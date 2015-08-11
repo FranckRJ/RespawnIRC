@@ -9,10 +9,14 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
 
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(true);
+    messageLine.setTabChangesFocus(true);
+    messageLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    messageLine.setMaximumHeight(65);
     networkManager.setCookieJar(new QNetworkCookieJar(this));
     timerForGetMessage.setInterval(5000);
     timerForGetMessage.stop();
     messagesStatus.setText("Rien.");
+    sendButton->setAutoDefault(true);
     reply = 0;
     replyForSendMessage = 0;
     firstTimeGetMessages = true;
@@ -28,7 +32,6 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
 
     connect(&timerForGetMessage, SIGNAL(timeout()), SLOT(getMessages()));
     connect(sendButton, SIGNAL(pressed()), SLOT(postMessage()));
-    connect(&messageLine, SIGNAL(returnPressed()), SLOT(postMessage()));
 }
 
 void respawnIrcClass::showConnect()
@@ -133,7 +136,7 @@ void respawnIrcClass::postMessage()
             data += listOfInput.at(i).first + "=" + listOfInput.at(i).second + "&";
         }
 
-        data += "message_topic=" + messageLine.text() + "&form_alias_rang=1";
+        data += "message_topic=" + messageLine.toPlainText() + "&form_alias_rang=1";
 
         replyForSendMessage = networkManager.post(request, data.toAscii());
         connect(replyForSendMessage, SIGNAL(finished()), this, SLOT(deleteReplyForSendMessage()));

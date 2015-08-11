@@ -23,7 +23,7 @@ protected:
     void focusInEvent(QFocusEvent * event);
 private:
     QTextBrowser messagesBox;
-    QLineEdit messageLine;
+    QTextEdit messageLine;
     QNetworkReply* reply;
     QNetworkReply* replyForSendMessage;
     QNetworkAccessManager networkManager;

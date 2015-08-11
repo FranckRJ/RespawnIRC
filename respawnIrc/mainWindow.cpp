@@ -8,7 +8,7 @@ mainWindowClass::mainWindowClass()
 
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
-    setWindowTitle("RespawnIRC");
+    setWindowTitle("RespawnIRC v1.0");
     respawnIrc.setFocus();
 
     connect(actionConnect, SIGNAL(triggered()), &respawnIrc, SLOT(showConnect()));
