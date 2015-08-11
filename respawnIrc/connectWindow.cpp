@@ -86,7 +86,7 @@ void connectWindowClass::getFormInput()
     {
         if(source.isEmpty() == true)
         {
-            emit newCookiesAvailable(networkManager.cookieJar()->cookiesForUrl(QUrl("http://www.jeuxvideo.com")), rememberBox.isChecked());
+            emit newCookiesAvailable(networkManager.cookieJar()->cookiesForUrl(QUrl("http://www.jeuxvideo.com")), pseudoLine.text(), rememberBox.isChecked());
             close();
             return;
         }

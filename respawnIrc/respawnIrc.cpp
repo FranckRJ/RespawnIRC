@@ -12,7 +12,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("co
     messageLine.setTabChangesFocus(true);
     messageLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     messageLine.setMaximumHeight(65);
-    timerForGetMessage.setInterval(5000);
+    timerForGetMessage.setInterval(4000);
     timerForGetMessage.stop();
     messagesStatus.setText("Rien.");
     sendButton->setAutoDefault(true);
@@ -21,6 +21,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("co
     firstTimeGetMessages = true;
     retrievesMessage = false;
     idOfLastMessage = 0;
+    isConnected = false;
 
     QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(&messagesBox, 0, 0, 1, 2);
@@ -43,6 +44,7 @@ void respawnIrcClass::warnUser()
 
 void respawnIrcClass::loadSettings()
 {
+    pseudoOfUser = setting.value("pseudo", "").toString();
     topicLink = setting.value("topicLink", "").toString();
 
     if(topicLink.isEmpty() == false)
@@ -73,7 +75,7 @@ void respawnIrcClass::startGetMessage()
 void respawnIrcClass::showConnect()
 {
     connectWindowClass* myConnectWindow = new connectWindowClass(this);
-    connect(myConnectWindow, SIGNAL(newCookiesAvailable(QList<QNetworkCookie>,bool)), this, SLOT(setNewCookies(QList<QNetworkCookie>,bool)));
+    connect(myConnectWindow, SIGNAL(newCookiesAvailable(QList<QNetworkCookie>,QString,bool)), this, SLOT(setNewCookies(QList<QNetworkCookie>,QString,bool)));
     myConnectWindow->exec();
 }
 
@@ -84,10 +86,11 @@ void respawnIrcClass::showSelectTopic()
     mySelectTopicWindow->exec();
 }
 
-void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, bool saveInfo)
+void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo)
 {
     networkManager.setCookieJar(new QNetworkCookieJar(this)); //fuite ?
     networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+    pseudoOfUser = newPseudoOfUser;
     isConnected = true;
 
     startGetMessage();
@@ -98,6 +101,7 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, bool saveI
         {
             setting.setValue(newCookies.at(i).name(), newCookies.at(i).value());
         }
+        setting.setValue("pseudo", pseudoOfUser);
     }
 }
 
@@ -115,24 +119,28 @@ void respawnIrcClass::setNewTopic(QString newTopic)
 
 void respawnIrcClass::getMessages()
 {
-    retrievesMessage = true;
+    if(retrievesMessage == false)
+    {
+        retrievesMessage = true;
 
-    if(reply == 0)
-    {
-        QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(topicLink);
-        messagesStatus.setText("Récupération des messages en cours...");
-        reply = networkManager.get(request);
-        connect(reply, SIGNAL(finished()), this, SLOT(analyzeMessages()));
-    }
-    else
-    {
-        retrievesMessage = false;
+        if(reply == 0)
+        {
+            QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(topicLink);
+            messagesStatus.setText("Récupération des messages en cours...");
+            reply = networkManager.get(request);
+            connect(reply, SIGNAL(finished()), this, SLOT(analyzeMessages()));
+        }
+        else
+        {
+            retrievesMessage = false;
+        }
     }
 }
 
 void respawnIrcClass::analyzeMessages()
 {
     QString newTopicLink;
+    QString colorOfPseudo;
     QString source = reply->readAll();
     reply->deleteLater();
     reply = 0;
@@ -152,7 +160,16 @@ void respawnIrcClass::analyzeMessages()
         {
             if(listOfMessageID.at(i) > idOfLastMessage)
             {
-                messagesBox.insertHtml("<table><tr><td>[" + listOfDate.at(i) + "] &lt;" + listOfPseudo.at(i) + "&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
+                if(pseudoOfUser.toLower() == listOfPseudo.at(i).toLower())
+                {
+                    colorOfPseudo = "blue";
+                }
+                else
+                {
+                    colorOfPseudo = "dimgrey";
+                }
+
+                messagesBox.insertHtml("<table><tr><td>[" + listOfDate.at(i) + "] &lt;<span style=\"color: " + colorOfPseudo + ";\">" + listOfPseudo.at(i) + "</span>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
                 messagesBox.verticalScrollBar()->updateGeometry();
                 messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
                 idOfLastMessage = listOfMessageID.at(i);

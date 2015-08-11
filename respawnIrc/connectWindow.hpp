@@ -18,7 +18,7 @@ public slots:
     void startLogin();
     void showCaptcha();
 signals:
-    void newCookiesAvailable(QList<QNetworkCookie> newCookiek, bool saveInfo);
+    void newCookiesAvailable(QList<QNetworkCookie> newCookiek, QString newPseudoOfUser, bool saveInfo);
 private:
     QLineEdit pseudoLine;
     QLineEdit passwordLine;

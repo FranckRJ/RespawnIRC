@@ -30,19 +30,20 @@ static const uint qt_meta_data_connectWindowClass[] = {
        1,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
-      40,   20,   19,   19, 0x05,
+      56,   20,   19,   19, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      88,   19,   19,   19, 0x0a,
-     103,   19,   19,   19, 0x0a,
-     116,   19,   19,   19, 0x0a,
+     112,   19,   19,   19, 0x0a,
+     127,   19,   19,   19, 0x0a,
+     140,   19,   19,   19, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_connectWindowClass[] = {
-    "connectWindowClass\0\0newCookiek,saveInfo\0"
-    "newCookiesAvailable(QList<QNetworkCookie>,bool)\0"
+    "connectWindowClass\0\0"
+    "newCookiek,newPseudoOfUser,saveInfo\0"
+    "newCookiesAvailable(QList<QNetworkCookie>,QString,bool)\0"
     "getFormInput()\0startLogin()\0showCaptcha()\0"
 };
 
@@ -52,7 +53,7 @@ void connectWindowClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
         Q_ASSERT(staticMetaObject.cast(_o));
         connectWindowClass *_t = static_cast<connectWindowClass *>(_o);
         switch (_id) {
-        case 0: _t->newCookiesAvailable((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
+        case 0: _t->newCookiesAvailable((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
         case 1: _t->getFormInput(); break;
         case 2: _t->startLogin(); break;
         case 3: _t->showCaptcha(); break;
@@ -101,9 +102,9 @@ int connectWindowClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void connectWindowClass::newCookiesAvailable(QList<QNetworkCookie> _t1, bool _t2)
+void connectWindowClass::newCookiesAvailable(QList<QNetworkCookie> _t1, QString _t2, bool _t3)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_END_MOC_NAMESPACE

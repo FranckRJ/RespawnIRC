@@ -16,7 +16,7 @@ public:
 public slots:
     void showConnect();
     void showSelectTopic();
-    void setNewCookies(QList<QNetworkCookie> newCookies, bool saveInfo);
+    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
     void setNewTopic(QString newTopic);
     void getMessages();
     void analyzeMessages();
@@ -35,6 +35,7 @@ private:
     QList<QPair<QString, QString> > listOfInput;
     QLabel messagesStatus;
     QString topicLink;
+    QString pseudoOfUser;
     bool isConnected;
     bool firstTimeGetMessages;
     bool retrievesMessage;
