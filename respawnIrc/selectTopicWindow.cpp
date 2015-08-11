@@ -9,6 +9,7 @@ selectTopicWindow::selectTopicWindow(QString currentTopic, QWidget* parent) : QD
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
 
     topicLine.setText(currentTopic);
+    topicLine.setMinimumWidth(500);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(buttonSelect);

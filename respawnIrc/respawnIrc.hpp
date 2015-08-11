@@ -10,6 +10,7 @@ class respawnIrcClass : public QWidget
     Q_OBJECT
 public:
     respawnIrcClass(QWidget* parent = 0);
+    void warnUser();
 public slots:
     void showConnect();
     void showSelectTopic();

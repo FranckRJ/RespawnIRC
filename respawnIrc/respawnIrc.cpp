@@ -34,6 +34,11 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     connect(sendButton, SIGNAL(pressed()), SLOT(postMessage()));
 }
 
+void respawnIrcClass::warnUser()
+{
+    QApplication::alert(this);
+}
+
 void respawnIrcClass::showConnect()
 {
     connectWindowClass* myConnectWindow = new connectWindowClass(this);
@@ -59,6 +64,7 @@ void respawnIrcClass::setNewTopic(QString newTopic)
     topicLink = newTopic;
     messagesBox.clear();
     firstTimeGetMessages = true;
+    idOfLastMessage = 0;
 
     if(timerForGetMessage.isActive() == false)
     {
@@ -104,6 +110,7 @@ void respawnIrcClass::analyzeMessages()
                 messagesBox.verticalScrollBar()->updateGeometry();
                 messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
                 idOfLastMessage = listOfMessageID.at(i);
+                warnUser();
             }
         }
     }
@@ -126,7 +133,7 @@ void respawnIrcClass::analyzeMessages()
 
 void respawnIrcClass::postMessage()
 {
-    if(replyForSendMessage == 0)
+    if(replyForSendMessage == 0 && isConnected == true && topicLink.isEmpty() == false)
     {
         QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(topicLink);
         QString data;
