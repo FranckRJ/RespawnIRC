@@ -12,6 +12,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("co
     messageLine.setTabChangesFocus(true);
     messageLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     messageLine.setMaximumHeight(65);
+    messageLine.setAcceptRichText(false);
     timerForGetMessage.setInterval(4000);
     timerForGetMessage.stop();
     messagesStatus.setText("Rien.");
@@ -169,7 +170,8 @@ void respawnIrcClass::analyzeMessages()
                     colorOfPseudo = "dimgrey";
                 }
 
-                messagesBox.insertHtml("<table><tr><td>[" + listOfDate.at(i) + "] &lt;<span style=\"color: " + colorOfPseudo + ";\">" + listOfPseudo.at(i) + "</span>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
+                //peut-être à changer
+                messagesBox.setHtml(messagesBox.toHtml() + "<table><tr><td>[" + listOfDate.at(i) + "] &lt;<span style=\"color: " + colorOfPseudo + ";\">" + listOfPseudo.at(i) + "</span>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
                 messagesBox.verticalScrollBar()->updateGeometry();
                 messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
                 idOfLastMessage = listOfMessageID.at(i);
