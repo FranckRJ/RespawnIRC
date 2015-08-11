@@ -1,0 +1,12 @@
+INPUT(
+./release\main.o
+./release\mainWindow.o
+./release\respawnIrc.o
+./release\connectWindow.o
+./release\parsingTool.o
+./release\selectTopicWindow.o
+./release\captchaWindow.o
+./release\moc_respawnIrc.o
+./release\moc_connectWindow.o
+./release\moc_selectTopicWindow.o
+);

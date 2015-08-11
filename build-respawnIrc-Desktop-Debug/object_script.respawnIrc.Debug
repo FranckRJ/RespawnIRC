@@ -1,0 +1,12 @@
+INPUT(
+./debug\main.o
+./debug\mainWindow.o
+./debug\respawnIrc.o
+./debug\connectWindow.o
+./debug\parsingTool.o
+./debug\selectTopicWindow.o
+./debug\captchaWindow.o
+./debug\moc_respawnIrc.o
+./debug\moc_connectWindow.o
+./debug\moc_selectTopicWindow.o
+);
