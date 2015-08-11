@@ -3,7 +3,7 @@
 #include "selectTopicWindow.hpp"
 #include "parsingTool.hpp"
 
-respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
+respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("config.ini", QSettings::IniFormat)
 {
     QPushButton* sendButton = new QPushButton("Envoyer", this);
 
@@ -12,7 +12,6 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     messageLine.setTabChangesFocus(true);
     messageLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     messageLine.setMaximumHeight(65);
-    networkManager.setCookieJar(new QNetworkCookieJar(this));
     timerForGetMessage.setInterval(5000);
     timerForGetMessage.stop();
     messagesStatus.setText("Rien.");
@@ -20,6 +19,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     reply = 0;
     replyForSendMessage = 0;
     firstTimeGetMessages = true;
+    retrievesMessage = false;
     idOfLastMessage = 0;
 
     QGridLayout* mainLayout = new QGridLayout(this);
@@ -32,6 +32,8 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
 
     connect(&timerForGetMessage, SIGNAL(timeout()), SLOT(getMessages()));
     connect(sendButton, SIGNAL(pressed()), SLOT(postMessage()));
+
+    loadSettings();
 }
 
 void respawnIrcClass::warnUser()
@@ -39,10 +41,39 @@ void respawnIrcClass::warnUser()
     QApplication::alert(this);
 }
 
+void respawnIrcClass::loadSettings()
+{
+    topicLink = setting.value("topicLink", "").toString();
+
+    if(topicLink.isEmpty() == false)
+    {
+        setNewTopic(topicLink);
+    }
+
+    if(setting.value("dlrowolleh", "").toString().isEmpty() == false && setting.value("coniunctio", "").toString().isEmpty() == false)
+    {
+        QList<QNetworkCookie> newCookies;
+        newCookies.append(QNetworkCookie(QByteArray("dlrowolleh"), setting.value("dlrowolleh").toByteArray()));
+        newCookies.append(QNetworkCookie(QByteArray("coniunctio"), setting.value("coniunctio").toByteArray()));
+
+        networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+        isConnected = true;
+    }
+}
+
+void respawnIrcClass::startGetMessage()
+{
+    if(retrievesMessage == false)
+    {
+        timerForGetMessage.start();
+        getMessages();
+    }
+}
+
 void respawnIrcClass::showConnect()
 {
     connectWindowClass* myConnectWindow = new connectWindowClass(this);
-    connect(myConnectWindow, SIGNAL(newCookiesAvailable(QList<QNetworkCookie>)), this, SLOT(setNewCookies(QList<QNetworkCookie>)));
+    connect(myConnectWindow, SIGNAL(newCookiesAvailable(QList<QNetworkCookie>,bool)), this, SLOT(setNewCookies(QList<QNetworkCookie>,bool)));
     myConnectWindow->exec();
 }
 
@@ -53,10 +84,21 @@ void respawnIrcClass::showSelectTopic()
     mySelectTopicWindow->exec();
 }
 
-void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies)
+void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, bool saveInfo)
 {
+    networkManager.setCookieJar(new QNetworkCookieJar(this)); //fuite ?
     networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
     isConnected = true;
+
+    startGetMessage();
+
+    if(saveInfo == true)
+    {
+        for(int i = 0; i < newCookies.size(); ++i)
+        {
+            setting.setValue(newCookies.at(i).name(), newCookies.at(i).value());
+        }
+    }
 }
 
 void respawnIrcClass::setNewTopic(QString newTopic)
@@ -66,21 +108,25 @@ void respawnIrcClass::setNewTopic(QString newTopic)
     firstTimeGetMessages = true;
     idOfLastMessage = 0;
 
-    if(timerForGetMessage.isActive() == false)
-    {
-        timerForGetMessage.start();
-        getMessages();
-    }
+    startGetMessage();
+
+    setting.setValue("topicLink", topicLink);
 }
 
 void respawnIrcClass::getMessages()
 {
+    retrievesMessage = true;
+
     if(reply == 0)
     {
         QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(topicLink);
         messagesStatus.setText("Récupération des messages en cours...");
         reply = networkManager.get(request);
         connect(reply, SIGNAL(finished()), this, SLOT(analyzeMessages()));
+    }
+    else
+    {
+        retrievesMessage = false;
     }
 }
 
@@ -121,14 +167,14 @@ void respawnIrcClass::analyzeMessages()
         parsingToolClass::getListOfHiddenInputFromThisForm(source, "form-post-topic form-post-message", listOfInput);
     }
 
+    firstTimeGetMessages = false;
+    retrievesMessage = false;
+
     if(newTopicLink.isEmpty() == false)
     {
         topicLink = newTopicLink;
-        timerForGetMessage.start();
-        getMessages();
+        startGetMessage();
     }
-
-    firstTimeGetMessages = false;
 }
 
 void respawnIrcClass::postMessage()
@@ -143,7 +189,7 @@ void respawnIrcClass::postMessage()
             data += listOfInput.at(i).first + "=" + listOfInput.at(i).second + "&";
         }
 
-        data += "message_topic=" + messageLine.toPlainText() + "&form_alias_rang=1";
+        data += "message_topic=" + messageLine.toPlainText().replace("&", "%26").replace("+", "%2B") + "&form_alias_rang=1";
 
         replyForSendMessage = networkManager.post(request, data.toAscii());
         connect(replyForSendMessage, SIGNAL(finished()), this, SLOT(deleteReplyForSendMessage()));

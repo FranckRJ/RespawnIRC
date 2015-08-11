@@ -32,20 +32,20 @@ static const uint qt_meta_data_respawnIrcClass[] = {
  // slots: signature, parameters, type, tag, flags
       17,   16,   16,   16, 0x0a,
       31,   16,   16,   16, 0x0a,
-      60,   49,   16,   16, 0x0a,
-     106,   97,   16,   16, 0x0a,
-     127,   16,   16,   16, 0x0a,
+      69,   49,   16,   16, 0x0a,
+     120,  111,   16,   16, 0x0a,
      141,   16,   16,   16, 0x0a,
-     159,   16,   16,   16, 0x0a,
+     155,   16,   16,   16, 0x0a,
      173,   16,   16,   16, 0x0a,
+     187,   16,   16,   16, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_respawnIrcClass[] = {
     "respawnIrcClass\0\0showConnect()\0"
-    "showSelectTopic()\0newCookies\0"
-    "setNewCookies(QList<QNetworkCookie>)\0"
+    "showSelectTopic()\0newCookies,saveInfo\0"
+    "setNewCookies(QList<QNetworkCookie>,bool)\0"
     "newTopic\0setNewTopic(QString)\0"
     "getMessages()\0analyzeMessages()\0"
     "postMessage()\0deleteReplyForSendMessage()\0"
@@ -59,7 +59,7 @@ void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         switch (_id) {
         case 0: _t->showConnect(); break;
         case 1: _t->showSelectTopic(); break;
-        case 2: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1]))); break;
+        case 2: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
         case 3: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 4: _t->getMessages(); break;
         case 5: _t->analyzeMessages(); break;

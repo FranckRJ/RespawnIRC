@@ -11,10 +11,12 @@ class respawnIrcClass : public QWidget
 public:
     respawnIrcClass(QWidget* parent = 0);
     void warnUser();
+    void loadSettings();
+    void startGetMessage();
 public slots:
     void showConnect();
     void showSelectTopic();
-    void setNewCookies(QList<QNetworkCookie> newCookies);
+    void setNewCookies(QList<QNetworkCookie> newCookies, bool saveInfo);
     void setNewTopic(QString newTopic);
     void getMessages();
     void analyzeMessages();
@@ -23,6 +25,7 @@ public slots:
 protected:
     void focusInEvent(QFocusEvent * event);
 private:
+    QSettings setting;
     QTextBrowser messagesBox;
     QTextEdit messageLine;
     QNetworkReply* reply;
@@ -34,6 +37,7 @@ private:
     QString topicLink;
     bool isConnected;
     bool firstTimeGetMessages;
+    bool retrievesMessage;
     int idOfLastMessage;
 };
 

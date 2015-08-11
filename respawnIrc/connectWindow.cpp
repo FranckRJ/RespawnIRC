@@ -7,12 +7,14 @@ connectWindowClass::connectWindowClass(QWidget* parent) : QDialog(parent, Qt::Wi
 
     QLabel* labPseudo = new QLabel("Pseudo :", this);
     QLabel* labPassword = new QLabel("Mot de passe :", this);
+    QLabel* labRemember = new QLabel("Se souvenir :", this);
     QLabel* labCaptcha = new QLabel("Captcha :", this);
     QPushButton* buttonConnect = new QPushButton("Se connecter", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
 
     passwordLine.setEchoMode(QLineEdit::Password);
     captchaLine.setDisabled(true);
+    rememberBox.setChecked(false);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(buttonConnect);
@@ -23,10 +25,12 @@ connectWindowClass::connectWindowClass(QWidget* parent) : QDialog(parent, Qt::Wi
     mainLayout->addWidget(&pseudoLine, 0, 1);
     mainLayout->addWidget(labPassword, 1, 0);
     mainLayout->addWidget(&passwordLine, 1, 1);
-    mainLayout->addWidget(labCaptcha, 2, 0);
-    mainLayout->addWidget(&labPixCaptcha, 2, 1);
-    mainLayout->addWidget(&captchaLine, 3, 0, 1, 2);
-    mainLayout->addLayout(buttonLayout, 4, 0, 1, 2);
+    mainLayout->addWidget(labRemember, 2, 0);
+    mainLayout->addWidget(&rememberBox, 2, 1);
+    mainLayout->addWidget(labCaptcha, 3, 0);
+    mainLayout->addWidget(&labPixCaptcha, 3, 1);
+    mainLayout->addWidget(&captchaLine, 4, 0, 1, 2);
+    mainLayout->addLayout(buttonLayout, 5, 0, 1, 2);
 
     setLayout(mainLayout);
     setWindowTitle("Se connecter");
@@ -82,7 +86,7 @@ void connectWindowClass::getFormInput()
     {
         if(source.isEmpty() == true)
         {
-            emit newCookiesAvailable(networkManager.cookieJar()->cookiesForUrl(QUrl("http://www.jeuxvideo.com")));
+            emit newCookiesAvailable(networkManager.cookieJar()->cookiesForUrl(QUrl("http://www.jeuxvideo.com")), rememberBox.isChecked());
             close();
             return;
         }

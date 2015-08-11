@@ -18,10 +18,11 @@ public slots:
     void startLogin();
     void showCaptcha();
 signals:
-    void newCookiesAvailable(QList<QNetworkCookie> newCookie);
+    void newCookiesAvailable(QList<QNetworkCookie> newCookiek, bool saveInfo);
 private:
     QLineEdit pseudoLine;
     QLineEdit passwordLine;
+    QCheckBox rememberBox;
     QLineEdit captchaLine;
     QNetworkReply* reply;
     QNetworkAccessManager networkManager;
