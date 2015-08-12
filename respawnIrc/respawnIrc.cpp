@@ -191,7 +191,10 @@ void respawnIrcClass::analyzeMessages()
                     colorOfPseudo = "dimgrey";
                 }
 
-                messagesBox.append("<table><tr><td>[" + listOfDate.at(i) + "] &lt;<span style=\"color: " + colorOfPseudo + ";\">" + listOfPseudo.at(i) + "</span>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
+                messagesBox.append("<table><tr><td>[" + listOfDate.at(i) +
+                                   "] &lt;<a href=\"http://www.jeuxvideo.com/profil/" + listOfPseudo.at(i).toLower() +
+                                   "?mode=infos\"><span style=\"color: " + colorOfPseudo + ";text-decoration: none\">" +
+                                   listOfPseudo.at(i) + "</span></a>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
                 messagesBox.verticalScrollBar()->updateGeometry();
                 messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
                 idOfLastMessage = listOfMessageID.at(i);
