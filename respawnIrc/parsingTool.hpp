@@ -8,6 +8,7 @@ class parsingToolClass
 {
 public:
     static void getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
+    static QString getCaptchaLink(QString source);
     static QString getLastPageOfTopic(QString source);
     static QList<int> getListOfMessageID(QString source);
     static QList<QString> getListOfPseudo(QString source);

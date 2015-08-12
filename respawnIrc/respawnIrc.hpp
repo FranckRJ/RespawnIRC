@@ -18,6 +18,7 @@ public slots:
     void showSelectTopic();
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
     void setNewTopic(QString newTopic);
+    void setCodeForCaptcha(QString code);
     void getMessages();
     void analyzeMessages();
     void postMessage();
@@ -35,8 +36,11 @@ private:
     QTimer timerForGetMessage;
     QList<QPair<QString, QString> > listOfInput;
     QLabel messagesStatus;
+    QPushButton sendButton;
     QString topicLink;
     QString pseudoOfUser;
+    QString captchaLink;
+    QString captchaCode;
     bool isConnected;
     bool firstTimeGetMessages;
     bool retrievesMessage;

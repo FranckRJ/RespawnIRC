@@ -9,4 +9,5 @@ INPUT(
 ./debug\moc_respawnIrc.o
 ./debug\moc_connectWindow.o
 ./debug\moc_selectTopicWindow.o
+./debug\moc_captchaWindow.o
 );

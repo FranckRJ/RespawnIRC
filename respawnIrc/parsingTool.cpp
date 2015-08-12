@@ -48,6 +48,21 @@ void parsingToolClass::getListOfHiddenInputFromThisForm(QString& source, QString
     }
 }
 
+QString parsingToolClass::getCaptchaLink(QString source)
+{
+    QRegExp expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>");
+    expForCaptcha.setMinimal(true);
+
+    if(source.contains(expForCaptcha) == true)
+    {
+        return expForCaptcha.cap(1);
+    }
+    else
+    {
+        return "";
+    }
+}
+
 QString parsingToolClass::getLastPageOfTopic(QString source)
 {
     int currentPage = 0;

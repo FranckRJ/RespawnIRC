@@ -1,22 +1,22 @@
 #include "respawnIrc.hpp"
 #include "connectWindow.hpp"
 #include "selectTopicWindow.hpp"
+#include "captchaWindow.hpp"
 #include "parsingTool.hpp"
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("config.ini", QSettings::IniFormat)
 {
-    QPushButton* sendButton = new QPushButton("Envoyer", this);
-
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(true);
     messageLine.setTabChangesFocus(true);
     messageLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     messageLine.setMaximumHeight(65);
     messageLine.setAcceptRichText(false);
+    sendButton.setText("Envoyer");
     timerForGetMessage.setInterval(4000);
     timerForGetMessage.stop();
     messagesStatus.setText("Rien.");
-    sendButton->setAutoDefault(true);
+    sendButton.setAutoDefault(true);
     reply = 0;
     replyForSendMessage = 0;
     firstTimeGetMessages = true;
@@ -28,13 +28,13 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("co
     QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(&messagesBox, 0, 0, 1, 2);
     mainLayout->addWidget(&messageLine, 1, 0);
-    mainLayout->addWidget(sendButton, 1, 1);
+    mainLayout->addWidget(&sendButton, 1, 1);
     mainLayout->addWidget(&messagesStatus, 2, 0, 1, 2);
 
     setLayout(mainLayout);
 
     connect(&timerForGetMessage, SIGNAL(timeout()), SLOT(getMessages()));
-    connect(sendButton, SIGNAL(pressed()), SLOT(postMessage()));
+    connect(&sendButton, SIGNAL(pressed()), SLOT(postMessage()));
 
     loadSettings();
 }
@@ -47,12 +47,6 @@ void respawnIrcClass::warnUser()
 void respawnIrcClass::loadSettings()
 {
     pseudoOfUser = setting.value("pseudo", "").toString();
-    topicLink = setting.value("topicLink", "").toString();
-
-    if(topicLink.isEmpty() == false)
-    {
-        setNewTopic(topicLink);
-    }
 
     if(setting.value("dlrowolleh", "").toString().isEmpty() == false && setting.value("coniunctio", "").toString().isEmpty() == false)
     {
@@ -60,14 +54,20 @@ void respawnIrcClass::loadSettings()
         newCookies.append(QNetworkCookie(QByteArray("dlrowolleh"), setting.value("dlrowolleh").toByteArray()));
         newCookies.append(QNetworkCookie(QByteArray("coniunctio"), setting.value("coniunctio").toByteArray()));
 
-        networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
-        isConnected = true;
+        setNewCookies(newCookies, pseudoOfUser, false);
+    }
+
+    topicLink = setting.value("topicLink", "").toString();
+
+    if(topicLink.isEmpty() == false)
+    {
+        setNewTopic(topicLink);
     }
 }
 
 void respawnIrcClass::startGetMessage()
 {
-    if(retrievesMessage == false)
+    if(retrievesMessage == false && topicLink.isEmpty() == false)
     {
         timerForGetMessage.start();
         getMessages();
@@ -109,15 +109,21 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
 
 void respawnIrcClass::setNewTopic(QString newTopic)
 {
-    topicLink = newTopic;
     messagesBox.clear();
-    firstTimeGetMessages = true;
+    topicLink = newTopic;
     linkHasChanged = true;
+    firstTimeGetMessages = true;
     idOfLastMessage = 0;
 
     startGetMessage();
 
     setting.setValue("topicLink", topicLink);
+}
+
+void respawnIrcClass::setCodeForCaptcha(QString code)
+{
+    captchaCode = code;
+    postMessage();
 }
 
 void respawnIrcClass::getMessages()
@@ -207,6 +213,7 @@ void respawnIrcClass::analyzeMessages()
     {
         listOfInput.clear();
         parsingToolClass::getListOfHiddenInputFromThisForm(source, "form-post-topic form-post-message", listOfInput);
+        captchaLink = parsingToolClass::getCaptchaLink(source);
     }
 
     firstTimeGetMessages = false;
@@ -226,23 +233,60 @@ void respawnIrcClass::postMessage()
         QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(topicLink);
         QString data;
 
+        if(captchaLink.isEmpty() == false && captchaCode.isEmpty() == true)
+        {
+            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(captchaLink, this);
+            connect(myCaptchaWindow, SIGNAL(codeForCaptcha(QString)), this, SLOT(setCodeForCaptcha(QString)));
+            myCaptchaWindow->exec();
+            return;
+        }
+
+        sendButton.setEnabled(false);
+
         for(int i = 0; i < listOfInput.size(); ++i)
         {
             data += listOfInput.at(i).first + "=" + listOfInput.at(i).second + "&";
         }
 
-        data += "message_topic=" + messageLine.toPlainText().replace("&", "%26").replace("+", "%2B") + "&form_alias_rang=1";
+        data += "message_topic=" + messageLine.toPlainText().replace("&", "%26").replace("+", "%2B");
+
+        if(captchaCode.isEmpty() == false)
+        {
+            data += "&fs_ccode=" + captchaCode;
+        }
+
+        data += "&form_alias_rang=1";
 
         replyForSendMessage = networkManager.post(request, data.toAscii());
         connect(replyForSendMessage, SIGNAL(finished()), this, SLOT(deleteReplyForSendMessage()));
-        messageLine.clear();
     }
 }
 
 void respawnIrcClass::deleteReplyForSendMessage()
 {
+    QString source = replyForSendMessage->readAll();
     replyForSendMessage->deleteLater();
     replyForSendMessage = 0;
+    captchaCode.clear();
+
+    if(source.size() == 0)
+    {
+        messageLine.clear();
+        sendButton.setEnabled(true);
+    }
+    else if(source.contains("<div class=\"alert-row\"> Le code de confirmation est incorrect. </div>") == true)
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Le code de confirmation est incorrect.");
+        sendButton.setEnabled(true);
+    }
+    else
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Le message n'a pas été envoyé.");
+        sendButton.setEnabled(true);
+    }
+
     startGetMessage();
 }
 
