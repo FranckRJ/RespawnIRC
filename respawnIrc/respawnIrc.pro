@@ -17,3 +17,5 @@ HEADERS += \
     parsingTool.hpp \
     selectTopicWindow.hpp \
     captchaWindow.hpp
+
+RC_FILE = respawnIrc.rc
