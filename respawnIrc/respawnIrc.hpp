@@ -39,6 +39,7 @@ private:
     bool isConnected;
     bool firstTimeGetMessages;
     bool retrievesMessage;
+    bool linkHasChanged;
     int idOfLastMessage;
 };
 

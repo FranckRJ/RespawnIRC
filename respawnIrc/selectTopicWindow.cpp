@@ -28,8 +28,26 @@ selectTopicWindow::selectTopicWindow(QString currentTopic, QWidget* parent) : QD
     connect(buttonCancel, SIGNAL(pressed()), this, SLOT(close()));
 }
 
+bool selectTopicWindow::linkIsValid(QString link)
+{
+    if(link.startsWith("http://www.jeuxvideo.com/") == false)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void selectTopicWindow::selectThisTopic()
 {
-    emit newTopicSelected(topicLine.text());
-    close();
+    if(linkIsValid(topicLine.text()) == true)
+    {
+        emit newTopicSelected(topicLine.text());
+        close();
+    }
+    else
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Le lien du topic n'est pas valide !");
+    }
 }

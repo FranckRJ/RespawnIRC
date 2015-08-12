@@ -75,6 +75,8 @@ void connectWindowClass::getFormInput()
 
     if(source.contains("Combinaison pseudo / mot de passe invalide.") == true)
     {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Combinaison pseudo / mot de passe invalide.");
         captchaHere = false;
         removeCaptcha();
     }

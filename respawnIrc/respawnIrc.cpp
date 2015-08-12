@@ -23,6 +23,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("co
     retrievesMessage = false;
     idOfLastMessage = 0;
     isConnected = false;
+    linkHasChanged = false;
 
     QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(&messagesBox, 0, 0, 1, 2);
@@ -111,6 +112,7 @@ void respawnIrcClass::setNewTopic(QString newTopic)
     topicLink = newTopic;
     messagesBox.clear();
     firstTimeGetMessages = true;
+    linkHasChanged = true;
     idOfLastMessage = 0;
 
     startGetMessage();
@@ -128,6 +130,7 @@ void respawnIrcClass::getMessages()
         {
             QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(topicLink);
             messagesStatus.setText("Récupération des messages en cours...");
+            linkHasChanged = false;
             reply = networkManager.get(request);
             connect(reply, SIGNAL(finished()), this, SLOT(analyzeMessages()));
         }
@@ -146,6 +149,12 @@ void respawnIrcClass::analyzeMessages()
     reply->deleteLater();
     reply = 0;
 
+    if(linkHasChanged == true)
+    {
+        retrievesMessage = false;
+        return;
+    }
+
     messagesStatus.setText("Récupération des messages terminé !");
 
     newTopicLink = parsingToolClass::getLastPageOfTopic(source);
@@ -156,6 +165,18 @@ void respawnIrcClass::analyzeMessages()
         QList<QString> listOfPseudo = parsingToolClass::getListOfPseudo(source);
         QList<QString> listOfDate = parsingToolClass::getListOfDate(source);
         QList<QString> listOfMessage = parsingToolClass::getListOfMessage(source);
+
+        if((listOfMessageID.size() == listOfPseudo.size() && listOfPseudo.size() == listOfDate.size() && listOfDate.size() == listOfMessage.size()) == false || listOfDate.size() == 0)
+        {
+            QMessageBox messageBox;
+            topicLink.clear();
+            timerForGetMessage.stop();
+            messagesBox.clear();
+            messagesStatus.setText("Erreur.");
+            messageBox.warning(this, "Erreur", "Un problème est survenu lors de la récupération des messages.");
+            retrievesMessage = false;
+            return;
+        }
 
         for(int i = 0; i < listOfMessageID.size(); ++i)
         {
