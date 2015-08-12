@@ -16,7 +16,8 @@ public:
     static QString parsingMessages(QString thisMessage);
     static QNetworkRequest buildRequestWithThisUrl(QString url);
     static QList<QString> getListOfThisCapNumber(QString& source, QRegExp exp, int capNumber);
-    static void replaceWithCapNumber(QString& source, QRegExp exp, int capNumber, bool createLink = false, QString stringBefore = "", QString stringAfter = "");
+    static void replaceWithCapNumber(QString& source, QRegExp exp, int capNumber, bool createLink = false, QString stringBefore = "",
+                                     QString stringAfter = "", int secondCapNumber = 0, QString stringAfterAfter = "");
 };
 
 #endif

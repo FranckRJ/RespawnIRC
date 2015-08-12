@@ -1,4 +1,5 @@
 #include "mainWindow.hpp"
+#include "parsingTool.hpp"
 
 mainWindowClass::mainWindowClass()
 {
@@ -8,11 +9,11 @@ mainWindowClass::mainWindowClass()
 
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
-    setWindowTitle("RespawnIRC v1.2");
+    setWindowTitle("RespawnIRC v1.3");
     resize(QDesktopWidget().availableGeometry(this).size() * 0.5);
     respawnIrc.setFocus();
 
     connect(actionConnect, SIGNAL(triggered()), &respawnIrc, SLOT(showConnect()));
     connect(actionSelectTopic, SIGNAL(triggered()), &respawnIrc, SLOT(showSelectTopic()));
+    connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), &respawnIrc, SLOT(clipboardChanged()));
 }
-

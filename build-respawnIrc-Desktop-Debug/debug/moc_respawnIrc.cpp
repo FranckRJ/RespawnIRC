@@ -22,7 +22,7 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+       9,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -38,6 +38,7 @@ static const uint qt_meta_data_respawnIrcClass[] = {
      179,   16,   16,   16, 0x0a,
      197,   16,   16,   16, 0x0a,
      211,   16,   16,   16, 0x0a,
+     239,   16,   16,   16, 0x0a,
 
        0        // eod
 };
@@ -49,6 +50,7 @@ static const char qt_meta_stringdata_respawnIrcClass[] = {
     "newTopic\0setNewTopic(QString)\0"
     "getMessages()\0analyzeMessages()\0"
     "postMessage()\0deleteReplyForSendMessage()\0"
+    "clipboardChanged()\0"
 };
 
 void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -65,6 +67,7 @@ void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 5: _t->analyzeMessages(); break;
         case 6: _t->postMessage(); break;
         case 7: _t->deleteReplyForSendMessage(); break;
+        case 8: _t->clipboardChanged(); break;
         default: ;
         }
     }
@@ -102,9 +105,9 @@ int respawnIrcClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 9)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 9;
     }
     return _id;
 }

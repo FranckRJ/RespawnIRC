@@ -121,7 +121,7 @@ QList<QString> parsingToolClass::getListOfMessage(QString source)
 
 QString parsingToolClass::parsingMessages(QString thisMessage)
 {
-    QRegExp expForSmiley("<img src=\"[^\"]*\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />");
+    QRegExp expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />");
     QRegExp expForStickers("<img class=\"img-stickers\" src=\"([^\"]*)\"/>");
     QRegExp expForLongLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\" title=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>");
     QRegExp expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>");
@@ -132,7 +132,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
 
     thisMessage.replace("\n", "");
 
-    replaceWithCapNumber(thisMessage, expForSmiley, 1);
+    replaceWithCapNumber(thisMessage, expForSmiley, 1, false, "<img src=\"smileys/", "\" />");
     replaceWithCapNumber(thisMessage, expForStickers, 1, true);
     replaceWithCapNumber(thisMessage, expForLongLink, 1, true);
     replaceWithCapNumber(thisMessage, expForShortLink, 1, true);
@@ -173,7 +173,7 @@ QList<QString> parsingToolClass::getListOfThisCapNumber(QString& source, QRegExp
     return listOfString;
 }
 
-void parsingToolClass::replaceWithCapNumber(QString& source, QRegExp exp, int capNumber, bool createLink, QString stringBefore, QString stringAfter)
+void parsingToolClass::replaceWithCapNumber(QString& source, QRegExp exp, int capNumber, bool createLink, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter)
 {
     int posForExp = 0;
     QString newString;
@@ -192,6 +192,12 @@ void parsingToolClass::replaceWithCapNumber(QString& source, QRegExp exp, int ca
         }
 
         newString += stringAfter;
+
+        if(secondCapNumber != 0)
+        {
+            newString += exp.cap(secondCapNumber);
+            newString += stringAfterAfter;
+        }
 
         source.replace(posForExp, exp.cap(0).length(), newString);
         posForExp += newString.length();

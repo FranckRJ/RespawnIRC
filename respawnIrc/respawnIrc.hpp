@@ -22,6 +22,7 @@ public slots:
     void analyzeMessages();
     void postMessage();
     void deleteReplyForSendMessage();
+    void clipboardChanged();
 protected:
     void focusInEvent(QFocusEvent * event);
 private:
