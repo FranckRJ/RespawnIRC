@@ -170,8 +170,7 @@ void respawnIrcClass::analyzeMessages()
                     colorOfPseudo = "dimgrey";
                 }
 
-                //peut-être à changer
-                messagesBox.setHtml(messagesBox.toHtml() + "<table><tr><td>[" + listOfDate.at(i) + "] &lt;<span style=\"color: " + colorOfPseudo + ";\">" + listOfPseudo.at(i) + "</span>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
+                messagesBox.append("<table><tr><td>[" + listOfDate.at(i) + "] &lt;<span style=\"color: " + colorOfPseudo + ";\">" + listOfPseudo.at(i) + "</span>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
                 messagesBox.verticalScrollBar()->updateGeometry();
                 messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
                 idOfLastMessage = listOfMessageID.at(i);
@@ -220,6 +219,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
 {
     replyForSendMessage->deleteLater();
     replyForSendMessage = 0;
+    startGetMessage();
 }
 
 void respawnIrcClass::focusInEvent(QFocusEvent* event)

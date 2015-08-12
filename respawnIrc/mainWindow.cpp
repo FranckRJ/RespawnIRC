@@ -8,7 +8,7 @@ mainWindowClass::mainWindowClass()
 
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
-    setWindowTitle("RespawnIRC v1.1.1");
+    setWindowTitle("RespawnIRC v1.1.2");
     resize(QDesktopWidget().availableGeometry(this).size() * 0.5);
     respawnIrc.setFocus();
 
