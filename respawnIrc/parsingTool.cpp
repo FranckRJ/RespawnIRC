@@ -167,8 +167,8 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
     replaceWithCapNumber(thisMessage, expForLongLink, 1, true);
     replaceWithCapNumber(thisMessage, expForShortLink, 1, true);
     replaceWithCapNumber(thisMessage, expForNoelshack, 1, true);
-    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, false, "<strong> !!! SPOIL !!! </strong>", "<strong> !!! SPOIL !!! </strong>");
-    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, false, "<br /><br /><strong>!!! SPOIL !!! </strong>", "<strong> !!! SPOIL !!!</strong>");
+    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, false, "<span style=\"color: black; background-color: black;\">", "</span>");
+    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, false, "<br /><br /><span style=\"color: black; background-color: black;\">", "</span>");
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1);
 
     thisMessage.replace(QRegExp("</p> *<p>"), "<br /><br />");
