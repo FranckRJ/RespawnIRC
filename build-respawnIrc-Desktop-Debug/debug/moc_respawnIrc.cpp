@@ -22,7 +22,7 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      14,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -32,25 +32,33 @@ static const uint qt_meta_data_respawnIrcClass[] = {
  // slots: signature, parameters, type, tag, flags
       17,   16,   16,   16, 0x0a,
       31,   16,   16,   16, 0x0a,
-      85,   49,   16,   16, 0x0a,
-     144,  135,   16,   16, 0x0a,
-     170,  165,   16,   16, 0x0a,
-     197,   16,   16,   16, 0x0a,
-     211,   16,   16,   16, 0x0a,
-     229,   16,   16,   16, 0x0a,
-     243,   16,   16,   16, 0x0a,
-     271,   16,   16,   16, 0x0a,
+      49,   16,   16,   16, 0x0a,
+      67,   61,   16,   16, 0x0a,
+     118,   82,   16,   16, 0x0a,
+     177,  168,   16,   16, 0x0a,
+     203,  198,   16,   16, 0x0a,
+     230,   16,   16,   16, 0x0a,
+     262,  252,   16,   16, 0x0a,
+     287,   16,   16,   16, 0x0a,
+     321,  312,   16,   16, 0x0a,
+     344,   16,   16,   16, 0x0a,
+     358,   16,   16,   16, 0x0a,
+     386,   16,   16,   16, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_respawnIrcClass[] = {
     "respawnIrcClass\0\0showConnect()\0"
-    "showSelectTopic()\0newCookies,newPseudoOfUser,saveInfo\0"
+    "showSelectTopic()\0addNewTab()\0index\0"
+    "removeTab(int)\0newCookies,newPseudoOfUser,saveInfo\0"
     "setNewCookies(QList<QNetworkCookie>,QString,bool)\0"
     "newTopic\0setNewTopic(QString)\0code\0"
-    "setCodeForCaptcha(QString)\0getMessages()\0"
-    "analyzeMessages()\0postMessage()\0"
+    "setCodeForCaptcha(QString)\0"
+    "setNewMessageStatus()\0topicName\0"
+    "setNewTopicName(QString)\0"
+    "warnUserForNewMessages()\0newIndex\0"
+    "currentTabChanged(int)\0postMessage()\0"
     "deleteReplyForSendMessage()\0"
     "clipboardChanged()\0"
 };
@@ -63,14 +71,18 @@ void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         switch (_id) {
         case 0: _t->showConnect(); break;
         case 1: _t->showSelectTopic(); break;
-        case 2: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
-        case 3: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 4: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 5: _t->getMessages(); break;
-        case 6: _t->analyzeMessages(); break;
-        case 7: _t->postMessage(); break;
-        case 8: _t->deleteReplyForSendMessage(); break;
-        case 9: _t->clipboardChanged(); break;
+        case 2: _t->addNewTab(); break;
+        case 3: _t->removeTab((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 4: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 5: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 6: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 7: _t->setNewMessageStatus(); break;
+        case 8: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 9: _t->warnUserForNewMessages(); break;
+        case 10: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 11: _t->postMessage(); break;
+        case 12: _t->deleteReplyForSendMessage(); break;
+        case 13: _t->clipboardChanged(); break;
         default: ;
         }
     }
@@ -108,9 +120,9 @@ int respawnIrcClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 14;
     }
     return _id;
 }

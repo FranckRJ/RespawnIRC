@@ -5,7 +5,8 @@ SOURCES += \
     connectWindow.cpp \
     parsingTool.cpp \
     selectTopicWindow.cpp \
-    captchaWindow.cpp
+    captchaWindow.cpp \
+    showTopicMessages.cpp
 
 QT += \
     network
@@ -16,6 +17,7 @@ HEADERS += \
     connectWindow.hpp \
     parsingTool.hpp \
     selectTopicWindow.hpp \
-    captchaWindow.hpp
+    captchaWindow.hpp \
+    showTopicMessages.hpp
 
 RC_FILE = respawnIrc.rc

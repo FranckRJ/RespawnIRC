@@ -6,42 +6,29 @@
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("config.ini", QSettings::IniFormat)
 {
-    messagesBox.setReadOnly(true);
-    messagesBox.setOpenExternalLinks(true);
+    tabList.setTabsClosable(true);
     messageLine.setTabChangesFocus(true);
     messageLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     messageLine.setMaximumHeight(65);
     messageLine.setAcceptRichText(false);
     sendButton.setText("Envoyer");
-    timerForGetMessage.setInterval(4000);
-    timerForGetMessage.stop();
-    messagesStatus.setText("Rien.");
     sendButton.setAutoDefault(true);
-    reply = 0;
     replyForSendMessage = 0;
-    firstTimeGetMessages = true;
-    retrievesMessage = false;
-    idOfLastMessage = 0;
     isConnected = false;
-    linkHasChanged = false;
 
     QGridLayout* mainLayout = new QGridLayout(this);
-    mainLayout->addWidget(&messagesBox, 0, 0, 1, 2);
+    mainLayout->addWidget(&tabList, 0, 0, 1, 2);
     mainLayout->addWidget(&messageLine, 1, 0);
     mainLayout->addWidget(&sendButton, 1, 1);
     mainLayout->addWidget(&messagesStatus, 2, 0, 1, 2);
 
     setLayout(mainLayout);
 
-    connect(&timerForGetMessage, SIGNAL(timeout()), SLOT(getMessages()));
     connect(&sendButton, SIGNAL(pressed()), SLOT(postMessage()));
+    connect(&tabList, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
+    connect(&tabList, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
 
     loadSettings();
-}
-
-void respawnIrcClass::warnUser()
-{
-    QApplication::alert(this);
 }
 
 void respawnIrcClass::loadSettings()
@@ -57,21 +44,75 @@ void respawnIrcClass::loadSettings()
         setNewCookies(newCookies, pseudoOfUser, false);
     }
 
-    topicLink = setting.value("topicLink", "").toString();
-
-    if(topicLink.isEmpty() == false)
+    if(setting.value("listOfTopicLink", QList<QVariant>()).toList().isEmpty() == false)
     {
-        setNewTopic(topicLink);
+        listOfTopicLink = createListWithThisQVariantList(setting.value("listOfTopicLink").toList());
+
+        for(int i = 0; i < listOfTopicLink.size(); ++i)
+        {
+            addNewTab();
+            tabList.setCurrentIndex(i);
+            setNewTopic(listOfTopicLink.at(i));
+            tabList.setCurrentIndex(0);
+        }
     }
+
+    if(listOfShowTopicMessages.isEmpty() == true)
+    {
+        addNewTab();
+    }
+
+    messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
 }
 
-void respawnIrcClass::startGetMessage()
+showTopicMessagesClass* respawnIrcClass::getCurrentWidget()
 {
-    if(retrievesMessage == false && topicLink.isEmpty() == false)
+    return listOfShowTopicMessages.at(tabList.currentIndex());
+}
+
+QString respawnIrcClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput)
+{
+    QString data;
+
+    for(int i = 0; i < listOfInput.size(); ++i)
     {
-        timerForGetMessage.start();
-        getMessages();
+        data += listOfInput.at(i).first + "=" + listOfInput.at(i).second + "&";
     }
+
+    data += "message_topic=" + messageLine.toPlainText().replace("&", "%26").replace("+", "%2B");
+
+    if(captchaCode.isEmpty() == false)
+    {
+        data += "&fs_ccode=" + captchaCode;
+    }
+
+    data += "&form_alias_rang=1";
+
+    return data;
+}
+
+QList<QVariant> respawnIrcClass::createQVariantListWithThisList(QList<QString> list)
+{
+    QList<QVariant> newList;
+
+    for(int i = 0; i < list.size(); ++i)
+    {
+        newList.push_back(list.at(i));
+    }
+
+    return newList;
+}
+
+QList<QString> respawnIrcClass::createListWithThisQVariantList(QList<QVariant> list)
+{
+    QList<QString> newList;
+
+    for(int i = 0; i < list.size(); ++i)
+    {
+        newList.push_back(list.at(i).toString());
+    }
+
+    return newList;
 }
 
 void respawnIrcClass::showConnect()
@@ -83,9 +124,40 @@ void respawnIrcClass::showConnect()
 
 void respawnIrcClass::showSelectTopic()
 {
-    selectTopicWindow* mySelectTopicWindow = new selectTopicWindow(topicLink, this);
+    selectTopicWindow* mySelectTopicWindow = new selectTopicWindow(getCurrentWidget()->getTopicLink(), this);
     connect(mySelectTopicWindow, SIGNAL(newTopicSelected(QString)), this, SLOT(setNewTopic(QString)));
     mySelectTopicWindow->exec();
+}
+
+void respawnIrcClass::addNewTab()
+{
+    listOfShowTopicMessages.push_back(new showTopicMessagesClass(this));
+
+    if(listOfShowTopicMessages.size() > listOfTopicLink.size())
+    {
+        listOfTopicLink.push_back(QString());
+    }
+
+    if(isConnected == true)
+    {
+        listOfShowTopicMessages.back()->setNewCookies(networkManager.cookieJar()->cookiesForUrl(QUrl("http://www.jeuxvideo.com")), pseudoOfUser);
+    }
+
+    connect(listOfShowTopicMessages.back(), SIGNAL(newMessageStatus()), this, SLOT(setNewMessageStatus()));
+    connect(listOfShowTopicMessages.back(), SIGNAL(newMessagesAvailable()), this, SLOT(warnUserForNewMessages()));
+    connect(listOfShowTopicMessages.back(), SIGNAL(newNameForTopic(QString)), this, SLOT(setNewTopicName(QString)));
+    tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
+}
+
+void respawnIrcClass::removeTab(int index)
+{
+    if(listOfShowTopicMessages.size() > 1)
+    {
+        tabList.removeTab(index);
+        listOfTopicLink.removeAt(index);
+        setting.setValue("listOfTopicLink", createQVariantListWithThisList(listOfTopicLink));
+        delete listOfShowTopicMessages.takeAt(index);
+    }
 }
 
 void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo)
@@ -95,7 +167,10 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
     pseudoOfUser = newPseudoOfUser;
     isConnected = true;
 
-    startGetMessage();
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->setNewCookies(newCookies, newPseudoOfUser);
+    }
 
     if(saveInfo == true)
     {
@@ -109,15 +184,10 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
 
 void respawnIrcClass::setNewTopic(QString newTopic)
 {
-    messagesBox.clear();
-    topicLink = newTopic;
-    linkHasChanged = true;
-    firstTimeGetMessages = true;
-    idOfLastMessage = 0;
+    getCurrentWidget()->setNewTopic(newTopic);
+    listOfTopicLink[tabList.currentIndex()] = newTopic;
 
-    startGetMessage();
-
-    setting.setValue("topicLink", topicLink);
+    setting.setValue("listOfTopicLink", createQVariantListWithThisList(listOfTopicLink));
 }
 
 void respawnIrcClass::setCodeForCaptcha(QString code)
@@ -126,136 +196,73 @@ void respawnIrcClass::setCodeForCaptcha(QString code)
     postMessage();
 }
 
-void respawnIrcClass::getMessages()
+void respawnIrcClass::setNewMessageStatus()
 {
-    if(retrievesMessage == false)
-    {
-        retrievesMessage = true;
+    messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
+}
 
-        if(reply == 0)
+void respawnIrcClass::setNewTopicName(QString topicName)
+{
+    QObject* senderObject = sender();
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        if(senderObject == listOfShowTopicMessages.at(i))
         {
-            QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(topicLink);
-            messagesStatus.setText("Récupération des messages en cours...");
-            linkHasChanged = false;
-            reply = networkManager.get(request);
-            connect(reply, SIGNAL(finished()), this, SLOT(analyzeMessages()));
-        }
-        else
-        {
-            retrievesMessage = false;
+            tabList.setTabText(i, topicName);
         }
     }
 }
 
-void respawnIrcClass::analyzeMessages()
+void respawnIrcClass::warnUserForNewMessages()
 {
-    QString newTopicLink;
-    QString colorOfPseudo;
-    QString source = reply->readAll();
-    reply->deleteLater();
-    reply = 0;
+    QApplication::alert(this);
+    QObject* senderObject = sender();
 
-    if(linkHasChanged == true)
+    if(senderObject != getCurrentWidget())
     {
-        retrievesMessage = false;
-        return;
-    }
-
-    messagesStatus.setText("Récupération des messages terminé !");
-
-    newTopicLink = parsingToolClass::getLastPageOfTopic(source);
-//a changer // enfin j'sais pas
-    if(firstTimeGetMessages == false || newTopicLink.isEmpty() == true)
-    {
-        QList<int> listOfMessageID = parsingToolClass::getListOfMessageID(source);
-        QList<QString> listOfPseudo = parsingToolClass::getListOfPseudo(source);
-        QList<QString> listOfDate = parsingToolClass::getListOfDate(source);
-        QList<QString> listOfMessage = parsingToolClass::getListOfMessage(source);
-
-        if((listOfMessageID.size() == listOfPseudo.size() && listOfPseudo.size() == listOfDate.size() && listOfDate.size() == listOfMessage.size()) == false || listOfDate.size() == 0)
+        for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
         {
-            QMessageBox messageBox;
-            topicLink.clear();
-            timerForGetMessage.stop();
-            messagesBox.clear();
-            messagesStatus.setText("Erreur.");
-            messageBox.warning(this, "Erreur", "Un problème est survenu lors de la récupération des messages.");
-            retrievesMessage = false;
-            return;
-        }
-
-        for(int i = 0; i < listOfMessageID.size(); ++i)
-        {
-            if(listOfMessageID.at(i) > idOfLastMessage)
+            if(senderObject == listOfShowTopicMessages.at(i))
             {
-                if(pseudoOfUser.toLower() == listOfPseudo.at(i).toLower())
-                {
-                    colorOfPseudo = "blue";
-                }
-                else
-                {
-                    colorOfPseudo = "dimgrey";
-                }
-
-                messagesBox.append("<table><tr><td>[" + listOfDate.at(i) +
-                                   "] &lt;<a href=\"http://www.jeuxvideo.com/profil/" + listOfPseudo.at(i).toLower() +
-                                   "?mode=infos\"><span style=\"color: " + colorOfPseudo + ";text-decoration: none\">" +
-                                   listOfPseudo.at(i) + "</span></a>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
-                messagesBox.verticalScrollBar()->updateGeometry();
-                messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
-                idOfLastMessage = listOfMessageID.at(i);
-                warnUser();
+                tabList.setTabIcon(i, QIcon("ressources/alert.gif"));
             }
         }
     }
-//fin
-    if(isConnected == true)
-    {
-        listOfInput.clear();
-        parsingToolClass::getListOfHiddenInputFromThisForm(source, "form-post-topic form-post-message", listOfInput);
-        captchaLink = parsingToolClass::getCaptchaLink(source);
-    }
+}
 
-    firstTimeGetMessages = false;
-    retrievesMessage = false;
-
-    if(newTopicLink.isEmpty() == false)
-    {
-        topicLink = newTopicLink;
-        startGetMessage();
-    }
+void respawnIrcClass::currentTabChanged(int newIndex)
+{
+    setNewMessageStatus();
+    tabList.setTabIcon(newIndex, QIcon());
 }
 
 void respawnIrcClass::postMessage()
 {
-    if(replyForSendMessage == 0 && isConnected == true && topicLink.isEmpty() == false)
+    if(replyForSendMessage == 0 && isConnected == true && getCurrentWidget()->getTopicLink().isEmpty() == false)
     {
-        QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(topicLink);
+        QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(getCurrentWidget()->getTopicLink());
         QString data;
 
-        if(captchaLink.isEmpty() == false && captchaCode.isEmpty() == true)
+        if(getCurrentWidget()->getCaptchaLink().isEmpty() == false && captchaCode.isEmpty() == true)
         {
-            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(captchaLink, this);
+            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(getCurrentWidget()->getCaptchaLink(), this);
             connect(myCaptchaWindow, SIGNAL(codeForCaptcha(QString)), this, SLOT(setCodeForCaptcha(QString)));
+            oldListOfInput = getCurrentWidget()->getListOfInput();
             myCaptchaWindow->exec();
             return;
         }
 
         sendButton.setEnabled(false);
 
-        for(int i = 0; i < listOfInput.size(); ++i)
+        if(captchaCode.isEmpty() == true)
         {
-            data += listOfInput.at(i).first + "=" + listOfInput.at(i).second + "&";
+            data = buildDataWithThisListOfInput(getCurrentWidget()->getListOfInput());
         }
-
-        data += "message_topic=" + messageLine.toPlainText().replace("&", "%26").replace("+", "%2B");
-
-        if(captchaCode.isEmpty() == false)
+        else
         {
-            data += "&fs_ccode=" + captchaCode;
+            data = buildDataWithThisListOfInput(oldListOfInput);
         }
-
-        data += "&form_alias_rang=1";
 
         replyForSendMessage = networkManager.post(request, data.toAscii());
         connect(replyForSendMessage, SIGNAL(finished()), this, SLOT(deleteReplyForSendMessage()));
@@ -287,7 +294,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
         sendButton.setEnabled(true);
     }
 
-    startGetMessage();
+    getCurrentWidget()->startGetMessage();
 }
 
 void respawnIrcClass::focusInEvent(QFocusEvent* event)

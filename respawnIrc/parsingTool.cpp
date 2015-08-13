@@ -48,7 +48,7 @@ void parsingToolClass::getListOfHiddenInputFromThisForm(QString& source, QString
     }
 }
 
-QString parsingToolClass::getCaptchaLink(QString source)
+QString parsingToolClass::getCaptchaLink(const QString& source)
 {
     QRegExp expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>");
     expForCaptcha.setMinimal(true);
@@ -63,7 +63,7 @@ QString parsingToolClass::getCaptchaLink(QString source)
     }
 }
 
-QString parsingToolClass::getLastPageOfTopic(QString source)
+QString parsingToolClass::getLastPageOfTopic(const QString& source)
 {
     int currentPage = 0;
     QString lastPage;
@@ -88,7 +88,22 @@ QString parsingToolClass::getLastPageOfTopic(QString source)
     return lastPage;
 }
 
-QList<int> parsingToolClass::getListOfMessageID(QString source)
+QString parsingToolClass::getNameOfTopic(const QString& source)
+{
+    QRegExp expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>");
+    expForNameOfTopic.setMinimal(true);
+
+    if(source.contains(expForNameOfTopic) == true)
+    {
+        return expForNameOfTopic.cap(1);
+    }
+    else
+    {
+        return "";
+    }
+}
+
+QList<int> parsingToolClass::getListOfMessageID(const QString& source)
 {
     QList<int> listOfMessageIDInNumber;
     QList<QString> listOfMessageIDInString;
@@ -104,21 +119,21 @@ QList<int> parsingToolClass::getListOfMessageID(QString source)
     return listOfMessageIDInNumber;
 }
 
-QList<QString> parsingToolClass::getListOfPseudo(QString source)
+QList<QString> parsingToolClass::getListOfPseudo(const QString& source)
 {
     QRegExp expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-[^\"]*\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>");
 
     return getListOfThisCapNumber(source, expForPseudo, 1);
 }
 
-QList<QString> parsingToolClass::getListOfDate(QString source)
+QList<QString> parsingToolClass::getListOfDate(const QString& source)
 {
     QRegExp expForDate("<div class=\"bloc-date-msg\">[^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">[^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)[^<]*</span>");
 
     return getListOfThisCapNumber(source, expForDate, 1);
 }
 
-QList<QString> parsingToolClass::getListOfMessage(QString source)
+QList<QString> parsingToolClass::getListOfMessage(const QString& source)
 {
     QList<QString> listOfMessage;
     QRegExp expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-enrichi-forum \">(.*)</div>");
@@ -175,7 +190,7 @@ QNetworkRequest parsingToolClass::buildRequestWithThisUrl(QString url)
     return request;
 }
 
-QList<QString> parsingToolClass::getListOfThisCapNumber(QString& source, QRegExp exp, int capNumber)
+QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, QRegExp exp, int capNumber)
 {
     QList<QString> listOfString;
     int posForExp = 0;

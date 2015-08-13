@@ -6,8 +6,10 @@ INPUT(
 ./release\parsingTool.o
 ./release\selectTopicWindow.o
 ./release\captchaWindow.o
+./release\showTopicMessages.o
 ./release\moc_respawnIrc.o
 ./release\moc_connectWindow.o
 ./release\moc_selectTopicWindow.o
 ./release\moc_captchaWindow.o
+./release\moc_showTopicMessages.o
 );

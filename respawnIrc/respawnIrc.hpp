@@ -5,22 +5,30 @@
 #include <QtCore>
 #include <QtNetwork>
 
+#include "showTopicMessages.hpp"
+
 class respawnIrcClass : public QWidget
 {
     Q_OBJECT
 public:
     respawnIrcClass(QWidget* parent = 0);
-    void warnUser();
     void loadSettings();
-    void startGetMessage();
+    showTopicMessagesClass* getCurrentWidget();
+    QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
+    QList<QVariant> createQVariantListWithThisList(QList<QString> list);
+    QList<QString> createListWithThisQVariantList(QList<QVariant> list);
 public slots:
     void showConnect();
     void showSelectTopic();
+    void addNewTab();
+    void removeTab(int index);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
     void setNewTopic(QString newTopic);
     void setCodeForCaptcha(QString code);
-    void getMessages();
-    void analyzeMessages();
+    void setNewMessageStatus();
+    void setNewTopicName(QString topicName);
+    void warnUserForNewMessages();
+    void currentTabChanged(int newIndex);
     void postMessage();
     void deleteReplyForSendMessage();
     void clipboardChanged();
@@ -28,24 +36,18 @@ protected:
     void focusInEvent(QFocusEvent * event);
 private:
     QSettings setting;
-    QTextBrowser messagesBox;
+    QTabWidget tabList;
+    QList<showTopicMessagesClass*> listOfShowTopicMessages;
+    QList<QString> listOfTopicLink;
+    QList<QPair<QString, QString> > oldListOfInput;
     QTextEdit messageLine;
-    QNetworkReply* reply;
     QNetworkReply* replyForSendMessage;
     QNetworkAccessManager networkManager;
-    QTimer timerForGetMessage;
-    QList<QPair<QString, QString> > listOfInput;
     QLabel messagesStatus;
     QPushButton sendButton;
-    QString topicLink;
     QString pseudoOfUser;
-    QString captchaLink;
     QString captchaCode;
     bool isConnected;
-    bool firstTimeGetMessages;
-    bool retrievesMessage;
-    bool linkHasChanged;
-    int idOfLastMessage;
 };
 
 #endif
