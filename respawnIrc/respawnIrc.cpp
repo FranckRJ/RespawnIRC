@@ -13,6 +13,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("co
     messageLine.setAcceptRichText(false);
     sendButton.setText("Envoyer");
     sendButton.setAutoDefault(true);
+    alertImage.load("ressources/alert.png");
     replyForSendMessage = 0;
     isConnected = false;
 
@@ -225,7 +226,7 @@ void respawnIrcClass::warnUserForNewMessages()
         {
             if(senderObject == listOfShowTopicMessages.at(i))
             {
-                tabList.setTabIcon(i, QIcon("ressources/alert.gif"));
+                tabList.setTabIcon(i, QIcon(alertImage));
             }
         }
     }

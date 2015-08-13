@@ -154,6 +154,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
     QRegExp expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />");
     QRegExp expForStickers("<img class=\"img-stickers\" src=\"([^\"]*)\"/>");
     QRegExp expForLongLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\" title=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>");
+    QRegExp secExpForLongLink("<span class=\"JvCare [^\"]*\" title=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>");
     QRegExp expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>");
     QRegExp expForNoelshack("<a href=\"([^\"]*)\" data-def=\"NOELSHACK\" target=\"_blank\"><img class=\"img-shack\" [^>]*></a>");
     QRegExp expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\"><span class=\"contenu-spoil\">([^<]*)</span></span>");
@@ -164,7 +165,8 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
 
     replaceWithCapNumber(thisMessage, expForSmiley, 1, false, "<img src=\"smileys/", "\" />");
     replaceWithCapNumber(thisMessage, expForStickers, 1, true);
-    replaceWithCapNumber(thisMessage, expForLongLink, 1, true);
+    replaceWithCapNumber(thisMessage, expForLongLink, 1, true); //je sais pas si c'est utile
+    replaceWithCapNumber(thisMessage, secExpForLongLink, 1, true);
     replaceWithCapNumber(thisMessage, expForShortLink, 1, true);
     replaceWithCapNumber(thisMessage, expForNoelshack, 1, true);
     replaceWithCapNumber(thisMessage, expForSpoilLine, 1, false, "<span style=\"color: black; background-color: black;\">", "</span>");

@@ -47,6 +47,7 @@ private:
     QPushButton sendButton;
     QString pseudoOfUser;
     QString captchaCode;
+    QPixmap alertImage;
     bool isConnected;
 };
 
