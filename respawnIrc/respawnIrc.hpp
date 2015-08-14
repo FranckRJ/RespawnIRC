@@ -22,6 +22,7 @@ public slots:
     void showSelectTopic();
     void addNewTab();
     void removeTab(int index);
+    void goToCurrentTopic();
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
     void setNewTopic(QString newTopic);
     void setCodeForCaptcha(QString code);

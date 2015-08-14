@@ -161,6 +161,19 @@ void respawnIrcClass::removeTab(int index)
     }
 }
 
+void respawnIrcClass::goToCurrentTopic()
+{
+    if(getCurrentWidget()->getTopicLink().isEmpty() == false)
+    {
+        QDesktopServices::openUrl(QUrl(getCurrentWidget()->getTopicLink()));
+    }
+    else
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Il n'y a pas de topic.");
+    }
+}
+
 void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo)
 {
     networkManager.setCookieJar(new QNetworkCookieJar(this)); //fuite ?

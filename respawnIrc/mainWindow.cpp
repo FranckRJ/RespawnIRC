@@ -4,10 +4,17 @@
 mainWindowClass::mainWindowClass()
 {
     QMenuBar* menuBar = new QMenuBar(this);
-    QAction* actionConnect = menuBar->addAction("Se connecter");
-    QAction* actionSelectTopic = menuBar->addAction("Choisir un topic");
+    QMenu* menuFile = menuBar->addMenu("Fichier");
+    QAction* actionQuit = menuFile->addAction("Quitter");
+    QMenu* menuAccount = menuBar->addMenu("Comptes");
+    QAction* actionConnect = menuAccount->addAction("Se connecter");
+    QMenu* menuTopic = menuBar->addMenu("Topic");
+    QAction* actionSelectTopic = menuTopic->addAction("Choisir un topic");
+    QAction* actionGoToTopic = menuTopic->addAction("Accéder au topic");
     QMenu* menuTab = menuBar->addMenu("Onglet");
     QAction* actionTabAddTab = menuTab->addAction("Ajouter un onglet");
+    QMenu* menuHelp = menuBar->addMenu("Aide");
+    QAction* actionAboutQt = menuHelp->addAction("A propos de Qt");
 
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
@@ -17,6 +24,9 @@ mainWindowClass::mainWindowClass()
 
     connect(actionConnect, SIGNAL(triggered()), &respawnIrc, SLOT(showConnect()));
     connect(actionSelectTopic, SIGNAL(triggered()), &respawnIrc, SLOT(showSelectTopic()));
+    connect(actionGoToTopic, SIGNAL(triggered()), &respawnIrc, SLOT(goToCurrentTopic()));
     connect(actionTabAddTab, SIGNAL(triggered()), &respawnIrc, SLOT(addNewTab()));
+    connect(actionQuit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), &respawnIrc, SLOT(clipboardChanged()));
 }

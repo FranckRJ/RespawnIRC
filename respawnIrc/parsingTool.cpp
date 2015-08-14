@@ -173,6 +173,9 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
     replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, false, "<br /><br /><span style=\"color: black; background-color: black;\">", "</span>");
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1);
 
+    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\"><tr><td>");
+    thisMessage.replace("</blockquote>", "</td></tr></table>");
+
     thisMessage.replace(QRegExp("</p> *<p>"), "<br /><br />");
     thisMessage.replace("<p>", "");
     thisMessage.replace("</p>", "");
