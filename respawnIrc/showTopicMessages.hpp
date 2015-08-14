@@ -16,14 +16,17 @@ public:
     QString getTopicName();
     QString getCaptchaLink();
     QString getMessagesStatus();
+    QString getNumberOfConnected();
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser);
     void setNewTopic(QString newTopic);
     void setMessageStatus(QString newStatus);
+    void setNumberOfConnected(QString newNumber, bool forceSet = false);
 public slots:
     void getMessages();
     void analyzeMessages();
 signals:
     void newMessageStatus();
+    void newNumberOfConnected();
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
 private:
@@ -33,6 +36,7 @@ private:
     QTimer timerForGetMessage;
     QList<QPair<QString, QString> > listOfInput;
     QString messagesStatus;
+    QString numberOfConnected;
     QString topicLink;
     QString topicName;
     QString pseudoOfUser;

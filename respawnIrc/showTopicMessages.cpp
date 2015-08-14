@@ -57,6 +57,11 @@ QString showTopicMessagesClass::getMessagesStatus()
     return messagesStatus;
 }
 
+QString showTopicMessagesClass::getNumberOfConnected()
+{
+    return numberOfConnected;
+}
+
 void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser)
 {
     networkManager.setCookieJar(new QNetworkCookieJar(this)); //fuite ?
@@ -75,6 +80,8 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     firstTimeGetMessages = true;
     idOfLastMessage = 0;
 
+    setMessageStatus("Nouveau topic.");
+    setNumberOfConnected("", true);
     startGetMessage();
 }
 
@@ -82,6 +89,18 @@ void showTopicMessagesClass::setMessageStatus(QString newStatus)
 {
     messagesStatus = newStatus;
     emit newMessageStatus();
+}
+
+void showTopicMessagesClass::setNumberOfConnected(QString newNumber, bool forceSet)
+{
+    if(newNumber.isEmpty() == false || forceSet == true)
+    {
+        if(newNumber != numberOfConnected)
+        {
+            numberOfConnected = newNumber;
+            emit newNumberOfConnected();
+        }
+    }
 }
 
 void showTopicMessagesClass::getMessages()
@@ -120,6 +139,7 @@ void showTopicMessagesClass::analyzeMessages()
     }
 
     setMessageStatus("Récupération des messages terminé !");
+    setNumberOfConnected(parsingToolClass::getNumberOfConnected(source));
 
     newTopicLink = parsingToolClass::getLastPageOfTopic(source);
 
@@ -149,6 +169,7 @@ void showTopicMessagesClass::analyzeMessages()
             timerForGetMessage.stop();
             messagesBox.clear();
             setMessageStatus("Erreur.");
+            setNumberOfConnected("", true);
             messageBox.warning(this, "Erreur", "Un problème est survenu lors de la récupération des messages.");
             retrievesMessage = false;
             return;
@@ -167,8 +188,9 @@ void showTopicMessagesClass::analyzeMessages()
                     colorOfPseudo = "dimgrey";
                 }
 
-                messagesBox.append("<table><tr><td>[" + listOfDate.at(i) +
-                                   "] &lt;<a href=\"http://www.jeuxvideo.com/profil/" + listOfPseudo.at(i).toLower() +
+                messagesBox.append("<table><tr><td>[<a style=\"color: black;text-decoration: none\" href=\"http://www.jeuxvideo.com/" + listOfPseudo.at(i).toLower() +
+                                   "/forums/message/" + QString::number(listOfMessageID.at(i)) + "\">" + listOfDate.at(i) +
+                                   "</a>] &lt;<a href=\"http://www.jeuxvideo.com/profil/" + listOfPseudo.at(i).toLower() +
                                    "?mode=infos\"><span style=\"color: " + colorOfPseudo + ";text-decoration: none\">" +
                                    listOfPseudo.at(i) + "</span></a>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
                 messagesBox.verticalScrollBar()->updateGeometry();

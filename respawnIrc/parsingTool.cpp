@@ -103,6 +103,21 @@ QString parsingToolClass::getNameOfTopic(const QString& source)
     }
 }
 
+QString parsingToolClass::getNumberOfConnected(const QString &source)
+{
+    QRegExp expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>");
+    expForNumberOfConnected.setMinimal(true);
+
+    if(source.contains(expForNumberOfConnected) == true)
+    {
+        return expForNumberOfConnected.cap(1);
+    }
+    else
+    {
+        return "";
+    }
+}
+
 QList<int> parsingToolClass::getListOfMessageID(const QString& source)
 {
     QList<int> listOfMessageIDInNumber;
@@ -149,6 +164,20 @@ QList<QString> parsingToolClass::getListOfMessage(const QString& source)
     return listOfMessage;
 }
 
+QString parsingToolClass::getForumOfTopic(const QString& source)
+{
+    QRegExp expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm");
+
+    if(source.contains(expForForum) == true)
+    {
+        return QString("http://www.jeuxvideo.com/forums/0-" + expForForum.cap(1) + "-0-1-0-1-0-respawn-irc.htm");
+    }
+    else
+    {
+        return "";
+    }
+}
+
 QString parsingToolClass::parsingMessages(QString thisMessage)
 {
     QRegExp expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />");
@@ -173,7 +202,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
     replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, false, "<br /><br /><span style=\"color: black; background-color: black;\">", "</span>");
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1);
 
-    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\"><tr><td>");
+    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-bottom: 5px;margin-top: 5px;\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
 
     thisMessage.replace(QRegExp("</p> *<p>"), "<br /><br />");

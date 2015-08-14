@@ -22,30 +22,31 @@ static const uint qt_meta_data_showTopicMessagesClass[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       6,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       3,       // signalCount
+       4,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
       24,   23,   23,   23, 0x05,
       43,   23,   23,   23, 0x05,
-      74,   66,   23,   23, 0x05,
+      66,   23,   23,   23, 0x05,
+      97,   89,   23,   23, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      99,   23,   23,   23, 0x0a,
-     113,   23,   23,   23, 0x0a,
+     122,   23,   23,   23, 0x0a,
+     136,   23,   23,   23, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_showTopicMessagesClass[] = {
     "showTopicMessagesClass\0\0newMessageStatus()\0"
-    "newMessagesAvailable()\0newName\0"
-    "newNameForTopic(QString)\0getMessages()\0"
-    "analyzeMessages()\0"
+    "newNumberOfConnected()\0newMessagesAvailable()\0"
+    "newName\0newNameForTopic(QString)\0"
+    "getMessages()\0analyzeMessages()\0"
 };
 
 void showTopicMessagesClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -55,10 +56,11 @@ void showTopicMessagesClass::qt_static_metacall(QObject *_o, QMetaObject::Call _
         showTopicMessagesClass *_t = static_cast<showTopicMessagesClass *>(_o);
         switch (_id) {
         case 0: _t->newMessageStatus(); break;
-        case 1: _t->newMessagesAvailable(); break;
-        case 2: _t->newNameForTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 3: _t->getMessages(); break;
-        case 4: _t->analyzeMessages(); break;
+        case 1: _t->newNumberOfConnected(); break;
+        case 2: _t->newMessagesAvailable(); break;
+        case 3: _t->newNameForTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 4: _t->getMessages(); break;
+        case 5: _t->analyzeMessages(); break;
         default: ;
         }
     }
@@ -96,9 +98,9 @@ int showTopicMessagesClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 6;
     }
     return _id;
 }
@@ -110,15 +112,21 @@ void showTopicMessagesClass::newMessageStatus()
 }
 
 // SIGNAL 1
-void showTopicMessagesClass::newMessagesAvailable()
+void showTopicMessagesClass::newNumberOfConnected()
 {
     QMetaObject::activate(this, &staticMetaObject, 1, 0);
 }
 
 // SIGNAL 2
+void showTopicMessagesClass::newMessagesAvailable()
+{
+    QMetaObject::activate(this, &staticMetaObject, 2, 0);
+}
+
+// SIGNAL 3
 void showTopicMessagesClass::newNameForTopic(QString _t1)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
-    QMetaObject::activate(this, &staticMetaObject, 2, _a);
+    QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 QT_END_MOC_NAMESPACE

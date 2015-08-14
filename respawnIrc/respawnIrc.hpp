@@ -23,10 +23,12 @@ public slots:
     void addNewTab();
     void removeTab(int index);
     void goToCurrentTopic();
+    void goToCurrentForum();
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
     void setNewTopic(QString newTopic);
     void setCodeForCaptcha(QString code);
     void setNewMessageStatus();
+    void setNewNumberOfConnected();
     void setNewTopicName(QString topicName);
     void warnUserForNewMessages();
     void currentTabChanged(int newIndex);
@@ -45,6 +47,7 @@ private:
     QNetworkReply* replyForSendMessage;
     QNetworkAccessManager networkManager;
     QLabel messagesStatus;
+    QLabel numberOfConnected;
     QPushButton sendButton;
     QString pseudoOfUser;
     QString captchaCode;

@@ -21,7 +21,8 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), setting("co
     mainLayout->addWidget(&tabList, 0, 0, 1, 2);
     mainLayout->addWidget(&messageLine, 1, 0);
     mainLayout->addWidget(&sendButton, 1, 1);
-    mainLayout->addWidget(&messagesStatus, 2, 0, 1, 2);
+    mainLayout->addWidget(&messagesStatus, 2, 0);
+    mainLayout->addWidget(&numberOfConnected, 2, 1, 1, 1, Qt::AlignRight);
 
     setLayout(mainLayout);
 
@@ -64,6 +65,7 @@ void respawnIrcClass::loadSettings()
     }
 
     messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
+    numberOfConnected.setText(getCurrentWidget()->getNumberOfConnected());
 }
 
 showTopicMessagesClass* respawnIrcClass::getCurrentWidget()
@@ -98,7 +100,10 @@ QList<QVariant> respawnIrcClass::createQVariantListWithThisList(QList<QString> l
 
     for(int i = 0; i < list.size(); ++i)
     {
-        newList.push_back(list.at(i));
+        if(list.at(i).isEmpty() == false)
+        {
+            newList.push_back(list.at(i));
+        }
     }
 
     return newList;
@@ -145,6 +150,7 @@ void respawnIrcClass::addNewTab()
     }
 
     connect(listOfShowTopicMessages.back(), SIGNAL(newMessageStatus()), this, SLOT(setNewMessageStatus()));
+    connect(listOfShowTopicMessages.back(), SIGNAL(newNumberOfConnected()), this, SLOT(setNewNumberOfConnected()));
     connect(listOfShowTopicMessages.back(), SIGNAL(newMessagesAvailable()), this, SLOT(warnUserForNewMessages()));
     connect(listOfShowTopicMessages.back(), SIGNAL(newNameForTopic(QString)), this, SLOT(setNewTopicName(QString)));
     tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
@@ -171,6 +177,19 @@ void respawnIrcClass::goToCurrentTopic()
     {
         QMessageBox messageBox;
         messageBox.warning(this, "Erreur", "Il n'y a pas de topic.");
+    }
+}
+
+void respawnIrcClass::goToCurrentForum()
+{
+    if(parsingToolClass::getForumOfTopic(getCurrentWidget()->getTopicLink()).isEmpty() == false)
+    {
+        QDesktopServices::openUrl(QUrl(parsingToolClass::getForumOfTopic(getCurrentWidget()->getTopicLink())));
+    }
+    else
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Il n'y a pas de forum.");
     }
 }
 
@@ -215,6 +234,11 @@ void respawnIrcClass::setNewMessageStatus()
     messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
 }
 
+void respawnIrcClass::setNewNumberOfConnected()
+{
+    numberOfConnected.setText(getCurrentWidget()->getNumberOfConnected());
+}
+
 void respawnIrcClass::setNewTopicName(QString topicName)
 {
     QObject* senderObject = sender();
@@ -248,6 +272,7 @@ void respawnIrcClass::warnUserForNewMessages()
 void respawnIrcClass::currentTabChanged(int newIndex)
 {
     setNewMessageStatus();
+    setNewNumberOfConnected();
     tabList.setTabIcon(newIndex, QIcon());
 }
 
