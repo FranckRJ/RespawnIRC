@@ -9,7 +9,7 @@ class showTopicMessagesClass : public QWidget
 {
     Q_OBJECT
 public:
-    showTopicMessagesClass(QWidget* parent = 0);
+    showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QWidget* parent = 0);
     void startGetMessage();
     const QList<QPair<QString, QString> >& getListOfInput();
     QString getTopicLink();
@@ -35,6 +35,7 @@ private:
     QNetworkAccessManager networkManager;
     QTimer timerForGetMessage;
     QList<QPair<QString, QString> > listOfInput;
+    QList<QString>* listOfIgnoredPseudo;
     QString messagesStatus;
     QString numberOfConnected;
     QString topicLink;

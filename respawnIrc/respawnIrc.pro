@@ -6,7 +6,9 @@ SOURCES += \
     parsingTool.cpp \
     selectTopicWindow.cpp \
     captchaWindow.cpp \
-    showTopicMessages.cpp
+    showTopicMessages.cpp \
+    ignoreListWindow.cpp \
+    addPseudoWindow.cpp
 
 QT += \
     network
@@ -18,6 +20,8 @@ HEADERS += \
     parsingTool.hpp \
     selectTopicWindow.hpp \
     captchaWindow.hpp \
-    showTopicMessages.hpp
+    showTopicMessages.hpp \
+    ignoreListWindow.hpp \
+    addPseudoWindow.hpp
 
 RC_FILE = respawnIrc.rc

@@ -7,6 +7,7 @@ mainWindowClass::mainWindowClass()
 
     QMenu* menuFile = menuBar->addMenu("Fichier");
     QAction* actionQuit = menuFile->addAction("Quitter");
+    actionQuit->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
 
     QMenu* menuAccount = menuBar->addMenu("Comptes");
     QAction* actionConnect = menuAccount->addAction("Se connecter");
@@ -24,8 +25,13 @@ mainWindowClass::mainWindowClass()
     QAction* actionTabAddTab = menuTab->addAction("Ajouter un onglet");
     actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
 
+    QMenu* menuPseudo = menuBar->addMenu("Pseudo");
+    QAction* actionShowListOfIgnoredPseudo = menuPseudo->addAction("Afficher la liste des ignorés");
+    actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
+
     QMenu* menuHelp = menuBar->addMenu("Aide");
     QAction* actionAboutQt = menuHelp->addAction("A propos de Qt");
+    actionAboutQt->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
 
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
@@ -38,6 +44,7 @@ mainWindowClass::mainWindowClass()
     connect(actionGoToTopic, SIGNAL(triggered()), &respawnIrc, SLOT(goToCurrentTopic()));
     connect(actionGoToForum, SIGNAL(triggered()), &respawnIrc, SLOT(goToCurrentForum()));
     connect(actionTabAddTab, SIGNAL(triggered()), &respawnIrc, SLOT(addNewTab()));
+    connect(actionShowListOfIgnoredPseudo, SIGNAL(triggered()), &respawnIrc, SLOT(showIgnoreListWindow()));
     connect(actionQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), &respawnIrc, SLOT(clipboardChanged()));

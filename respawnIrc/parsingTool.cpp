@@ -53,14 +53,7 @@ QString parsingToolClass::getCaptchaLink(const QString& source)
     QRegExp expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>");
     expForCaptcha.setMinimal(true);
 
-    if(source.contains(expForCaptcha) == true)
-    {
-        return expForCaptcha.cap(1);
-    }
-    else
-    {
-        return "";
-    }
+    return searchThisCapNumber(source, expForCaptcha, 1);
 }
 
 QString parsingToolClass::getLastPageOfTopic(const QString& source)
@@ -93,14 +86,7 @@ QString parsingToolClass::getNameOfTopic(const QString& source)
     QRegExp expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>");
     expForNameOfTopic.setMinimal(true);
 
-    if(source.contains(expForNameOfTopic) == true)
-    {
-        return expForNameOfTopic.cap(1);
-    }
-    else
-    {
-        return "";
-    }
+    return searchThisCapNumber(source, expForNameOfTopic, 1);
 }
 
 QString parsingToolClass::getNumberOfConnected(const QString &source)
@@ -108,14 +94,7 @@ QString parsingToolClass::getNumberOfConnected(const QString &source)
     QRegExp expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>");
     expForNumberOfConnected.setMinimal(true);
 
-    if(source.contains(expForNumberOfConnected) == true)
-    {
-        return expForNumberOfConnected.cap(1);
-    }
-    else
-    {
-        return "";
-    }
+    return searchThisCapNumber(source, expForNumberOfConnected, 1);
 }
 
 QList<int> parsingToolClass::getListOfMessageID(const QString& source)
@@ -168,22 +147,14 @@ QString parsingToolClass::getForumOfTopic(const QString& source)
 {
     QRegExp expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm");
 
-    if(source.contains(expForForum) == true)
-    {
-        return QString("http://www.jeuxvideo.com/forums/0-" + expForForum.cap(1) + "-0-1-0-1-0-respawn-irc.htm");
-    }
-    else
-    {
-        return "";
-    }
+    return searchThisCapNumber(source, expForForum, 1, "http://www.jeuxvideo.com/forums/0-", "-0-1-0-1-0-respawn-irc.htm");
 }
 
 QString parsingToolClass::parsingMessages(QString thisMessage)
 {
     QRegExp expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />");
     QRegExp expForStickers("<img class=\"img-stickers\" src=\"([^\"]*)\"/>");
-    QRegExp expForLongLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\" title=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>");
-    QRegExp secExpForLongLink("<span class=\"JvCare [^\"]*\" title=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>");
+    QRegExp expForLongLink("<span class=\"JvCare [^\"]*\".*title=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>");
     QRegExp expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>");
     QRegExp expForNoelshack("<a href=\"([^\"]*)\" data-def=\"NOELSHACK\" target=\"_blank\"><img class=\"img-shack\" [^>]*></a>");
     QRegExp expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\"><span class=\"contenu-spoil\">([^<]*)</span></span>");
@@ -194,8 +165,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
 
     replaceWithCapNumber(thisMessage, expForSmiley, 1, false, "<img src=\"smileys/", "\" />");
     replaceWithCapNumber(thisMessage, expForStickers, 1, true);
-    replaceWithCapNumber(thisMessage, expForLongLink, 1, true); //je sais pas si c'est utile
-    replaceWithCapNumber(thisMessage, secExpForLongLink, 1, true);
+    replaceWithCapNumber(thisMessage, expForLongLink, 1, true);
     replaceWithCapNumber(thisMessage, expForShortLink, 1, true);
     replaceWithCapNumber(thisMessage, expForNoelshack, 1, true);
     replaceWithCapNumber(thisMessage, expForSpoilLine, 1, false, "<span style=\"color: black; background-color: black;\">", "</span>");
@@ -265,5 +235,17 @@ void parsingToolClass::replaceWithCapNumber(QString& source, QRegExp exp, int ca
 
         source.replace(posForExp, exp.cap(0).length(), newString);
         posForExp += newString.length();
+    }
+}
+
+QString parsingToolClass::searchThisCapNumber(const QString& source, QRegExp exp, int capNumber, QString stringBefore, QString stringAfter)
+{
+    if(source.contains(exp) == true)
+    {
+        return stringBefore + exp.cap(capNumber) + stringAfter;
+    }
+    else
+    {
+        return "";
     }
 }

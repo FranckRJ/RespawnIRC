@@ -7,9 +7,13 @@ INPUT(
 ./release\selectTopicWindow.o
 ./release\captchaWindow.o
 ./release\showTopicMessages.o
+./release\ignoreListWindow.o
+./release\addPseudoWindow.o
 ./release\moc_respawnIrc.o
 ./release\moc_connectWindow.o
 ./release\moc_selectTopicWindow.o
 ./release\moc_captchaWindow.o
 ./release\moc_showTopicMessages.o
+./release\moc_ignoreListWindow.o
+./release\moc_addPseudoWindow.o
 );

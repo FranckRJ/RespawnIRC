@@ -20,6 +20,7 @@ public:
 public slots:
     void showConnect();
     void showSelectTopic();
+    void showIgnoreListWindow();
     void addNewTab();
     void removeTab(int index);
     void goToCurrentTopic();
@@ -30,6 +31,7 @@ public slots:
     void setNewMessageStatus();
     void setNewNumberOfConnected();
     void setNewTopicName(QString topicName);
+    void saveListOfIgnoredPseudo();
     void warnUserForNewMessages();
     void currentTabChanged(int newIndex);
     void postMessage();
@@ -42,6 +44,7 @@ private:
     QTabWidget tabList;
     QList<showTopicMessagesClass*> listOfShowTopicMessages;
     QList<QString> listOfTopicLink;
+    QList<QString> listOfIgnoredPseudo;
     QList<QPair<QString, QString> > oldListOfInput;
     QTextEdit messageLine;
     QNetworkReply* replyForSendMessage;

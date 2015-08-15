@@ -1,6 +1,7 @@
 #include "respawnIrc.hpp"
 #include "connectWindow.hpp"
 #include "selectTopicWindow.hpp"
+#include "ignoreListWindow.hpp"
 #include "captchaWindow.hpp"
 #include "parsingTool.hpp"
 
@@ -44,6 +45,11 @@ void respawnIrcClass::loadSettings()
         newCookies.append(QNetworkCookie(QByteArray("coniunctio"), setting.value("coniunctio").toByteArray()));
 
         setNewCookies(newCookies, pseudoOfUser, false);
+    }
+
+    if(setting.value("listOfIgnoredPseudo", QList<QVariant>()).toList().isEmpty() == false)
+    {
+        listOfIgnoredPseudo = createListWithThisQVariantList(setting.value("listOfIgnoredPseudo").toList());
     }
 
     if(setting.value("listOfTopicLink", QList<QVariant>()).toList().isEmpty() == false)
@@ -135,9 +141,16 @@ void respawnIrcClass::showSelectTopic()
     mySelectTopicWindow->exec();
 }
 
+void respawnIrcClass::showIgnoreListWindow()
+{
+    ignoreListWindowClass* myIgnoreListWindow = new ignoreListWindowClass(&listOfIgnoredPseudo, this);
+    connect(myIgnoreListWindow, SIGNAL(listHasChanged()), this, SLOT(saveListOfIgnoredPseudo()));
+    myIgnoreListWindow->exec();
+}
+
 void respawnIrcClass::addNewTab()
 {
-    listOfShowTopicMessages.push_back(new showTopicMessagesClass(this));
+    listOfShowTopicMessages.push_back(new showTopicMessagesClass(&listOfIgnoredPseudo, this));
 
     if(listOfShowTopicMessages.size() > listOfTopicLink.size())
     {
@@ -252,6 +265,11 @@ void respawnIrcClass::setNewTopicName(QString topicName)
     }
 }
 
+void respawnIrcClass::saveListOfIgnoredPseudo()
+{
+    setting.setValue("listOfIgnoredPseudo", createQVariantListWithThisList(listOfIgnoredPseudo));
+}
+
 void respawnIrcClass::warnUserForNewMessages()
 {
     QApplication::alert(this);
@@ -285,7 +303,8 @@ void respawnIrcClass::postMessage()
 
         if(getCurrentWidget()->getCaptchaLink().isEmpty() == false && captchaCode.isEmpty() == true)
         {
-            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(getCurrentWidget()->getCaptchaLink(), this);
+            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(getCurrentWidget()->getCaptchaLink(),
+                                                                         networkManager.cookieJar()->cookiesForUrl(QUrl("http://www.jeuxvideo.com")), this);
             connect(myCaptchaWindow, SIGNAL(codeForCaptcha(QString)), this, SLOT(setCodeForCaptcha(QString)));
             oldListOfInput = getCurrentWidget()->getListOfInput();
             myCaptchaWindow->exec();

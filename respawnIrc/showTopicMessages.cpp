@@ -1,12 +1,13 @@
 #include "showTopicMessages.hpp"
 #include "parsingTool.hpp"
 
-showTopicMessagesClass::showTopicMessagesClass(QWidget* parent) : QWidget(parent)
+showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QWidget* parent) : QWidget(parent)
 {
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(true);
     timerForGetMessage.setInterval(4000);
     timerForGetMessage.stop();
+    listOfIgnoredPseudo = newListOfIgnoredPseudo;
     messagesStatus = "Rien.";
     reply = 0;
     firstTimeGetMessages = true;
@@ -177,7 +178,7 @@ void showTopicMessagesClass::analyzeMessages()
 
         for(int i = 0; i < listOfMessageID.size(); ++i)
         {
-            if(listOfMessageID.at(i) > idOfLastMessage)
+            if(listOfMessageID.at(i) > idOfLastMessage && listOfIgnoredPseudo->indexOf(listOfPseudo.at(i).toLower()) == -1)
             {
                 if(pseudoOfUser.toLower() == listOfPseudo.at(i).toLower())
                 {

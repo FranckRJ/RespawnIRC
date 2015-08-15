@@ -22,6 +22,7 @@ public:
     static QList<QString> getListOfThisCapNumber(const QString &source, QRegExp exp, int capNumber);
     static void replaceWithCapNumber(QString& source, QRegExp exp, int capNumber, bool createLink = false, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = 0, QString stringAfterAfter = "");
+    static QString searchThisCapNumber(const QString& source, QRegExp exp, int capNumber, QString stringBefore = "", QString stringAfter = "");
 };
 
 #endif

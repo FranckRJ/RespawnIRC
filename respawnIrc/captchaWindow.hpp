@@ -9,7 +9,7 @@ class captchaWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    captchaWindowClass(QString captchaLink, QWidget* parent);
+    captchaWindowClass(QString captchaLink, QList<QNetworkCookie> listOfCookie, QWidget* parent);
     ~captchaWindowClass();
 public slots:
     void showCaptcha();
