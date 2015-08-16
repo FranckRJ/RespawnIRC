@@ -22,7 +22,7 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      19,   14, // methods
+      28,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -31,33 +31,45 @@ static const uint qt_meta_data_respawnIrcClass[] = {
 
  // slots: signature, parameters, type, tag, flags
       17,   16,   16,   16, 0x0a,
-      31,   16,   16,   16, 0x0a,
-      49,   16,   16,   16, 0x0a,
-      72,   16,   16,   16, 0x0a,
-      90,   84,   16,   16, 0x0a,
-     105,   16,   16,   16, 0x0a,
-     124,   16,   16,   16, 0x0a,
-     179,  143,   16,   16, 0x0a,
-     238,  229,   16,   16, 0x0a,
-     264,  259,   16,   16, 0x0a,
-     291,   16,   16,   16, 0x0a,
-     313,   16,   16,   16, 0x0a,
-     349,  339,   16,   16, 0x0a,
-     374,   16,   16,   16, 0x0a,
-     400,   16,   16,   16, 0x0a,
-     434,  425,   16,   16, 0x0a,
-     457,   16,   16,   16, 0x0a,
-     471,   16,   16,   16, 0x0a,
-     499,   16,   16,   16, 0x0a,
+      27,   16,   16,   16, 0x0a,
+      39,   16,   16,   16, 0x0a,
+      54,   16,   16,   16, 0x0a,
+      66,   16,   16,   16, 0x0a,
+      77,   16,   16,   16, 0x0a,
+      89,   16,   16,   16, 0x0a,
+     100,   16,   16,   16, 0x0a,
+     110,   16,   16,   16, 0x0a,
+     121,   16,   16,   16, 0x0a,
+     135,   16,   16,   16, 0x0a,
+     153,   16,   16,   16, 0x0a,
+     176,   16,   16,   16, 0x0a,
+     194,  188,   16,   16, 0x0a,
+     209,   16,   16,   16, 0x0a,
+     228,   16,   16,   16, 0x0a,
+     283,  247,   16,   16, 0x0a,
+     342,  333,   16,   16, 0x0a,
+     368,  363,   16,   16, 0x0a,
+     395,   16,   16,   16, 0x0a,
+     417,   16,   16,   16, 0x0a,
+     453,  443,   16,   16, 0x0a,
+     478,   16,   16,   16, 0x0a,
+     504,   16,   16,   16, 0x0a,
+     538,  529,   16,   16, 0x0a,
+     561,   16,   16,   16, 0x0a,
+     575,   16,   16,   16, 0x0a,
+     603,   16,   16,   16, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_respawnIrcClass[] = {
-    "respawnIrcClass\0\0showConnect()\0"
-    "showSelectTopic()\0showIgnoreListWindow()\0"
-    "addNewTab()\0index\0removeTab(int)\0"
-    "goToCurrentTopic()\0goToCurrentForum()\0"
+    "respawnIrcClass\0\0addBold()\0addItalic()\0"
+    "addUnderLine()\0addStrike()\0addUList()\0"
+    "addOListe()\0addQuote()\0addCode()\0"
+    "addSpoil()\0showConnect()\0showSelectTopic()\0"
+    "showIgnoreListWindow()\0addNewTab()\0"
+    "index\0removeTab(int)\0goToCurrentTopic()\0"
+    "goToCurrentForum()\0"
     "newCookies,newPseudoOfUser,saveInfo\0"
     "setNewCookies(QList<QNetworkCookie>,QString,bool)\0"
     "newTopic\0setNewTopic(QString)\0code\0"
@@ -77,25 +89,34 @@ void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         Q_ASSERT(staticMetaObject.cast(_o));
         respawnIrcClass *_t = static_cast<respawnIrcClass *>(_o);
         switch (_id) {
-        case 0: _t->showConnect(); break;
-        case 1: _t->showSelectTopic(); break;
-        case 2: _t->showIgnoreListWindow(); break;
-        case 3: _t->addNewTab(); break;
-        case 4: _t->removeTab((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 5: _t->goToCurrentTopic(); break;
-        case 6: _t->goToCurrentForum(); break;
-        case 7: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
-        case 8: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 9: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 10: _t->setNewMessageStatus(); break;
-        case 11: _t->setNewNumberOfConnected(); break;
-        case 12: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 13: _t->saveListOfIgnoredPseudo(); break;
-        case 14: _t->warnUserForNewMessages(); break;
-        case 15: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 16: _t->postMessage(); break;
-        case 17: _t->deleteReplyForSendMessage(); break;
-        case 18: _t->clipboardChanged(); break;
+        case 0: _t->addBold(); break;
+        case 1: _t->addItalic(); break;
+        case 2: _t->addUnderLine(); break;
+        case 3: _t->addStrike(); break;
+        case 4: _t->addUList(); break;
+        case 5: _t->addOListe(); break;
+        case 6: _t->addQuote(); break;
+        case 7: _t->addCode(); break;
+        case 8: _t->addSpoil(); break;
+        case 9: _t->showConnect(); break;
+        case 10: _t->showSelectTopic(); break;
+        case 11: _t->showIgnoreListWindow(); break;
+        case 12: _t->addNewTab(); break;
+        case 13: _t->removeTab((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 14: _t->goToCurrentTopic(); break;
+        case 15: _t->goToCurrentForum(); break;
+        case 16: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 17: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 18: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 19: _t->setNewMessageStatus(); break;
+        case 20: _t->setNewNumberOfConnected(); break;
+        case 21: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 22: _t->saveListOfIgnoredPseudo(); break;
+        case 23: _t->warnUserForNewMessages(); break;
+        case 24: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 25: _t->postMessage(); break;
+        case 26: _t->deleteReplyForSendMessage(); break;
+        case 27: _t->clipboardChanged(); break;
         default: ;
         }
     }
@@ -133,9 +154,9 @@ int respawnIrcClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 19)
+        if (_id < 28)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 19;
+        _id -= 28;
     }
     return _id;
 }

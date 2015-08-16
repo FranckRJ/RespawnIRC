@@ -8,7 +8,8 @@ SOURCES += \
     captchaWindow.cpp \
     showTopicMessages.cpp \
     ignoreListWindow.cpp \
-    addPseudoWindow.cpp
+    addPseudoWindow.cpp \
+    settingTool.cpp
 
 QT += \
     network
@@ -22,6 +23,7 @@ HEADERS += \
     captchaWindow.hpp \
     showTopicMessages.hpp \
     ignoreListWindow.hpp \
-    addPseudoWindow.hpp
+    addPseudoWindow.hpp \
+    settingTool.hpp
 
 RC_FILE = respawnIrc.rc

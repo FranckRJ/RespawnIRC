@@ -9,6 +9,7 @@ INPUT(
 ./debug\showTopicMessages.o
 ./debug\ignoreListWindow.o
 ./debug\addPseudoWindow.o
+./debug\settingTool.o
 ./debug\moc_respawnIrc.o
 ./debug\moc_connectWindow.o
 ./debug\moc_selectTopicWindow.o

@@ -9,6 +9,7 @@ INPUT(
 ./release\showTopicMessages.o
 ./release\ignoreListWindow.o
 ./release\addPseudoWindow.o
+./release\settingTool.o
 ./release\moc_respawnIrc.o
 ./release\moc_connectWindow.o
 ./release\moc_selectTopicWindow.o

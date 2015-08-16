@@ -15,9 +15,17 @@ public:
     void loadSettings();
     showTopicMessagesClass* getCurrentWidget();
     QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
-    QList<QVariant> createQVariantListWithThisList(QList<QString> list);
-    QList<QString> createListWithThisQVariantList(QList<QVariant> list);
+    void moveMessageLineCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);
 public slots:
+    void addBold();
+    void addItalic();
+    void addUnderLine();
+    void addStrike();
+    void addUList();
+    void addOListe();
+    void addQuote();
+    void addCode();
+    void addSpoil();
     void showConnect();
     void showSelectTopic();
     void showIgnoreListWindow();
@@ -40,7 +48,6 @@ public slots:
 protected:
     void focusInEvent(QFocusEvent * event);
 private:
-    QSettings setting;
     QTabWidget tabList;
     QList<showTopicMessagesClass*> listOfShowTopicMessages;
     QList<QString> listOfTopicLink;
@@ -49,6 +56,7 @@ private:
     QTextEdit messageLine;
     QNetworkReply* replyForSendMessage;
     QNetworkAccessManager networkManager;
+    QLabel pseudoUsedLab;
     QLabel messagesStatus;
     QLabel numberOfConnected;
     QPushButton sendButton;
