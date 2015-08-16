@@ -14,6 +14,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     retrievesMessage = false;
     idOfLastMessage = 0;
     linkHasChanged = false;
+    errorMode = false;
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(&messagesBox);
@@ -104,6 +105,35 @@ void showTopicMessagesClass::setNumberOfConnected(QString newNumber, bool forceS
     }
 }
 
+void showTopicMessagesClass::setTopicToErrorMode()
+{
+    if(errorMode == false)
+    {
+        QMessageBox messageBox;
+        errorMode = true;
+        if(firstTimeGetMessages == true)
+        {
+            topicLink.clear();
+            topicName.clear();
+            timerForGetMessage.stop();
+            messagesBox.clear();
+            setMessageStatus("Erreur, topic invalide.");
+            setNumberOfConnected("", true);
+            messageBox.warning(this, "Erreur", "Le topic n'existe pas.");
+        }
+        else
+        {
+            setMessageStatus("Erreur, impossible de récupérer les messages.");
+            messageBox.warning(this, "Erreur", "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.");
+        }
+    }
+    else
+    {
+        setMessageStatus("Erreur, impossible de récupérer les messages.");
+    }
+    retrievesMessage = false;
+}
+
 void showTopicMessagesClass::getMessages()
 {
     if(retrievesMessage == false)
@@ -129,6 +159,7 @@ void showTopicMessagesClass::analyzeMessages()
 {
     QString newTopicLink;
     QString colorOfPseudo;
+    QString colorOfDate;
     QString source = reply->readAll();
     reply->deleteLater();
     reply = 0;
@@ -154,33 +185,27 @@ void showTopicMessagesClass::analyzeMessages()
         }
     }
 
-//a changer // enfin j'sais pas
     if(firstTimeGetMessages == false || newTopicLink.isEmpty() == true)
     {
-        QList<int> listOfMessageID = parsingToolClass::getListOfMessageID(source);
-        QList<QString> listOfPseudo = parsingToolClass::getListOfPseudo(source);
-        QList<QString> listOfDate = parsingToolClass::getListOfDate(source);
-        QList<QString> listOfMessage = parsingToolClass::getListOfMessage(source);
+        QList<messageStruct> listOfEntireMessage = parsingToolClass::getListOfEntireMessages(source);
 
-        if((listOfMessageID.size() == listOfPseudo.size() && listOfPseudo.size() == listOfDate.size() && listOfDate.size() == listOfMessage.size()) == false || listOfDate.size() == 0)
+        if(listOfEntireMessage.size() == 0)
         {
-            QMessageBox messageBox;
-            topicLink.clear();
-            topicName.clear();
-            timerForGetMessage.stop();
-            messagesBox.clear();
-            setMessageStatus("Erreur.");
-            setNumberOfConnected("", true);
-            messageBox.warning(this, "Erreur", "Un problème est survenu lors de la récupération des messages.");
-            retrievesMessage = false;
+            setTopicToErrorMode();
             return;
         }
-
-        for(int i = 0; i < listOfMessageID.size(); ++i)
+        else
         {
-            if(listOfMessageID.at(i) > idOfLastMessage && listOfIgnoredPseudo->indexOf(listOfPseudo.at(i).toLower()) == -1)
+            errorMode = false;
+        }
+
+        for(int i = 0; i < listOfEntireMessage.size(); ++i)
+        {
+            QMap<int, QString>::const_iterator listOfEditIterator = listOfEdit.find(listOfEntireMessage.at(i).idOfMessage);
+            if((listOfEntireMessage.at(i).idOfMessage > idOfLastMessage || (listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit))
+                    && listOfIgnoredPseudo->indexOf(listOfEntireMessage.at(i).pseudo.toLower()) == -1)
             {
-                if(pseudoOfUser.toLower() == listOfPseudo.at(i).toLower())
+                if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
                 {
                     colorOfPseudo = "blue";
                 }
@@ -189,19 +214,35 @@ void showTopicMessagesClass::analyzeMessages()
                     colorOfPseudo = "dimgrey";
                 }
 
-                messagesBox.append("<table><tr><td>[<a style=\"color: black;text-decoration: none\" href=\"http://www.jeuxvideo.com/" + listOfPseudo.at(i).toLower() +
-                                   "/forums/message/" + QString::number(listOfMessageID.at(i)) + "\">" + listOfDate.at(i) +
-                                   "</a>] &lt;<a href=\"http://www.jeuxvideo.com/profil/" + listOfPseudo.at(i).toLower() +
+                if(listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit)
+                {
+                    colorOfDate = "green";
+                }
+                else
+                {
+                    colorOfDate = "black";
+                    idOfLastMessage = listOfEntireMessage.at(i).idOfMessage;
+                }
+
+                messagesBox.append("<table><tr><td>[<a style=\"color: " + colorOfDate + ";text-decoration: none\" href=\"http://www.jeuxvideo.com/" +
+                                   listOfEntireMessage.at(i).pseudo.toLower() +
+                                   "/forums/message/" + QString::number(listOfEntireMessage.at(i).idOfMessage) + "\">" + listOfEntireMessage.at(i).date +
+                                   "</a>] &lt;<a href=\"http://www.jeuxvideo.com/profil/" + listOfEntireMessage.at(i).pseudo.toLower() +
                                    "?mode=infos\"><span style=\"color: " + colorOfPseudo + ";text-decoration: none\">" +
-                                   listOfPseudo.at(i) + "</span></a>&gt;</td><td>" + listOfMessage.at(i) + "</td></tr></table>");
+                                   listOfEntireMessage.at(i).pseudo + "</span></a>&gt;</td><td>" + listOfEntireMessage.at(i).message + "</td></tr></table>");
                 messagesBox.verticalScrollBar()->updateGeometry();
                 messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
-                idOfLastMessage = listOfMessageID.at(i);
+                listOfEdit[listOfEntireMessage.at(i).idOfMessage] = listOfEntireMessage.at(i).lastTimeEdit;
                 emit newMessagesAvailable();
             }
         }
+
+        while(listOfEdit.size() > 20)
+        {
+            listOfEdit.erase(listOfEdit.begin());
+        }
     }
-//fin
+
     if(pseudoOfUser.isEmpty() == false)
     {
         listOfInput.clear();

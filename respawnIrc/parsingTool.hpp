@@ -4,6 +4,15 @@
 #include <QtCore>
 #include <QtNetwork>
 
+struct messageStruct
+{
+    int idOfMessage;
+    QString pseudo;
+    QString date;
+    QString message;
+    QString lastTimeEdit;
+};
+
 class parsingToolClass
 {
 public:
@@ -12,14 +21,11 @@ public:
     static QString getLastPageOfTopic(const QString& source);
     static QString getNameOfTopic(const QString& source);
     static QString getNumberOfConnected(const QString& source);
-    static QList<int> getListOfMessageID(const QString& source);
-    static QList<QString> getListOfPseudo(const QString& source);
-    static QList<QString> getListOfDate(const QString& source);
-    static QList<QString> getListOfMessage(const QString& source);
+    static QList<messageStruct> getListOfEntireMessages(const QString& source);
     static QString getForumOfTopic(const QString& source);
     static QString parsingMessages(QString thisMessage);
     static QNetworkRequest buildRequestWithThisUrl(QString url);
-    static QList<QString> getListOfThisCapNumber(const QString &source, QRegExp exp, int capNumber);
+    static QList<QString> getListOfThisCapNumber(const QString &source, QRegExp exp, int capNumber, bool onlyUseCapString = false);
     static void replaceWithCapNumber(QString& source, QRegExp exp, int capNumber, bool createLink = false, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = 0, QString stringAfterAfter = "");
     static QString searchThisCapNumber(const QString& source, QRegExp exp, int capNumber, QString stringBefore = "", QString stringAfter = "");

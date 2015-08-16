@@ -21,6 +21,7 @@ public:
     void setNewTopic(QString newTopic);
     void setMessageStatus(QString newStatus);
     void setNumberOfConnected(QString newNumber, bool forceSet = false);
+    void setTopicToErrorMode();
 public slots:
     void getMessages();
     void analyzeMessages();
@@ -36,6 +37,7 @@ private:
     QTimer timerForGetMessage;
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;
+    QMap<int, QString> listOfEdit;
     QString messagesStatus;
     QString numberOfConnected;
     QString topicLink;
@@ -45,6 +47,7 @@ private:
     bool firstTimeGetMessages;
     bool retrievesMessage;
     bool linkHasChanged;
+    bool errorMode;
     int idOfLastMessage;
 };
 

@@ -97,50 +97,32 @@ QString parsingToolClass::getNumberOfConnected(const QString &source)
     return searchThisCapNumber(source, expForNumberOfConnected, 1);
 }
 
-QList<int> parsingToolClass::getListOfMessageID(const QString& source)
+QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &source)
 {
-    QList<int> listOfMessageIDInNumber;
-    QList<QString> listOfMessageIDInString;
+    QList<QString> listOfEntireMessage;
+    QList<messageStruct> listOfMessages;
+    QRegExp expForEntireMessage("(<div class=\"bloc-message-forum \".*)(<div class=\"bloc-message-forum \"|<div class=\"bloc-pagi-default\">)");
     QRegExp expForMessageID("<div class=\"bloc-message-forum \" id=\"post_[^\"]*\" data-id=\"([^\"]*)\">");
-
-    listOfMessageIDInString = getListOfThisCapNumber(source, expForMessageID, 1);
-
-    for(int i = 0; i < listOfMessageIDInString.size(); ++i)
-    {
-        listOfMessageIDInNumber.push_back(listOfMessageIDInString.at(i).toInt());
-    }
-
-    return listOfMessageIDInNumber;
-}
-
-QList<QString> parsingToolClass::getListOfPseudo(const QString& source)
-{
     QRegExp expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-[^\"]*\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>");
-
-    return getListOfThisCapNumber(source, expForPseudo, 1);
-}
-
-QList<QString> parsingToolClass::getListOfDate(const QString& source)
-{
     QRegExp expForDate("<div class=\"bloc-date-msg\">[^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">[^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)[^<]*</span>");
-
-    return getListOfThisCapNumber(source, expForDate, 1);
-}
-
-QList<QString> parsingToolClass::getListOfMessage(const QString& source)
-{
-    QList<QString> listOfMessage;
     QRegExp expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-enrichi-forum \">(.*)</div>");
+    QRegExp expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span");
+    expForEntireMessage.setMinimal(true);
     expForMessage.setMinimal(true);
 
-    listOfMessage = getListOfThisCapNumber(source, expForMessage, 1);
+    listOfEntireMessage = getListOfThisCapNumber(source, expForEntireMessage, 1, true);
 
-    for(int i = 0; i < listOfMessage.size(); ++i)
+    for(int i = 0; i < listOfEntireMessage.size(); ++i)
     {
-        listOfMessage[i] = parsingMessages(listOfMessage.at(i));
+        listOfMessages.push_back(messageStruct());
+        listOfMessages.back().idOfMessage = searchThisCapNumber(listOfEntireMessage.at(i), expForMessageID, 1).toInt();
+        listOfMessages.back().pseudo = searchThisCapNumber(listOfEntireMessage.at(i), expForPseudo, 1);
+        listOfMessages.back().date = searchThisCapNumber(listOfEntireMessage.at(i), expForDate, 1);
+        listOfMessages.back().message = parsingMessages(searchThisCapNumber(listOfEntireMessage.at(i), expForMessage, 1));
+        listOfMessages.back().lastTimeEdit = searchThisCapNumber(listOfEntireMessage.at(i), expForEdit, 1);
     }
 
-    return listOfMessage;
+    return listOfMessages;
 }
 
 QString parsingToolClass::getForumOfTopic(const QString& source)
@@ -194,14 +176,21 @@ QNetworkRequest parsingToolClass::buildRequestWithThisUrl(QString url)
     return request;
 }
 
-QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, QRegExp exp, int capNumber)
+QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, QRegExp exp, int capNumber, bool onlyUseCapString)
 {
     QList<QString> listOfString;
     int posForExp = 0;
     while((posForExp = exp.indexIn(source, posForExp)) != -1)
     {
         listOfString.push_back(exp.cap(capNumber));
-        posForExp += exp.matchedLength();
+        if(onlyUseCapString == false)
+        {
+            posForExp += exp.matchedLength();
+        }
+        else
+        {
+            posForExp += exp.cap(capNumber).size();
+        }
     }
 
     return listOfString;
