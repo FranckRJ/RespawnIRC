@@ -9,7 +9,8 @@ SOURCES += \
     showTopicMessages.cpp \
     ignoreListWindow.cpp \
     addPseudoWindow.cpp \
-    settingTool.cpp
+    settingTool.cpp \
+    multiTypeTextBox.cpp
 
 QT += \
     network
@@ -24,6 +25,7 @@ HEADERS += \
     showTopicMessages.hpp \
     ignoreListWindow.hpp \
     addPseudoWindow.hpp \
-    settingTool.hpp
+    settingTool.hpp \
+    multiTypeTextBox.hpp
 
 RC_FILE = respawnIrc.rc

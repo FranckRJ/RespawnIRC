@@ -6,6 +6,7 @@
 #include <QtNetwork>
 
 #include "showTopicMessages.hpp"
+#include "multiTypeTextBox.hpp"
 
 class respawnIrcClass : public QWidget
 {
@@ -15,7 +16,8 @@ public:
     void loadSettings();
     showTopicMessagesClass* getCurrentWidget();
     QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
-    void moveMessageLineCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);
+    void addButtonToButtonLayout();
+    void setButtonInButtonLayoutVisible(bool visible);
 public slots:
     void addBold();
     void addItalic();
@@ -33,11 +35,13 @@ public slots:
     void removeTab(int index);
     void goToCurrentTopic();
     void goToCurrentForum();
+    void setShowTextDecorationButton(bool newVal);
+    void setMultilineEdit(bool newVal);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
     void setNewTopic(QString newTopic);
     void setCodeForCaptcha(QString code);
     void setNewMessageStatus();
-    void setNewNumberOfConnected();
+    void setNewNumberOfConnectedAndPseudoUsed();
     void setNewTopicName(QString topicName);
     void saveListOfIgnoredPseudo();
     void warnUserForNewMessages();
@@ -48,17 +52,18 @@ public slots:
 protected:
     void focusInEvent(QFocusEvent * event);
 private:
+    QGridLayout* mainLayout;
+    QHBoxLayout* buttonLayout;
     QTabWidget tabList;
     QList<showTopicMessagesClass*> listOfShowTopicMessages;
     QList<QString> listOfTopicLink;
     QList<QString> listOfIgnoredPseudo;
     QList<QPair<QString, QString> > oldListOfInput;
-    QTextEdit messageLine;
+    multiTypeTextBoxClass messageLine;
     QNetworkReply* replyForSendMessage;
     QNetworkAccessManager networkManager;
-    QLabel pseudoUsedLab;
     QLabel messagesStatus;
-    QLabel numberOfConnected;
+    QLabel numberOfConnectedAndPseudoUsed;
     QPushButton sendButton;
     QString pseudoOfUser;
     QString captchaCode;

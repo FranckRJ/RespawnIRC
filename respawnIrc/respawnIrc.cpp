@@ -8,6 +8,96 @@
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
 {
+
+    tabList.setTabsClosable(true);
+    sendButton.setText("Envoyer");
+    sendButton.setAutoDefault(true);
+    alertImage.load("ressources/alert.png");
+    replyForSendMessage = 0;
+    isConnected = false;
+
+    addButtonToButtonLayout();
+
+    QHBoxLayout* infoLayout = new QHBoxLayout();
+    infoLayout->addWidget(&messagesStatus);
+    infoLayout->addWidget(&numberOfConnectedAndPseudoUsed, 1, Qt::AlignRight);
+
+    mainLayout = new QGridLayout(this);
+    mainLayout->addWidget(&tabList, 0, 0, 1, 2);
+    mainLayout->addLayout(buttonLayout, 1, 0, 1, 2, Qt::AlignLeft);
+    mainLayout->addWidget(&messageLine, 2, 0);
+    mainLayout->addWidget(&sendButton, 2, 1);
+    mainLayout->addLayout(infoLayout, 3, 0, 1, 2);
+
+    setLayout(mainLayout);
+
+    connect(&sendButton, SIGNAL(pressed()), this, SLOT(postMessage()));
+    connect(&messageLine, SIGNAL(returnPressed()), &sendButton, SLOT(click()));
+    connect(&tabList, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
+    connect(&tabList, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
+
+    loadSettings();
+}
+
+void respawnIrcClass::loadSettings()
+{
+    pseudoOfUser = settingToolClass::getPseudoOfUser();
+    setNewCookies(settingToolClass::getListOfCookie(), pseudoOfUser, false);
+    listOfIgnoredPseudo = settingToolClass::getListOfIgnoredPseudo();
+    listOfTopicLink = settingToolClass::getListOfTopicLink();
+
+    for(int i = 0; i < listOfTopicLink.size(); ++i)
+    {
+        addNewTab();
+        tabList.setCurrentIndex(i);
+        setNewTopic(listOfTopicLink.at(i));
+        tabList.setCurrentIndex(0);
+    }
+
+    if(listOfShowTopicMessages.isEmpty() == true)
+    {
+        addNewTab();
+    }
+
+    messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
+    setNewNumberOfConnectedAndPseudoUsed();
+
+    if(settingToolClass::getShowTextDecorationButton() == false)
+    {
+        setShowTextDecorationButton(false);
+    }
+
+    setMultilineEdit(settingToolClass::getSetMultilineEdit());
+}
+
+showTopicMessagesClass* respawnIrcClass::getCurrentWidget()
+{
+    return listOfShowTopicMessages.at(tabList.currentIndex());
+}
+
+QString respawnIrcClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput)
+{
+    QString data;
+
+    for(int i = 0; i < listOfInput.size(); ++i)
+    {
+        data += listOfInput.at(i).first + "=" + listOfInput.at(i).second + "&";
+    }
+
+    data += "message_topic=" + messageLine.text().replace("&", "%26").replace("+", "%2B");
+
+    if(captchaCode.isEmpty() == false)
+    {
+        data += "&fs_ccode=" + captchaCode;
+    }
+
+    data += "&form_alias_rang=1";
+
+    return data;
+}
+
+void respawnIrcClass::addButtonToButtonLayout()
+{
     QPushButton* buttonBold = new QPushButton("B", this);
     QPushButton* buttonItalic = new QPushButton("I", this);
     QPushButton* buttonUnderline = new QPushButton("U", this);
@@ -36,18 +126,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     buttonSpoil->setMaximumWidth(buttonSpoil->fontMetrics().boundingRect(buttonSpoil->text()).width() + 10);
     buttonSpoil->setMaximumHeight(20);
 
-    tabList.setTabsClosable(true);
-    messageLine.setTabChangesFocus(true);
-    messageLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    messageLine.setMaximumHeight(65);
-    messageLine.setAcceptRichText(false);
-    sendButton.setText("Envoyer");
-    sendButton.setAutoDefault(true);
-    alertImage.load("ressources/alert.png");
-    replyForSendMessage = 0;
-    isConnected = false;
-
-    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    buttonLayout = new QHBoxLayout();
     buttonLayout->addWidget(buttonBold);
     buttonLayout->addWidget(buttonItalic);
     buttonLayout->addWidget(buttonUnderline);
@@ -57,19 +136,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     buttonLayout->addWidget(buttonQuote);
     buttonLayout->addWidget(buttonCode);
     buttonLayout->addWidget(buttonSpoil);
-    buttonLayout->addWidget(&pseudoUsedLab, 1, Qt::AlignRight);
 
-    QGridLayout* mainLayout = new QGridLayout(this);
-    mainLayout->addWidget(&tabList, 0, 0, 1, 2);
-    mainLayout->addLayout(buttonLayout, 1, 0, 1, 2, Qt::AlignLeft);
-    mainLayout->addWidget(&messageLine, 2, 0);
-    mainLayout->addWidget(&sendButton, 2, 1);
-    mainLayout->addWidget(&messagesStatus, 3, 0);
-    mainLayout->addWidget(&numberOfConnected, 3, 1, 1, 1, Qt::AlignRight);
-
-    setLayout(mainLayout);
-
-    connect(&sendButton, SIGNAL(pressed()), this, SLOT(postMessage()));
     connect(buttonBold, SIGNAL(pressed()), this, SLOT(addBold()));
     connect(buttonItalic, SIGNAL(pressed()), this, SLOT(addItalic()));
     connect(buttonUnderline, SIGNAL(pressed()), this, SLOT(addUnderLine()));
@@ -79,133 +146,79 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     connect(buttonQuote, SIGNAL(pressed()), this, SLOT(addQuote()));
     connect(buttonCode, SIGNAL(pressed()), this, SLOT(addCode()));
     connect(buttonSpoil, SIGNAL(pressed()), this, SLOT(addSpoil()));
-    connect(&tabList, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
-    connect(&tabList, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
-
-    loadSettings();
 }
 
-void respawnIrcClass::loadSettings()
+void respawnIrcClass::setButtonInButtonLayoutVisible(bool visible)
 {
-    pseudoOfUser = settingToolClass::getPseudoOfUser();
-    setNewCookies(settingToolClass::getListOfCookie(), pseudoOfUser, false);
-    listOfIgnoredPseudo = settingToolClass::getListOfIgnoredPseudo();
-    listOfTopicLink = settingToolClass::getListOfTopicLink();
-
-    for(int i = 0; i < listOfTopicLink.size(); ++i)
+    for(int i = 0; i < buttonLayout->count(); ++i)
     {
-        addNewTab();
-        tabList.setCurrentIndex(i);
-        setNewTopic(listOfTopicLink.at(i));
-        tabList.setCurrentIndex(0);
-    }
-
-    if(listOfShowTopicMessages.isEmpty() == true)
-    {
-        addNewTab();
-    }
-
-    messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
-    numberOfConnected.setText(getCurrentWidget()->getNumberOfConnected());
-}
-
-showTopicMessagesClass* respawnIrcClass::getCurrentWidget()
-{
-    return listOfShowTopicMessages.at(tabList.currentIndex());
-}
-
-QString respawnIrcClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput)
-{
-    QString data;
-
-    for(int i = 0; i < listOfInput.size(); ++i)
-    {
-        data += listOfInput.at(i).first + "=" + listOfInput.at(i).second + "&";
-    }
-
-    data += "message_topic=" + messageLine.toPlainText().replace("&", "%26").replace("+", "%2B");
-
-    if(captchaCode.isEmpty() == false)
-    {
-        data += "&fs_ccode=" + captchaCode;
-    }
-
-    data += "&form_alias_rang=1";
-
-    return data;
-}
-
-void respawnIrcClass::moveMessageLineCursor(QTextCursor::MoveOperation operation, int numberOfTime)
-{
-    for(int i = 0; i < numberOfTime; ++i)
-    {
-        messageLine.moveCursor(operation);
+        buttonLayout->itemAt(i)->widget()->setVisible(visible);
     }
 }
 
 void respawnIrcClass::addBold()
 {
-    messageLine.insertPlainText("''''''");
-    moveMessageLineCursor(QTextCursor::Left, 3);
+    messageLine.insertText("''''''");
+    messageLine.moveCursor(QTextCursor::Left, 3);
     messageLine.setFocus();
 }
 
 void respawnIrcClass::addItalic()
 {
-    messageLine.insertPlainText("''''");
-    moveMessageLineCursor(QTextCursor::Left, 2);
+    messageLine.insertText("''''");
+    messageLine.moveCursor(QTextCursor::Left, 2);
     messageLine.setFocus();
 }
 
 void respawnIrcClass::addUnderLine()
 {
-    messageLine.insertPlainText("<u></u>");
-    moveMessageLineCursor(QTextCursor::Left, 4);
+    messageLine.insertText("<u></u>");
+    messageLine.moveCursor(QTextCursor::Left, 4);
     messageLine.setFocus();
 }
 
 void respawnIrcClass::addStrike()
 {
-    messageLine.insertPlainText("<s></s>");
-    moveMessageLineCursor(QTextCursor::Left, 4);
+    messageLine.insertText("<s></s>");
+    messageLine.moveCursor(QTextCursor::Left, 4);
     messageLine.setFocus();
 }
 
 void respawnIrcClass::addUList()
 {
-    moveMessageLineCursor(QTextCursor::StartOfLine);
-    messageLine.insertPlainText("* ");
-    moveMessageLineCursor(QTextCursor::EndOfLine);
+    messageLine.moveCursor(QTextCursor::StartOfLine);
+    messageLine.insertText("* ");
+    messageLine.moveCursor(QTextCursor::EndOfLine);
     messageLine.setFocus();
 }
 
 void respawnIrcClass::addOListe()
 {
-    moveMessageLineCursor(QTextCursor::StartOfLine);
-    messageLine.insertPlainText("# ");
-    moveMessageLineCursor(QTextCursor::EndOfLine);
+    messageLine.moveCursor(QTextCursor::StartOfLine);
+    messageLine.insertText("# ");
+    messageLine.moveCursor(QTextCursor::EndOfLine);
     messageLine.setFocus();
 }
 
 void respawnIrcClass::addQuote()
 {
-    moveMessageLineCursor(QTextCursor::StartOfLine);
-    messageLine.insertPlainText("> ");
-    moveMessageLineCursor(QTextCursor::EndOfLine);
+    messageLine.moveCursor(QTextCursor::StartOfLine);
+    messageLine.insertText("> ");
+    messageLine.moveCursor(QTextCursor::EndOfLine);
     messageLine.setFocus();
 }
 
 void respawnIrcClass::addCode()
 {
-    messageLine.insertPlainText("<code></code>");
-    moveMessageLineCursor(QTextCursor::Left, 7);
+    messageLine.insertText("<code></code>");
+    messageLine.moveCursor(QTextCursor::Left, 7);
     messageLine.setFocus();
 }
 
 void respawnIrcClass::addSpoil()
 {
-    messageLine.insertPlainText("<spoil></spoil>");
-    moveMessageLineCursor(QTextCursor::Left, 8);
+    messageLine.insertText("<spoil></spoil>");
+    messageLine.moveCursor(QTextCursor::Left, 8);
     messageLine.setFocus();
 }
 
@@ -246,7 +259,7 @@ void respawnIrcClass::addNewTab()
     }
 
     connect(listOfShowTopicMessages.back(), SIGNAL(newMessageStatus()), this, SLOT(setNewMessageStatus()));
-    connect(listOfShowTopicMessages.back(), SIGNAL(newNumberOfConnected()), this, SLOT(setNewNumberOfConnected()));
+    connect(listOfShowTopicMessages.back(), SIGNAL(newNumberOfConnected()), this, SLOT(setNewNumberOfConnectedAndPseudoUsed()));
     connect(listOfShowTopicMessages.back(), SIGNAL(newMessagesAvailable()), this, SLOT(warnUserForNewMessages()));
     connect(listOfShowTopicMessages.back(), SIGNAL(newNameForTopic(QString)), this, SLOT(setNewTopicName(QString)));
     tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
@@ -260,6 +273,7 @@ void respawnIrcClass::removeTab(int index)
         listOfTopicLink.removeAt(index);
         settingToolClass::saveListOfTopicLink(listOfTopicLink);
         delete listOfShowTopicMessages.takeAt(index);
+        currentTabChanged(-1);
     }
 }
 
@@ -289,6 +303,31 @@ void respawnIrcClass::goToCurrentForum()
     }
 }
 
+void respawnIrcClass::setShowTextDecorationButton(bool newVal)
+{
+    setButtonInButtonLayoutVisible(newVal);
+
+    if(newVal == false)
+    {
+        mainLayout->removeItem(buttonLayout);
+    }
+    else if(newVal == true)
+    {
+        mainLayout->addLayout(buttonLayout, 1, 0, 1, 2, Qt::AlignLeft);
+        mainLayout->update();
+    }
+
+    settingToolClass::saveShowTextDecoration(newVal);
+}
+
+void respawnIrcClass::setMultilineEdit(bool newVal)
+{
+    messageLine.setTextEditSelected(newVal);
+    messageLine.setFocus();
+
+    settingToolClass::saveSetMultilineEdit(newVal);
+}
+
 void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo)
 {
     if(newCookies.isEmpty() == false)
@@ -296,7 +335,7 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
         networkManager.setCookieJar(new QNetworkCookieJar(this)); //fuite ?
         networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
         pseudoOfUser = newPseudoOfUser;
-        pseudoUsedLab.setText("Pseudo actuel : " + pseudoOfUser);
+        setNewNumberOfConnectedAndPseudoUsed();
         isConnected = true;
 
         for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
@@ -331,9 +370,25 @@ void respawnIrcClass::setNewMessageStatus()
     messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
 }
 
-void respawnIrcClass::setNewNumberOfConnected()
+void respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed()
 {
-    numberOfConnected.setText(getCurrentWidget()->getNumberOfConnected());
+    QString textToShow;
+
+    if(listOfShowTopicMessages.isEmpty() == false)
+    {
+        textToShow += getCurrentWidget()->getNumberOfConnected();
+    }
+
+    if(pseudoOfUser.isEmpty() == false)
+    {
+        if(textToShow.isEmpty() == false)
+        {
+            textToShow += " - ";
+        }
+        textToShow += pseudoOfUser;
+    }
+
+    numberOfConnectedAndPseudoUsed.setText(textToShow);
 }
 
 void respawnIrcClass::setNewTopicName(QString topicName)
@@ -373,8 +428,13 @@ void respawnIrcClass::warnUserForNewMessages()
 
 void respawnIrcClass::currentTabChanged(int newIndex)
 {
+    if(newIndex == -1)
+    {
+        newIndex = tabList.currentIndex();
+    }
+
     setNewMessageStatus();
-    setNewNumberOfConnected();
+    setNewNumberOfConnectedAndPseudoUsed();
     tabList.setTabIcon(newIndex, QIcon());
 }
 

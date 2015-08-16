@@ -1,5 +1,5 @@
 #include "mainWindow.hpp"
-#include "parsingTool.hpp"
+#include "settingTool.hpp"
 
 mainWindowClass::mainWindowClass()
 {
@@ -12,7 +12,7 @@ mainWindowClass::mainWindowClass()
     actionQuit->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
     actionConnect->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
 
-    QMenu* menuDiscussion = menuBar->addMenu("&Discuission");
+    QMenu* menuDiscussion = menuBar->addMenu("&Discussion");
     QAction* actionTabAddTab = menuDiscussion->addAction("Ajouter un onglet");
     menuDiscussion->addSeparator();
     QAction* actionSelectTopic = menuDiscussion->addAction("Choisir un topic");
@@ -37,11 +37,14 @@ mainWindowClass::mainWindowClass()
 
     QMenu* menuSetting = menuBar->addMenu("&Configuration");
     QAction* actionShowListOfIgnoredPseudo = menuSetting->addAction("Afficher la liste des ignorés");
-    //QAction* actionShowTextDecorationButtons = menuSetting->addAction("Afficher les boutons de décoration de texte");
-    //QAction* actionSetMultilineEdit = menuSetting->addAction("Ecrire dans une boite de plusieurs lignes");
+    menuSetting->addSeparator();
+    QAction* actionShowTextDecorationButtons = menuSetting->addAction("Afficher les boutons de décoration de texte");
+    QAction* actionSetMultilineEdit = menuSetting->addAction("Saisi du message en mode multiligne");
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
-    //actionShowTextDecorationButtons->setCheckable(true);
-    //actionSetMultilineEdit->setCheckable(true);
+    actionShowTextDecorationButtons->setCheckable(true);
+    actionShowTextDecorationButtons->setChecked(settingToolClass::getShowTextDecorationButton());
+    actionSetMultilineEdit->setCheckable(true);
+    actionSetMultilineEdit->setChecked(settingToolClass::getSetMultilineEdit());
 
     QMenu* menuHelp = menuBar->addMenu("&Aide");
     QAction* actionAboutQt = menuHelp->addAction("A propos de Qt");
@@ -68,6 +71,8 @@ mainWindowClass::mainWindowClass()
     connect(actionGoToTopic, SIGNAL(triggered()), &respawnIrc, SLOT(goToCurrentTopic()));
     connect(actionGoToForum, SIGNAL(triggered()), &respawnIrc, SLOT(goToCurrentForum()));
     connect(actionShowListOfIgnoredPseudo, SIGNAL(triggered()), &respawnIrc, SLOT(showIgnoreListWindow()));
+    connect(actionShowTextDecorationButtons, SIGNAL(toggled(bool)), &respawnIrc, SLOT(setShowTextDecorationButton(bool)));
+    connect(actionSetMultilineEdit, SIGNAL(toggled(bool)), &respawnIrc, SLOT(setMultilineEdit(bool)));
     connect(actionQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), &respawnIrc, SLOT(clipboardChanged()));

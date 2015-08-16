@@ -44,6 +44,16 @@ QList<QString> settingToolClass::getListOfTopicLink()
     return listOfTopicLink;
 }
 
+bool settingToolClass::getShowTextDecorationButton()
+{
+    return setting.value("showTextDecorationButton", true).toBool();
+}
+
+bool settingToolClass::getSetMultilineEdit()
+{
+    return setting.value("setMultilineEdit", true).toBool();
+}
+
 void settingToolClass::savePseudoOfUser(QString newPseudo)
 {
     setting.setValue("pseudo", newPseudo);
@@ -65,6 +75,16 @@ void settingToolClass::saveListOfIgnoredPseudo(QList<QString> newList)
 void settingToolClass::saveListOfTopicLink(QList<QString> newList)
 {
     setting.setValue("listOfTopicLink", createQVariantListWithThisList(newList));
+}
+
+void settingToolClass::saveShowTextDecoration(bool newVal)
+{
+    setting.setValue("showTextDecorationButton", newVal);
+}
+
+void settingToolClass::saveSetMultilineEdit(bool newVal)
+{
+    setting.setValue("setMultilineEdit", newVal);
 }
 
 QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> list)

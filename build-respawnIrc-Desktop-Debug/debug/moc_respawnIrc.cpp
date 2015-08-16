@@ -22,7 +22,7 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      28,   14, // methods
+      30,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -46,18 +46,20 @@ static const uint qt_meta_data_respawnIrcClass[] = {
      194,  188,   16,   16, 0x0a,
      209,   16,   16,   16, 0x0a,
      228,   16,   16,   16, 0x0a,
-     283,  247,   16,   16, 0x0a,
-     342,  333,   16,   16, 0x0a,
-     368,  363,   16,   16, 0x0a,
-     395,   16,   16,   16, 0x0a,
-     417,   16,   16,   16, 0x0a,
-     453,  443,   16,   16, 0x0a,
-     478,   16,   16,   16, 0x0a,
-     504,   16,   16,   16, 0x0a,
-     538,  529,   16,   16, 0x0a,
-     561,   16,   16,   16, 0x0a,
-     575,   16,   16,   16, 0x0a,
-     603,   16,   16,   16, 0x0a,
+     254,  247,   16,   16, 0x0a,
+     288,  247,   16,   16, 0x0a,
+     347,  311,   16,   16, 0x0a,
+     406,  397,   16,   16, 0x0a,
+     432,  427,   16,   16, 0x0a,
+     459,   16,   16,   16, 0x0a,
+     481,   16,   16,   16, 0x0a,
+     530,  520,   16,   16, 0x0a,
+     555,   16,   16,   16, 0x0a,
+     581,   16,   16,   16, 0x0a,
+     615,  606,   16,   16, 0x0a,
+     638,   16,   16,   16, 0x0a,
+     652,   16,   16,   16, 0x0a,
+     680,   16,   16,   16, 0x0a,
 
        0        // eod
 };
@@ -69,12 +71,15 @@ static const char qt_meta_stringdata_respawnIrcClass[] = {
     "addSpoil()\0showConnect()\0showSelectTopic()\0"
     "showIgnoreListWindow()\0addNewTab()\0"
     "index\0removeTab(int)\0goToCurrentTopic()\0"
-    "goToCurrentForum()\0"
+    "goToCurrentForum()\0newVal\0"
+    "setShowTextDecorationButton(bool)\0"
+    "setMultilineEdit(bool)\0"
     "newCookies,newPseudoOfUser,saveInfo\0"
     "setNewCookies(QList<QNetworkCookie>,QString,bool)\0"
     "newTopic\0setNewTopic(QString)\0code\0"
     "setCodeForCaptcha(QString)\0"
-    "setNewMessageStatus()\0setNewNumberOfConnected()\0"
+    "setNewMessageStatus()\0"
+    "setNewNumberOfConnectedAndPseudoUsed()\0"
     "topicName\0setNewTopicName(QString)\0"
     "saveListOfIgnoredPseudo()\0"
     "warnUserForNewMessages()\0newIndex\0"
@@ -105,18 +110,20 @@ void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 13: _t->removeTab((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 14: _t->goToCurrentTopic(); break;
         case 15: _t->goToCurrentForum(); break;
-        case 16: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
-        case 17: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 18: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 19: _t->setNewMessageStatus(); break;
-        case 20: _t->setNewNumberOfConnected(); break;
-        case 21: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 22: _t->saveListOfIgnoredPseudo(); break;
-        case 23: _t->warnUserForNewMessages(); break;
-        case 24: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 25: _t->postMessage(); break;
-        case 26: _t->deleteReplyForSendMessage(); break;
-        case 27: _t->clipboardChanged(); break;
+        case 16: _t->setShowTextDecorationButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 17: _t->setMultilineEdit((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 18: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 19: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 20: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 21: _t->setNewMessageStatus(); break;
+        case 22: _t->setNewNumberOfConnectedAndPseudoUsed(); break;
+        case 23: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 24: _t->saveListOfIgnoredPseudo(); break;
+        case 25: _t->warnUserForNewMessages(); break;
+        case 26: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 27: _t->postMessage(); break;
+        case 28: _t->deleteReplyForSendMessage(); break;
+        case 29: _t->clipboardChanged(); break;
         default: ;
         }
     }
@@ -154,9 +161,9 @@ int respawnIrcClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 28)
+        if (_id < 30)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 28;
+        _id -= 30;
     }
     return _id;
 }
