@@ -142,6 +142,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
     QRegExp expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\"><span class=\"contenu-spoil\">([^<]*)</span></span>");
     QRegExp expForSpoilBlock("<span class=\"bloc-spoil-jv\"><span class=\"contenu-spoil\">([^<]*)</span></span>");
     QRegExp expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>");
+    expForLongLink.setMinimal(true);
 
     thisMessage.replace("\n", "");
 
