@@ -22,8 +22,11 @@ public:
     void setMessageStatus(QString newStatus);
     void setNumberOfConnected(QString newNumber, bool forceSet = false);
     void setTopicToErrorMode();
+    void updateSettingInfo();
 public slots:
     void getMessages();
+    void loadFirstPageFinish();
+    void loadSecondPageFinish();
     void analyzeMessages();
 signals:
     void newMessageStatus();
@@ -32,7 +35,8 @@ signals:
     void newNameForTopic(QString newName);
 private:
     QTextBrowser messagesBox;
-    QNetworkReply* reply;
+    QNetworkReply* replyForFirstPage;
+    QNetworkReply* replyForSecondPage;
     QNetworkAccessManager networkManager;
     QTimer timerForGetMessage;
     QList<QPair<QString, QString> > listOfInput;
@@ -44,11 +48,14 @@ private:
     QString topicName;
     QString pseudoOfUser;
     QString captchaLink;
+    bool loadTwoLastPage;
+    bool secondPageLoading;
     bool firstTimeGetMessages;
     bool retrievesMessage;
     bool linkHasChanged;
     bool errorMode;
     int idOfLastMessage;
+    int numberOfMessageShowedFirstTime;
 };
 
 #endif

@@ -16,6 +16,7 @@ mainWindowClass::mainWindowClass()
     QAction* actionTabAddTab = menuDiscussion->addAction("Ajouter un onglet");
     menuDiscussion->addSeparator();
     QAction* actionSelectTopic = menuDiscussion->addAction("Choisir un topic");
+    QAction* actionReloadTopic = menuDiscussion->addAction("Recharger le topic");
     menuDiscussion->addSeparator();
     QMenu* menuTextDecoration = menuDiscussion->addMenu("Ajouter des décorations de texte");
     QAction* actionAddBold = menuTextDecoration->addAction("Gras");
@@ -32,19 +33,26 @@ mainWindowClass::mainWindowClass()
     QAction* actionGoToForum = menuDiscussion->addAction("Accéder au forum");
     actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
     actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
+    actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
     actionGoToTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     actionGoToForum->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
 
     QMenu* menuSetting = menuBar->addMenu("&Configuration");
     QAction* actionShowListOfIgnoredPseudo = menuSetting->addAction("Afficher la liste des ignorés");
     menuSetting->addSeparator();
+    QAction* actionShowUpdateTopicTime = menuSetting->addAction("Taux de rafraichissement des topics");
+    QAction* actionShowNumberOfMessageShowedFirstTime = menuSetting->addAction("Nombre de message affiché au premier chargement");
+    menuSetting->addSeparator();
     QAction* actionShowTextDecorationButtons = menuSetting->addAction("Afficher les boutons de décoration de texte");
     QAction* actionSetMultilineEdit = menuSetting->addAction("Saisi du message en mode multiligne");
+    QAction* actionLoadTwoLastPage = menuSetting->addAction("Charger les deux dernières pages");
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
     actionShowTextDecorationButtons->setCheckable(true);
     actionShowTextDecorationButtons->setChecked(settingToolClass::getShowTextDecorationButton());
     actionSetMultilineEdit->setCheckable(true);
     actionSetMultilineEdit->setChecked(settingToolClass::getSetMultilineEdit());
+    actionLoadTwoLastPage->setCheckable(true);
+    actionLoadTwoLastPage->setChecked(settingToolClass::getLoadTwoLastPage());
 
     QMenu* menuHelp = menuBar->addMenu("&Aide");
     QAction* actionAboutQt = menuHelp->addAction("A propos de Qt");
@@ -59,6 +67,7 @@ mainWindowClass::mainWindowClass()
     connect(actionConnect, SIGNAL(triggered()), &respawnIrc, SLOT(showConnect()));
     connect(actionTabAddTab, SIGNAL(triggered()), &respawnIrc, SLOT(addNewTab()));
     connect(actionSelectTopic, SIGNAL(triggered()), &respawnIrc, SLOT(showSelectTopic()));
+    connect(actionReloadTopic, SIGNAL(triggered()), &respawnIrc, SLOT(reloadTopic()));
     connect(actionAddBold, SIGNAL(triggered()), &respawnIrc, SLOT(addBold()));
     connect(actionAddItalic, SIGNAL(triggered()), &respawnIrc, SLOT(addItalic()));
     connect(actionAddUnderline, SIGNAL(triggered()), &respawnIrc, SLOT(addUnderLine()));
@@ -71,8 +80,11 @@ mainWindowClass::mainWindowClass()
     connect(actionGoToTopic, SIGNAL(triggered()), &respawnIrc, SLOT(goToCurrentTopic()));
     connect(actionGoToForum, SIGNAL(triggered()), &respawnIrc, SLOT(goToCurrentForum()));
     connect(actionShowListOfIgnoredPseudo, SIGNAL(triggered()), &respawnIrc, SLOT(showIgnoreListWindow()));
+    connect(actionShowUpdateTopicTime, SIGNAL(triggered()), &respawnIrc, SLOT(showUpdateTopicTimeWindow()));
+    connect(actionShowNumberOfMessageShowedFirstTime, SIGNAL(triggered()), &respawnIrc, SLOT(showNumberOfMessageShowedFirstTimeWindow()));
     connect(actionShowTextDecorationButtons, SIGNAL(toggled(bool)), &respawnIrc, SLOT(setShowTextDecorationButton(bool)));
     connect(actionSetMultilineEdit, SIGNAL(toggled(bool)), &respawnIrc, SLOT(setMultilineEdit(bool)));
+    connect(actionLoadTwoLastPage, SIGNAL(toggled(bool)), &respawnIrc, SLOT(setLoadTwoLastPage(bool)));
     connect(actionQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), &respawnIrc, SLOT(clipboardChanged()));

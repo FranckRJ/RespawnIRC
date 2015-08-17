@@ -19,6 +19,7 @@ public:
     static void getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
     static QString getCaptchaLink(const QString& source);
     static QString getLastPageOfTopic(const QString& source);
+    static QString getBeforeLastPageOfTopic(const QString& source);
     static QString getNameOfTopic(const QString& source);
     static QString getNumberOfConnected(const QString& source);
     static QList<messageStruct> getListOfEntireMessages(const QString& source);

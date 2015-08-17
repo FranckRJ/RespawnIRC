@@ -81,6 +81,21 @@ QString parsingToolClass::getLastPageOfTopic(const QString& source)
     return lastPage;
 }
 
+QString parsingToolClass::getBeforeLastPageOfTopic(const QString &source)
+{
+    QRegExp expForBeforeLastPage("(http://www.jeuxvideo.com/forums/[^-]*-[^-]*-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)");
+    QString pageNumber = searchThisCapNumber(source, expForBeforeLastPage, 2);
+
+    if(pageNumber.isEmpty() == false && pageNumber != "1")
+    {
+        return searchThisCapNumber(source, expForBeforeLastPage, 1) + QString::number(pageNumber.toInt() - 1) + searchThisCapNumber(source, expForBeforeLastPage, 3);
+    }
+    else
+    {
+        return "";
+    }
+}
+
 QString parsingToolClass::getNameOfTopic(const QString& source)
 {
     QRegExp expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>");
@@ -136,7 +151,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
 {
     QRegExp expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />");
     QRegExp expForStickers("<img class=\"img-stickers\" src=\"([^\"]*)\"/>");
-    QRegExp expForLongLink("<span class=\"JvCare [^\"]*\".*title=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>");
+    QRegExp expForLongLink("<span class=\"JvCare [^\"]*\"[^i]*itle=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>");
     QRegExp expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>");
     QRegExp expForNoelshack("<a href=\"([^\"]*)\" data-def=\"NOELSHACK\" target=\"_blank\"><img class=\"img-shack\" [^>]*></a>");
     QRegExp expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\"><span class=\"contenu-spoil\">([^<]*)</span></span>");

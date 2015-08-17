@@ -31,12 +31,18 @@ public slots:
     void showConnect();
     void showSelectTopic();
     void showIgnoreListWindow();
+    void showUpdateTopicTimeWindow();
+    void showNumberOfMessageShowedFirstTimeWindow();
     void addNewTab();
     void removeTab(int index);
+    void reloadTopic();
     void goToCurrentTopic();
     void goToCurrentForum();
+    void setUpdateTopicTime(int newTime);
+    void setNumberOfMessageShowedFirstTime(int newNumber);
     void setShowTextDecorationButton(bool newVal);
     void setMultilineEdit(bool newVal);
+    void setLoadTwoLastPage(bool newVal);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
     void setNewTopic(QString newTopic);
     void setCodeForCaptcha(QString code);
@@ -69,6 +75,8 @@ private:
     QString captchaCode;
     QPixmap alertImage;
     bool isConnected;
+    int updateTopicTime;
+    int numberOfMessageShowedFirstTime;
 };
 
 #endif

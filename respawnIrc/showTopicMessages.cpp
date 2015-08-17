@@ -1,20 +1,25 @@
 #include "showTopicMessages.hpp"
 #include "parsingTool.hpp"
+#include "settingTool.hpp"
 
 showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QWidget* parent) : QWidget(parent)
 {
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(true);
-    timerForGetMessage.setInterval(4000);
+    timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
     timerForGetMessage.stop();
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
     messagesStatus = "Rien.";
-    reply = 0;
+    replyForFirstPage = 0;
+    replyForSecondPage = 0;
     firstTimeGetMessages = true;
     retrievesMessage = false;
     idOfLastMessage = 0;
     linkHasChanged = false;
     errorMode = false;
+    loadTwoLastPage = settingToolClass::getLoadTwoLastPage();
+    numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
+    secondPageLoading = false;
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(&messagesBox);
@@ -77,6 +82,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
 {
     messagesBox.clear();
     topicName.clear();
+    listOfEdit.clear();
     topicLink = newTopic;
     linkHasChanged = true;
     firstTimeGetMessages = true;
@@ -117,6 +123,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
             topicName.clear();
             timerForGetMessage.stop();
             messagesBox.clear();
+            listOfEdit.clear();
             setMessageStatus("Erreur, topic invalide.");
             setNumberOfConnected("", true);
             messageBox.warning(this, "Erreur", "Le topic n'existe pas.");
@@ -134,23 +141,69 @@ void showTopicMessagesClass::setTopicToErrorMode()
     retrievesMessage = false;
 }
 
+void showTopicMessagesClass::updateSettingInfo()
+{
+    loadTwoLastPage = settingToolClass::getLoadTwoLastPage();
+    timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
+    numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
+}
+
 void showTopicMessagesClass::getMessages()
 {
     if(retrievesMessage == false)
     {
         retrievesMessage = true;
 
-        if(reply == 0)
+        if(replyForFirstPage == 0)
         {
-            QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(topicLink);
+            QString beforeLastPage = parsingToolClass::getBeforeLastPageOfTopic(topicLink);
+            QNetworkRequest requestForFirstPage = parsingToolClass::buildRequestWithThisUrl(topicLink);
             setMessageStatus("Récupération des messages en cours...");
+            secondPageLoading = false;
             linkHasChanged = false;
-            reply = networkManager.get(request);
-            connect(reply, SIGNAL(finished()), this, SLOT(analyzeMessages()));
+            replyForFirstPage = networkManager.get(requestForFirstPage);
+            connect(replyForFirstPage, SIGNAL(finished()), this, SLOT(loadFirstPageFinish()));
+
+            if(loadTwoLastPage == true && beforeLastPage.isEmpty() == false)
+            {
+                QNetworkRequest requestForSecondPage = parsingToolClass::buildRequestWithThisUrl(beforeLastPage);
+                secondPageLoading = true;
+                replyForSecondPage = networkManager.get(requestForSecondPage);
+                connect(replyForSecondPage, SIGNAL(finished()), this, SLOT(loadSecondPageFinish()));
+            }
         }
         else
         {
             retrievesMessage = false;
+        }
+    }
+}
+
+void showTopicMessagesClass::loadFirstPageFinish()
+{
+    if(loadTwoLastPage == true && secondPageLoading == true)
+    {
+        if(replyForSecondPage != 0)
+        {
+            if(replyForSecondPage->isFinished() == true)
+            {
+                analyzeMessages();
+            }
+        }
+    }
+    else
+    {
+        analyzeMessages();
+    }
+}
+
+void showTopicMessagesClass::loadSecondPageFinish()
+{
+    if(replyForFirstPage != 0)
+    {
+        if(replyForFirstPage->isFinished() == true)
+        {
+            analyzeMessages();
         }
     }
 }
@@ -160,9 +213,24 @@ void showTopicMessagesClass::analyzeMessages()
     QString newTopicLink;
     QString colorOfPseudo;
     QString colorOfDate;
-    QString source = reply->readAll();
-    reply->deleteLater();
-    reply = 0;
+    QString sourceFirst;
+    QString sourceSecond;
+
+    if(replyForFirstPage == 0)
+    {
+        return;
+    }
+
+    sourceFirst = replyForFirstPage->readAll();
+    replyForFirstPage->deleteLater();
+    replyForFirstPage = 0;
+
+    if(loadTwoLastPage == true && secondPageLoading == true)
+    {
+        sourceSecond = replyForSecondPage->readAll();
+        replyForSecondPage->deleteLater();
+        replyForSecondPage = 0;
+    }
 
     if(linkHasChanged == true)
     {
@@ -171,13 +239,13 @@ void showTopicMessagesClass::analyzeMessages()
     }
 
     setMessageStatus("Récupération des messages terminé !");
-    setNumberOfConnected(parsingToolClass::getNumberOfConnected(source));
+    setNumberOfConnected(parsingToolClass::getNumberOfConnected(sourceFirst));
 
-    newTopicLink = parsingToolClass::getLastPageOfTopic(source);
+    newTopicLink = parsingToolClass::getLastPageOfTopic(sourceFirst);
 
     if(firstTimeGetMessages == true)
     {
-        topicName = parsingToolClass::getNameOfTopic(source);
+        topicName = parsingToolClass::getNameOfTopic(sourceFirst);
 
         if(topicName.isEmpty() == false)
         {
@@ -187,7 +255,14 @@ void showTopicMessagesClass::analyzeMessages()
 
     if(firstTimeGetMessages == false || newTopicLink.isEmpty() == true)
     {
-        QList<messageStruct> listOfEntireMessage = parsingToolClass::getListOfEntireMessages(source);
+        QList<messageStruct> listOfEntireMessage;
+
+        if(sourceSecond.isEmpty() == false)
+        {
+            listOfEntireMessage = parsingToolClass::getListOfEntireMessages(sourceSecond);
+        }
+
+        listOfEntireMessage.append(parsingToolClass::getListOfEntireMessages(sourceFirst));
 
         if(listOfEntireMessage.size() == 0)
         {
@@ -197,6 +272,14 @@ void showTopicMessagesClass::analyzeMessages()
         else
         {
             errorMode = false;
+        }
+
+        if(messagesBox.toPlainText().isEmpty() == true)
+        {
+            while(listOfEntireMessage.size() > numberOfMessageShowedFirstTime)
+            {
+                listOfEntireMessage.pop_front();
+            }
         }
 
         for(int i = 0; i < listOfEntireMessage.size(); ++i)
@@ -237,7 +320,7 @@ void showTopicMessagesClass::analyzeMessages()
             }
         }
 
-        while(listOfEdit.size() > 20)
+        while(listOfEdit.size() > 40)
         {
             listOfEdit.erase(listOfEdit.begin());
         }
@@ -246,8 +329,8 @@ void showTopicMessagesClass::analyzeMessages()
     if(pseudoOfUser.isEmpty() == false)
     {
         listOfInput.clear();
-        parsingToolClass::getListOfHiddenInputFromThisForm(source, "form-post-topic form-post-message", listOfInput);
-        captchaLink = parsingToolClass::getCaptchaLink(source);
+        parsingToolClass::getListOfHiddenInputFromThisForm(sourceFirst, "form-post-topic form-post-message", listOfInput);
+        captchaLink = parsingToolClass::getCaptchaLink(sourceFirst);
     }
 
     firstTimeGetMessages = false;

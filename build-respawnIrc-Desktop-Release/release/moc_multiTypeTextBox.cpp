@@ -22,7 +22,7 @@ static const uint qt_meta_data_multiTypeTextBoxClass[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -33,13 +33,15 @@ static const uint qt_meta_data_multiTypeTextBoxClass[] = {
       23,   22,   22,   22, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      39,   22,   22,   22, 0x0a,
+      46,   39,   22,   22, 0x0a,
+      72,   22,   22,   22, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_multiTypeTextBoxClass[] = {
     "multiTypeTextBoxClass\0\0returnPressed()\0"
+    "newVal\0setTextEditSelected(bool)\0"
     "returnIsPressed()\0"
 };
 
@@ -50,11 +52,11 @@ void multiTypeTextBoxClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c
         multiTypeTextBoxClass *_t = static_cast<multiTypeTextBoxClass *>(_o);
         switch (_id) {
         case 0: _t->returnPressed(); break;
-        case 1: _t->returnIsPressed(); break;
+        case 1: _t->setTextEditSelected((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 2: _t->returnIsPressed(); break;
         default: ;
         }
     }
-    Q_UNUSED(_a);
 }
 
 const QMetaObjectExtraData multiTypeTextBoxClass::staticMetaObjectExtraData = {
@@ -89,9 +91,9 @@ int multiTypeTextBoxClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     }
     return _id;
 }

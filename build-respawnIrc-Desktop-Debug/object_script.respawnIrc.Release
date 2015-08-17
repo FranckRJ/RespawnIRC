@@ -11,6 +11,7 @@ INPUT(
 ./release\addPseudoWindow.o
 ./release\settingTool.o
 ./release\multiTypeTextBox.o
+./release\chooseNumberWindow.o
 ./release\moc_respawnIrc.o
 ./release\moc_connectWindow.o
 ./release\moc_selectTopicWindow.o
@@ -19,4 +20,5 @@ INPUT(
 ./release\moc_ignoreListWindow.o
 ./release\moc_addPseudoWindow.o
 ./release\moc_multiTypeTextBox.o
+./release\moc_chooseNumberWindow.o
 );

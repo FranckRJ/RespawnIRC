@@ -11,6 +11,7 @@ INPUT(
 ./debug\addPseudoWindow.o
 ./debug\settingTool.o
 ./debug\multiTypeTextBox.o
+./debug\chooseNumberWindow.o
 ./debug\moc_respawnIrc.o
 ./debug\moc_connectWindow.o
 ./debug\moc_selectTopicWindow.o
@@ -19,4 +20,5 @@ INPUT(
 ./debug\moc_ignoreListWindow.o
 ./debug\moc_addPseudoWindow.o
 ./debug\moc_multiTypeTextBox.o
+./debug\moc_chooseNumberWindow.o
 );

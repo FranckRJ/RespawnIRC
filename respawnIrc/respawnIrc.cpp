@@ -2,6 +2,7 @@
 #include "connectWindow.hpp"
 #include "selectTopicWindow.hpp"
 #include "ignoreListWindow.hpp"
+#include "chooseNumberWindow.hpp"
 #include "captchaWindow.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
@@ -14,6 +15,8 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     sendButton.setAutoDefault(true);
     alertImage.load("ressources/alert.png");
     replyForSendMessage = 0;
+    updateTopicTime = 4000;
+    numberOfMessageShowedFirstTime = 10;
     isConnected = false;
 
     addButtonToButtonLayout();
@@ -44,6 +47,9 @@ void respawnIrcClass::loadSettings()
     pseudoOfUser = settingToolClass::getPseudoOfUser();
     setNewCookies(settingToolClass::getListOfCookie(), pseudoOfUser, false);
     listOfIgnoredPseudo = settingToolClass::getListOfIgnoredPseudo();
+    setLoadTwoLastPage(settingToolClass::getLoadTwoLastPage());
+    setUpdateTopicTime(settingToolClass::getUpdateTopicTime());
+    setNumberOfMessageShowedFirstTime(settingToolClass::getNumberOfMessageShowedFirstTime());
     listOfTopicLink = settingToolClass::getListOfTopicLink();
 
     for(int i = 0; i < listOfTopicLink.size(); ++i)
@@ -244,6 +250,20 @@ void respawnIrcClass::showIgnoreListWindow()
     myIgnoreListWindow->exec();
 }
 
+void respawnIrcClass::showUpdateTopicTimeWindow()
+{
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(2500, 10000, updateTopicTime, this);
+    connect(myChooseNumberWindow, SIGNAL(newNumberSet(int)), this, SLOT(setUpdateTopicTime(int)));
+    myChooseNumberWindow->exec();
+}
+
+void respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow()
+{
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(1, 40, numberOfMessageShowedFirstTime, this);
+    connect(myChooseNumberWindow, SIGNAL(newNumberSet(int)), this, SLOT(setNumberOfMessageShowedFirstTime(int)));
+    myChooseNumberWindow->exec();
+}
+
 void respawnIrcClass::addNewTab()
 {
     listOfShowTopicMessages.push_back(new showTopicMessagesClass(&listOfIgnoredPseudo, this));
@@ -277,6 +297,11 @@ void respawnIrcClass::removeTab(int index)
     }
 }
 
+void respawnIrcClass::reloadTopic()
+{
+    getCurrentWidget()->setNewTopic(listOfTopicLink[tabList.currentIndex()]);
+}
+
 void respawnIrcClass::goToCurrentTopic()
 {
     if(getCurrentWidget()->getTopicLink().isEmpty() == false)
@@ -303,6 +328,28 @@ void respawnIrcClass::goToCurrentForum()
     }
 }
 
+void respawnIrcClass::setUpdateTopicTime(int newTime)
+{
+    updateTopicTime = newTime;
+    settingToolClass::saveUpdateTopicTime(newTime);
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->updateSettingInfo();
+    }
+}
+
+void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
+{
+    numberOfMessageShowedFirstTime = newNumber;
+    settingToolClass::saveNumberOfMessageShowedFirstTime(newNumber);
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->updateSettingInfo();
+    }
+}
+
 void respawnIrcClass::setShowTextDecorationButton(bool newVal)
 {
     setButtonInButtonLayoutVisible(newVal);
@@ -326,6 +373,16 @@ void respawnIrcClass::setMultilineEdit(bool newVal)
     messageLine.setFocus();
 
     settingToolClass::saveSetMultilineEdit(newVal);
+}
+
+void respawnIrcClass::setLoadTwoLastPage(bool newVal)
+{
+    settingToolClass::saveLoadTwoLastPage(newVal);
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->updateSettingInfo();
+    }
 }
 
 void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo)

@@ -54,6 +54,21 @@ bool settingToolClass::getSetMultilineEdit()
     return setting.value("setMultilineEdit", true).toBool();
 }
 
+bool settingToolClass::getLoadTwoLastPage()
+{
+    return setting.value("loadTwoLastPage", false).toBool();
+}
+
+int settingToolClass::getUpdateTopicTime()
+{
+    return setting.value("updateTopicTime", 4000).toInt();
+}
+
+int settingToolClass::getNumberOfMessageShowedFirstTime()
+{
+    return setting.value("numberOfMessageShowedFirstTime", 10).toInt();
+}
+
 void settingToolClass::savePseudoOfUser(QString newPseudo)
 {
     setting.setValue("pseudo", newPseudo);
@@ -85,6 +100,21 @@ void settingToolClass::saveShowTextDecoration(bool newVal)
 void settingToolClass::saveSetMultilineEdit(bool newVal)
 {
     setting.setValue("setMultilineEdit", newVal);
+}
+
+void settingToolClass::saveLoadTwoLastPage(bool newVal)
+{
+    setting.setValue("loadTwoLastPage", newVal);
+}
+
+void settingToolClass::saveUpdateTopicTime(int newTime)
+{
+    setting.setValue("updateTopicTime", newTime);
+}
+
+void settingToolClass::saveNumberOfMessageShowedFirstTime(int newNumber)
+{
+    setting.setValue("numberOfMessageShowedFirstTime", newNumber);
 }
 
 QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> list)
