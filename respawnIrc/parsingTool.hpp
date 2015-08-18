@@ -24,6 +24,7 @@ public:
     static QString getNumberOfConnected(const QString& source);
     static QList<messageStruct> getListOfEntireMessages(const QString& source);
     static QString getForumOfTopic(const QString& source);
+    static QString jvfLinkToJvcLink(const QString& source);
     static QString parsingMessages(QString thisMessage);
     static QNetworkRequest buildRequestWithThisUrl(QString url);
     static QList<QString> getListOfThisCapNumber(const QString &source, QRegExp exp, int capNumber, bool onlyUseCapString = false);

@@ -81,6 +81,11 @@ showTopicMessagesClass* respawnIrcClass::getCurrentWidget()
     return listOfShowTopicMessages.at(tabList.currentIndex());
 }
 
+multiTypeTextBoxClass* respawnIrcClass::getMessageLine()
+{
+    return &messageLine;
+}
+
 QString respawnIrcClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput)
 {
     QString data;
@@ -143,15 +148,15 @@ void respawnIrcClass::addButtonToButtonLayout()
     buttonLayout->addWidget(buttonCode);
     buttonLayout->addWidget(buttonSpoil);
 
-    connect(buttonBold, SIGNAL(pressed()), this, SLOT(addBold()));
-    connect(buttonItalic, SIGNAL(pressed()), this, SLOT(addItalic()));
-    connect(buttonUnderline, SIGNAL(pressed()), this, SLOT(addUnderLine()));
-    connect(buttonStrike, SIGNAL(pressed()), this, SLOT(addStrike()));
-    connect(buttonUList, SIGNAL(pressed()), this, SLOT(addUList()));
-    connect(buttonOList, SIGNAL(pressed()), this, SLOT(addOListe()));
-    connect(buttonQuote, SIGNAL(pressed()), this, SLOT(addQuote()));
-    connect(buttonCode, SIGNAL(pressed()), this, SLOT(addCode()));
-    connect(buttonSpoil, SIGNAL(pressed()), this, SLOT(addSpoil()));
+    connect(buttonBold, SIGNAL(pressed()), &messageLine, SLOT(addBold()));
+    connect(buttonItalic, SIGNAL(pressed()), &messageLine, SLOT(addItalic()));
+    connect(buttonUnderline, SIGNAL(pressed()), &messageLine, SLOT(addUnderLine()));
+    connect(buttonStrike, SIGNAL(pressed()), &messageLine, SLOT(addStrike()));
+    connect(buttonUList, SIGNAL(pressed()), &messageLine, SLOT(addUList()));
+    connect(buttonOList, SIGNAL(pressed()), &messageLine, SLOT(addOListe()));
+    connect(buttonQuote, SIGNAL(pressed()), &messageLine, SLOT(addQuote()));
+    connect(buttonCode, SIGNAL(pressed()), &messageLine, SLOT(addCode()));
+    connect(buttonSpoil, SIGNAL(pressed()), &messageLine, SLOT(addSpoil()));
 }
 
 void respawnIrcClass::setButtonInButtonLayoutVisible(bool visible)
@@ -161,73 +166,6 @@ void respawnIrcClass::setButtonInButtonLayoutVisible(bool visible)
         buttonLayout->itemAt(i)->widget()->setVisible(visible);
     }
 }
-
-void respawnIrcClass::addBold()
-{
-    messageLine.insertText("''''''");
-    messageLine.moveCursor(QTextCursor::Left, 3);
-    messageLine.setFocus();
-}
-
-void respawnIrcClass::addItalic()
-{
-    messageLine.insertText("''''");
-    messageLine.moveCursor(QTextCursor::Left, 2);
-    messageLine.setFocus();
-}
-
-void respawnIrcClass::addUnderLine()
-{
-    messageLine.insertText("<u></u>");
-    messageLine.moveCursor(QTextCursor::Left, 4);
-    messageLine.setFocus();
-}
-
-void respawnIrcClass::addStrike()
-{
-    messageLine.insertText("<s></s>");
-    messageLine.moveCursor(QTextCursor::Left, 4);
-    messageLine.setFocus();
-}
-
-void respawnIrcClass::addUList()
-{
-    messageLine.moveCursor(QTextCursor::StartOfLine);
-    messageLine.insertText("* ");
-    messageLine.moveCursor(QTextCursor::EndOfLine);
-    messageLine.setFocus();
-}
-
-void respawnIrcClass::addOListe()
-{
-    messageLine.moveCursor(QTextCursor::StartOfLine);
-    messageLine.insertText("# ");
-    messageLine.moveCursor(QTextCursor::EndOfLine);
-    messageLine.setFocus();
-}
-
-void respawnIrcClass::addQuote()
-{
-    messageLine.moveCursor(QTextCursor::StartOfLine);
-    messageLine.insertText("> ");
-    messageLine.moveCursor(QTextCursor::EndOfLine);
-    messageLine.setFocus();
-}
-
-void respawnIrcClass::addCode()
-{
-    messageLine.insertText("<code></code>");
-    messageLine.moveCursor(QTextCursor::Left, 7);
-    messageLine.setFocus();
-}
-
-void respawnIrcClass::addSpoil()
-{
-    messageLine.insertText("<spoil></spoil>");
-    messageLine.moveCursor(QTextCursor::Left, 8);
-    messageLine.setFocus();
-}
-
 
 void respawnIrcClass::showConnect()
 {
@@ -295,6 +233,11 @@ void respawnIrcClass::removeTab(int index)
         delete listOfShowTopicMessages.takeAt(index);
         currentTabChanged(-1);
     }
+}
+
+void respawnIrcClass::updateTopic()
+{
+    getCurrentWidget()->startGetMessage();
 }
 
 void respawnIrcClass::reloadTopic()
@@ -612,7 +555,7 @@ void respawnIrcClass::clipboardChanged()
         newDataInHtml.replace("<img src=\"smileys/37.gif\" />", ":oui:");
         newDataInHtml.replace("<img src=\"smileys/38.gif\" />", ":rechercher:");
         newDataInHtml.replace("<img src=\"smileys/39.gif\" />", ":rire:");
-        newDataInHtml.replace("<img src=\"smileys/40.gif\" />", ":-D:");
+        newDataInHtml.replace("<img src=\"smileys/40.gif\" />", ":-D");
         newDataInHtml.replace("<img src=\"smileys/41.gif\" />", ":rire2:");
         newDataInHtml.replace("<img src=\"smileys/42.gif\" />", ":salut:");
         newDataInHtml.replace("<img src=\"smileys/43.gif\" />", ":sarcastic:");

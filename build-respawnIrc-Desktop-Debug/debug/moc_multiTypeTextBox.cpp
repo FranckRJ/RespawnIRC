@@ -22,7 +22,7 @@ static const uint qt_meta_data_multiTypeTextBoxClass[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+      12,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -35,6 +35,15 @@ static const uint qt_meta_data_multiTypeTextBoxClass[] = {
  // slots: signature, parameters, type, tag, flags
       46,   39,   22,   22, 0x0a,
       72,   22,   22,   22, 0x0a,
+      90,   22,   22,   22, 0x0a,
+     100,   22,   22,   22, 0x0a,
+     112,   22,   22,   22, 0x0a,
+     127,   22,   22,   22, 0x0a,
+     139,   22,   22,   22, 0x0a,
+     150,   22,   22,   22, 0x0a,
+     162,   22,   22,   22, 0x0a,
+     173,   22,   22,   22, 0x0a,
+     183,   22,   22,   22, 0x0a,
 
        0        // eod
 };
@@ -42,7 +51,10 @@ static const uint qt_meta_data_multiTypeTextBoxClass[] = {
 static const char qt_meta_stringdata_multiTypeTextBoxClass[] = {
     "multiTypeTextBoxClass\0\0returnPressed()\0"
     "newVal\0setTextEditSelected(bool)\0"
-    "returnIsPressed()\0"
+    "returnIsPressed()\0addBold()\0addItalic()\0"
+    "addUnderLine()\0addStrike()\0addUList()\0"
+    "addOListe()\0addQuote()\0addCode()\0"
+    "addSpoil()\0"
 };
 
 void multiTypeTextBoxClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -54,6 +66,15 @@ void multiTypeTextBoxClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c
         case 0: _t->returnPressed(); break;
         case 1: _t->setTextEditSelected((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 2: _t->returnIsPressed(); break;
+        case 3: _t->addBold(); break;
+        case 4: _t->addItalic(); break;
+        case 5: _t->addUnderLine(); break;
+        case 6: _t->addStrike(); break;
+        case 7: _t->addUList(); break;
+        case 8: _t->addOListe(); break;
+        case 9: _t->addQuote(); break;
+        case 10: _t->addCode(); break;
+        case 11: _t->addSpoil(); break;
         default: ;
         }
     }
@@ -91,9 +112,9 @@ int multiTypeTextBoxClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 12;
     }
     return _id;
 }

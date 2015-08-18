@@ -147,6 +147,31 @@ QString parsingToolClass::getForumOfTopic(const QString& source)
     return searchThisCapNumber(source, expForForum, 1, "http://www.jeuxvideo.com/forums/0-", "-0-1-0-1-0-respawn-irc.htm");
 }
 
+QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
+{
+    QRegExp expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)");
+    QString forumNumber = searchThisCapNumber(source, expForJvfLink, 1);
+    QString topicNumber = searchThisCapNumber(source, expForJvfLink, 2);
+    QString nameOfTopic = searchThisCapNumber(source, expForJvfLink, 3);
+
+    if(forumNumber.isEmpty() == false && topicNumber.isEmpty() == false)
+    {
+        QString tempo = "42";
+
+        if(topicNumber.startsWith("0") == true)
+        {
+            tempo = "1";
+            topicNumber.remove(0, 1);
+        }
+
+        return "http://www.jeuxvideo.com/forums/" + tempo + "-" + forumNumber + "-" + topicNumber + "-1-0-1-0-" + nameOfTopic + ".htm";
+    }
+    else
+    {
+        return "";
+    }
+}
+
 QString parsingToolClass::parsingMessages(QString thisMessage)
 {
     QRegExp expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />");

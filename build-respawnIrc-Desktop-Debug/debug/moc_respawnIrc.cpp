@@ -22,7 +22,7 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      36,   14, // methods
+      28,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -31,58 +31,47 @@ static const uint qt_meta_data_respawnIrcClass[] = {
 
  // slots: signature, parameters, type, tag, flags
       17,   16,   16,   16, 0x0a,
-      27,   16,   16,   16, 0x0a,
-      39,   16,   16,   16, 0x0a,
-      54,   16,   16,   16, 0x0a,
-      66,   16,   16,   16, 0x0a,
-      77,   16,   16,   16, 0x0a,
-      89,   16,   16,   16, 0x0a,
+      31,   16,   16,   16, 0x0a,
+      49,   16,   16,   16, 0x0a,
+      72,   16,   16,   16, 0x0a,
      100,   16,   16,   16, 0x0a,
-     110,   16,   16,   16, 0x0a,
-     121,   16,   16,   16, 0x0a,
-     135,   16,   16,   16, 0x0a,
-     153,   16,   16,   16, 0x0a,
+     143,   16,   16,   16, 0x0a,
+     161,  155,   16,   16, 0x0a,
      176,   16,   16,   16, 0x0a,
+     190,   16,   16,   16, 0x0a,
      204,   16,   16,   16, 0x0a,
-     247,   16,   16,   16, 0x0a,
-     265,  259,   16,   16, 0x0a,
-     280,   16,   16,   16, 0x0a,
-     294,   16,   16,   16, 0x0a,
-     313,   16,   16,   16, 0x0a,
-     340,  332,   16,   16, 0x0a,
-     374,  364,   16,   16, 0x0a,
-     420,  413,   16,   16, 0x0a,
-     454,  413,   16,   16, 0x0a,
-     477,  413,   16,   16, 0x0a,
-     538,  502,   16,   16, 0x0a,
-     597,  588,   16,   16, 0x0a,
-     623,  618,   16,   16, 0x0a,
-     650,   16,   16,   16, 0x0a,
-     672,   16,   16,   16, 0x0a,
-     721,  711,   16,   16, 0x0a,
-     746,   16,   16,   16, 0x0a,
-     772,   16,   16,   16, 0x0a,
-     806,  797,   16,   16, 0x0a,
-     829,   16,   16,   16, 0x0a,
-     843,   16,   16,   16, 0x0a,
-     871,   16,   16,   16, 0x0a,
+     223,   16,   16,   16, 0x0a,
+     250,  242,   16,   16, 0x0a,
+     284,  274,   16,   16, 0x0a,
+     330,  323,   16,   16, 0x0a,
+     364,  323,   16,   16, 0x0a,
+     387,  323,   16,   16, 0x0a,
+     448,  412,   16,   16, 0x0a,
+     507,  498,   16,   16, 0x0a,
+     533,  528,   16,   16, 0x0a,
+     560,   16,   16,   16, 0x0a,
+     582,   16,   16,   16, 0x0a,
+     631,  621,   16,   16, 0x0a,
+     656,   16,   16,   16, 0x0a,
+     682,   16,   16,   16, 0x0a,
+     716,  707,   16,   16, 0x0a,
+     739,   16,   16,   16, 0x0a,
+     753,   16,   16,   16, 0x0a,
+     781,   16,   16,   16, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_respawnIrcClass[] = {
-    "respawnIrcClass\0\0addBold()\0addItalic()\0"
-    "addUnderLine()\0addStrike()\0addUList()\0"
-    "addOListe()\0addQuote()\0addCode()\0"
-    "addSpoil()\0showConnect()\0showSelectTopic()\0"
-    "showIgnoreListWindow()\0"
+    "respawnIrcClass\0\0showConnect()\0"
+    "showSelectTopic()\0showIgnoreListWindow()\0"
     "showUpdateTopicTimeWindow()\0"
     "showNumberOfMessageShowedFirstTimeWindow()\0"
     "addNewTab()\0index\0removeTab(int)\0"
-    "reloadTopic()\0goToCurrentTopic()\0"
-    "goToCurrentForum()\0newTime\0"
-    "setUpdateTopicTime(int)\0newNumber\0"
-    "setNumberOfMessageShowedFirstTime(int)\0"
+    "updateTopic()\0reloadTopic()\0"
+    "goToCurrentTopic()\0goToCurrentForum()\0"
+    "newTime\0setUpdateTopicTime(int)\0"
+    "newNumber\0setNumberOfMessageShowedFirstTime(int)\0"
     "newVal\0setShowTextDecorationButton(bool)\0"
     "setMultilineEdit(bool)\0setLoadTwoLastPage(bool)\0"
     "newCookies,newPseudoOfUser,saveInfo\0"
@@ -105,42 +94,34 @@ void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         Q_ASSERT(staticMetaObject.cast(_o));
         respawnIrcClass *_t = static_cast<respawnIrcClass *>(_o);
         switch (_id) {
-        case 0: _t->addBold(); break;
-        case 1: _t->addItalic(); break;
-        case 2: _t->addUnderLine(); break;
-        case 3: _t->addStrike(); break;
-        case 4: _t->addUList(); break;
-        case 5: _t->addOListe(); break;
-        case 6: _t->addQuote(); break;
-        case 7: _t->addCode(); break;
-        case 8: _t->addSpoil(); break;
-        case 9: _t->showConnect(); break;
-        case 10: _t->showSelectTopic(); break;
-        case 11: _t->showIgnoreListWindow(); break;
-        case 12: _t->showUpdateTopicTimeWindow(); break;
-        case 13: _t->showNumberOfMessageShowedFirstTimeWindow(); break;
-        case 14: _t->addNewTab(); break;
-        case 15: _t->removeTab((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 16: _t->reloadTopic(); break;
-        case 17: _t->goToCurrentTopic(); break;
-        case 18: _t->goToCurrentForum(); break;
-        case 19: _t->setUpdateTopicTime((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 20: _t->setNumberOfMessageShowedFirstTime((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 21: _t->setShowTextDecorationButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 22: _t->setMultilineEdit((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 23: _t->setLoadTwoLastPage((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 24: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
-        case 25: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 26: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 27: _t->setNewMessageStatus(); break;
-        case 28: _t->setNewNumberOfConnectedAndPseudoUsed(); break;
-        case 29: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 30: _t->saveListOfIgnoredPseudo(); break;
-        case 31: _t->warnUserForNewMessages(); break;
-        case 32: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 33: _t->postMessage(); break;
-        case 34: _t->deleteReplyForSendMessage(); break;
-        case 35: _t->clipboardChanged(); break;
+        case 0: _t->showConnect(); break;
+        case 1: _t->showSelectTopic(); break;
+        case 2: _t->showIgnoreListWindow(); break;
+        case 3: _t->showUpdateTopicTimeWindow(); break;
+        case 4: _t->showNumberOfMessageShowedFirstTimeWindow(); break;
+        case 5: _t->addNewTab(); break;
+        case 6: _t->removeTab((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 7: _t->updateTopic(); break;
+        case 8: _t->reloadTopic(); break;
+        case 9: _t->goToCurrentTopic(); break;
+        case 10: _t->goToCurrentForum(); break;
+        case 11: _t->setUpdateTopicTime((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 12: _t->setNumberOfMessageShowedFirstTime((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 13: _t->setShowTextDecorationButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 14: _t->setMultilineEdit((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 15: _t->setLoadTwoLastPage((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 16: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 17: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 18: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 19: _t->setNewMessageStatus(); break;
+        case 20: _t->setNewNumberOfConnectedAndPseudoUsed(); break;
+        case 21: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 22: _t->saveListOfIgnoredPseudo(); break;
+        case 23: _t->warnUserForNewMessages(); break;
+        case 24: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 25: _t->postMessage(); break;
+        case 26: _t->deleteReplyForSendMessage(); break;
+        case 27: _t->clipboardChanged(); break;
         default: ;
         }
     }
@@ -178,9 +159,9 @@ int respawnIrcClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 36)
+        if (_id < 28)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 36;
+        _id -= 28;
     }
     return _id;
 }

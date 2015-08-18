@@ -114,3 +114,69 @@ void multiTypeTextBoxClass::returnIsPressed()
 {
     emit returnPressed();
 }
+
+void multiTypeTextBoxClass::addBold()
+{
+    insertText("''''''");
+    moveCursor(QTextCursor::Left, 3);
+    setFocus();
+}
+
+void multiTypeTextBoxClass::addItalic()
+{
+    insertText("''''");
+    moveCursor(QTextCursor::Left, 2);
+    setFocus();
+}
+
+void multiTypeTextBoxClass::addUnderLine()
+{
+    insertText("<u></u>");
+    moveCursor(QTextCursor::Left, 4);
+    setFocus();
+}
+
+void multiTypeTextBoxClass::addStrike()
+{
+    insertText("<s></s>");
+    moveCursor(QTextCursor::Left, 4);
+    setFocus();
+}
+
+void multiTypeTextBoxClass::addUList()
+{
+    moveCursor(QTextCursor::StartOfLine);
+    insertText("* ");
+    moveCursor(QTextCursor::EndOfLine);
+    setFocus();
+}
+
+void multiTypeTextBoxClass::addOListe()
+{
+    moveCursor(QTextCursor::StartOfLine);
+    insertText("# ");
+    moveCursor(QTextCursor::EndOfLine);
+    setFocus();
+}
+
+void multiTypeTextBoxClass::addQuote()
+{
+    moveCursor(QTextCursor::StartOfLine);
+    insertText("> ");
+    moveCursor(QTextCursor::EndOfLine);
+    setFocus();
+}
+
+void multiTypeTextBoxClass::addCode()
+{
+    insertText("<code></code>");
+    moveCursor(QTextCursor::Left, 7);
+    setFocus();
+}
+
+void multiTypeTextBoxClass::addSpoil()
+{
+    insertText("<spoil></spoil>");
+    moveCursor(QTextCursor::Left, 8);
+    setFocus();
+}

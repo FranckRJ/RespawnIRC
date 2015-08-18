@@ -1,4 +1,5 @@
 #include "selectTopicWindow.hpp"
+#include "parsingTool.hpp"
 
 selectTopicWindow::selectTopicWindow(QString currentTopic, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
@@ -30,7 +31,7 @@ selectTopicWindow::selectTopicWindow(QString currentTopic, QWidget* parent) : QD
 
 bool selectTopicWindow::linkIsValid(QString link)
 {
-    if(link.startsWith("http://www.jeuxvideo.com/") == false)
+    if(link.startsWith("http://www.jeuxvideo.com/") == false && link.startsWith("http://jvforum.fr/") == false)
     {
         return false;
     }
@@ -42,7 +43,14 @@ void selectTopicWindow::selectThisTopic()
 {
     if(linkIsValid(topicLine.text()) == true)
     {
-        emit newTopicSelected(topicLine.text());
+        if(topicLine.text().startsWith("http://jvforum.fr/") == true)
+        {
+            emit newTopicSelected(parsingToolClass::jvfLinkToJvcLink(topicLine.text()));
+        }
+        else
+        {
+            emit newTopicSelected(topicLine.text());
+        }
         close();
     }
     else

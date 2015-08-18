@@ -15,19 +15,11 @@ public:
     respawnIrcClass(QWidget* parent = 0);
     void loadSettings();
     showTopicMessagesClass* getCurrentWidget();
+    multiTypeTextBoxClass* getMessageLine();
     QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
     void addButtonToButtonLayout();
     void setButtonInButtonLayoutVisible(bool visible);
 public slots:
-    void addBold();
-    void addItalic();
-    void addUnderLine();
-    void addStrike();
-    void addUList();
-    void addOListe();
-    void addQuote();
-    void addCode();
-    void addSpoil();
     void showConnect();
     void showSelectTopic();
     void showIgnoreListWindow();
@@ -35,6 +27,7 @@ public slots:
     void showNumberOfMessageShowedFirstTimeWindow();
     void addNewTab();
     void removeTab(int index);
+    void updateTopic();
     void reloadTopic();
     void goToCurrentTopic();
     void goToCurrentForum();

@@ -16,6 +16,7 @@ mainWindowClass::mainWindowClass()
     QAction* actionTabAddTab = menuDiscussion->addAction("Ajouter un onglet");
     menuDiscussion->addSeparator();
     QAction* actionSelectTopic = menuDiscussion->addAction("Choisir un topic");
+    QAction* actionUpdateTopic = menuDiscussion->addAction("Forcer la récupération des messages");
     QAction* actionReloadTopic = menuDiscussion->addAction("Recharger le topic");
     menuDiscussion->addSeparator();
     QMenu* menuTextDecoration = menuDiscussion->addMenu("Ajouter des décorations de texte");
@@ -33,6 +34,7 @@ mainWindowClass::mainWindowClass()
     QAction* actionGoToForum = menuDiscussion->addAction("Accéder au forum");
     actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
     actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
+    actionUpdateTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
     actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
     actionGoToTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     actionGoToForum->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
@@ -60,23 +62,24 @@ mainWindowClass::mainWindowClass()
 
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
-    setWindowTitle("RespawnIRC v1.7");
+    setWindowTitle("RespawnIRC v1.8");
     resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     respawnIrc.setFocus();
 
     connect(actionConnect, SIGNAL(triggered()), &respawnIrc, SLOT(showConnect()));
     connect(actionTabAddTab, SIGNAL(triggered()), &respawnIrc, SLOT(addNewTab()));
     connect(actionSelectTopic, SIGNAL(triggered()), &respawnIrc, SLOT(showSelectTopic()));
+    connect(actionUpdateTopic, SIGNAL(triggered()), &respawnIrc, SLOT(updateTopic()));
     connect(actionReloadTopic, SIGNAL(triggered()), &respawnIrc, SLOT(reloadTopic()));
-    connect(actionAddBold, SIGNAL(triggered()), &respawnIrc, SLOT(addBold()));
-    connect(actionAddItalic, SIGNAL(triggered()), &respawnIrc, SLOT(addItalic()));
-    connect(actionAddUnderline, SIGNAL(triggered()), &respawnIrc, SLOT(addUnderLine()));
-    connect(actionAddStrike, SIGNAL(triggered()), &respawnIrc, SLOT(addStrike()));
-    connect(actionAddUList, SIGNAL(triggered()), &respawnIrc, SLOT(addUList()));
-    connect(actionAddOList, SIGNAL(triggered()), &respawnIrc, SLOT(addOListe()));
-    connect(actionAddQuote, SIGNAL(triggered()), &respawnIrc, SLOT(addQuote()));
-    connect(actionAddCode, SIGNAL(triggered()), &respawnIrc, SLOT(addCode()));
-    connect(actionAddSpoil, SIGNAL(triggered()), &respawnIrc, SLOT(addSpoil()));
+    connect(actionAddBold, SIGNAL(triggered()), respawnIrc.getMessageLine(), SLOT(addBold()));
+    connect(actionAddItalic, SIGNAL(triggered()), respawnIrc.getMessageLine(), SLOT(addItalic()));
+    connect(actionAddUnderline, SIGNAL(triggered()), respawnIrc.getMessageLine(), SLOT(addUnderLine()));
+    connect(actionAddStrike, SIGNAL(triggered()), respawnIrc.getMessageLine(), SLOT(addStrike()));
+    connect(actionAddUList, SIGNAL(triggered()), respawnIrc.getMessageLine(), SLOT(addUList()));
+    connect(actionAddOList, SIGNAL(triggered()), respawnIrc.getMessageLine(), SLOT(addOListe()));
+    connect(actionAddQuote, SIGNAL(triggered()), respawnIrc.getMessageLine(), SLOT(addQuote()));
+    connect(actionAddCode, SIGNAL(triggered()), respawnIrc.getMessageLine(), SLOT(addCode()));
+    connect(actionAddSpoil, SIGNAL(triggered()), respawnIrc.getMessageLine(), SLOT(addSpoil()));
     connect(actionGoToTopic, SIGNAL(triggered()), &respawnIrc, SLOT(goToCurrentTopic()));
     connect(actionGoToForum, SIGNAL(triggered()), &respawnIrc, SLOT(goToCurrentForum()));
     connect(actionShowListOfIgnoredPseudo, SIGNAL(triggered()), &respawnIrc, SLOT(showIgnoreListWindow()));

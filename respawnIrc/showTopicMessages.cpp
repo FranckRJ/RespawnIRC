@@ -86,6 +86,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     topicLink = newTopic;
     linkHasChanged = true;
     firstTimeGetMessages = true;
+    errorMode = false;
     idOfLastMessage = 0;
 
     setMessageStatus("Nouveau topic.");

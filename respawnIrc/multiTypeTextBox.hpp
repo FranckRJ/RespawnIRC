@@ -17,6 +17,15 @@ public:
 public slots:
     void setTextEditSelected(bool newVal);
     void returnIsPressed();
+    void addBold();
+    void addItalic();
+    void addUnderLine();
+    void addStrike();
+    void addUList();
+    void addOListe();
+    void addQuote();
+    void addCode();
+    void addSpoil();
 signals:
     void returnPressed();
 private:
