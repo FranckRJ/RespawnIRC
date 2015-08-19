@@ -11,7 +11,8 @@ SOURCES += \
     addPseudoWindow.cpp \
     settingTool.cpp \
     multiTypeTextBox.cpp \
-    chooseNumberWindow.cpp
+    chooseNumberWindow.cpp \
+    accountlistwindow.cpp
 
 QT += \
     network \
@@ -29,6 +30,7 @@ HEADERS += \
     addPseudoWindow.hpp \
     settingTool.hpp \
     multiTypeTextBox.hpp \
-    chooseNumberWindow.hpp
+    chooseNumberWindow.hpp \
+    accountlistwindow.hpp
 
 RC_FILE = respawnIrc.rc

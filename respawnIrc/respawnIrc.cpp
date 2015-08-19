@@ -15,8 +15,6 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     sendButton.setAutoDefault(true);
     alertImage.load("ressources/alert.png");
     replyForSendMessage = 0;
-    updateTopicTime = 4000;
-    numberOfMessageShowedFirstTime = 10;
     isConnected = false;
 
     addButtonToButtonLayout();
@@ -45,7 +43,26 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
 void respawnIrcClass::loadSettings()
 {
     pseudoOfUser = settingToolClass::getPseudoOfUser();
-    setNewCookies(settingToolClass::getListOfCookie(), pseudoOfUser, false);
+    listOfAccount = settingToolClass::getListOfAccount();
+
+    if(listOfAccount.isEmpty() == true)
+    {
+        pseudoOfUser.clear();
+    }
+
+    for(int i = 0; i < listOfAccount.size(); ++i)
+    {
+        if(pseudoOfUser.toLower() == listOfAccount.at(i).pseudo.toLower())
+        {
+            setNewCookies(listOfAccount.at(i).listOfCookie, pseudoOfUser, false, false);
+            break;
+        }
+        else if(i == listOfAccount.size() - 1)
+        {
+            pseudoOfUser.clear();
+        }
+    }
+
     listOfIgnoredPseudo = settingToolClass::getListOfIgnoredPseudo();
     setLoadTwoLastPage(settingToolClass::getLoadTwoLastPage());
     setUpdateTopicTime(settingToolClass::getUpdateTopicTime());
@@ -174,6 +191,14 @@ void respawnIrcClass::showConnect()
     myConnectWindow->exec();
 }
 
+void respawnIrcClass::showAccountListWindow()
+{
+    accountListWindowClass* myAccountListWindow = new accountListWindowClass(&listOfAccount, this);
+    QObject::connect(myAccountListWindow, &accountListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfAccount);
+    QObject::connect(myAccountListWindow, &accountListWindowClass::useThisAccount, this, &respawnIrcClass::setNewCookies);
+    myAccountListWindow->exec();
+}
+
 void respawnIrcClass::showSelectTopic()
 {
     selectTopicWindow* mySelectTopicWindow = new selectTopicWindow(getCurrentWidget()->getTopicLink(), this);
@@ -190,14 +215,14 @@ void respawnIrcClass::showIgnoreListWindow()
 
 void respawnIrcClass::showUpdateTopicTimeWindow()
 {
-    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(2500, 10000, updateTopicTime, this);
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(2500, 10000, settingToolClass::getUpdateTopicTime(), this);
     QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setUpdateTopicTime);
     myChooseNumberWindow->exec();
 }
 
 void respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow()
 {
-    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(1, 40, numberOfMessageShowedFirstTime, this);
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(1, 40, settingToolClass::getNumberOfMessageShowedFirstTime(), this);
     QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setNumberOfMessageShowedFirstTime);
     myChooseNumberWindow->exec();
 }
@@ -273,7 +298,6 @@ void respawnIrcClass::goToCurrentForum()
 
 void respawnIrcClass::setUpdateTopicTime(int newTime)
 {
-    updateTopicTime = newTime;
     settingToolClass::saveUpdateTopicTime(newTime);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
@@ -284,7 +308,6 @@ void respawnIrcClass::setUpdateTopicTime(int newTime)
 
 void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
 {
-    numberOfMessageShowedFirstTime = newNumber;
     settingToolClass::saveNumberOfMessageShowedFirstTime(newNumber);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
@@ -328,7 +351,7 @@ void respawnIrcClass::setLoadTwoLastPage(bool newVal)
     }
 }
 
-void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo)
+void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo)
 {
     if(newCookies.isEmpty() == false)
     {
@@ -341,13 +364,18 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
 
         for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
         {
-            listOfShowTopicMessages.at(i)->setNewCookies(newCookies, newPseudoOfUser);
+            listOfShowTopicMessages.at(i)->setNewCookies(currentCookieList, newPseudoOfUser);
         }
 
-        if(saveInfo == true)
+        if(saveAccountList == true)
+        {
+            accountListWindowClass::addAcountToThisList(currentCookieList, pseudoOfUser, &listOfAccount);
+            settingToolClass::saveListOfAccount(listOfAccount);
+        }
+
+        if(savePseudo == true)
         {
             settingToolClass::savePseudoOfUser(pseudoOfUser);
-            settingToolClass::saveListOfCookie(newCookies);
         }
     }
 }
@@ -403,6 +431,11 @@ void respawnIrcClass::setNewTopicName(QString topicName)
             tabList.setTabText(i, topicName);
         }
     }
+}
+
+void respawnIrcClass::saveListOfAccount()
+{
+    settingToolClass::saveListOfAccount(listOfAccount);
 }
 
 void respawnIrcClass::saveListOfIgnoredPseudo()
@@ -477,11 +510,6 @@ void respawnIrcClass::deleteReplyForSendMessage()
     replyForSendMessage->deleteLater();
     replyForSendMessage = 0;
     captchaCode.clear();
-
-    QFile file("result.txt");
-    file.open(QIODevice::ReadWrite);
-    QTextStream  out(&file);
-    out << source;
 
     if(source.size() == 0)
     {

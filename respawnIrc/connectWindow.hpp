@@ -9,7 +9,7 @@ class connectWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    connectWindowClass(QWidget* parent);
+    connectWindowClass(QWidget* parent, bool showRemeberBox = true);
     ~connectWindowClass();
     void getLoginInfo();
     void removeCaptcha();
@@ -18,7 +18,7 @@ public slots:
     void startLogin();
     void showCaptcha();
 signals:
-    void newCookiesAvailable(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
+    void newCookiesAvailable(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
 private:
     QLineEdit pseudoLine;
     QLineEdit passwordLine;

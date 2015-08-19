@@ -1,13 +1,12 @@
 #include "connectWindow.hpp"
 #include "parsingTool.hpp"
 
-connectWindowClass::connectWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
     QLabel* labPseudo = new QLabel("Pseudo :", this);
     QLabel* labPassword = new QLabel("Mot de passe :", this);
-    QLabel* labRemember = new QLabel("Se souvenir :", this);
     QLabel* labCaptcha = new QLabel("Captcha :", this);
     QPushButton* buttonConnect = new QPushButton("Se connecter", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
@@ -25,8 +24,18 @@ connectWindowClass::connectWindowClass(QWidget* parent) : QDialog(parent, Qt::Wi
     mainLayout->addWidget(&pseudoLine, 0, 1);
     mainLayout->addWidget(labPassword, 1, 0);
     mainLayout->addWidget(&passwordLine, 1, 1);
-    mainLayout->addWidget(labRemember, 2, 0);
-    mainLayout->addWidget(&rememberBox, 2, 1);
+
+    if(showRemeberBox == true)
+    {
+        QLabel* labRemember = new QLabel("Se souvenir :", this);
+        mainLayout->addWidget(labRemember, 2, 0);
+        mainLayout->addWidget(&rememberBox, 2, 1);
+    }
+    else
+    {
+        rememberBox.setVisible(false);
+    }
+
     mainLayout->addWidget(labCaptcha, 3, 0);
     mainLayout->addWidget(&labPixCaptcha, 3, 1);
     mainLayout->addWidget(&captchaLine, 4, 0, 1, 2);
@@ -90,7 +99,7 @@ void connectWindowClass::getFormInput()
     {
         if(source.isEmpty() == true)
         {
-            emit newCookiesAvailable(listOfCookieFromLastReply, pseudoLine.text(), rememberBox.isChecked());
+            emit newCookiesAvailable(listOfCookieFromLastReply, pseudoLine.text(), rememberBox.isChecked(), rememberBox.isChecked());
             close();
             return;
         }

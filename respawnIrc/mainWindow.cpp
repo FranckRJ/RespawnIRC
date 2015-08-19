@@ -7,10 +7,12 @@ mainWindowClass::mainWindowClass()
 
     QMenu* menuFile = menuBar->addMenu("&Fichier");
     QAction* actionConnect = menuFile->addAction("Se connecter");
+    QAction* actionShowAccountList = menuFile->addAction("Afficher la liste des comptes");
     menuFile->addSeparator();
     QAction* actionQuit = menuFile->addAction("Quitter");
-    actionQuit->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
     actionConnect->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
+    actionShowAccountList->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
+    actionQuit->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
 
     QMenu* menuDiscussion = menuBar->addMenu("&Discussion");
     QAction* actionTabAddTab = menuDiscussion->addAction("Ajouter un onglet");
@@ -33,7 +35,7 @@ mainWindowClass::mainWindowClass()
     QAction* actionGoToTopic = menuDiscussion->addAction("Accéder au topic");
     QAction* actionGoToForum = menuDiscussion->addAction("Accéder au forum");
     actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
-    actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
+    actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
     actionUpdateTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
     actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
     actionGoToTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
@@ -67,6 +69,7 @@ mainWindowClass::mainWindowClass()
     respawnIrc.setFocus();
 
     QObject::connect(actionConnect, &QAction::triggered, &respawnIrc, &respawnIrcClass::showConnect);
+    QObject::connect(actionShowAccountList, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAccountListWindow);
     QObject::connect(actionTabAddTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::addNewTab);
     QObject::connect(actionSelectTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTopic);
     QObject::connect(actionUpdateTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::updateTopic);

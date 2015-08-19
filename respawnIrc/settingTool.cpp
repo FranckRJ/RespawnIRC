@@ -2,22 +2,30 @@
 
 QSettings settingToolClass::setting("config.ini", QSettings::IniFormat);
 
+QList<accountStruct> settingToolClass::getListOfAccount()
+{
+    QList<accountStruct> listOfAccount;
+    QList<QNetworkCookie> listOfHelloCookie = createCookieListWithThisQVariantList(setting.value("listOfHelloCookie", QList<QVariant>()).toList());
+    QList<QNetworkCookie> listOfConnectCookie = createCookieListWithThisQVariantList(setting.value("listOfConnectCookie", QList<QVariant>()).toList());
+    QList<QString> listOfPseudo = createStringListWithThisQVariantList(setting.value("listOfPseudo", QList<QVariant>()).toList());
+
+    if(listOfHelloCookie.size() == listOfConnectCookie.size() && listOfConnectCookie.size() == listOfPseudo.size())
+    {
+        for(int i = 0; i < listOfPseudo.size(); ++i)
+        {
+            listOfAccount.push_back(accountStruct());
+            listOfAccount.back().listOfCookie.append(listOfHelloCookie.at(i));
+            listOfAccount.back().listOfCookie.append(listOfConnectCookie.at(i));
+            listOfAccount.back().pseudo = listOfPseudo.at(i);
+        }
+    }
+
+    return listOfAccount;
+}
+
 QString settingToolClass::getPseudoOfUser()
 {
     return setting.value("pseudo", "").toString();
-}
-
-QList<QNetworkCookie> settingToolClass::getListOfCookie()
-{
-    QList<QNetworkCookie> newCookies;
-
-    if(setting.value("dlrowolleh", "").toString().isEmpty() == false && setting.value("coniunctio", "").toString().isEmpty() == false)
-    {
-        newCookies.append(QNetworkCookie(QByteArray("dlrowolleh"), setting.value("dlrowolleh").toByteArray()));
-        newCookies.append(QNetworkCookie(QByteArray("coniunctio"), setting.value("coniunctio").toByteArray()));
-    }
-
-    return newCookies;
 }
 
 QList<QString> settingToolClass::getListOfIgnoredPseudo()
@@ -26,7 +34,7 @@ QList<QString> settingToolClass::getListOfIgnoredPseudo()
 
     if(setting.value("listOfIgnoredPseudo", QList<QVariant>()).toList().isEmpty() == false)
     {
-        listOfIgnoredPseudo = createListWithThisQVariantList(setting.value("listOfIgnoredPseudo").toList());
+        listOfIgnoredPseudo = createStringListWithThisQVariantList(setting.value("listOfIgnoredPseudo").toList());
     }
 
     return listOfIgnoredPseudo;
@@ -38,7 +46,7 @@ QList<QString> settingToolClass::getListOfTopicLink()
 
     if(setting.value("listOfTopicLink", QList<QVariant>()).toList().isEmpty() == false)
     {
-        listOfTopicLink = createListWithThisQVariantList(setting.value("listOfTopicLink").toList());
+        listOfTopicLink = createStringListWithThisQVariantList(setting.value("listOfTopicLink").toList());
     }
 
     return listOfTopicLink;
@@ -69,17 +77,37 @@ int settingToolClass::getNumberOfMessageShowedFirstTime()
     return setting.value("numberOfMessageShowedFirstTime", 10).toInt();
 }
 
+void settingToolClass::saveListOfAccount(QList<accountStruct> newListOfAccount)
+{
+    QList<QNetworkCookie> listOfHelloCookie;
+    QList<QNetworkCookie> listOfConnectCookie;
+    QList<QString> listOfPseudo;
+
+    for(int i = 0; i < newListOfAccount.size(); ++i)
+    {
+        for(int j = 0; j < newListOfAccount.at(i).listOfCookie.size(); ++j)
+        {
+            if(newListOfAccount.at(i).listOfCookie.at(j).name() == "dlrowolleh")
+            {
+                listOfHelloCookie.push_back(newListOfAccount.at(i).listOfCookie.at(j));
+            }
+            else if(newListOfAccount.at(i).listOfCookie.at(j).name() == "coniunctio")
+            {
+                listOfConnectCookie.push_back(newListOfAccount.at(i).listOfCookie.at(j));
+            }
+        }
+
+        listOfPseudo.push_back(newListOfAccount.at(i).pseudo);
+    }
+
+    setting.setValue("listOfHelloCookie", createQVariantListWithThisList(listOfHelloCookie));
+    setting.setValue("listOfConnectCookie", createQVariantListWithThisList(listOfConnectCookie));
+    setting.setValue("listOfPseudo", createQVariantListWithThisList(listOfPseudo));
+}
+
 void settingToolClass::savePseudoOfUser(QString newPseudo)
 {
     setting.setValue("pseudo", newPseudo);
-}
-
-void settingToolClass::saveListOfCookie(QList<QNetworkCookie> newListOfCookie)
-{
-    for(int i = 0; i < newListOfCookie.size(); ++i)
-    {
-        setting.setValue(newListOfCookie.at(i).name(), newListOfCookie.at(i).value());
-    }
 }
 
 void settingToolClass::saveListOfIgnoredPseudo(QList<QString> newList)
@@ -132,13 +160,37 @@ QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> 
     return newList;
 }
 
-QList<QString> settingToolClass::createListWithThisQVariantList(QList<QVariant> list)
+QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QNetworkCookie> list)
+{
+    QList<QVariant> newList;
+
+    for(int i = 0; i < list.size(); ++i)
+    {
+        newList.push_back(list.at(i).toRawForm());
+    }
+
+    return newList;
+}
+
+QList<QString> settingToolClass::createStringListWithThisQVariantList(QList<QVariant> list)
 {
     QList<QString> newList;
 
     for(int i = 0; i < list.size(); ++i)
     {
         newList.push_back(list.at(i).toString());
+    }
+
+    return newList;
+}
+
+QList<QNetworkCookie> settingToolClass::createCookieListWithThisQVariantList(QList<QVariant> list)
+{
+    QList<QNetworkCookie> newList;
+
+    for(int i = 0; i < list.size(); ++i)
+    {
+        newList.push_back(QNetworkCookie::parseCookies(list.at(i).toByteArray()).first());
     }
 
     return newList;

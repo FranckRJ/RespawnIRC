@@ -6,6 +6,7 @@
 #include <QtNetwork>
 
 #include "showTopicMessages.hpp"
+#include "accountlistwindow.hpp"
 #include "multiTypeTextBox.hpp"
 
 class respawnIrcClass : public QWidget
@@ -21,6 +22,7 @@ public:
     void setButtonInButtonLayoutVisible(bool visible);
 public slots:
     void showConnect();
+    void showAccountListWindow();
     void showSelectTopic();
     void showIgnoreListWindow();
     void showUpdateTopicTimeWindow();
@@ -36,12 +38,13 @@ public slots:
     void setShowTextDecorationButton(bool newVal);
     void setMultilineEdit(bool newVal);
     void setLoadTwoLastPage(bool newVal);
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
+    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
     void setNewTopic(QString newTopic);
     void setCodeForCaptcha(QString code);
     void setNewMessageStatus();
     void setNewNumberOfConnectedAndPseudoUsed();
     void setNewTopicName(QString topicName);
+    void saveListOfAccount();
     void saveListOfIgnoredPseudo();
     void warnUserForNewMessages();
     void currentTabChanged(int newIndex);
@@ -58,6 +61,7 @@ private:
     QList<showTopicMessagesClass*> listOfShowTopicMessages;
     QList<QString> listOfTopicLink;
     QList<QString> listOfIgnoredPseudo;
+    QList<accountStruct> listOfAccount;
     QList<QPair<QString, QString> > oldListOfInput;
     multiTypeTextBoxClass messageLine;
     QNetworkReply* replyForSendMessage;
@@ -69,8 +73,6 @@ private:
     QString captchaCode;
     QPixmap alertImage;
     bool isConnected;
-    int updateTopicTime;
-    int numberOfMessageShowedFirstTime;
 };
 
 #endif
