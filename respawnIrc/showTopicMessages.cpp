@@ -27,7 +27,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 
     setLayout(layout);
 
-    connect(&timerForGetMessage, SIGNAL(timeout()), SLOT(getMessages()));
+    QObject::connect(&timerForGetMessage, &QTimer::timeout, this, &showTopicMessagesClass::getMessages);
 }
 
 void showTopicMessagesClass::startGetMessage()
@@ -71,7 +71,7 @@ QString showTopicMessagesClass::getNumberOfConnected()
 
 void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser)
 {
-    networkManager.setCookieJar(new QNetworkCookieJar(this)); //fuite ?
+    networkManager.setCookieJar(new QNetworkCookieJar(this));
     networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
     pseudoOfUser = newPseudoOfUser;
 
@@ -163,14 +163,14 @@ void showTopicMessagesClass::getMessages()
             secondPageLoading = false;
             linkHasChanged = false;
             replyForFirstPage = networkManager.get(requestForFirstPage);
-            connect(replyForFirstPage, SIGNAL(finished()), this, SLOT(loadFirstPageFinish()));
+            QObject::connect(replyForFirstPage, &QNetworkReply::finished, this, &showTopicMessagesClass::loadFirstPageFinish);
 
             if(loadTwoLastPage == true && beforeLastPage.isEmpty() == false)
             {
                 QNetworkRequest requestForSecondPage = parsingToolClass::buildRequestWithThisUrl(beforeLastPage);
                 secondPageLoading = true;
                 replyForSecondPage = networkManager.get(requestForSecondPage);
-                connect(replyForSecondPage, SIGNAL(finished()), this, SLOT(loadSecondPageFinish()));
+                QObject::connect(replyForSecondPage, &QNetworkReply::finished, this, &showTopicMessagesClass::loadSecondPageFinish);
             }
         }
         else

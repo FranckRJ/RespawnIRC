@@ -1,6 +1,6 @@
 #include "chooseNumberWindow.hpp"
 
-chooseNumberWindowClass::chooseNumberWindowClass(int minNumber, int maxNumber, int currentNumber, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+chooseNumberWindowClass::chooseNumberWindowClass(int minNumber, int maxNumber, int currentNumber, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -25,8 +25,8 @@ chooseNumberWindowClass::chooseNumberWindowClass(int minNumber, int maxNumber, i
     setWindowTitle("Choisir un nombre");
     numberBox.setFocus();
 
-    connect(buttonValide, SIGNAL(pressed()), this, SLOT(setNumber()));
-    connect(buttonCancel, SIGNAL(pressed()), this, SLOT(close()));
+    QObject::connect(buttonValide, &QPushButton::pressed, this, &chooseNumberWindowClass::setNumber);
+    QObject::connect(buttonCancel, &QPushButton::pressed, this, &chooseNumberWindowClass::close);
 }
 
 void chooseNumberWindowClass::setNumber()

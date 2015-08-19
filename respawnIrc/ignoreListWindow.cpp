@@ -1,7 +1,7 @@
 #include "ignoreListWindow.hpp"
 #include "addPseudoWindow.hpp"
 
-ignoreListWindowClass::ignoreListWindowClass(QList<QString> *newListOfIgnoredPseudo, QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+ignoreListWindowClass::ignoreListWindowClass(QList<QString> *newListOfIgnoredPseudo, QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -22,9 +22,9 @@ ignoreListWindowClass::ignoreListWindowClass(QList<QString> *newListOfIgnoredPse
     modelForListView.setStringList(*listOfIgnoredPseudo);
     viewListOfIgnoredPseudo.setModel(&modelForListView);
 
-    connect(buttonAddPseudo, SIGNAL(pressed()), this, SLOT(addPseudo()));
-    connect(buttonEditPseudo, SIGNAL(pressed()), this, SLOT(editCurrentPseudo()));
-    connect(buttonRemovePseudo, SIGNAL(pressed()), this, SLOT(removeCurrentPseudo()));
+    QObject::connect(buttonAddPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::addPseudo);
+    QObject::connect(buttonEditPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::editCurrentPseudo);
+    QObject::connect(buttonRemovePseudo, &QPushButton::pressed, this, &ignoreListWindowClass::removeCurrentPseudo);
 }
 
 void ignoreListWindowClass::updateList()

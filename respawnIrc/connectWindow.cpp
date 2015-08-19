@@ -1,7 +1,7 @@
 #include "connectWindow.hpp"
 #include "parsingTool.hpp"
 
-connectWindowClass::connectWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+connectWindowClass::connectWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -40,8 +40,8 @@ connectWindowClass::connectWindowClass(QWidget* parent) : QDialog(parent, Qt::Wi
     captchaHere = false;
     reply = 0;
 
-    connect(buttonConnect, SIGNAL(pressed()), this, SLOT(startLogin()));
-    connect(buttonCancel, SIGNAL(pressed()), this, SLOT(close()));
+    QObject::connect(buttonConnect, &QPushButton::pressed, this, &connectWindowClass::startLogin);
+    QObject::connect(buttonCancel, &QPushButton::pressed, this, &connectWindowClass::close);
     getLoginInfo();
 }
 
@@ -57,7 +57,7 @@ void connectWindowClass::getLoginInfo()
 {
     QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/login");
     reply = networkManager.get(request);
-    connect(reply, SIGNAL(finished()), this, SLOT(getFormInput()));
+    QObject::connect(reply, &QNetworkReply::finished, this, &connectWindowClass::getFormInput);
 }
 
 void connectWindowClass::removeCaptcha()
@@ -69,10 +69,12 @@ void connectWindowClass::removeCaptcha()
 
 void connectWindowClass::getFormInput()
 {
+// a changer si possible (cookiesForUrl bug)
+    listOfCookieFromLastReply = qvariant_cast<QList<QNetworkCookie> >(reply->header(QNetworkRequest::SetCookieHeader));
+// fin
     QString source = reply->readAll();
     reply->deleteLater();
     reply = 0;
-
     if(source.contains("Combinaison pseudo / mot de passe invalide.") == true)
     {
         QMessageBox messageBox;
@@ -88,7 +90,7 @@ void connectWindowClass::getFormInput()
     {
         if(source.isEmpty() == true)
         {
-            emit newCookiesAvailable(networkManager.cookieJar()->cookiesForUrl(QUrl("http://www.jeuxvideo.com")), pseudoLine.text(), rememberBox.isChecked());
+            emit newCookiesAvailable(listOfCookieFromLastReply, pseudoLine.text(), rememberBox.isChecked());
             close();
             return;
         }
@@ -99,7 +101,7 @@ void connectWindowClass::getFormInput()
         QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com" + expForCaptcha.cap(1));
 
         reply = networkManager.get(request);
-        connect(reply, SIGNAL(finished()), this, SLOT(showCaptcha()));
+        QObject::connect(reply, &QNetworkReply::finished, this, &connectWindowClass::showCaptcha);
     }
 }
 
@@ -124,9 +126,9 @@ void connectWindowClass::startLogin()
 
         listOfInput.clear();
         captchaHere = true;
-        reply = networkManager.post(request, data.toAscii());
+        reply = networkManager.post(request, data.toLatin1());
 
-        connect(reply, SIGNAL(finished()), this, SLOT(getFormInput()));
+        QObject::connect(reply, &QNetworkReply::finished, this, &connectWindowClass::getFormInput);
     }
 }
 

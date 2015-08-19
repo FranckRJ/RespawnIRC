@@ -1,7 +1,7 @@
 #ifndef CHOOSENUMBERWINDOW_HPP
 #define CHOOSENUMBERWINDOW_HPP
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
 
 class chooseNumberWindowClass : public QDialog

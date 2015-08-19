@@ -1,7 +1,7 @@
 #ifndef MULTITYPETEXTBOX_HPP
 #define MULTITYPETEXTBOX_HPP
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
 
 class multiTypeTextBoxClass : public QWidget

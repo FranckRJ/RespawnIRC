@@ -13,7 +13,7 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
 
     setLayout(&layout);
 
-    connect(&lineEdit, SIGNAL(returnPressed()), this, SLOT(returnIsPressed()));
+    QObject::connect(&lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnIsPressed);
 }
 
 void multiTypeTextBoxClass::clear()

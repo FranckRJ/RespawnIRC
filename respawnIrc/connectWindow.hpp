@@ -1,7 +1,7 @@
 #ifndef CONNECTWINDOW_HPP
 #define CONNECTWINDOW_HPP
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
 #include <QtNetwork>
 
@@ -18,7 +18,7 @@ public slots:
     void startLogin();
     void showCaptcha();
 signals:
-    void newCookiesAvailable(QList<QNetworkCookie> newCookiek, QString newPseudoOfUser, bool saveInfo);
+    void newCookiesAvailable(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
 private:
     QLineEdit pseudoLine;
     QLineEdit passwordLine;
@@ -26,9 +26,9 @@ private:
     QLineEdit captchaLine;
     QNetworkReply* reply;
     QNetworkAccessManager networkManager;
+    QList<QNetworkCookie> listOfCookieFromLastReply;
     QList<QPair<QString, QString> > listOfInput;
     QLabel labPixCaptcha;
     bool captchaHere;
 };
-
 #endif

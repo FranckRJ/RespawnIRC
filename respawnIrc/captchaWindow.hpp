@@ -1,7 +1,7 @@
 #ifndef CAPTCHAWINDOW_HPP
 #define CAPTCHAWINDOW_HPP
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
 #include <QtNetwork>
 

@@ -1,7 +1,7 @@
 #include "selectTopicWindow.hpp"
 #include "parsingTool.hpp"
 
-selectTopicWindow::selectTopicWindow(QString currentTopic, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+selectTopicWindow::selectTopicWindow(QString currentTopic, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -25,8 +25,8 @@ selectTopicWindow::selectTopicWindow(QString currentTopic, QWidget* parent) : QD
     setWindowTitle("Choisir un topic");
     topicLine.setFocus();
 
-    connect(buttonSelect, SIGNAL(pressed()), this, SLOT(selectThisTopic()));
-    connect(buttonCancel, SIGNAL(pressed()), this, SLOT(close()));
+    QObject::connect(buttonSelect, &QPushButton::pressed, this, &selectTopicWindow::selectThisTopic);
+    QObject::connect(buttonCancel, &QPushButton::pressed, this, &selectTopicWindow::close);
 }
 
 bool selectTopicWindow::linkIsValid(QString link)

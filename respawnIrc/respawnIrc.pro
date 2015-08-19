@@ -14,7 +14,8 @@ SOURCES += \
     chooseNumberWindow.cpp
 
 QT += \
-    network
+    network \
+    widgets
 
 HEADERS += \
     mainWindow.hpp \

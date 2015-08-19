@@ -1,6 +1,6 @@
 #include "addPseudoWindow.hpp"
 
-addPseudoWindowClass::addPseudoWindowClass(QWidget *parent, QString currentPseudo) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+addPseudoWindowClass::addPseudoWindowClass(QWidget *parent, QString currentPseudo) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -23,8 +23,8 @@ addPseudoWindowClass::addPseudoWindowClass(QWidget *parent, QString currentPseud
     setWindowTitle("Choisir un pseudo");
     pseudoLine.setFocus();
 
-    connect(buttonValide, SIGNAL(pressed()), this, SLOT(setPseudo()));
-    connect(buttonCancel, SIGNAL(pressed()), this, SLOT(close()));
+    QObject::connect(buttonValide, &QPushButton::pressed, this, &addPseudoWindowClass::setPseudo);
+    QObject::connect(buttonCancel, &QPushButton::pressed, this, &addPseudoWindowClass::close);
 }
 
 bool addPseudoWindowClass::pseudoIsValide(QString pseudo)

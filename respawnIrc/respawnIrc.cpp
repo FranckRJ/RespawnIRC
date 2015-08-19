@@ -34,10 +34,10 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
 
     setLayout(mainLayout);
 
-    connect(&sendButton, SIGNAL(pressed()), this, SLOT(postMessage()));
-    connect(&messageLine, SIGNAL(returnPressed()), &sendButton, SLOT(click()));
-    connect(&tabList, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
-    connect(&tabList, SIGNAL(tabCloseRequested(int)), this, SLOT(removeTab(int)));
+    QObject::connect(&sendButton, &QPushButton::pressed, this, &respawnIrcClass::postMessage);
+    QObject::connect(&messageLine, &multiTypeTextBoxClass::returnPressed, &sendButton, &QPushButton::click);
+    QObject::connect(&tabList, &QTabWidget::currentChanged, this, &respawnIrcClass::currentTabChanged);
+    QObject::connect(&tabList, &QTabWidget::tabCloseRequested, this, &respawnIrcClass::removeTab);
 
     loadSettings();
 }
@@ -95,7 +95,7 @@ QString respawnIrcClass::buildDataWithThisListOfInput(const QList<QPair<QString,
         data += listOfInput.at(i).first + "=" + listOfInput.at(i).second + "&";
     }
 
-    data += "message_topic=" + messageLine.text().replace("&", "%26").replace("+", "%2B");
+    data += "message_topic=" + QUrl::toPercentEncoding(messageLine.text());
 
     if(captchaCode.isEmpty() == false)
     {
@@ -148,15 +148,15 @@ void respawnIrcClass::addButtonToButtonLayout()
     buttonLayout->addWidget(buttonCode);
     buttonLayout->addWidget(buttonSpoil);
 
-    connect(buttonBold, SIGNAL(pressed()), &messageLine, SLOT(addBold()));
-    connect(buttonItalic, SIGNAL(pressed()), &messageLine, SLOT(addItalic()));
-    connect(buttonUnderline, SIGNAL(pressed()), &messageLine, SLOT(addUnderLine()));
-    connect(buttonStrike, SIGNAL(pressed()), &messageLine, SLOT(addStrike()));
-    connect(buttonUList, SIGNAL(pressed()), &messageLine, SLOT(addUList()));
-    connect(buttonOList, SIGNAL(pressed()), &messageLine, SLOT(addOListe()));
-    connect(buttonQuote, SIGNAL(pressed()), &messageLine, SLOT(addQuote()));
-    connect(buttonCode, SIGNAL(pressed()), &messageLine, SLOT(addCode()));
-    connect(buttonSpoil, SIGNAL(pressed()), &messageLine, SLOT(addSpoil()));
+    QObject::connect(buttonBold, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addBold);
+    QObject::connect(buttonItalic, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addItalic);
+    QObject::connect(buttonUnderline, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addUnderLine);
+    QObject::connect(buttonStrike, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addStrike);
+    QObject::connect(buttonUList, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addUList);
+    QObject::connect(buttonOList, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addOListe);
+    QObject::connect(buttonQuote, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addQuote);
+    QObject::connect(buttonCode, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addCode);
+    QObject::connect(buttonSpoil, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addSpoil);
 }
 
 void respawnIrcClass::setButtonInButtonLayoutVisible(bool visible)
@@ -170,35 +170,35 @@ void respawnIrcClass::setButtonInButtonLayoutVisible(bool visible)
 void respawnIrcClass::showConnect()
 {
     connectWindowClass* myConnectWindow = new connectWindowClass(this);
-    connect(myConnectWindow, SIGNAL(newCookiesAvailable(QList<QNetworkCookie>,QString,bool)), this, SLOT(setNewCookies(QList<QNetworkCookie>,QString,bool)));
+    QObject::connect(myConnectWindow, &connectWindowClass::newCookiesAvailable, this, &respawnIrcClass::setNewCookies);
     myConnectWindow->exec();
 }
 
 void respawnIrcClass::showSelectTopic()
 {
     selectTopicWindow* mySelectTopicWindow = new selectTopicWindow(getCurrentWidget()->getTopicLink(), this);
-    connect(mySelectTopicWindow, SIGNAL(newTopicSelected(QString)), this, SLOT(setNewTopic(QString)));
+    QObject::connect(mySelectTopicWindow, &selectTopicWindow::newTopicSelected, this, &respawnIrcClass::setNewTopic);
     mySelectTopicWindow->exec();
 }
 
 void respawnIrcClass::showIgnoreListWindow()
 {
     ignoreListWindowClass* myIgnoreListWindow = new ignoreListWindowClass(&listOfIgnoredPseudo, this);
-    connect(myIgnoreListWindow, SIGNAL(listHasChanged()), this, SLOT(saveListOfIgnoredPseudo()));
+    QObject::connect(myIgnoreListWindow, &ignoreListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfIgnoredPseudo);
     myIgnoreListWindow->exec();
 }
 
 void respawnIrcClass::showUpdateTopicTimeWindow()
 {
     chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(2500, 10000, updateTopicTime, this);
-    connect(myChooseNumberWindow, SIGNAL(newNumberSet(int)), this, SLOT(setUpdateTopicTime(int)));
+    QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setUpdateTopicTime);
     myChooseNumberWindow->exec();
 }
 
 void respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow()
 {
     chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(1, 40, numberOfMessageShowedFirstTime, this);
-    connect(myChooseNumberWindow, SIGNAL(newNumberSet(int)), this, SLOT(setNumberOfMessageShowedFirstTime(int)));
+    QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setNumberOfMessageShowedFirstTime);
     myChooseNumberWindow->exec();
 }
 
@@ -213,13 +213,13 @@ void respawnIrcClass::addNewTab()
 
     if(isConnected == true)
     {
-        listOfShowTopicMessages.back()->setNewCookies(networkManager.cookieJar()->cookiesForUrl(QUrl("http://www.jeuxvideo.com")), pseudoOfUser);
+        listOfShowTopicMessages.back()->setNewCookies(currentCookieList, pseudoOfUser);
     }
 
-    connect(listOfShowTopicMessages.back(), SIGNAL(newMessageStatus()), this, SLOT(setNewMessageStatus()));
-    connect(listOfShowTopicMessages.back(), SIGNAL(newNumberOfConnected()), this, SLOT(setNewNumberOfConnectedAndPseudoUsed()));
-    connect(listOfShowTopicMessages.back(), SIGNAL(newMessagesAvailable()), this, SLOT(warnUserForNewMessages()));
-    connect(listOfShowTopicMessages.back(), SIGNAL(newNameForTopic(QString)), this, SLOT(setNewTopicName(QString)));
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNumberOfConnected, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
     tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
 }
 
@@ -332,8 +332,9 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
 {
     if(newCookies.isEmpty() == false)
     {
-        networkManager.setCookieJar(new QNetworkCookieJar(this)); //fuite ?
+        networkManager.setCookieJar(new QNetworkCookieJar(this));
         networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+        currentCookieList = newCookies;
         pseudoOfUser = newPseudoOfUser;
         setNewNumberOfConnectedAndPseudoUsed();
         isConnected = true;
@@ -447,9 +448,8 @@ void respawnIrcClass::postMessage()
 
         if(getCurrentWidget()->getCaptchaLink().isEmpty() == false && captchaCode.isEmpty() == true)
         {
-            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(getCurrentWidget()->getCaptchaLink(),
-                                                                         networkManager.cookieJar()->cookiesForUrl(QUrl("http://www.jeuxvideo.com")), this);
-            connect(myCaptchaWindow, SIGNAL(codeForCaptcha(QString)), this, SLOT(setCodeForCaptcha(QString)));
+            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(getCurrentWidget()->getCaptchaLink(), currentCookieList, this);
+            QObject::connect(myCaptchaWindow, &captchaWindowClass::codeForCaptcha, this, &respawnIrcClass::setCodeForCaptcha);
             oldListOfInput = getCurrentWidget()->getListOfInput();
             myCaptchaWindow->exec();
             return;
@@ -466,8 +466,8 @@ void respawnIrcClass::postMessage()
             data = buildDataWithThisListOfInput(oldListOfInput);
         }
 
-        replyForSendMessage = networkManager.post(request, data.toAscii());
-        connect(replyForSendMessage, SIGNAL(finished()), this, SLOT(deleteReplyForSendMessage()));
+        replyForSendMessage = networkManager.post(request, data.toLatin1());
+        QObject::connect(replyForSendMessage, &QNetworkReply::finished, this, &respawnIrcClass::deleteReplyForSendMessage);
     }
 }
 
@@ -477,6 +477,11 @@ void respawnIrcClass::deleteReplyForSendMessage()
     replyForSendMessage->deleteLater();
     replyForSendMessage = 0;
     captchaCode.clear();
+
+    QFile file("result.txt");
+    file.open(QIODevice::ReadWrite);
+    QTextStream  out(&file);
+    out << source;
 
     if(source.size() == 0)
     {

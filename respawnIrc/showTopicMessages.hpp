@@ -1,7 +1,7 @@
 #ifndef SHOWTOPICMESSAGES_HPP
 #define SHOWTOPICMESSAGES_HPP
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
 #include <QtNetwork>
 

@@ -1,7 +1,7 @@
 #include "captchaWindow.hpp"
 #include "parsingTool.hpp"
 
-captchaWindowClass::captchaWindowClass(QString captchaLink, QList<QNetworkCookie> listOfCookie, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+captchaWindowClass::captchaWindowClass(QString captchaLink, QList<QNetworkCookie> listOfCookie, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -27,10 +27,10 @@ captchaWindowClass::captchaWindowClass(QString captchaLink, QList<QNetworkCookie
     networkManager.cookieJar()->setCookiesFromUrl(listOfCookie, QUrl("http://www.jeuxvideo.com"));
 
     reply = networkManager.get(parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com" + captchaLink));
-    connect(reply, SIGNAL(finished()), this, SLOT(showCaptcha()));
+    QObject::connect(reply, &QNetworkReply::finished, this, &captchaWindowClass::showCaptcha);
 
-    connect(buttonSend, SIGNAL(pressed()), this, SLOT(sendCaptchaCode()));
-    connect(buttonCancel, SIGNAL(pressed()), this, SLOT(close()));
+    QObject::connect(buttonSend, &QPushButton::pressed, this, &captchaWindowClass::sendCaptchaCode);
+    QObject::connect(buttonCancel, &QPushButton::pressed, this, &captchaWindowClass::close);
 }
 
 captchaWindowClass::~captchaWindowClass()

@@ -1,7 +1,7 @@
 #ifndef RESPAWNIRC_HPP
 #define RESPAWNIRC_HPP
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
 #include <QtNetwork>
 
@@ -54,6 +54,7 @@ private:
     QGridLayout* mainLayout;
     QHBoxLayout* buttonLayout;
     QTabWidget tabList;
+    QList<QNetworkCookie> currentCookieList;
     QList<showTopicMessagesClass*> listOfShowTopicMessages;
     QList<QString> listOfTopicLink;
     QList<QString> listOfIgnoredPseudo;
