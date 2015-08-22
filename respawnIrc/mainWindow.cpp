@@ -35,7 +35,7 @@ mainWindowClass::mainWindowClass()
     QAction* actionGoToTopic = menuDiscussion->addAction("Accéder au topic");
     QAction* actionGoToForum = menuDiscussion->addAction("Accéder au forum");
     actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
-    actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
+    actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
     actionUpdateTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
     actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
     actionGoToTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
@@ -64,7 +64,7 @@ mainWindowClass::mainWindowClass()
 
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
-    setWindowTitle("RespawnIRC v1.8");
+    setWindowTitle("RespawnIRC v1.9");
     resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     respawnIrc.setFocus();
 

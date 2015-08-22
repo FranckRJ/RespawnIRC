@@ -132,7 +132,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
         else
         {
             setMessageStatus("Erreur, impossible de récupérer les messages.");
-            messageBox.warning(this, "Erreur", "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.");
+            messageBox.warning(this, "Erreur sur " + topicName, "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.");
         }
     }
     else

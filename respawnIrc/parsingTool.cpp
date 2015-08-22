@@ -120,7 +120,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &so
     QRegExp expForMessageID("<div class=\"bloc-message-forum \" id=\"post_[^\"]*\" data-id=\"([^\"]*)\">");
     QRegExp expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-[^\"]*\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>");
     QRegExp expForDate("<div class=\"bloc-date-msg\">[^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">[^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)[^<]*</span>");
-    QRegExp expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-enrichi-forum \">(.*)</div>");
+    QRegExp expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">(.*)</div>");
     QRegExp expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span");
     expForEntireMessage.setMinimal(true);
     expForMessage.setMinimal(true);
