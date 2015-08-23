@@ -344,6 +344,13 @@ void showTopicMessagesClass::analyzeMessages()
         listOfInput.clear();
         parsingToolClass::getListOfHiddenInputFromThisForm(sourceFirst, "form-post-topic form-post-message", listOfInput);
         captchaLink = parsingToolClass::getCaptchaLink(sourceFirst);
+
+        if(listOfInput.isEmpty() == true)
+        {
+            QMessageBox messageBox;
+            messageBox.warning(this, "Erreur sur " + topicName + " avec " + pseudoOfUser, "Le compte semble invalide, si tel est vraiment le cas veuillez supprimer celui-ci de la liste des comptes et vous reconnecter avec.");
+            pseudoOfUser.clear();
+        }
     }
 
     firstTimeGetMessages = false;

@@ -1,7 +1,7 @@
 #include "parsingTool.hpp"
 
-QRegularExpression parsingToolClass::expForFormTopic("(<form [^>]*form-post-topic form-post-message.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption);
-QRegularExpression parsingToolClass::expForFormConnect("(<form [^>]*form-connect-jv.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForFormTopic("(<form [^>]*form-post-topic form-post-message.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForFormConnect("(<form [^>]*form-connect-jv.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForInput("<input ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForCurrentPage("<span class=\"page-active\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);

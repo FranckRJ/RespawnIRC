@@ -269,6 +269,7 @@ void respawnIrcClass::addNewTab()
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
     tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
+    tabList.setCurrentIndex(listOfShowTopicMessages.size() - 1);
 }
 
 void respawnIrcClass::removeTab(int index)
