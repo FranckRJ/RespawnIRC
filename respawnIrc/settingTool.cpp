@@ -28,6 +28,18 @@ QString settingToolClass::getPseudoOfUser()
     return setting.value("pseudo", "").toString();
 }
 
+QList<QString> settingToolClass::getListOfPseudoForTopic()
+{
+    QList<QString> listOfPseudoForTopic;
+
+    if(setting.value("listOfPseudoForTopic", QList<QVariant>()).toList().isEmpty() == false)
+    {
+        listOfPseudoForTopic = createStringListWithThisQVariantList(setting.value("listOfPseudoForTopic").toList());
+    }
+
+    return listOfPseudoForTopic;
+}
+
 QList<QString> settingToolClass::getListOfIgnoredPseudo()
 {
     QList<QString> listOfIgnoredPseudo;
@@ -110,6 +122,11 @@ void settingToolClass::savePseudoOfUser(QString newPseudo)
     setting.setValue("pseudo", newPseudo);
 }
 
+void settingToolClass::saveListOfPseudoForTopic(QList<QString> newList)
+{
+    setting.setValue("listOfPseudoForTopic", createQVariantListWithThisList(newList, false));
+}
+
 void settingToolClass::saveListOfIgnoredPseudo(QList<QString> newList)
 {
     setting.setValue("listOfIgnoredPseudo", createQVariantListWithThisList(newList));
@@ -145,13 +162,13 @@ void settingToolClass::saveNumberOfMessageShowedFirstTime(int newNumber)
     setting.setValue("numberOfMessageShowedFirstTime", newNumber);
 }
 
-QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> list)
+QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString)
 {
     QList<QVariant> newList;
 
     for(int i = 0; i < list.size(); ++i)
     {
-        if(list.at(i).isEmpty() == false)
+        if(list.at(i).isEmpty() == false || deleteEmptyString == false)
         {
             newList.push_back(list.at(i));
         }

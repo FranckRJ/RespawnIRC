@@ -23,9 +23,11 @@ public slots:
     void addAccount(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo);
     void removeCurrentAccount();
     void connectWithThisAccount();
+    void connectToOneTopicWithThisAccount();
 signals:
     void listHasChanged();
     void useThisAccount(QList<QNetworkCookie> withTheseCookie, QString withThisPseudo, bool saveAccountList, bool savePseudo);
+    void useThisAccountForOneTopic(QList<QNetworkCookie> withTheseCookie, QString withThisPseudo, bool savePseudo);
 private:
     QList<accountStruct>* listOfAccount;
     QListView viewListOfAccount;

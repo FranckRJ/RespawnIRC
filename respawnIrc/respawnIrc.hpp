@@ -39,6 +39,7 @@ public slots:
     void setMultilineEdit(bool newVal);
     void setLoadTwoLastPage(bool newVal);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
+    void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);
     void setNewTopic(QString newTopic);
     void setCodeForCaptcha(QString code);
     void setNewMessageStatus();
@@ -58,10 +59,12 @@ private:
     QHBoxLayout* buttonLayout;
     QTabWidget tabList;
     QList<QNetworkCookie> currentCookieList;
+    QList<QNetworkCookie> cookieListForPostMsg;
     QList<showTopicMessagesClass*> listOfShowTopicMessages;
     QList<QString> listOfTopicLink;
     QList<QString> listOfIgnoredPseudo;
     QList<accountStruct> listOfAccount;
+    QList<QString> listOfPseudoForTopic;
     QList<QPair<QString, QString> > oldListOfInput;
     multiTypeTextBoxClass messageLine;
     QNetworkReply* replyForSendMessage;
@@ -72,7 +75,6 @@ private:
     QString pseudoOfUser;
     QString captchaCode;
     QPixmap alertImage;
-    bool isConnected;
 };
 
 #endif

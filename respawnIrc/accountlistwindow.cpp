@@ -8,9 +8,11 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
     QLabel* labRemember = new QLabel("Se souvenir :", this);
     QPushButton* buttonAddAccount = new QPushButton("Ajouter", this);
     QPushButton* buttonRemoveAccount = new QPushButton("Supprimer", this);
-    QPushButton* buttonLogin = new QPushButton("Se connecter", this);
+    QPushButton* buttonLogin = new QPushButton("Se connecter sur tout les onglets", this);
+    QPushButton* buttonLoginOneTopic = new QPushButton("Se connecter sur l'onglet acutel", this);
 
     rememberBox.setChecked(true);
+    viewListOfAccount.setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(&viewListOfAccount, 0, 0, 1, 2);
@@ -18,7 +20,8 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
     mainLayout->addWidget(&rememberBox, 1, 1);
     mainLayout->addWidget(buttonAddAccount, 2, 0);
     mainLayout->addWidget(buttonRemoveAccount, 2, 1);
-    mainLayout->addWidget(buttonLogin, 3, 0, 1, 2);
+    mainLayout->addWidget(buttonLogin, 3, 0);
+    mainLayout->addWidget(buttonLoginOneTopic, 3, 1);
 
     setLayout(mainLayout);
     setWindowTitle("Liste des comptes");
@@ -30,6 +33,7 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
     QObject::connect(buttonAddAccount, &QPushButton::pressed, this, &accountListWindowClass::showConnectWindow);
     QObject::connect(buttonRemoveAccount, &QPushButton::pressed, this, &accountListWindowClass::removeCurrentAccount);
     QObject::connect(buttonLogin, &QPushButton::pressed, this, &accountListWindowClass::connectWithThisAccount);
+    QObject::connect(buttonLoginOneTopic, &QPushButton::pressed, this, &accountListWindowClass::connectToOneTopicWithThisAccount);
 }
 
 bool accountListWindowClass::addAcountToThisList(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, QList<accountStruct>* thisList)
@@ -98,6 +102,15 @@ void accountListWindowClass::connectWithThisAccount()
     if(viewListOfAccount.currentIndex().row() != -1)
     {
         emit useThisAccount(listOfAccount->at(viewListOfAccount.currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo, false, rememberBox.isChecked());
+        close();
+    }
+}
+
+void accountListWindowClass::connectToOneTopicWithThisAccount()
+{
+    if(viewListOfAccount.currentIndex().row() != -1)
+    {
+        emit useThisAccountForOneTopic(listOfAccount->at(viewListOfAccount.currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo, rememberBox.isChecked());
         close();
     }
 }

@@ -6,6 +6,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 {
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(true);
+    timerForGetMessage.setTimerType(Qt::CoarseTimer);
     timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
     timerForGetMessage.stop();
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
@@ -69,10 +70,21 @@ QString showTopicMessagesClass::getNumberOfConnected()
     return numberOfConnected;
 }
 
+QString showTopicMessagesClass::getPseudoUsed()
+{
+    return pseudoOfUser;
+}
+
+const QList<QNetworkCookie>& showTopicMessagesClass::getListOfCookies()
+{
+    return currentCookieList;
+}
+
 void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser)
 {
     networkManager.setCookieJar(new QNetworkCookieJar(this));
     networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+    currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
 
     startGetMessage();

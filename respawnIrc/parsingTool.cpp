@@ -1,81 +1,102 @@
 #include "parsingTool.hpp"
 
+QRegularExpression parsingToolClass::expForFormTopic("(<form [^>]*form-post-topic form-post-message.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForFormConnect("(<form [^>]*form-connect-jv.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForInput("<input ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForCurrentPage("<span class=\"page-active\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForPageLink("<span><a href=\"([^\"]*)\" class=\"lien-jv\">([^<]*)</a></span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForBeforeLastPage("(http://www.jeuxvideo.com/forums/[^-]*-[^-]*-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForEntireMessage("(<div class=\"bloc-message-forum \".*?)(<div class=\"bloc-message-forum \"|<div class=\"bloc-pagi-default\">)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForMessageID("<div class=\"bloc-message-forum \" id=\"post_[^\"]*\" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-[^\"]*\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForDate("<div class=\"bloc-date-msg\">[^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">[^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">(.*?)</div>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForStickers("<img class=\"img-stickers\" src=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForLongLink("<span class=\"JvCare [^\"]*\"[^i]*itle=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForNoelshack("<a href=\"([^\"]*)\" data-def=\"NOELSHACK\" target=\"_blank\"><img class=\"img-shack\" [^>]*></a>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\"><span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForSpoilBlock("<span class=\"bloc-spoil-jv\"><span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+
 void parsingToolClass::getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput)
 {
-    QRegExp expForForm("(<form [^>]*" + formName + ".*</form>)");
-    expForForm.setMinimal(true);
-    source.contains(expForForm);
-    source = expForForm.cap(1);
-
-    QRegExp expForInput("<input ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\"/>");
-    int posForExpForInput = 0;
-    while((posForExpForInput = expForInput.indexIn(source, posForExpForInput)) != -1)
+    if(formName == "form-post-topic form-post-message")
     {
-        if(expForInput.cap(1) == "type")
+        source = expForFormTopic.match(source).captured(1);
+    }
+    else if(formName == "form-connect-jv")
+    {
+        source = expForFormConnect.match(source).captured(1);
+    }
+
+    QRegularExpressionMatchIterator matchIteratorForInput = expForInput.globalMatch(source);
+    while(matchIteratorForInput.hasNext())
+    {
+        QRegularExpressionMatch matchForInput = matchIteratorForInput.next();
+        if(matchForInput.captured(1) == "type")
         {
-            if(expForInput.cap(3) == "name")
+            if(matchForInput.captured(3) == "name")
             {
-                listOfInput.push_back(QPair<QString, QString>(expForInput.cap(4), expForInput.cap(6)));
+                listOfInput.push_back(QPair<QString, QString>(matchForInput.captured(4), matchForInput.captured(6)));
             }
             else
             {
-                listOfInput.push_back(QPair<QString, QString>(expForInput.cap(6), expForInput.cap(4)));
+                listOfInput.push_back(QPair<QString, QString>(matchForInput.captured(6), matchForInput.captured(4)));
             }
         }
-        else if(expForInput.cap(3) == "type")
+        else if(matchForInput.captured(3) == "type")
         {
-            if(expForInput.cap(1) == "name")
+            if(matchForInput.captured(1) == "name")
             {
-                listOfInput.push_back(QPair<QString, QString>(expForInput.cap(2), expForInput.cap(6)));
+                listOfInput.push_back(QPair<QString, QString>(matchForInput.captured(2), matchForInput.captured(6)));
             }
             else
             {
-                listOfInput.push_back(QPair<QString, QString>(expForInput.cap(6), expForInput.cap(2)));
+                listOfInput.push_back(QPair<QString, QString>(matchForInput.captured(6), matchForInput.captured(2)));
             }
         }
         else
         {
-            if(expForInput.cap(1) == "name")
+            if(matchForInput.captured(1) == "name")
             {
-                listOfInput.push_back(QPair<QString, QString>(expForInput.cap(2), expForInput.cap(4)));
+                listOfInput.push_back(QPair<QString, QString>(matchForInput.captured(2), matchForInput.captured(4)));
             }
             else
             {
-                listOfInput.push_back(QPair<QString, QString>(expForInput.cap(4), expForInput.cap(2)));
+                listOfInput.push_back(QPair<QString, QString>(matchForInput.captured(4), matchForInput.captured(2)));
             }
         }
-        posForExpForInput += expForInput.matchedLength();
     }
 }
 
 QString parsingToolClass::getCaptchaLink(const QString& source)
 {
-    QRegExp expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>");
-    expForCaptcha.setMinimal(true);
-
-    return searchThisCapNumber(source, expForCaptcha, 1);
+    return expForCaptcha.match(source).captured(1);
 }
 
 QString parsingToolClass::getLastPageOfTopic(const QString& source)
 {
     int currentPage = 0;
     QString lastPage;
-    QRegExp expForCurrentPage("<span class=\"page-active\">([^<]*)</span>");
-    expForCurrentPage.setMinimal(true);
-    source.contains(expForCurrentPage);
-    currentPage = expForCurrentPage.cap(1).toInt();
+    currentPage = expForCurrentPage.match(source).captured(1).toInt();
 
-    QRegExp expForPageLink("<span><a href=\"([^\"]*)\" class=\"lien-jv\">([^<]*)</a></span>");
-    int posForExpForPageLink = 0;
-    while((posForExpForPageLink = expForPageLink.indexIn(source, posForExpForPageLink)) != -1)
+    QRegularExpressionMatchIterator matchIteratorForPgaeLink = expForPageLink.globalMatch(source);
+    while(matchIteratorForPgaeLink.hasNext())
     {
-        if(expForPageLink.cap(2).toInt() > currentPage)
+        QRegularExpressionMatch matchForPageLink = matchIteratorForPgaeLink.next();
+        if(matchForPageLink.captured(2).toInt() > currentPage)
         {
-            currentPage = expForPageLink.cap(2).toInt();
-            lastPage = "http://www.jeuxvideo.com" + expForPageLink.cap(1);
+            currentPage = matchForPageLink.captured(2).toInt();
+            lastPage = "http://www.jeuxvideo.com" + matchForPageLink.captured(1);
         }
-
-        posForExpForPageLink += expForPageLink.matchedLength();
     }
 
     return lastPage;
@@ -83,12 +104,12 @@ QString parsingToolClass::getLastPageOfTopic(const QString& source)
 
 QString parsingToolClass::getBeforeLastPageOfTopic(const QString &source)
 {
-    QRegExp expForBeforeLastPage("(http://www.jeuxvideo.com/forums/[^-]*-[^-]*-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)");
-    QString pageNumber = searchThisCapNumber(source, expForBeforeLastPage, 2);
+    QRegularExpressionMatch matchForBeforeLastPage = expForBeforeLastPage.match(source);
+    QString pageNumber = matchForBeforeLastPage.captured(2);
 
     if(pageNumber.isEmpty() == false && pageNumber != "1")
     {
-        return searchThisCapNumber(source, expForBeforeLastPage, 1) + QString::number(pageNumber.toInt() - 1) + searchThisCapNumber(source, expForBeforeLastPage, 3);
+        return matchForBeforeLastPage.captured(1) + QString::number(pageNumber.toInt() - 1) + matchForBeforeLastPage.captured(3);
     }
     else
     {
@@ -98,43 +119,29 @@ QString parsingToolClass::getBeforeLastPageOfTopic(const QString &source)
 
 QString parsingToolClass::getNameOfTopic(const QString& source)
 {
-    QRegExp expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>");
-    expForNameOfTopic.setMinimal(true);
-
-    return searchThisCapNumber(source, expForNameOfTopic, 1);
+    return expForNameOfTopic.match(source).captured(1);
 }
 
 QString parsingToolClass::getNumberOfConnected(const QString &source)
 {
-    QRegExp expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>");
-    expForNumberOfConnected.setMinimal(true);
-
-    return searchThisCapNumber(source, expForNumberOfConnected, 1);
+    return expForNumberOfConnected.match(source).captured(1);
 }
 
 QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &source)
 {
     QList<QString> listOfEntireMessage;
     QList<messageStruct> listOfMessages;
-    QRegExp expForEntireMessage("(<div class=\"bloc-message-forum \".*)(<div class=\"bloc-message-forum \"|<div class=\"bloc-pagi-default\">)");
-    QRegExp expForMessageID("<div class=\"bloc-message-forum \" id=\"post_[^\"]*\" data-id=\"([^\"]*)\">");
-    QRegExp expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-[^\"]*\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>");
-    QRegExp expForDate("<div class=\"bloc-date-msg\">[^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">[^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)[^<]*</span>");
-    QRegExp expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">(.*)</div>");
-    QRegExp expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span");
-    expForEntireMessage.setMinimal(true);
-    expForMessage.setMinimal(true);
 
-    listOfEntireMessage = getListOfThisCapNumber(source, expForEntireMessage, 1, true);
+    listOfEntireMessage = getListOfThisCapNumber(source, expForEntireMessage, 1, false);
 
     for(int i = 0; i < listOfEntireMessage.size(); ++i)
     {
         listOfMessages.push_back(messageStruct());
-        listOfMessages.back().idOfMessage = searchThisCapNumber(listOfEntireMessage.at(i), expForMessageID, 1).toInt();
-        listOfMessages.back().pseudo = searchThisCapNumber(listOfEntireMessage.at(i), expForPseudo, 1);
-        listOfMessages.back().date = searchThisCapNumber(listOfEntireMessage.at(i), expForDate, 1);
-        listOfMessages.back().message = parsingMessages(searchThisCapNumber(listOfEntireMessage.at(i), expForMessage, 1));
-        listOfMessages.back().lastTimeEdit = searchThisCapNumber(listOfEntireMessage.at(i), expForEdit, 1);
+        listOfMessages.back().idOfMessage = expForMessageID.match(listOfEntireMessage.at(i)).captured(1).toInt();
+        listOfMessages.back().pseudo = expForPseudo.match(listOfEntireMessage.at(i)).captured(1);
+        listOfMessages.back().date = expForDate.match(listOfEntireMessage.at(i)).captured(1);
+        listOfMessages.back().message = parsingMessages(expForMessage.match(listOfEntireMessage.at(i)).captured(1));
+        listOfMessages.back().lastTimeEdit = expForEdit.match(listOfEntireMessage.at(i)).captured(1);
     }
 
     return listOfMessages;
@@ -142,17 +149,24 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &so
 
 QString parsingToolClass::getForumOfTopic(const QString& source)
 {
-    QRegExp expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm");
+    QString forumNumber = expForForum.match(source).captured(1);
 
-    return searchThisCapNumber(source, expForForum, 1, "http://www.jeuxvideo.com/forums/0-", "-0-1-0-1-0-respawn-irc.htm");
+    if(forumNumber.isEmpty() == false)
+    {
+        return "http://www.jeuxvideo.com/forums/0-" + forumNumber + "-0-1-0-1-0-respawn-irc.htm";
+    }
+    else
+    {
+        return "";
+    }
 }
 
 QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
 {
-    QRegExp expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)");
-    QString forumNumber = searchThisCapNumber(source, expForJvfLink, 1);
-    QString topicNumber = searchThisCapNumber(source, expForJvfLink, 2);
-    QString nameOfTopic = searchThisCapNumber(source, expForJvfLink, 3);
+    QRegularExpressionMatch matchForJvfLink = expForJvfLink.match(source);
+    QString forumNumber = matchForJvfLink.captured(1);
+    QString topicNumber = matchForJvfLink.captured(2);
+    QString nameOfTopic = matchForJvfLink.captured(3);
 
     if(forumNumber.isEmpty() == false && topicNumber.isEmpty() == false)
     {
@@ -174,16 +188,6 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
 
 QString parsingToolClass::parsingMessages(QString thisMessage)
 {
-    QRegExp expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />");
-    QRegExp expForStickers("<img class=\"img-stickers\" src=\"([^\"]*)\"/>");
-    QRegExp expForLongLink("<span class=\"JvCare [^\"]*\"[^i]*itle=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>");
-    QRegExp expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>");
-    QRegExp expForNoelshack("<a href=\"([^\"]*)\" data-def=\"NOELSHACK\" target=\"_blank\"><img class=\"img-shack\" [^>]*></a>");
-    QRegExp expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\"><span class=\"contenu-spoil\">([^<]*)</span></span>");
-    QRegExp expForSpoilBlock("<span class=\"bloc-spoil-jv\"><span class=\"contenu-spoil\">([^<]*)</span></span>");
-    QRegExp expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>");
-    expForLongLink.setMinimal(true);
-
     thisMessage.replace("\n", "");
 
     replaceWithCapNumber(thisMessage, expForSmiley, 1, false, "<img src=\"smileys/", "\" />");
@@ -198,7 +202,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
     thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-bottom: 5px;margin-top: 5px;\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
 
-    thisMessage.replace(QRegExp("</p> *<p>"), "<br /><br />");
+    thisMessage.replace(QRegularExpression("</p> *<p>"), "<br /><br />");
     thisMessage.replace("<p>", "");
     thisMessage.replace("</p>", "");
 
@@ -217,65 +221,61 @@ QNetworkRequest parsingToolClass::buildRequestWithThisUrl(QString url)
     return request;
 }
 
-QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, QRegExp exp, int capNumber, bool onlyUseCapString)
+QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, QRegularExpression& exp, int capNumber, bool globalMatch)
 {
     QList<QString> listOfString;
-    int posForExp = 0;
-    while((posForExp = exp.indexIn(source, posForExp)) != -1)
+    if(globalMatch == true)
     {
-        listOfString.push_back(exp.cap(capNumber));
-        if(onlyUseCapString == false)
+        QRegularExpressionMatchIterator matchIterator = exp.globalMatch(source);
+        while(matchIterator.hasNext())
         {
-            posForExp += exp.matchedLength();
+            QRegularExpressionMatch match = matchIterator.next();
+            listOfString.push_back(match.captured(capNumber));
         }
-        else
+    }
+    else
+    {
+        QRegularExpressionMatch match = exp.match(source);
+        while(match.hasMatch() == true)
         {
-            posForExp += exp.cap(capNumber).size();
+            listOfString.push_back(match.captured(capNumber));
+            match = exp.match(source, match.capturedEnd(capNumber));
         }
     }
 
     return listOfString;
 }
 
-void parsingToolClass::replaceWithCapNumber(QString& source, QRegExp exp, int capNumber, bool createLink, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter)
+void parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, bool createLink, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter)
 {
-    int posForExp = 0;
+    QRegularExpressionMatchIterator matchIterator = exp.globalMatch(source);
+    int lenghtChanged = 0;
     QString newString;
 
-    while((posForExp = exp.indexIn(source, posForExp)) != -1)
+    while(matchIterator.hasNext())
     {
+        QRegularExpressionMatch match = matchIterator.next();
         newString = stringBefore;
 
         if(createLink == false)
         {
-            newString += exp.cap(capNumber);
+            newString += match.captured(capNumber);
         }
         else
         {
-            newString += "<a href=\"" + exp.cap(capNumber) +"\">" + exp.cap(capNumber) + "</a>";
+            newString += "<a href=\"" + match.captured(capNumber) +"\">" + match.captured(capNumber) + "</a>";
         }
 
         newString += stringAfter;
 
         if(secondCapNumber != 0)
         {
-            newString += exp.cap(secondCapNumber);
+            newString += match.captured(secondCapNumber);
             newString += stringAfterAfter;
         }
 
-        source.replace(posForExp, exp.cap(0).length(), newString);
-        posForExp += newString.length();
-    }
-}
-
-QString parsingToolClass::searchThisCapNumber(const QString& source, QRegExp exp, int capNumber, QString stringBefore, QString stringAfter)
-{
-    if(source.contains(exp) == true)
-    {
-        return stringBefore + exp.cap(capNumber) + stringAfter;
-    }
-    else
-    {
-        return "";
+        source.replace(match.capturedStart(0) + lenghtChanged, match.capturedLength(0), newString);
+        lenghtChanged -= match.capturedLength(0);
+        lenghtChanged += newString.size();
     }
 }

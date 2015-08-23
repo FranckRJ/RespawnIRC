@@ -17,6 +17,8 @@ public:
     QString getCaptchaLink();
     QString getMessagesStatus();
     QString getNumberOfConnected();
+    QString getPseudoUsed();
+    const QList<QNetworkCookie>& getListOfCookies();
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser);
     void setNewTopic(QString newTopic);
     void setMessageStatus(QString newStatus);
@@ -35,6 +37,7 @@ signals:
     void newNameForTopic(QString newName);
 private:
     QTextBrowser messagesBox;
+    QList<QNetworkCookie> currentCookieList;
     QNetworkReply* replyForFirstPage;
     QNetworkReply* replyForSecondPage;
     QNetworkAccessManager networkManager;

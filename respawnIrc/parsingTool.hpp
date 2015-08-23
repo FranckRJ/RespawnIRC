@@ -27,10 +27,35 @@ public:
     static QString jvfLinkToJvcLink(const QString& source);
     static QString parsingMessages(QString thisMessage);
     static QNetworkRequest buildRequestWithThisUrl(QString url);
-    static QList<QString> getListOfThisCapNumber(const QString &source, QRegExp exp, int capNumber, bool onlyUseCapString = false);
-    static void replaceWithCapNumber(QString& source, QRegExp exp, int capNumber, bool createLink = false, QString stringBefore = "",
+    static QList<QString> getListOfThisCapNumber(const QString &source, QRegularExpression& exp, int capNumber, bool globalMatch = true);
+    static void replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, bool createLink = false, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = 0, QString stringAfterAfter = "");
-    static QString searchThisCapNumber(const QString& source, QRegExp exp, int capNumber, QString stringBefore = "", QString stringAfter = "");
+private:
+    static QRegularExpression expForFormTopic;
+    static QRegularExpression expForFormConnect;
+    static QRegularExpression expForInput;
+    static QRegularExpression expForCaptcha;
+    static QRegularExpression expForCurrentPage;
+    static QRegularExpression expForPageLink;
+    static QRegularExpression expForBeforeLastPage;
+    static QRegularExpression expForNameOfTopic;
+    static QRegularExpression expForNumberOfConnected;
+    static QRegularExpression expForEntireMessage;
+    static QRegularExpression expForMessageID;
+    static QRegularExpression expForPseudo;
+    static QRegularExpression expForDate;
+    static QRegularExpression expForMessage;
+    static QRegularExpression expForEdit;
+    static QRegularExpression expForForum;
+    static QRegularExpression expForJvfLink;
+    static QRegularExpression expForSmiley;
+    static QRegularExpression expForStickers;
+    static QRegularExpression expForLongLink;
+    static QRegularExpression expForShortLink;
+    static QRegularExpression expForNoelshack;
+    static QRegularExpression expForSpoilLine;
+    static QRegularExpression expForSpoilBlock;
+    static QRegularExpression expForAllJVCare;
 };
 
 #endif

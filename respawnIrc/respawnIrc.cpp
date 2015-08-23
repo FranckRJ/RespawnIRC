@@ -15,7 +15,6 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     sendButton.setAutoDefault(true);
     alertImage.load("ressources/alert.png");
     replyForSendMessage = 0;
-    isConnected = false;
 
     addButtonToButtonLayout();
 
@@ -60,6 +59,7 @@ void respawnIrcClass::loadSettings()
         else if(i == listOfAccount.size() - 1)
         {
             pseudoOfUser.clear();
+            settingToolClass::savePseudoOfUser(pseudoOfUser);
         }
     }
 
@@ -68,6 +68,7 @@ void respawnIrcClass::loadSettings()
     setUpdateTopicTime(settingToolClass::getUpdateTopicTime());
     setNumberOfMessageShowedFirstTime(settingToolClass::getNumberOfMessageShowedFirstTime());
     listOfTopicLink = settingToolClass::getListOfTopicLink();
+    listOfPseudoForTopic = settingToolClass::getListOfPseudoForTopic();
 
     for(int i = 0; i < listOfTopicLink.size(); ++i)
     {
@@ -196,6 +197,7 @@ void respawnIrcClass::showAccountListWindow()
     accountListWindowClass* myAccountListWindow = new accountListWindowClass(&listOfAccount, this);
     QObject::connect(myAccountListWindow, &accountListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfAccount);
     QObject::connect(myAccountListWindow, &accountListWindowClass::useThisAccount, this, &respawnIrcClass::setNewCookies);
+    QObject::connect(myAccountListWindow, &accountListWindowClass::useThisAccountForOneTopic, this, &respawnIrcClass::setNewCookiesForCurrentTopic);
     myAccountListWindow->exec();
 }
 
@@ -236,7 +238,28 @@ void respawnIrcClass::addNewTab()
         listOfTopicLink.push_back(QString());
     }
 
-    if(isConnected == true)
+    if(listOfShowTopicMessages.size() > listOfPseudoForTopic.size())
+    {
+        listOfPseudoForTopic.push_back(QString());
+    }
+
+    if(listOfPseudoForTopic.at(listOfShowTopicMessages.size() - 1).isEmpty() == false)
+    {
+        for(int j = 0; j < listOfAccount.size(); ++j)
+        {
+            if(listOfAccount.at(j).pseudo.toLower() == listOfPseudoForTopic.at(listOfShowTopicMessages.size() - 1).toLower())
+            {
+                listOfShowTopicMessages.back()->setNewCookies(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo);
+                break;
+            }
+            else if(j == listOfAccount.size() - 1)
+            {
+                listOfPseudoForTopic[listOfShowTopicMessages.size() - 1].clear();
+                settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+            }
+        }
+    }
+    else if(pseudoOfUser.isEmpty() == false)
     {
         listOfShowTopicMessages.back()->setNewCookies(currentCookieList, pseudoOfUser);
     }
@@ -255,6 +278,8 @@ void respawnIrcClass::removeTab(int index)
         tabList.removeTab(index);
         listOfTopicLink.removeAt(index);
         settingToolClass::saveListOfTopicLink(listOfTopicLink);
+        listOfPseudoForTopic.removeAt(index);
+        settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
         delete listOfShowTopicMessages.takeAt(index);
         currentTabChanged(-1);
     }
@@ -355,17 +380,13 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
 {
     if(newCookies.isEmpty() == false)
     {
-        networkManager.setCookieJar(new QNetworkCookieJar(this));
-        networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
         currentCookieList = newCookies;
         pseudoOfUser = newPseudoOfUser;
-        setNewNumberOfConnectedAndPseudoUsed();
-        isConnected = true;
-
         for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
         {
             listOfShowTopicMessages.at(i)->setNewCookies(currentCookieList, newPseudoOfUser);
         }
+        setNewNumberOfConnectedAndPseudoUsed();
 
         if(saveAccountList == true)
         {
@@ -376,7 +397,24 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
         if(savePseudo == true)
         {
             settingToolClass::savePseudoOfUser(pseudoOfUser);
+            for(int i = 0; i < listOfPseudoForTopic.size(); ++i)
+            {
+                listOfPseudoForTopic[i].clear();
+            }
+            settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
         }
+    }
+}
+
+void respawnIrcClass::setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo)
+{
+    getCurrentWidget()->setNewCookies(newCookies, newPseudoOfUser);
+    setNewNumberOfConnectedAndPseudoUsed();
+
+    if(savePseudo == true)
+    {
+        listOfPseudoForTopic[tabList.currentIndex()] = newPseudoOfUser;
+        settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
     }
 }
 
@@ -406,15 +444,15 @@ void respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed()
     if(listOfShowTopicMessages.isEmpty() == false)
     {
         textToShow += getCurrentWidget()->getNumberOfConnected();
-    }
 
-    if(pseudoOfUser.isEmpty() == false)
-    {
-        if(textToShow.isEmpty() == false)
+        if(getCurrentWidget()->getPseudoUsed().isEmpty() == false)
         {
-            textToShow += " - ";
+            if(textToShow.isEmpty() == false)
+            {
+                textToShow += " - ";
+            }
+            textToShow += getCurrentWidget()->getPseudoUsed();
         }
-        textToShow += pseudoOfUser;
     }
 
     numberOfConnectedAndPseudoUsed.setText(textToShow);
@@ -474,14 +512,18 @@ void respawnIrcClass::currentTabChanged(int newIndex)
 
 void respawnIrcClass::postMessage()
 {
-    if(replyForSendMessage == 0 && isConnected == true && getCurrentWidget()->getTopicLink().isEmpty() == false)
+    if(replyForSendMessage == 0 && getCurrentWidget()->getPseudoUsed().isEmpty() == false && getCurrentWidget()->getTopicLink().isEmpty() == false)
     {
         QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(getCurrentWidget()->getTopicLink());
         QString data;
 
+        cookieListForPostMsg = getCurrentWidget()->getListOfCookies();
+        networkManager.setCookieJar(new QNetworkCookieJar(this));
+        networkManager.cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://www.jeuxvideo.com"));
+
         if(getCurrentWidget()->getCaptchaLink().isEmpty() == false && captchaCode.isEmpty() == true)
         {
-            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(getCurrentWidget()->getCaptchaLink(), currentCookieList, this);
+            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(getCurrentWidget()->getCaptchaLink(), cookieListForPostMsg, this);
             QObject::connect(myCaptchaWindow, &captchaWindowClass::codeForCaptcha, this, &respawnIrcClass::setCodeForCaptcha);
             oldListOfInput = getCurrentWidget()->getListOfInput();
             myCaptchaWindow->exec();

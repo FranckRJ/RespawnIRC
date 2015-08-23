@@ -11,6 +11,7 @@ class settingToolClass
 public:
     static QList<accountStruct> getListOfAccount();
     static QString getPseudoOfUser();
+    static QList<QString> getListOfPseudoForTopic();
     static QList<QString> getListOfIgnoredPseudo();
     static QList<QString> getListOfTopicLink();
     static bool getShowTextDecorationButton();
@@ -20,6 +21,7 @@ public:
     static int getNumberOfMessageShowedFirstTime();
     static void saveListOfAccount(QList<accountStruct> newListOfAccount);
     static void savePseudoOfUser(QString newPseudo);
+    static void saveListOfPseudoForTopic(QList<QString> newList);
     static void saveListOfIgnoredPseudo(QList<QString> newList);
     static void saveListOfTopicLink(QList<QString> newList);
     static void saveShowTextDecoration(bool newVal);
@@ -27,7 +29,7 @@ public:
     static void saveLoadTwoLastPage(bool newVal);
     static void saveUpdateTopicTime(int newTime);
     static void saveNumberOfMessageShowedFirstTime(int newNumber);
-    static QList<QVariant> createQVariantListWithThisList(QList<QString> list);
+    static QList<QVariant> createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString = true);
     static QList<QVariant> createQVariantListWithThisList(QList<QNetworkCookie> list);
     static QList<QString> createStringListWithThisQVariantList(QList<QVariant> list);
     static QList<QNetworkCookie> createCookieListWithThisQVariantList(QList<QVariant> list);
