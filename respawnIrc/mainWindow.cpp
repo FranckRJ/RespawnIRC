@@ -45,7 +45,8 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     actionGoToForum->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
 
     QMenu* menuSetting = menuBar->addMenu("&Configuration");
-    QAction* actionShowListOfIgnoredPseudo = menuSetting->addAction("Afficher la liste des ignorés");
+    QAction* actionShowListOfIgnoredPseudo = menuSetting->addAction("Gérer les ignorés");
+    QAction* actionShowListOfColorPseudo = menuSetting->addAction("Gérer la couleur des pseudos");
     menuSetting->addSeparator();
     QAction* actionShowUpdateTopicTime = menuSetting->addAction("Taux de rafraichissement des topics");
     QAction* actionShowNumberOfMessageShowedFirstTime = menuSetting->addAction("Nombre de message affiché au premier chargement");
@@ -55,6 +56,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionLoadTwoLastPage = menuSetting->addAction("Charger les deux dernières pages");
     QAction* actionSearchForUpdateAtLaunch = menuSetting->addAction("Chercher les mises à jour au lancement");
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
+    actionShowListOfColorPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
     actionShowTextDecorationButtons->setCheckable(true);
     actionShowTextDecorationButtons->setChecked(settingToolClass::getShowTextDecorationButton());
     actionSetMultilineEdit->setCheckable(true);
@@ -93,6 +95,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionGoToTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentTopic);
     QObject::connect(actionGoToForum, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentForum);
     QObject::connect(actionShowListOfIgnoredPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showIgnoreListWindow);
+    QObject::connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
     QObject::connect(actionShowUpdateTopicTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showUpdateTopicTimeWindow);
     QObject::connect(actionShowNumberOfMessageShowedFirstTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow);
     QObject::connect(actionShowTextDecorationButtons, &QAction::toggled, &respawnIrc, &respawnIrcClass::setShowTextDecorationButton);

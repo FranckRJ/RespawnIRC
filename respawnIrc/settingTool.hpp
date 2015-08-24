@@ -4,7 +4,8 @@
 #include <QtCore>
 #include <QtNetwork>
 
-#include "accountlistwindow.hpp"
+#include "accountListWindow.hpp"
+#include "colorPseudoListWindow.hpp"
 
 class settingToolClass
 {
@@ -13,6 +14,7 @@ public:
     static QString getPseudoOfUser();
     static QList<QString> getListOfPseudoForTopic();
     static QList<QString> getListOfIgnoredPseudo();
+    static QList<pseudoWithColorStruct> getListOfColorPseudo();
     static QList<QString> getListOfTopicLink();
     static bool getShowTextDecorationButton();
     static bool getSetMultilineEdit();
@@ -20,11 +22,12 @@ public:
     static bool getSearchForUpdateAtLaunch();
     static int getUpdateTopicTime();
     static int getNumberOfMessageShowedFirstTime();
-    static void saveListOfAccount(QList<accountStruct> newListOfAccount);
+    static void saveListOfAccount(QList<accountStruct>& newListOfAccount);
     static void savePseudoOfUser(QString newPseudo);
-    static void saveListOfPseudoForTopic(QList<QString> newList);
-    static void saveListOfIgnoredPseudo(QList<QString> newList);
-    static void saveListOfTopicLink(QList<QString> newList);
+    static void saveListOfPseudoForTopic(QList<QString>& newList);
+    static void saveListOfIgnoredPseudo(QList<QString>& newList);
+    static void saveListOfColorPseudo(QList<pseudoWithColorStruct>& newListOfColorPseudo);
+    static void saveListOfTopicLink(QList<QString>& newList);
     static void saveShowTextDecoration(bool newVal);
     static void saveSetMultilineEdit(bool newVal);
     static void saveLoadTwoLastPage(bool newVal);

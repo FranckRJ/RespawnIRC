@@ -66,6 +66,7 @@ void respawnIrcClass::loadSettings()
     }
 
     listOfIgnoredPseudo = settingToolClass::getListOfIgnoredPseudo();
+    listOfColorPseudo = settingToolClass::getListOfColorPseudo();
     setLoadTwoLastPage(settingToolClass::getLoadTwoLastPage());
     setUpdateTopicTime(settingToolClass::getUpdateTopicTime());
     setNumberOfMessageShowedFirstTime(settingToolClass::getNumberOfMessageShowedFirstTime());
@@ -222,6 +223,13 @@ void respawnIrcClass::showIgnoreListWindow()
     myIgnoreListWindow->exec();
 }
 
+void respawnIrcClass::showColorPseudoListWindow()
+{
+    colorPseudoListWindowClass* myColorPseudoListWindow = new colorPseudoListWindowClass(&listOfColorPseudo, this);
+    QObject::connect(myColorPseudoListWindow, &colorPseudoListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfColorPseudo);
+    myColorPseudoListWindow->exec();
+}
+
 void respawnIrcClass::showUpdateTopicTimeWindow()
 {
     chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(2500, 10000, settingToolClass::getUpdateTopicTime(), this);
@@ -238,7 +246,7 @@ void respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow()
 
 void respawnIrcClass::addNewTab()
 {
-    listOfShowTopicMessages.push_back(new showTopicMessagesClass(&listOfIgnoredPseudo, this));
+    listOfShowTopicMessages.push_back(new showTopicMessagesClass(&listOfIgnoredPseudo, &listOfColorPseudo, this));
 
     if(listOfShowTopicMessages.size() > listOfTopicLink.size())
     {
@@ -497,6 +505,11 @@ void respawnIrcClass::saveListOfAccount()
 void respawnIrcClass::saveListOfIgnoredPseudo()
 {
     settingToolClass::saveListOfIgnoredPseudo(listOfIgnoredPseudo);
+}
+
+void respawnIrcClass::saveListOfColorPseudo()
+{
+    settingToolClass::saveListOfColorPseudo(listOfColorPseudo);
 }
 
 void respawnIrcClass::warnUserForNewMessages()

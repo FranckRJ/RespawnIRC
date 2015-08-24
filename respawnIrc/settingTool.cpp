@@ -52,6 +52,29 @@ QList<QString> settingToolClass::getListOfIgnoredPseudo()
     return listOfIgnoredPseudo;
 }
 
+QList<pseudoWithColorStruct> settingToolClass::getListOfColorPseudo()
+{
+    QList<pseudoWithColorStruct> listOfColorPseudo;
+    QList<QString> listOfPseudo = createStringListWithThisQVariantList(setting.value("listOfPseudoForColor", QList<QVariant>()).toList());
+    QList<QString> listOfRed = createStringListWithThisQVariantList(setting.value("listOfRedForColor", QList<QVariant>()).toList());
+    QList<QString> listOfGreen = createStringListWithThisQVariantList(setting.value("listOfGreenForColor", QList<QVariant>()).toList());
+    QList<QString> listOfBlue = createStringListWithThisQVariantList(setting.value("listOfBlueForColor", QList<QVariant>()).toList());
+
+    if(listOfPseudo.size() == listOfRed.size() && listOfRed.size() == listOfGreen.size() && listOfGreen.size() == listOfBlue.size())
+    {
+        for(int i = 0; i < listOfPseudo.size(); ++i)
+        {
+            listOfColorPseudo.push_back(pseudoWithColorStruct());
+            listOfColorPseudo.back().pseudo = listOfPseudo.at(i);
+            listOfColorPseudo.back().red = listOfRed.at(i).toInt();
+            listOfColorPseudo.back().green = listOfGreen.at(i).toInt();
+            listOfColorPseudo.back().blue = listOfBlue.at(i).toInt();
+        }
+    }
+
+    return listOfColorPseudo;
+}
+
 QList<QString> settingToolClass::getListOfTopicLink()
 {
     QList<QString> listOfTopicLink;
@@ -94,7 +117,7 @@ int settingToolClass::getNumberOfMessageShowedFirstTime()
     return setting.value("numberOfMessageShowedFirstTime", 10).toInt();
 }
 
-void settingToolClass::saveListOfAccount(QList<accountStruct> newListOfAccount)
+void settingToolClass::saveListOfAccount(QList<accountStruct>& newListOfAccount)
 {
     QList<QNetworkCookie> listOfHelloCookie;
     QList<QNetworkCookie> listOfConnectCookie;
@@ -127,17 +150,38 @@ void settingToolClass::savePseudoOfUser(QString newPseudo)
     setting.setValue("pseudo", newPseudo);
 }
 
-void settingToolClass::saveListOfPseudoForTopic(QList<QString> newList)
+void settingToolClass::saveListOfPseudoForTopic(QList<QString>& newList)
 {
     setting.setValue("listOfPseudoForTopic", createQVariantListWithThisList(newList, false));
 }
 
-void settingToolClass::saveListOfIgnoredPseudo(QList<QString> newList)
+void settingToolClass::saveListOfIgnoredPseudo(QList<QString>& newList)
 {
     setting.setValue("listOfIgnoredPseudo", createQVariantListWithThisList(newList));
 }
 
-void settingToolClass::saveListOfTopicLink(QList<QString> newList)
+void settingToolClass::saveListOfColorPseudo(QList<pseudoWithColorStruct>& newListOfColorPseudo)
+{
+    QList<QString> pseudoList;
+    QList<QString> redList;
+    QList<QString> greenList;
+    QList<QString> blueList;
+
+    for(int i = 0; i < newListOfColorPseudo.size(); ++i)
+    {
+        pseudoList.push_back(newListOfColorPseudo.at(i).pseudo);
+        redList.push_back(QString::number(newListOfColorPseudo.at(i).red));
+        greenList.push_back(QString::number(newListOfColorPseudo.at(i).green));
+        blueList.push_back(QString::number(newListOfColorPseudo.at(i).blue));
+    }
+
+    setting.setValue("listOfPseudoForColor", createQVariantListWithThisList(pseudoList));
+    setting.setValue("listOfRedForColor", createQVariantListWithThisList(redList));
+    setting.setValue("listOfGreenForColor", createQVariantListWithThisList(greenList));
+    setting.setValue("listOfBlueForColor", createQVariantListWithThisList(blueList));
+}
+
+void settingToolClass::saveListOfTopicLink(QList<QString>& newList)
 {
     setting.setValue("listOfTopicLink", createQVariantListWithThisList(newList));
 }

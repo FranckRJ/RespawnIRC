@@ -1,4 +1,4 @@
-#include "accountlistwindow.hpp"
+#include "accountListWindow.hpp"
 #include "connectWindow.hpp"
 
 accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAccount, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
@@ -8,7 +8,7 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
     QLabel* labRemember = new QLabel("Se souvenir :", this);
     QPushButton* buttonAddAccount = new QPushButton("Ajouter", this);
     QPushButton* buttonRemoveAccount = new QPushButton("Supprimer", this);
-    QPushButton* buttonLogin = new QPushButton("Se connecter sur tout les onglets", this);
+    QPushButton* buttonLogin = new QPushButton("Se connecter sur tous les onglets", this);
     QPushButton* buttonLoginOneTopic = new QPushButton("Se connecter sur l'onglet acutel", this);
 
     rememberBox.setChecked(true);
@@ -85,6 +85,11 @@ void accountListWindowClass::addAccount(QList<QNetworkCookie> newCookies, QStrin
     if(addAcountToThisList(newCookies, newPseudoOfUser, listOfAccount) == true)
     {
         updateList();
+    }
+    else
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
     }
 }
 

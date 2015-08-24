@@ -9,6 +9,8 @@ ignoreListWindowClass::ignoreListWindowClass(QList<QString> *newListOfIgnoredPse
     QPushButton* buttonEditPseudo = new QPushButton("Editer", this);
     QPushButton* buttonRemovePseudo = new QPushButton("Supprimer", this);
 
+    viewListOfIgnoredPseudo.setEditTriggers(QAbstractItemView::NoEditTriggers);
+
     QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(&viewListOfIgnoredPseudo, 0, 0, 1, 3);
     mainLayout->addWidget(buttonAddPseudo, 1, 0);
@@ -36,7 +38,7 @@ void ignoreListWindowClass::updateList()
 void ignoreListWindowClass::addPseudo()
 {
     addPseudoWindowClass* myAddPseudoWindow = new addPseudoWindowClass(this);
-    connect(myAddPseudoWindow, SIGNAL(newPseudoSet(QString)), this, SLOT(addThisPseudo(QString)));
+    QObject::connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &ignoreListWindowClass::addThisPseudo);
     myAddPseudoWindow->exec();
 }
 
@@ -45,7 +47,7 @@ void ignoreListWindowClass::editCurrentPseudo()
     if(viewListOfIgnoredPseudo.currentIndex().row() != -1)
     {
         addPseudoWindowClass* myAddPseudoWindow = new addPseudoWindowClass(this, listOfIgnoredPseudo->at(viewListOfIgnoredPseudo.currentIndex().row()));
-        connect(myAddPseudoWindow, SIGNAL(newPseudoSet(QString)), this, SLOT(setCurrentPseudo(QString)));
+        QObject::connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &ignoreListWindowClass::setCurrentPseudo);
         myAddPseudoWindow->exec();
     }
 

@@ -20,8 +20,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_respawnIrcClass_t {
-    QByteArrayData data[46];
-    char stringdata0[774];
+    QByteArrayData data[50];
+    char stringdata0[864];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,68 +36,75 @@ QT_MOC_LITERAL(2, 28, 0), // ""
 QT_MOC_LITERAL(3, 29, 21), // "showAccountListWindow"
 QT_MOC_LITERAL(4, 51, 15), // "showSelectTopic"
 QT_MOC_LITERAL(5, 67, 20), // "showIgnoreListWindow"
-QT_MOC_LITERAL(6, 88, 25), // "showUpdateTopicTimeWindow"
-QT_MOC_LITERAL(7, 114, 40), // "showNumberOfMessageShowedFirs..."
-QT_MOC_LITERAL(8, 155, 9), // "addNewTab"
-QT_MOC_LITERAL(9, 165, 9), // "removeTab"
-QT_MOC_LITERAL(10, 175, 5), // "index"
-QT_MOC_LITERAL(11, 181, 11), // "updateTopic"
-QT_MOC_LITERAL(12, 193, 11), // "reloadTopic"
-QT_MOC_LITERAL(13, 205, 16), // "goToCurrentTopic"
-QT_MOC_LITERAL(14, 222, 16), // "goToCurrentForum"
-QT_MOC_LITERAL(15, 239, 18), // "setUpdateTopicTime"
-QT_MOC_LITERAL(16, 258, 7), // "newTime"
-QT_MOC_LITERAL(17, 266, 33), // "setNumberOfMessageShowedFirst..."
-QT_MOC_LITERAL(18, 300, 9), // "newNumber"
-QT_MOC_LITERAL(19, 310, 27), // "setShowTextDecorationButton"
-QT_MOC_LITERAL(20, 338, 6), // "newVal"
-QT_MOC_LITERAL(21, 345, 16), // "setMultilineEdit"
-QT_MOC_LITERAL(22, 362, 18), // "setLoadTwoLastPage"
-QT_MOC_LITERAL(23, 381, 13), // "setNewCookies"
-QT_MOC_LITERAL(24, 395, 21), // "QList<QNetworkCookie>"
-QT_MOC_LITERAL(25, 417, 10), // "newCookies"
-QT_MOC_LITERAL(26, 428, 15), // "newPseudoOfUser"
-QT_MOC_LITERAL(27, 444, 15), // "saveAccountList"
-QT_MOC_LITERAL(28, 460, 10), // "savePseudo"
-QT_MOC_LITERAL(29, 471, 28), // "setNewCookiesForCurrentTopic"
-QT_MOC_LITERAL(30, 500, 11), // "setNewTopic"
-QT_MOC_LITERAL(31, 512, 8), // "newTopic"
-QT_MOC_LITERAL(32, 521, 17), // "setCodeForCaptcha"
-QT_MOC_LITERAL(33, 539, 4), // "code"
-QT_MOC_LITERAL(34, 544, 19), // "setNewMessageStatus"
-QT_MOC_LITERAL(35, 564, 36), // "setNewNumberOfConnectedAndPse..."
-QT_MOC_LITERAL(36, 601, 15), // "setNewTopicName"
-QT_MOC_LITERAL(37, 617, 9), // "topicName"
-QT_MOC_LITERAL(38, 627, 17), // "saveListOfAccount"
-QT_MOC_LITERAL(39, 645, 23), // "saveListOfIgnoredPseudo"
-QT_MOC_LITERAL(40, 669, 22), // "warnUserForNewMessages"
-QT_MOC_LITERAL(41, 692, 17), // "currentTabChanged"
-QT_MOC_LITERAL(42, 710, 8), // "newIndex"
-QT_MOC_LITERAL(43, 719, 11), // "postMessage"
-QT_MOC_LITERAL(44, 731, 25), // "deleteReplyForSendMessage"
-QT_MOC_LITERAL(45, 757, 16) // "clipboardChanged"
+QT_MOC_LITERAL(6, 88, 25), // "showColorPseudoListWindow"
+QT_MOC_LITERAL(7, 114, 25), // "showUpdateTopicTimeWindow"
+QT_MOC_LITERAL(8, 140, 40), // "showNumberOfMessageShowedFirs..."
+QT_MOC_LITERAL(9, 181, 9), // "addNewTab"
+QT_MOC_LITERAL(10, 191, 9), // "removeTab"
+QT_MOC_LITERAL(11, 201, 5), // "index"
+QT_MOC_LITERAL(12, 207, 14), // "checkForUpdate"
+QT_MOC_LITERAL(13, 222, 11), // "updateTopic"
+QT_MOC_LITERAL(14, 234, 11), // "reloadTopic"
+QT_MOC_LITERAL(15, 246, 16), // "goToCurrentTopic"
+QT_MOC_LITERAL(16, 263, 16), // "goToCurrentForum"
+QT_MOC_LITERAL(17, 280, 18), // "setUpdateTopicTime"
+QT_MOC_LITERAL(18, 299, 7), // "newTime"
+QT_MOC_LITERAL(19, 307, 33), // "setNumberOfMessageShowedFirst..."
+QT_MOC_LITERAL(20, 341, 9), // "newNumber"
+QT_MOC_LITERAL(21, 351, 27), // "setShowTextDecorationButton"
+QT_MOC_LITERAL(22, 379, 6), // "newVal"
+QT_MOC_LITERAL(23, 386, 16), // "setMultilineEdit"
+QT_MOC_LITERAL(24, 403, 18), // "setLoadTwoLastPage"
+QT_MOC_LITERAL(25, 422, 26), // "setSearchForUpdateAtLaunch"
+QT_MOC_LITERAL(26, 449, 13), // "setNewCookies"
+QT_MOC_LITERAL(27, 463, 21), // "QList<QNetworkCookie>"
+QT_MOC_LITERAL(28, 485, 10), // "newCookies"
+QT_MOC_LITERAL(29, 496, 15), // "newPseudoOfUser"
+QT_MOC_LITERAL(30, 512, 15), // "saveAccountList"
+QT_MOC_LITERAL(31, 528, 10), // "savePseudo"
+QT_MOC_LITERAL(32, 539, 28), // "setNewCookiesForCurrentTopic"
+QT_MOC_LITERAL(33, 568, 11), // "setNewTopic"
+QT_MOC_LITERAL(34, 580, 8), // "newTopic"
+QT_MOC_LITERAL(35, 589, 17), // "setCodeForCaptcha"
+QT_MOC_LITERAL(36, 607, 4), // "code"
+QT_MOC_LITERAL(37, 612, 19), // "setNewMessageStatus"
+QT_MOC_LITERAL(38, 632, 36), // "setNewNumberOfConnectedAndPse..."
+QT_MOC_LITERAL(39, 669, 15), // "setNewTopicName"
+QT_MOC_LITERAL(40, 685, 9), // "topicName"
+QT_MOC_LITERAL(41, 695, 17), // "saveListOfAccount"
+QT_MOC_LITERAL(42, 713, 23), // "saveListOfIgnoredPseudo"
+QT_MOC_LITERAL(43, 737, 21), // "saveListOfColorPseudo"
+QT_MOC_LITERAL(44, 759, 22), // "warnUserForNewMessages"
+QT_MOC_LITERAL(45, 782, 17), // "currentTabChanged"
+QT_MOC_LITERAL(46, 800, 8), // "newIndex"
+QT_MOC_LITERAL(47, 809, 11), // "postMessage"
+QT_MOC_LITERAL(48, 821, 25), // "deleteReplyForSendMessage"
+QT_MOC_LITERAL(49, 847, 16) // "clipboardChanged"
 
     },
     "respawnIrcClass\0showConnect\0\0"
     "showAccountListWindow\0showSelectTopic\0"
-    "showIgnoreListWindow\0showUpdateTopicTimeWindow\0"
+    "showIgnoreListWindow\0showColorPseudoListWindow\0"
+    "showUpdateTopicTimeWindow\0"
     "showNumberOfMessageShowedFirstTimeWindow\0"
-    "addNewTab\0removeTab\0index\0updateTopic\0"
-    "reloadTopic\0goToCurrentTopic\0"
+    "addNewTab\0removeTab\0index\0checkForUpdate\0"
+    "updateTopic\0reloadTopic\0goToCurrentTopic\0"
     "goToCurrentForum\0setUpdateTopicTime\0"
     "newTime\0setNumberOfMessageShowedFirstTime\0"
     "newNumber\0setShowTextDecorationButton\0"
     "newVal\0setMultilineEdit\0setLoadTwoLastPage\0"
-    "setNewCookies\0QList<QNetworkCookie>\0"
-    "newCookies\0newPseudoOfUser\0saveAccountList\0"
+    "setSearchForUpdateAtLaunch\0setNewCookies\0"
+    "QList<QNetworkCookie>\0newCookies\0"
+    "newPseudoOfUser\0saveAccountList\0"
     "savePseudo\0setNewCookiesForCurrentTopic\0"
     "setNewTopic\0newTopic\0setCodeForCaptcha\0"
     "code\0setNewMessageStatus\0"
     "setNewNumberOfConnectedAndPseudoUsed\0"
     "setNewTopicName\0topicName\0saveListOfAccount\0"
-    "saveListOfIgnoredPseudo\0warnUserForNewMessages\0"
-    "currentTabChanged\0newIndex\0postMessage\0"
-    "deleteReplyForSendMessage\0clipboardChanged"
+    "saveListOfIgnoredPseudo\0saveListOfColorPseudo\0"
+    "warnUserForNewMessages\0currentTabChanged\0"
+    "newIndex\0postMessage\0deleteReplyForSendMessage\0"
+    "clipboardChanged"
 };
 #undef QT_MOC_LITERAL
 
@@ -107,7 +114,7 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      31,   14, // methods
+      35,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -115,37 +122,41 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  169,    2, 0x0a /* Public */,
-       3,    0,  170,    2, 0x0a /* Public */,
-       4,    0,  171,    2, 0x0a /* Public */,
-       5,    0,  172,    2, 0x0a /* Public */,
-       6,    0,  173,    2, 0x0a /* Public */,
-       7,    0,  174,    2, 0x0a /* Public */,
-       8,    0,  175,    2, 0x0a /* Public */,
-       9,    1,  176,    2, 0x0a /* Public */,
-      11,    0,  179,    2, 0x0a /* Public */,
-      12,    0,  180,    2, 0x0a /* Public */,
-      13,    0,  181,    2, 0x0a /* Public */,
-      14,    0,  182,    2, 0x0a /* Public */,
-      15,    1,  183,    2, 0x0a /* Public */,
-      17,    1,  186,    2, 0x0a /* Public */,
-      19,    1,  189,    2, 0x0a /* Public */,
-      21,    1,  192,    2, 0x0a /* Public */,
-      22,    1,  195,    2, 0x0a /* Public */,
-      23,    4,  198,    2, 0x0a /* Public */,
-      29,    3,  207,    2, 0x0a /* Public */,
-      30,    1,  214,    2, 0x0a /* Public */,
-      32,    1,  217,    2, 0x0a /* Public */,
-      34,    0,  220,    2, 0x0a /* Public */,
-      35,    0,  221,    2, 0x0a /* Public */,
-      36,    1,  222,    2, 0x0a /* Public */,
-      38,    0,  225,    2, 0x0a /* Public */,
-      39,    0,  226,    2, 0x0a /* Public */,
-      40,    0,  227,    2, 0x0a /* Public */,
-      41,    1,  228,    2, 0x0a /* Public */,
-      43,    0,  231,    2, 0x0a /* Public */,
-      44,    0,  232,    2, 0x0a /* Public */,
-      45,    0,  233,    2, 0x0a /* Public */,
+       1,    0,  189,    2, 0x0a /* Public */,
+       3,    0,  190,    2, 0x0a /* Public */,
+       4,    0,  191,    2, 0x0a /* Public */,
+       5,    0,  192,    2, 0x0a /* Public */,
+       6,    0,  193,    2, 0x0a /* Public */,
+       7,    0,  194,    2, 0x0a /* Public */,
+       8,    0,  195,    2, 0x0a /* Public */,
+       9,    0,  196,    2, 0x0a /* Public */,
+      10,    1,  197,    2, 0x0a /* Public */,
+      12,    0,  200,    2, 0x0a /* Public */,
+      13,    0,  201,    2, 0x0a /* Public */,
+      14,    0,  202,    2, 0x0a /* Public */,
+      15,    0,  203,    2, 0x0a /* Public */,
+      16,    0,  204,    2, 0x0a /* Public */,
+      17,    1,  205,    2, 0x0a /* Public */,
+      19,    1,  208,    2, 0x0a /* Public */,
+      21,    1,  211,    2, 0x0a /* Public */,
+      23,    1,  214,    2, 0x0a /* Public */,
+      24,    1,  217,    2, 0x0a /* Public */,
+      25,    1,  220,    2, 0x0a /* Public */,
+      26,    4,  223,    2, 0x0a /* Public */,
+      32,    3,  232,    2, 0x0a /* Public */,
+      33,    1,  239,    2, 0x0a /* Public */,
+      35,    1,  242,    2, 0x0a /* Public */,
+      37,    0,  245,    2, 0x0a /* Public */,
+      38,    0,  246,    2, 0x0a /* Public */,
+      39,    1,  247,    2, 0x0a /* Public */,
+      41,    0,  250,    2, 0x0a /* Public */,
+      42,    0,  251,    2, 0x0a /* Public */,
+      43,    0,  252,    2, 0x0a /* Public */,
+      44,    0,  253,    2, 0x0a /* Public */,
+      45,    1,  254,    2, 0x0a /* Public */,
+      47,    0,  257,    2, 0x0a /* Public */,
+      48,    0,  258,    2, 0x0a /* Public */,
+      49,    0,  259,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -155,27 +166,31 @@ static const uint qt_meta_data_respawnIrcClass[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   10,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   11,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   16,
+    QMetaType::Void,
     QMetaType::Void, QMetaType::Int,   18,
-    QMetaType::Void, QMetaType::Bool,   20,
-    QMetaType::Void, QMetaType::Bool,   20,
-    QMetaType::Void, QMetaType::Bool,   20,
-    QMetaType::Void, 0x80000000 | 24, QMetaType::QString, QMetaType::Bool, QMetaType::Bool,   25,   26,   27,   28,
-    QMetaType::Void, 0x80000000 | 24, QMetaType::QString, QMetaType::Bool,   25,   26,   28,
-    QMetaType::Void, QMetaType::QString,   31,
-    QMetaType::Void, QMetaType::QString,   33,
+    QMetaType::Void, QMetaType::Int,   20,
+    QMetaType::Void, QMetaType::Bool,   22,
+    QMetaType::Void, QMetaType::Bool,   22,
+    QMetaType::Void, QMetaType::Bool,   22,
+    QMetaType::Void, QMetaType::Bool,   22,
+    QMetaType::Void, 0x80000000 | 27, QMetaType::QString, QMetaType::Bool, QMetaType::Bool,   28,   29,   30,   31,
+    QMetaType::Void, 0x80000000 | 27, QMetaType::QString, QMetaType::Bool,   28,   29,   31,
+    QMetaType::Void, QMetaType::QString,   34,
+    QMetaType::Void, QMetaType::QString,   36,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   37,
+    QMetaType::Void, QMetaType::QString,   40,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   42,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   46,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -193,46 +208,50 @@ void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 1: _t->showAccountListWindow(); break;
         case 2: _t->showSelectTopic(); break;
         case 3: _t->showIgnoreListWindow(); break;
-        case 4: _t->showUpdateTopicTimeWindow(); break;
-        case 5: _t->showNumberOfMessageShowedFirstTimeWindow(); break;
-        case 6: _t->addNewTab(); break;
-        case 7: _t->removeTab((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 8: _t->updateTopic(); break;
-        case 9: _t->reloadTopic(); break;
-        case 10: _t->goToCurrentTopic(); break;
-        case 11: _t->goToCurrentForum(); break;
-        case 12: _t->setUpdateTopicTime((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 13: _t->setNumberOfMessageShowedFirstTime((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 14: _t->setShowTextDecorationButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 15: _t->setMultilineEdit((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 16: _t->setLoadTwoLastPage((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 17: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
-        case 18: _t->setNewCookiesForCurrentTopic((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
-        case 19: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 20: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 21: _t->setNewMessageStatus(); break;
-        case 22: _t->setNewNumberOfConnectedAndPseudoUsed(); break;
-        case 23: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 24: _t->saveListOfAccount(); break;
-        case 25: _t->saveListOfIgnoredPseudo(); break;
-        case 26: _t->warnUserForNewMessages(); break;
-        case 27: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 28: _t->postMessage(); break;
-        case 29: _t->deleteReplyForSendMessage(); break;
-        case 30: _t->clipboardChanged(); break;
+        case 4: _t->showColorPseudoListWindow(); break;
+        case 5: _t->showUpdateTopicTimeWindow(); break;
+        case 6: _t->showNumberOfMessageShowedFirstTimeWindow(); break;
+        case 7: _t->addNewTab(); break;
+        case 8: _t->removeTab((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 9: _t->checkForUpdate(); break;
+        case 10: _t->updateTopic(); break;
+        case 11: _t->reloadTopic(); break;
+        case 12: _t->goToCurrentTopic(); break;
+        case 13: _t->goToCurrentForum(); break;
+        case 14: _t->setUpdateTopicTime((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 15: _t->setNumberOfMessageShowedFirstTime((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 16: _t->setShowTextDecorationButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 17: _t->setMultilineEdit((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 18: _t->setLoadTwoLastPage((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 19: _t->setSearchForUpdateAtLaunch((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 20: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
+        case 21: _t->setNewCookiesForCurrentTopic((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 22: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 23: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 24: _t->setNewMessageStatus(); break;
+        case 25: _t->setNewNumberOfConnectedAndPseudoUsed(); break;
+        case 26: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 27: _t->saveListOfAccount(); break;
+        case 28: _t->saveListOfIgnoredPseudo(); break;
+        case 29: _t->saveListOfColorPseudo(); break;
+        case 30: _t->warnUserForNewMessages(); break;
+        case 31: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 32: _t->postMessage(); break;
+        case 33: _t->deleteReplyForSendMessage(); break;
+        case 34: _t->clipboardChanged(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 17:
+        case 20:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QNetworkCookie> >(); break;
             }
             break;
-        case 18:
+        case 21:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -268,13 +287,13 @@ int respawnIrcClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 31)
+        if (_id < 35)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 31;
+        _id -= 35;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 31)
+        if (_id < 35)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 31;
+        _id -= 35;
     }
     return _id;
 }

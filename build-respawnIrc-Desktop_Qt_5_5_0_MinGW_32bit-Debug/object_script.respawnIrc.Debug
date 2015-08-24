@@ -12,8 +12,9 @@ INPUT(
 ./debug\settingTool.o
 ./debug\multiTypeTextBox.o
 ./debug\chooseNumberWindow.o
-./debug\accountlistwindow.o
 ./debug\checkUpdate.o
+./debug\accountListWindow.o
+./debug\colorPseudoListWindow.o
 ./debug\moc_respawnIrc.o
 ./debug\moc_connectWindow.o
 ./debug\moc_selectTopicWindow.o
@@ -23,6 +24,7 @@ INPUT(
 ./debug\moc_addPseudoWindow.o
 ./debug\moc_multiTypeTextBox.o
 ./debug\moc_chooseNumberWindow.o
-./debug\moc_accountlistwindow.o
 ./debug\moc_checkUpdate.o
+./debug\moc_colorPseudoListWindow.o
+./debug\moc_accountListWindow.o
 );

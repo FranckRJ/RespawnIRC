@@ -2,7 +2,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QWidget* parent) : QWidget(parent)
+showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent) : QWidget(parent)
 {
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(true);
@@ -10,6 +10,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
     timerForGetMessage.stop();
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
+    listOfColorPseudo = newListOfColorPseudo;
     messagesStatus = "Rien.";
     replyForFirstPage = 0;
     replyForSecondPage = 0;
@@ -73,6 +74,19 @@ QString showTopicMessagesClass::getNumberOfConnected()
 QString showTopicMessagesClass::getPseudoUsed()
 {
     return pseudoOfUser;
+}
+
+QString showTopicMessagesClass::getColorOfThisPseudo(QString pseudo)
+{
+    for(int i = 0; i < listOfColorPseudo->size(); ++i)
+    {
+        if(listOfColorPseudo->at(i).pseudo == pseudo)
+        {
+            return "rgb(" + QString::number(listOfColorPseudo->at(i).red) + ", " + QString::number(listOfColorPseudo->at(i).green) + ", " + QString::number(listOfColorPseudo->at(i).blue) + ")";
+        }
+    }
+
+    return "";
 }
 
 const QList<QNetworkCookie>& showTopicMessagesClass::getListOfCookies()
@@ -301,13 +315,19 @@ void showTopicMessagesClass::analyzeMessages()
             if((listOfEntireMessage.at(i).idOfMessage > idOfLastMessage || (listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit))
                     && listOfIgnoredPseudo->indexOf(listOfEntireMessage.at(i).pseudo.toLower()) == -1)
             {
-                if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
+                colorOfPseudo.clear();
+                colorOfPseudo = getColorOfThisPseudo(listOfEntireMessage.at(i).pseudo.toLower());
+
+                if(colorOfPseudo.isEmpty() == true)
                 {
-                    colorOfPseudo = "blue";
-                }
-                else
-                {
-                    colorOfPseudo = "dimgrey";
+                    if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
+                    {
+                        colorOfPseudo = "blue";
+                    }
+                    else
+                    {
+                        colorOfPseudo = "dimgrey";
+                    }
                 }
 
                 if(listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit)
