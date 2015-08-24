@@ -13,6 +13,7 @@ INPUT(
 ./debug\multiTypeTextBox.o
 ./debug\chooseNumberWindow.o
 ./debug\accountlistwindow.o
+./debug\checkUpdate.o
 ./debug\moc_respawnIrc.o
 ./debug\moc_connectWindow.o
 ./debug\moc_selectTopicWindow.o
@@ -23,4 +24,5 @@ INPUT(
 ./debug\moc_multiTypeTextBox.o
 ./debug\moc_chooseNumberWindow.o
 ./debug\moc_accountlistwindow.o
+./debug\moc_checkUpdate.o
 );

@@ -16,6 +16,7 @@ struct messageStruct
 class parsingToolClass
 {
 public:
+    static QString getVersionName(const QString& source);
     static void getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
     static QString getCaptchaLink(const QString& source);
     static QString getLastPageOfTopic(const QString& source);
@@ -31,6 +32,7 @@ public:
     static void replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, bool createLink = false, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = 0, QString stringAfterAfter = "");
 private:
+    static QRegularExpression expForVersionName;
     static QRegularExpression expForFormTopic;
     static QRegularExpression expForFormConnect;
     static QRegularExpression expForInput;

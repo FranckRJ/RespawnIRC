@@ -12,7 +12,8 @@ SOURCES += \
     settingTool.cpp \
     multiTypeTextBox.cpp \
     chooseNumberWindow.cpp \
-    accountlistwindow.cpp
+    accountlistwindow.cpp \
+    checkUpdate.cpp
 
 QT += \
     network \
@@ -31,6 +32,7 @@ HEADERS += \
     settingTool.hpp \
     multiTypeTextBox.hpp \
     chooseNumberWindow.hpp \
-    accountlistwindow.hpp
+    accountlistwindow.hpp \
+    checkUpdate.hpp
 
 RC_FILE = respawnIrc.rc

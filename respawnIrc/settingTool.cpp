@@ -79,6 +79,11 @@ bool settingToolClass::getLoadTwoLastPage()
     return setting.value("loadTwoLastPage", false).toBool();
 }
 
+bool settingToolClass::getSearchForUpdateAtLaunch()
+{
+    return setting.value("searchForUpdateAtLaunch", true).toBool();
+}
+
 int settingToolClass::getUpdateTopicTime()
 {
     return setting.value("updateTopicTime", 4000).toInt();
@@ -150,6 +155,11 @@ void settingToolClass::saveSetMultilineEdit(bool newVal)
 void settingToolClass::saveLoadTwoLastPage(bool newVal)
 {
     setting.setValue("loadTwoLastPage", newVal);
+}
+
+void settingToolClass::saveSearchForUpdateAtLaunch(bool newVal)
+{
+    setting.setValue("searchForUpdateAtLaunch", newVal);
 }
 
 void settingToolClass::saveUpdateTopicTime(int newTime)

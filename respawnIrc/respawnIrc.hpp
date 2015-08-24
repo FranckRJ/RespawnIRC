@@ -8,6 +8,7 @@
 #include "showTopicMessages.hpp"
 #include "accountlistwindow.hpp"
 #include "multiTypeTextBox.hpp"
+#include "checkUpdate.hpp"
 
 class respawnIrcClass : public QWidget
 {
@@ -20,6 +21,7 @@ public:
     QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
     void addButtonToButtonLayout();
     void setButtonInButtonLayoutVisible(bool visible);
+    static const QString currentVersionName;
 public slots:
     void showConnect();
     void showAccountListWindow();
@@ -29,6 +31,7 @@ public slots:
     void showNumberOfMessageShowedFirstTimeWindow();
     void addNewTab();
     void removeTab(int index);
+    void checkForUpdate();
     void updateTopic();
     void reloadTopic();
     void goToCurrentTopic();
@@ -38,6 +41,7 @@ public slots:
     void setShowTextDecorationButton(bool newVal);
     void setMultilineEdit(bool newVal);
     void setLoadTwoLastPage(bool newVal);
+    void setSearchForUpdateAtLaunch(bool newVal);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
     void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);
     void setNewTopic(QString newTopic);
@@ -75,6 +79,7 @@ private:
     QString pseudoOfUser;
     QString captchaCode;
     QPixmap alertImage;
+    checkUpdateClass checkUpdate;
 };
 
 #endif

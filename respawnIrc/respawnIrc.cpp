@@ -7,7 +7,9 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
+const QString respawnIrcClass::currentVersionName("v1.10");
+
+respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
 
     tabList.setTabsClosable(true);
@@ -92,6 +94,11 @@ void respawnIrcClass::loadSettings()
     }
 
     setMultilineEdit(settingToolClass::getSetMultilineEdit());
+
+    if(settingToolClass::getSearchForUpdateAtLaunch() == true)
+    {
+        checkUpdate.startDownloadOfLatestUpdatePage();
+    }
 }
 
 showTopicMessagesClass* respawnIrcClass::getCurrentWidget()
@@ -286,6 +293,11 @@ void respawnIrcClass::removeTab(int index)
     }
 }
 
+void respawnIrcClass::checkForUpdate()
+{
+    checkUpdate.startDownloadOfLatestUpdatePage(true);
+}
+
 void respawnIrcClass::updateTopic()
 {
     getCurrentWidget()->startGetMessage();
@@ -375,6 +387,11 @@ void respawnIrcClass::setLoadTwoLastPage(bool newVal)
     {
         listOfShowTopicMessages.at(i)->updateSettingInfo();
     }
+}
+
+void respawnIrcClass::setSearchForUpdateAtLaunch(bool newVal)
+{
+    settingToolClass::saveSearchForUpdateAtLaunch(newVal);
 }
 
 void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo)

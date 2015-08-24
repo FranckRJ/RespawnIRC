@@ -13,6 +13,7 @@ INPUT(
 ./release\multiTypeTextBox.o
 ./release\chooseNumberWindow.o
 ./release\accountlistwindow.o
+./release\checkUpdate.o
 ./release\moc_respawnIrc.o
 ./release\moc_connectWindow.o
 ./release\moc_selectTopicWindow.o
@@ -23,4 +24,5 @@ INPUT(
 ./release\moc_multiTypeTextBox.o
 ./release\moc_chooseNumberWindow.o
 ./release\moc_accountlistwindow.o
+./release\moc_checkUpdate.o
 );
