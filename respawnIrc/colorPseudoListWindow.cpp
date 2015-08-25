@@ -11,14 +11,17 @@ colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStru
     QPushButton* buttonAddPseudo = new QPushButton("Ajouter", this);
     QPushButton* buttonEditPseudo = new QPushButton("Editer", this);
     QPushButton* buttonRemovePseudo = new QPushButton("Supprimer", this);
-    QPushButton* buttonValidate = new QPushButton("Valide la couleur", this);
+    QPushButton* buttonValidate = new QPushButton("Choisir une couleur", this);
 
     redBox.setMinimum(0);
     redBox.setMaximum(255);
+    redBox.setReadOnly(true);
     greenBox.setMinimum(0);
     greenBox.setMaximum(255);
+    greenBox.setReadOnly(true);
     blueBox.setMinimum(0);
     blueBox.setMaximum(255);
+    blueBox.setReadOnly(true);
     viewListOfColorPseudo.setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     QHBoxLayout* layoutForSpinBox = new QHBoxLayout;
@@ -48,7 +51,7 @@ colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStru
     QObject::connect(buttonEditPseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::editCurrentPseudo);
     QObject::connect(buttonRemovePseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::removeCurrentPseudo);
     QObject::connect(&viewListOfColorPseudo, &QListView::activated, this, &colorPseudoListWindowClass::itemSelectedHasChanged);
-    QObject::connect(buttonValidate, &QPushButton::pressed, this, &colorPseudoListWindowClass::valideColor);
+    QObject::connect(buttonValidate, &QPushButton::pressed, this, &colorPseudoListWindowClass::chooseColor);
 }
 
 bool colorPseudoListWindowClass::addPseudoToColorPseudoList(QString newPseudo, bool reallyAddPseudoToList)
@@ -147,13 +150,17 @@ void colorPseudoListWindowClass::itemSelectedHasChanged(QModelIndex index)
     blueBox.setValue(listOfColorPseudo->at(index.row()).blue);
 }
 
-void colorPseudoListWindowClass::valideColor()
+void colorPseudoListWindowClass::chooseColor()
 {
     if(viewListOfColorPseudo.currentIndex().row() != -1)
     {
-        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].red = redBox.value();
-        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].green = greenBox.value();
-        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].blue = blueBox.value();
+        QColor newColor = QColorDialog::getColor(QColor(listOfColorPseudo->at(viewListOfColorPseudo.currentIndex().row()).red,
+                                                        listOfColorPseudo->at(viewListOfColorPseudo.currentIndex().row()).green,
+                                                        listOfColorPseudo->at(viewListOfColorPseudo.currentIndex().row()).blue), this, "Choisir une couleur");
+        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].red = newColor.red();
+        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].green = newColor.green();
+        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].blue = newColor.blue();
+        itemSelectedHasChanged(viewListOfColorPseudo.currentIndex());
         emit listHasChanged();
     }
 }

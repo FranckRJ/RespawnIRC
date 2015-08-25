@@ -26,7 +26,7 @@ public slots:
     void addThisPseudo(QString newPseudo);
     void setCurrentPseudo(QString newPseudo);
     void itemSelectedHasChanged(QModelIndex index);
-    void valideColor();
+    void chooseColor();
 signals:
     void listHasChanged();
 private:

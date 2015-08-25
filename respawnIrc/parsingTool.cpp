@@ -1,6 +1,7 @@
 #include "parsingTool.hpp"
 
 QRegularExpression parsingToolClass::expForVersionName("\"tag_name\"[^\"]*:[^\"]*\"([^\"]*)\"",  QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForVersionChangelog("\"body\"[^\"]*:[^\"]*\"(.*)\"",  QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForFormTopic("(<form [^>]*form-post-topic form-post-message.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForFormConnect("(<form [^>]*form-connect-jv.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForInput("<input ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -30,6 +31,11 @@ QRegularExpression parsingToolClass::expForAllJVCare("<span class=\"JvCare [^\"]
 QString parsingToolClass::getVersionName(const QString &source)
 {
     return expForVersionName.match(source).captured(1);
+}
+
+QString parsingToolClass::getVersionChangelog(const QString &source)
+{
+    return expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--");
 }
 
 void parsingToolClass::getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput)

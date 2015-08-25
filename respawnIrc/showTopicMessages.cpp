@@ -265,7 +265,7 @@ void showTopicMessagesClass::analyzeMessages()
         return;
     }
 
-    setMessageStatus("Récupération des messages terminé !");
+    setMessageStatus("Récupération des messages terminée !");
     setNumberOfConnected(parsingToolClass::getNumberOfConnected(sourceFirst));
 
     newTopicLink = parsingToolClass::getLastPageOfTopic(sourceFirst);

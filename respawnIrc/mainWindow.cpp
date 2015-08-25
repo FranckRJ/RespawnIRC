@@ -52,7 +52,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionShowNumberOfMessageShowedFirstTime = menuSetting->addAction("Nombre de message affiché au premier chargement");
     menuSetting->addSeparator();
     QAction* actionShowTextDecorationButtons = menuSetting->addAction("Afficher les boutons de décoration de texte");
-    QAction* actionSetMultilineEdit = menuSetting->addAction("Saisi du message en mode multiligne");
+    QAction* actionSetMultilineEdit = menuSetting->addAction("Saisie du message en mode multiligne");
     QAction* actionLoadTwoLastPage = menuSetting->addAction("Charger les deux dernières pages");
     QAction* actionSearchForUpdateAtLaunch = menuSetting->addAction("Chercher les mises à jour au lancement");
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));

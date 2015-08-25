@@ -40,14 +40,14 @@ QT_MOC_LITERAL(7, 105, 9), // "newPseudo"
 QT_MOC_LITERAL(8, 115, 16), // "setCurrentPseudo"
 QT_MOC_LITERAL(9, 132, 22), // "itemSelectedHasChanged"
 QT_MOC_LITERAL(10, 155, 5), // "index"
-QT_MOC_LITERAL(11, 161, 11) // "valideColor"
+QT_MOC_LITERAL(11, 161, 11) // "chooseColor"
 
     },
     "colorPseudoListWindowClass\0listHasChanged\0"
     "\0addPseudo\0editCurrentPseudo\0"
     "removeCurrentPseudo\0addThisPseudo\0"
     "newPseudo\0setCurrentPseudo\0"
-    "itemSelectedHasChanged\0index\0valideColor"
+    "itemSelectedHasChanged\0index\0chooseColor"
 };
 #undef QT_MOC_LITERAL
 
@@ -104,7 +104,7 @@ void colorPseudoListWindowClass::qt_static_metacall(QObject *_o, QMetaObject::Ca
         case 4: _t->addThisPseudo((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 5: _t->setCurrentPseudo((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 6: _t->itemSelectedHasChanged((*reinterpret_cast< QModelIndex(*)>(_a[1]))); break;
-        case 7: _t->valideColor(); break;
+        case 7: _t->chooseColor(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
