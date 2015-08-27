@@ -19,6 +19,7 @@ public:
     static bool getShowTextDecorationButton();
     static bool getSetMultilineEdit();
     static bool getLoadTwoLastPage();
+    static bool getIgnoreNetworkError();
     static bool getSearchForUpdateAtLaunch();
     static int getUpdateTopicTime();
     static int getNumberOfMessageShowedFirstTime();
@@ -31,6 +32,7 @@ public:
     static void saveShowTextDecoration(bool newVal);
     static void saveSetMultilineEdit(bool newVal);
     static void saveLoadTwoLastPage(bool newVal);
+    static void saveIgnoreNetworkError(bool newVal);
     static void saveSearchForUpdateAtLaunch(bool newVal);
     static void saveUpdateTopicTime(int newTime);
     static void saveNumberOfMessageShowedFirstTime(int newNumber);

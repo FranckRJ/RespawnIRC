@@ -62,6 +62,7 @@ private:
     QString ajaxInfo;
     QString oldAjaxInfo;
     bool loadTwoLastPage;
+    bool ignoreNetworkError;
     bool secondPageLoading;
     bool firstTimeGetMessages;
     bool retrievesMessage;

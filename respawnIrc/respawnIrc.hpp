@@ -31,6 +31,7 @@ public slots:
     void showColorPseudoListWindow();
     void showUpdateTopicTimeWindow();
     void showNumberOfMessageShowedFirstTimeWindow();
+    void showAbout();
     void addNewTab();
     void removeTab(int index);
     void checkForUpdate();
@@ -43,6 +44,7 @@ public slots:
     void setShowTextDecorationButton(bool newVal);
     void setMultilineEdit(bool newVal);
     void setLoadTwoLastPage(bool newVal);
+    void setIgnoreNetworkError(bool newVal);
     void setSearchForUpdateAtLaunch(bool newVal);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
     void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);

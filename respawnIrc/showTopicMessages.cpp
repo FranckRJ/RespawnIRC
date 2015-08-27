@@ -22,6 +22,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     linkHasChanged = false;
     errorMode = false;
     loadTwoLastPage = settingToolClass::getLoadTwoLastPage();
+    ignoreNetworkError = settingToolClass::getIgnoreNetworkError();
     numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
     secondPageLoading = false;
 
@@ -161,7 +162,10 @@ void showTopicMessagesClass::setTopicToErrorMode()
         else
         {
             setMessageStatus("Erreur, impossible de récupérer les messages.");
-            messageBox.warning(this, "Erreur sur " + topicName, "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.");
+            if(ignoreNetworkError == false)
+            {
+                messageBox.warning(this, "Erreur sur " + topicName, "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.");
+            }
         }
     }
     else
@@ -174,6 +178,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
 void showTopicMessagesClass::updateSettingInfo()
 {
     loadTwoLastPage = settingToolClass::getLoadTwoLastPage();
+    ignoreNetworkError = settingToolClass::getIgnoreNetworkError();
     timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
     numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
 }
@@ -419,7 +424,7 @@ void showTopicMessagesClass::analyzeMessages()
         parsingToolClass::getListOfHiddenInputFromThisForm(sourceFirst, "form-post-topic", listOfInput);
         captchaLink = parsingToolClass::getCaptchaLink(sourceFirst);
 
-        if(listOfInput.isEmpty() == true)
+        if(listOfInput.isEmpty() == true && ignoreNetworkError == false)
         {
             QMessageBox messageBox;
             messageBox.warning(this, "Erreur sur " + topicName + " avec " + pseudoOfUser, "Le compte semble invalide, si tel est vraiment le cas veuillez supprimer celui-ci de la liste des comptes et vous reconnecter avec.");

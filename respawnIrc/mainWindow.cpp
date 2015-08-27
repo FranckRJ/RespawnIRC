@@ -56,6 +56,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionShowTextDecorationButtons = menuSetting->addAction("Afficher les boutons de décoration de texte");
     QAction* actionSetMultilineEdit = menuSetting->addAction("Saisie du message en mode multiligne");
     QAction* actionLoadTwoLastPage = menuSetting->addAction("Charger les deux dernières pages");
+    QAction* actionIgnoreNetworkError = menuSetting->addAction("Ignorer les erreurs réseau");
     QAction* actionSearchForUpdateAtLaunch = menuSetting->addAction("Chercher les mises à jour au lancement");
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
     actionShowListOfColorPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
@@ -65,11 +66,15 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     actionSetMultilineEdit->setChecked(settingToolClass::getSetMultilineEdit());
     actionLoadTwoLastPage->setCheckable(true);
     actionLoadTwoLastPage->setChecked(settingToolClass::getLoadTwoLastPage());
+    actionIgnoreNetworkError->setCheckable(true);
+    actionIgnoreNetworkError->setChecked(settingToolClass::getIgnoreNetworkError());
     actionSearchForUpdateAtLaunch->setCheckable(true);
     actionSearchForUpdateAtLaunch->setChecked(settingToolClass::getSearchForUpdateAtLaunch());
 
     QMenu* menuHelp = menuBar->addMenu("&Aide");
+    QAction* actionAbout = menuHelp->addAction("A propos de RespawnIRC");
     QAction* actionAboutQt = menuHelp->addAction("A propos de Qt");
+    actionAbout->setShortcut(QKeySequence(Qt::Key_F10));
     actionAboutQt->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
 
     setMenuBar(menuBar);
@@ -104,8 +109,10 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionShowTextDecorationButtons, &QAction::toggled, &respawnIrc, &respawnIrcClass::setShowTextDecorationButton);
     QObject::connect(actionSetMultilineEdit, &QAction::toggled, &respawnIrc, &respawnIrcClass::setMultilineEdit);
     QObject::connect(actionLoadTwoLastPage, &QAction::toggled, &respawnIrc, &respawnIrcClass::setLoadTwoLastPage);
+    QObject::connect(actionIgnoreNetworkError, &QAction::toggled, &respawnIrc, &respawnIrcClass::setIgnoreNetworkError);
     QObject::connect(actionSearchForUpdateAtLaunch, &QAction::toggled, &respawnIrc, &respawnIrcClass::setSearchForUpdateAtLaunch);
     QObject::connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
     QObject::connect(actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
+    QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
     QObject::connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
 }

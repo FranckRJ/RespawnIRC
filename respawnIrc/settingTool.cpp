@@ -102,6 +102,11 @@ bool settingToolClass::getLoadTwoLastPage()
     return setting.value("loadTwoLastPage", false).toBool();
 }
 
+bool settingToolClass::getIgnoreNetworkError()
+{
+    return setting.value("ignoreNetworkError", false).toBool();
+}
+
 bool settingToolClass::getSearchForUpdateAtLaunch()
 {
     return setting.value("searchForUpdateAtLaunch", true).toBool();
@@ -199,6 +204,11 @@ void settingToolClass::saveSetMultilineEdit(bool newVal)
 void settingToolClass::saveLoadTwoLastPage(bool newVal)
 {
     setting.setValue("loadTwoLastPage", newVal);
+}
+
+void settingToolClass::saveIgnoreNetworkError(bool newVal)
+{
+    setting.setValue("ignoreNetworkError", newVal);
 }
 
 void settingToolClass::saveSearchForUpdateAtLaunch(bool newVal)

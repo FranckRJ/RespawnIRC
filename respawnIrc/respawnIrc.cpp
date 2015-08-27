@@ -7,7 +7,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.10.1");
+const QString respawnIrcClass::currentVersionName("v1.11");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -69,9 +69,6 @@ void respawnIrcClass::loadSettings()
 
     listOfIgnoredPseudo = settingToolClass::getListOfIgnoredPseudo();
     listOfColorPseudo = settingToolClass::getListOfColorPseudo();
-    setLoadTwoLastPage(settingToolClass::getLoadTwoLastPage());
-    setUpdateTopicTime(settingToolClass::getUpdateTopicTime());
-    setNumberOfMessageShowedFirstTime(settingToolClass::getNumberOfMessageShowedFirstTime());
     listOfTopicLink = settingToolClass::getListOfTopicLink();
     listOfPseudoForTopic = settingToolClass::getListOfPseudoForTopic();
 
@@ -246,6 +243,16 @@ void respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow()
     myChooseNumberWindow->exec();
 }
 
+void respawnIrcClass::showAbout()
+{
+    QString versionName = currentVersionName;
+    QMessageBox messageBox;
+    versionName.remove(0, 1);
+    messageBox.information(this, "A propos de RespawnIRC", "<b>RespawnIRC version " + versionName + ".</b><br /><br />" +
+                           "Ce logiciel à été developpé à l'aide Qt 5.<br />" +
+                           "Lien du dépôt github : <a href=\"https://github.com/LEpigeon888/RespawnIRC\">https://github.com/LEpigeon888/RespawnIRC</a>");
+}
+
 void respawnIrcClass::addNewTab()
 {
     listOfShowTopicMessages.push_back(new showTopicMessagesClass(&listOfIgnoredPseudo, &listOfColorPseudo, this));
@@ -393,6 +400,16 @@ void respawnIrcClass::setMultilineEdit(bool newVal)
 void respawnIrcClass::setLoadTwoLastPage(bool newVal)
 {
     settingToolClass::saveLoadTwoLastPage(newVal);
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->updateSettingInfo();
+    }
+}
+
+void respawnIrcClass::setIgnoreNetworkError(bool newVal)
+{
+    settingToolClass::saveIgnoreNetworkError(newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
