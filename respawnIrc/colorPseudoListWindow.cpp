@@ -5,40 +5,21 @@ colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStru
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QLabel* labRedBox = new QLabel("Rouge :", this);
-    QLabel* labGreenBox = new QLabel("Vert :", this);
-    QLabel* labBlueBox = new QLabel("Bleu :", this);
     QPushButton* buttonAddPseudo = new QPushButton("Ajouter", this);
     QPushButton* buttonEditPseudo = new QPushButton("Editer", this);
     QPushButton* buttonRemovePseudo = new QPushButton("Supprimer", this);
     QPushButton* buttonValidate = new QPushButton("Choisir une couleur", this);
+    QPushButton* buttonOk = new QPushButton("OK", this);
 
-    redBox.setMinimum(0);
-    redBox.setMaximum(255);
-    redBox.setReadOnly(true);
-    greenBox.setMinimum(0);
-    greenBox.setMaximum(255);
-    greenBox.setReadOnly(true);
-    blueBox.setMinimum(0);
-    blueBox.setMaximum(255);
-    blueBox.setReadOnly(true);
     viewListOfColorPseudo.setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    QHBoxLayout* layoutForSpinBox = new QHBoxLayout;
-    layoutForSpinBox->addWidget(labRedBox);
-    layoutForSpinBox->addWidget(&redBox);
-    layoutForSpinBox->addWidget(labGreenBox);
-    layoutForSpinBox->addWidget(&greenBox);
-    layoutForSpinBox->addWidget(labBlueBox);
-    layoutForSpinBox->addWidget(&blueBox);
 
     QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(&viewListOfColorPseudo, 0, 0, 1, 3);
-    mainLayout->addLayout(layoutForSpinBox, 1, 0, 1, 3);
-    mainLayout->addWidget(buttonAddPseudo, 2, 0);
-    mainLayout->addWidget(buttonEditPseudo, 2, 1);
-    mainLayout->addWidget(buttonRemovePseudo, 2, 2);
-    mainLayout->addWidget(buttonValidate, 3, 0, 1, 3);
+    mainLayout->addWidget(buttonAddPseudo, 1, 0);
+    mainLayout->addWidget(buttonEditPseudo, 1, 1);
+    mainLayout->addWidget(buttonRemovePseudo, 1, 2);
+    mainLayout->addWidget(buttonValidate, 2, 0, 1, 3);
+    mainLayout->addWidget(buttonOk, 3, 0, 1, 3);
 
     setLayout(mainLayout);
     setWindowTitle("Liste des pseudo avec couleur");
@@ -50,8 +31,8 @@ colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStru
     QObject::connect(buttonAddPseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::addPseudo);
     QObject::connect(buttonEditPseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::editCurrentPseudo);
     QObject::connect(buttonRemovePseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::removeCurrentPseudo);
-    QObject::connect(&viewListOfColorPseudo, &QListView::activated, this, &colorPseudoListWindowClass::itemSelectedHasChanged);
     QObject::connect(buttonValidate, &QPushButton::pressed, this, &colorPseudoListWindowClass::chooseColor);
+    QObject::connect(buttonOk, &QPushButton::pressed, this, &colorPseudoListWindowClass::close);
 }
 
 bool colorPseudoListWindowClass::addPseudoToColorPseudoList(QString newPseudo, bool reallyAddPseudoToList)
@@ -143,13 +124,6 @@ void colorPseudoListWindowClass::setCurrentPseudo(QString newPseudo)
     }
 }
 
-void colorPseudoListWindowClass::itemSelectedHasChanged(QModelIndex index)
-{
-    redBox.setValue(listOfColorPseudo->at(index.row()).red);
-    greenBox.setValue(listOfColorPseudo->at(index.row()).green);
-    blueBox.setValue(listOfColorPseudo->at(index.row()).blue);
-}
-
 void colorPseudoListWindowClass::chooseColor()
 {
     if(viewListOfColorPseudo.currentIndex().row() != -1)
@@ -160,7 +134,6 @@ void colorPseudoListWindowClass::chooseColor()
         (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].red = newColor.red();
         (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].green = newColor.green();
         (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].blue = newColor.blue();
-        itemSelectedHasChanged(viewListOfColorPseudo.currentIndex());
         emit listHasChanged();
     }
 }

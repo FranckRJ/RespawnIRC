@@ -25,7 +25,6 @@ public slots:
     void removeCurrentPseudo();
     void addThisPseudo(QString newPseudo);
     void setCurrentPseudo(QString newPseudo);
-    void itemSelectedHasChanged(QModelIndex index);
     void chooseColor();
 signals:
     void listHasChanged();
@@ -33,9 +32,6 @@ private:
     QList<pseudoWithColorStruct>* listOfColorPseudo;
     QListView viewListOfColorPseudo;
     QStringListModel modelForListView;
-    QSpinBox redBox;
-    QSpinBox greenBox;
-    QSpinBox blueBox;
 };
 
 #endif

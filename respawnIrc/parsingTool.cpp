@@ -1,9 +1,12 @@
 #include "parsingTool.hpp"
 
+QRegularExpression parsingToolClass::expForAjaxTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_liste_messages\" id=\"ajax_timestamp_liste_messages\" value=\"([^\"]*)\" />",  QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForAjaxHash("<input type=\"hidden\" name=\"ajax_hash_liste_messages\" id=\"ajax_hash_liste_messages\" value=\"([^\"]*)\" />",  QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForMessageEdit("<textarea tabindex=\"3\" class=\"area-editor\" name=\"text_commentaire\" id=\"text_commentaire\" placeholder=\"[^\"]*\">([^<]*)</textarea>",  QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForVersionName("\"tag_name\"[^\"]*:[^\"]*\"([^\"]*)\"",  QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForVersionChangelog("\"body\"[^\"]*:[^\"]*\"(.*)\"",  QRegularExpression::OptimizeOnFirstUsageOption);
-QRegularExpression parsingToolClass::expForFormTopic("(<form [^>]*form-post-topic form-post-message.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-QRegularExpression parsingToolClass::expForFormConnect("(<form [^>]*form-connect-jv.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForFormTopic("(<form role=\"form\" class=\"form-post-topic[^\"]*\" method=\"post\" action=\"\">.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForFormConnect("(<form role=\"form\" class=\"form-connect-jv\" method=\"post\" action=\"\">.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForInput("<input ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForCurrentPage("<span class=\"page-active\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -27,6 +30,48 @@ QRegularExpression parsingToolClass::expForNoelshack("<a href=\"([^\"]*)\" data-
 QRegularExpression parsingToolClass::expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\"><span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForSpoilBlock("<span class=\"bloc-spoil-jv\"><span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", QRegularExpression::OptimizeOnFirstUsageOption);
+
+QString parsingToolClass::getAjaxInfo(const QString& source)
+{
+    QString ajaxTimestamp = expForAjaxTimestamp.match(source).captured(1);
+    QString ajaxHash = expForAjaxHash.match(source).captured(1);
+
+    if(ajaxTimestamp.isEmpty() == false && ajaxHash.isEmpty() == false)
+    {
+        return ("ajax_timestamp=" + ajaxTimestamp + "&ajax_hash=" + ajaxHash);
+    }
+    else
+    {
+        return "";
+    }
+}
+
+QString parsingToolClass::getMessageEdit(QString& source)
+{
+    QString message;
+    source.remove("\n");
+    source.replace("\\\"", "\"");
+    source.replace("\\/", "/");
+
+    message = expForMessageEdit.match(source).captured(1);
+    message.replace("\\n", "\n");
+
+    QRegularExpressionMatchIterator matchIterator = expForUnicodeInText.globalMatch(message);
+    int lenghtChanged = 0;
+    while(matchIterator.hasNext())
+    {
+        QRegularExpressionMatch match = matchIterator.next();
+
+        message.replace(match.capturedStart(0) + lenghtChanged, match.capturedLength(0), QChar(match.captured(1).toUpper().toUInt(0, 16)));
+        lenghtChanged -= match.capturedLength(0);
+        lenghtChanged += 1;
+    }
+
+    message.replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");
+
+    return message;
+}
 
 QString parsingToolClass::getVersionName(const QString &source)
 {
@@ -40,7 +85,7 @@ QString parsingToolClass::getVersionChangelog(const QString &source)
 
 void parsingToolClass::getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput)
 {
-    if(formName == "form-post-topic form-post-message")
+    if(formName == "form-post-topic")
     {
         source = expForFormTopic.match(source).captured(1);
     }

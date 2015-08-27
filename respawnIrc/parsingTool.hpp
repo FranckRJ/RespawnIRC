@@ -16,6 +16,8 @@ struct messageStruct
 class parsingToolClass
 {
 public:
+    static QString getAjaxInfo(const QString& source);
+    static QString getMessageEdit(QString& source);
     static QString getVersionName(const QString& source);
     static QString getVersionChangelog(const QString& source);
     static void getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
@@ -33,6 +35,9 @@ public:
     static void replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, bool createLink = false, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = 0, QString stringAfterAfter = "");
 private:
+    static QRegularExpression expForAjaxTimestamp;
+    static QRegularExpression expForAjaxHash;
+    static QRegularExpression expForMessageEdit;
     static QRegularExpression expForVersionName;
     static QRegularExpression expForVersionChangelog;
     static QRegularExpression expForFormTopic;
@@ -60,6 +65,7 @@ private:
     static QRegularExpression expForSpoilLine;
     static QRegularExpression expForSpoilBlock;
     static QRegularExpression expForAllJVCare;
+    static QRegularExpression expForUnicodeInText;
 };
 
 #endif

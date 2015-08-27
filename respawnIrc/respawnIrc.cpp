@@ -17,6 +17,8 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     sendButton.setAutoDefault(true);
     alertImage.load("ressources/alert.png");
     replyForSendMessage = 0;
+    inSending = false;
+    isInEdit = false;
 
     addButtonToButtonLayout();
 
@@ -283,6 +285,7 @@ void respawnIrcClass::addNewTab()
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNumberOfConnected, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::setEditInfo, this, &respawnIrcClass::setInfoForEditMessage);
     tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
     tabList.setCurrentIndex(listOfShowTopicMessages.size() - 1);
 }
@@ -531,6 +534,18 @@ void respawnIrcClass::warnUserForNewMessages()
 
 void respawnIrcClass::currentTabChanged(int newIndex)
 {
+    if(inSending == false)
+    {
+        sendButton.setText("Envoyer");
+        sendButton.setEnabled(true);
+
+        if(isInEdit == true)
+        {
+            messageLine.clear();
+            isInEdit = false;
+        }
+    }
+
     if(newIndex == -1)
     {
         newIndex = tabList.currentIndex();
@@ -545,16 +560,28 @@ void respawnIrcClass::postMessage()
 {
     if(replyForSendMessage == 0 && getCurrentWidget()->getPseudoUsed().isEmpty() == false && getCurrentWidget()->getTopicLink().isEmpty() == false)
     {
-        QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(getCurrentWidget()->getTopicLink());
+        QNetworkRequest request;
         QString data;
+        QString captchaLink;
 
         cookieListForPostMsg = getCurrentWidget()->getListOfCookies();
         networkManager.setCookieJar(new QNetworkCookieJar(this));
         networkManager.cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://www.jeuxvideo.com"));
 
-        if(getCurrentWidget()->getCaptchaLink().isEmpty() == false && captchaCode.isEmpty() == true)
+        if(isInEdit == true)
         {
-            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(getCurrentWidget()->getCaptchaLink(), cookieListForPostMsg, this);
+            captchaLink = captchaLinkForEditLastMessage;
+            request = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/forums/ajax_edit_message.php");
+        }
+        else
+        {
+            captchaLink = getCurrentWidget()->getCaptchaLink();
+            request = parsingToolClass::buildRequestWithThisUrl(getCurrentWidget()->getTopicLink());
+        }
+
+        if(captchaLink.isEmpty() == false && captchaCode.isEmpty() == true)
+        {
+            captchaWindowClass* myCaptchaWindow = new captchaWindowClass(captchaLink, cookieListForPostMsg, this);
             QObject::connect(myCaptchaWindow, &captchaWindowClass::codeForCaptcha, this, &respawnIrcClass::setCodeForCaptcha);
             oldListOfInput = getCurrentWidget()->getListOfInput();
             myCaptchaWindow->exec();
@@ -562,14 +589,28 @@ void respawnIrcClass::postMessage()
         }
 
         sendButton.setEnabled(false);
+        inSending = true;
 
-        if(captchaCode.isEmpty() == true)
+        if(isInEdit == false)
         {
-            data = buildDataWithThisListOfInput(getCurrentWidget()->getListOfInput());
+            if(captchaCode.isEmpty() == true)
+            {
+                data = buildDataWithThisListOfInput(getCurrentWidget()->getListOfInput());
+            }
+            else
+            {
+                data = buildDataWithThisListOfInput(oldListOfInput);
+            }
         }
         else
         {
-            data = buildDataWithThisListOfInput(oldListOfInput);
+            data = "message_topic=" + QUrl::toPercentEncoding(messageLine.text());
+            data += "&" + dataForEditLastMessage;
+
+            if(captchaCode.isEmpty() == false)
+            {
+                data += "&fs_ccode=" + captchaCode;
+            }
         }
 
         replyForSendMessage = networkManager.post(request, data.toLatin1());
@@ -584,31 +625,69 @@ void respawnIrcClass::deleteReplyForSendMessage()
     replyForSendMessage = 0;
     captchaCode.clear();
 
-    if(source.size() == 0)
+    if(source.size() == 0 || (isInEdit == true && source.startsWith("{\"erreur\":[]") == true))
     {
         messageLine.clear();
-        sendButton.setEnabled(true);
     }
-    else if(source.contains("<div class=\"alert-row\"> Le code de confirmation est incorrect. </div>") == true)
+    else if(source.contains("<div class=\"alert-row\"> Le code de confirmation est incorrect. </div>") == true ||
+            (isInEdit == true && source.startsWith("{\"erreur\":[\"Le code de confirmation est incorrect.\"]") == true))
     {
         QMessageBox messageBox;
         messageBox.warning(this, "Erreur", "Le code de confirmation est incorrect.");
-        sendButton.setEnabled(true);
     }
     else
     {
         QMessageBox messageBox;
         messageBox.warning(this, "Erreur", "Le message n'a pas été envoyé.");
-        sendButton.setEnabled(true);
+    }
+
+    sendButton.setEnabled(true);
+    inSending = false;
+
+    if(isInEdit == true)
+    {
+        messageLine.clear();
+        sendButton.setText("Envoyer");
+        isInEdit = false;
     }
 
     getCurrentWidget()->startGetMessage();
 }
 
-void respawnIrcClass::focusInEvent(QFocusEvent* event)
+void respawnIrcClass::setEditLastMessage()
 {
-    (void)event;
-    messageLine.setFocus();
+    if(inSending == false)
+    {
+        sendButton.setEnabled(false);
+        sendButton.setText("Editer");
+        if(getCurrentWidget()->getEditInfo() == false)
+        {
+            QMessageBox messageBox;
+            messageBox.warning(this, "Erreur", "Impossible d'éditer le dernier message.");
+            sendButton.setText("Envoyer");
+            sendButton.setEnabled(true);
+        }
+    }
+}
+
+void respawnIrcClass::setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString captchaLink)
+{
+    if(messageEdit.isEmpty() == false)
+    {
+        messageLine.clear();
+        messageLine.insertText(messageEdit);
+        dataForEditLastMessage = "id_message=" + QString::number(idOfMessageEdit) + "&" + infoToSend;
+        captchaLinkForEditLastMessage = captchaLink;
+        isInEdit = true;
+    }
+    else
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Impossible d'éditer le dernier message.");
+        sendButton.setText("Envoyer");
+    }
+
+    sendButton.setEnabled(true);
 }
 
 void respawnIrcClass::clipboardChanged()
@@ -715,4 +794,10 @@ void respawnIrcClass::clipboardChanged()
             clipboard->setMimeData(newData);
         }
     }
+}
+
+void respawnIrcClass::focusInEvent(QFocusEvent* event)
+{
+    (void)event;
+    messageLine.setFocus();
 }

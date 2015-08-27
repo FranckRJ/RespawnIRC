@@ -8,6 +8,7 @@ ignoreListWindowClass::ignoreListWindowClass(QList<QString> *newListOfIgnoredPse
     QPushButton* buttonAddPseudo = new QPushButton("Ajouter", this);
     QPushButton* buttonEditPseudo = new QPushButton("Editer", this);
     QPushButton* buttonRemovePseudo = new QPushButton("Supprimer", this);
+    QPushButton* buttonOk = new QPushButton("OK", this);
 
     viewListOfIgnoredPseudo.setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -16,6 +17,7 @@ ignoreListWindowClass::ignoreListWindowClass(QList<QString> *newListOfIgnoredPse
     mainLayout->addWidget(buttonAddPseudo, 1, 0);
     mainLayout->addWidget(buttonEditPseudo, 1, 1);
     mainLayout->addWidget(buttonRemovePseudo, 1, 2);
+    mainLayout->addWidget(buttonOk, 2, 0, 1, 3);
 
     setLayout(mainLayout);
     setWindowTitle("Liste des ignorés");
@@ -27,6 +29,7 @@ ignoreListWindowClass::ignoreListWindowClass(QList<QString> *newListOfIgnoredPse
     QObject::connect(buttonAddPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::addPseudo);
     QObject::connect(buttonEditPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::editCurrentPseudo);
     QObject::connect(buttonRemovePseudo, &QPushButton::pressed, this, &ignoreListWindowClass::removeCurrentPseudo);
+    QObject::connect(buttonOk, &QPushButton::pressed, this, &ignoreListWindowClass::close);
 }
 
 void ignoreListWindowClass::updateList()

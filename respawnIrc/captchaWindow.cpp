@@ -53,6 +53,14 @@ void captchaWindowClass::showCaptcha()
 
 void captchaWindowClass::sendCaptchaCode()
 {
-    emit codeForCaptcha(captchaCodeLine.text());
-    close();
+    if(captchaCodeLine.text().isEmpty() == true)
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Le captcha n'est pas valide !");
+    }
+    else
+    {
+        emit codeForCaptcha(captchaCodeLine.text());
+        close();
+    }
 }

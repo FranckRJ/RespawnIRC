@@ -20,8 +20,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_respawnIrcClass_t {
-    QByteArrayData data[50];
-    char stringdata0[864];
+    QByteArrayData data[56];
+    char stringdata0[956];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -79,7 +79,13 @@ QT_MOC_LITERAL(45, 782, 17), // "currentTabChanged"
 QT_MOC_LITERAL(46, 800, 8), // "newIndex"
 QT_MOC_LITERAL(47, 809, 11), // "postMessage"
 QT_MOC_LITERAL(48, 821, 25), // "deleteReplyForSendMessage"
-QT_MOC_LITERAL(49, 847, 16) // "clipboardChanged"
+QT_MOC_LITERAL(49, 847, 18), // "setEditLastMessage"
+QT_MOC_LITERAL(50, 866, 21), // "setInfoForEditMessage"
+QT_MOC_LITERAL(51, 888, 15), // "idOfMessageEdit"
+QT_MOC_LITERAL(52, 904, 11), // "messageEdit"
+QT_MOC_LITERAL(53, 916, 10), // "infoToSend"
+QT_MOC_LITERAL(54, 927, 11), // "captchaLink"
+QT_MOC_LITERAL(55, 939, 16) // "clipboardChanged"
 
     },
     "respawnIrcClass\0showConnect\0\0"
@@ -104,7 +110,9 @@ QT_MOC_LITERAL(49, 847, 16) // "clipboardChanged"
     "saveListOfIgnoredPseudo\0saveListOfColorPseudo\0"
     "warnUserForNewMessages\0currentTabChanged\0"
     "newIndex\0postMessage\0deleteReplyForSendMessage\0"
-    "clipboardChanged"
+    "setEditLastMessage\0setInfoForEditMessage\0"
+    "idOfMessageEdit\0messageEdit\0infoToSend\0"
+    "captchaLink\0clipboardChanged"
 };
 #undef QT_MOC_LITERAL
 
@@ -114,7 +122,7 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      35,   14, // methods
+      37,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -122,41 +130,43 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  189,    2, 0x0a /* Public */,
-       3,    0,  190,    2, 0x0a /* Public */,
-       4,    0,  191,    2, 0x0a /* Public */,
-       5,    0,  192,    2, 0x0a /* Public */,
-       6,    0,  193,    2, 0x0a /* Public */,
-       7,    0,  194,    2, 0x0a /* Public */,
-       8,    0,  195,    2, 0x0a /* Public */,
-       9,    0,  196,    2, 0x0a /* Public */,
-      10,    1,  197,    2, 0x0a /* Public */,
-      12,    0,  200,    2, 0x0a /* Public */,
-      13,    0,  201,    2, 0x0a /* Public */,
-      14,    0,  202,    2, 0x0a /* Public */,
-      15,    0,  203,    2, 0x0a /* Public */,
-      16,    0,  204,    2, 0x0a /* Public */,
-      17,    1,  205,    2, 0x0a /* Public */,
-      19,    1,  208,    2, 0x0a /* Public */,
-      21,    1,  211,    2, 0x0a /* Public */,
-      23,    1,  214,    2, 0x0a /* Public */,
-      24,    1,  217,    2, 0x0a /* Public */,
-      25,    1,  220,    2, 0x0a /* Public */,
-      26,    4,  223,    2, 0x0a /* Public */,
-      32,    3,  232,    2, 0x0a /* Public */,
-      33,    1,  239,    2, 0x0a /* Public */,
-      35,    1,  242,    2, 0x0a /* Public */,
-      37,    0,  245,    2, 0x0a /* Public */,
-      38,    0,  246,    2, 0x0a /* Public */,
-      39,    1,  247,    2, 0x0a /* Public */,
-      41,    0,  250,    2, 0x0a /* Public */,
-      42,    0,  251,    2, 0x0a /* Public */,
-      43,    0,  252,    2, 0x0a /* Public */,
-      44,    0,  253,    2, 0x0a /* Public */,
-      45,    1,  254,    2, 0x0a /* Public */,
-      47,    0,  257,    2, 0x0a /* Public */,
-      48,    0,  258,    2, 0x0a /* Public */,
-      49,    0,  259,    2, 0x0a /* Public */,
+       1,    0,  199,    2, 0x0a /* Public */,
+       3,    0,  200,    2, 0x0a /* Public */,
+       4,    0,  201,    2, 0x0a /* Public */,
+       5,    0,  202,    2, 0x0a /* Public */,
+       6,    0,  203,    2, 0x0a /* Public */,
+       7,    0,  204,    2, 0x0a /* Public */,
+       8,    0,  205,    2, 0x0a /* Public */,
+       9,    0,  206,    2, 0x0a /* Public */,
+      10,    1,  207,    2, 0x0a /* Public */,
+      12,    0,  210,    2, 0x0a /* Public */,
+      13,    0,  211,    2, 0x0a /* Public */,
+      14,    0,  212,    2, 0x0a /* Public */,
+      15,    0,  213,    2, 0x0a /* Public */,
+      16,    0,  214,    2, 0x0a /* Public */,
+      17,    1,  215,    2, 0x0a /* Public */,
+      19,    1,  218,    2, 0x0a /* Public */,
+      21,    1,  221,    2, 0x0a /* Public */,
+      23,    1,  224,    2, 0x0a /* Public */,
+      24,    1,  227,    2, 0x0a /* Public */,
+      25,    1,  230,    2, 0x0a /* Public */,
+      26,    4,  233,    2, 0x0a /* Public */,
+      32,    3,  242,    2, 0x0a /* Public */,
+      33,    1,  249,    2, 0x0a /* Public */,
+      35,    1,  252,    2, 0x0a /* Public */,
+      37,    0,  255,    2, 0x0a /* Public */,
+      38,    0,  256,    2, 0x0a /* Public */,
+      39,    1,  257,    2, 0x0a /* Public */,
+      41,    0,  260,    2, 0x0a /* Public */,
+      42,    0,  261,    2, 0x0a /* Public */,
+      43,    0,  262,    2, 0x0a /* Public */,
+      44,    0,  263,    2, 0x0a /* Public */,
+      45,    1,  264,    2, 0x0a /* Public */,
+      47,    0,  267,    2, 0x0a /* Public */,
+      48,    0,  268,    2, 0x0a /* Public */,
+      49,    0,  269,    2, 0x0a /* Public */,
+      50,    4,  270,    2, 0x0a /* Public */,
+      55,    0,  279,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -193,6 +203,8 @@ static const uint qt_meta_data_respawnIrcClass[] = {
     QMetaType::Void, QMetaType::Int,   46,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::QString,   51,   52,   53,   54,
     QMetaType::Void,
 
        0        // eod
@@ -238,7 +250,9 @@ void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 31: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 32: _t->postMessage(); break;
         case 33: _t->deleteReplyForSendMessage(); break;
-        case 34: _t->clipboardChanged(); break;
+        case 34: _t->setEditLastMessage(); break;
+        case 35: _t->setInfoForEditMessage((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4]))); break;
+        case 36: _t->clipboardChanged(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -287,13 +301,13 @@ int respawnIrcClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 35)
+        if (_id < 37)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 35;
+        _id -= 37;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 35)
+        if (_id < 37)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 35;
+        _id -= 37;
     }
     return _id;
 }

@@ -14,9 +14,11 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     messagesStatus = "Rien.";
     replyForFirstPage = 0;
     replyForSecondPage = 0;
+    replyForEditInfo = 0;
     firstTimeGetMessages = true;
     retrievesMessage = false;
     idOfLastMessage = 0;
+    idOfLastMessageOfUser = 0;
     linkHasChanged = false;
     errorMode = false;
     loadTwoLastPage = settingToolClass::getLoadTwoLastPage();
@@ -114,6 +116,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     firstTimeGetMessages = true;
     errorMode = false;
     idOfLastMessage = 0;
+    idOfLastMessageOfUser = 0;
 
     setMessageStatus("Nouveau topic.");
     setNumberOfConnected("", true);
@@ -175,6 +178,27 @@ void showTopicMessagesClass::updateSettingInfo()
     numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
 }
 
+bool showTopicMessagesClass::getEditInfo()
+{
+    if(ajaxInfo.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
+    {
+        if(replyForEditInfo == 0)
+        {
+            QString urlToGet = "http://www.jeuxvideo.com/forums/ajax_edit_message.php?id_message=" + QString::number(idOfLastMessageOfUser) + "&" + ajaxInfo + "&action=get";
+            QNetworkRequest requestForEditInfo = parsingToolClass::buildRequestWithThisUrl(urlToGet);
+            oldIdOfLastMessageOfUser = idOfLastMessageOfUser;
+            oldAjaxInfo = ajaxInfo;
+            ajaxInfo.clear();
+            replyForEditInfo = networkManager.get(requestForEditInfo);
+            QObject::connect(replyForEditInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeEditInfo);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void showTopicMessagesClass::getMessages()
 {
     if(retrievesMessage == false)
@@ -233,6 +257,27 @@ void showTopicMessagesClass::loadSecondPageFinish()
             analyzeMessages();
         }
     }
+}
+
+void showTopicMessagesClass::analyzeEditInfo()
+{
+    QString message;
+    QString dataToSend = oldAjaxInfo + "&action=post";
+    QList<QPair<QString, QString> > listOfEditInput;
+    QString source = replyForEditInfo->readAll();
+    replyForEditInfo->deleteLater();
+
+    message = parsingToolClass::getMessageEdit(source);
+    parsingToolClass::getListOfHiddenInputFromThisForm(source, "form-post-topic", listOfEditInput);
+
+    for(int i = 0; i < listOfEditInput.size(); ++i)
+    {
+        dataToSend += "&" + listOfEditInput.at(i).first + "=" + listOfEditInput.at(i).second;
+    }
+
+    emit setEditInfo(oldIdOfLastMessageOfUser, message, dataToSend, parsingToolClass::getCaptchaLink(source));
+
+    replyForEditInfo = 0;
 }
 
 void showTopicMessagesClass::analyzeMessages()
@@ -338,6 +383,11 @@ void showTopicMessagesClass::analyzeMessages()
                 {
                     colorOfDate = "black";
                     idOfLastMessage = listOfEntireMessage.at(i).idOfMessage;
+
+                    if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
+                    {
+                        idOfLastMessageOfUser = idOfLastMessage;
+                    }
                 }
 
                 messagesBox.append("<table><tr><td>[<a style=\"color: " + colorOfDate + ";text-decoration: none\" href=\"http://www.jeuxvideo.com/" +
@@ -349,7 +399,10 @@ void showTopicMessagesClass::analyzeMessages()
                 messagesBox.verticalScrollBar()->updateGeometry();
                 messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
                 listOfEdit[listOfEntireMessage.at(i).idOfMessage] = listOfEntireMessage.at(i).lastTimeEdit;
-                emit newMessagesAvailable();
+                if(pseudoOfUser.toLower() != listOfEntireMessage.at(i).pseudo.toLower())
+                {
+                    emit newMessagesAvailable();
+                }
             }
         }
 
@@ -361,8 +414,9 @@ void showTopicMessagesClass::analyzeMessages()
 
     if(pseudoOfUser.isEmpty() == false)
     {
+        ajaxInfo = parsingToolClass::getAjaxInfo(sourceFirst);
         listOfInput.clear();
-        parsingToolClass::getListOfHiddenInputFromThisForm(sourceFirst, "form-post-topic form-post-message", listOfInput);
+        parsingToolClass::getListOfHiddenInputFromThisForm(sourceFirst, "form-post-topic", listOfInput);
         captchaLink = parsingToolClass::getCaptchaLink(sourceFirst);
 
         if(listOfInput.isEmpty() == true)

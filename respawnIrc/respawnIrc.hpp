@@ -58,6 +58,8 @@ public slots:
     void currentTabChanged(int newIndex);
     void postMessage();
     void deleteReplyForSendMessage();
+    void setEditLastMessage();
+    void setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString captchaLink);
     void clipboardChanged();
 protected:
     void focusInEvent(QFocusEvent * event);
@@ -84,6 +86,10 @@ private:
     QString captchaCode;
     QPixmap alertImage;
     checkUpdateClass checkUpdate;
+    QString dataForEditLastMessage;
+    QString captchaLinkForEditLastMessage;
+    bool inSending;
+    bool isInEdit;
 };
 
 #endif

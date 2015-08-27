@@ -29,13 +29,16 @@ public:
     void setTopicToErrorMode();
     void updateSettingInfo();
 public slots:
+    bool getEditInfo();
     void getMessages();
     void loadFirstPageFinish();
     void loadSecondPageFinish();
+    void analyzeEditInfo();
     void analyzeMessages();
 signals:
     void newMessageStatus();
     void newNumberOfConnected();
+    void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString cpatchaLink);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
 private:
@@ -43,6 +46,7 @@ private:
     QList<QNetworkCookie> currentCookieList;
     QNetworkReply* replyForFirstPage;
     QNetworkReply* replyForSecondPage;
+    QNetworkReply* replyForEditInfo;
     QNetworkAccessManager networkManager;
     QTimer timerForGetMessage;
     QList<QPair<QString, QString> > listOfInput;
@@ -55,6 +59,8 @@ private:
     QString topicName;
     QString pseudoOfUser;
     QString captchaLink;
+    QString ajaxInfo;
+    QString oldAjaxInfo;
     bool loadTwoLastPage;
     bool secondPageLoading;
     bool firstTimeGetMessages;
@@ -62,6 +68,8 @@ private:
     bool linkHasChanged;
     bool errorMode;
     int idOfLastMessage;
+    int idOfLastMessageOfUser;
+    int oldIdOfLastMessageOfUser;
     int numberOfMessageShowedFirstTime;
 };
 

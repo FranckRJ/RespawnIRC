@@ -35,12 +35,14 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionAddQuote = menuTextDecoration->addAction("Citation");
     QAction* actionAddCode = menuTextDecoration->addAction("Code");
     QAction* actionAddSpoil = menuTextDecoration->addAction("Spoil");
+    QAction* actionEditLastMessage = menuDiscussion->addAction("Editer le dernier message");
     menuDiscussion->addSeparator();
     QAction* actionGoToTopic = menuDiscussion->addAction("Accéder au topic");
     QAction* actionGoToForum = menuDiscussion->addAction("Accéder au forum");
     actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
     actionUpdateTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
     actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
+    actionEditLastMessage->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
     actionGoToTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     actionGoToForum->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
 
@@ -92,6 +94,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionAddQuote, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addQuote);
     QObject::connect(actionAddCode, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addCode);
     QObject::connect(actionAddSpoil, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addSpoil);
+    QObject::connect(actionEditLastMessage, &QAction::triggered, &respawnIrc, &respawnIrcClass::setEditLastMessage);
     QObject::connect(actionGoToTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentTopic);
     QObject::connect(actionGoToForum, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentForum);
     QObject::connect(actionShowListOfIgnoredPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showIgnoreListWindow);
