@@ -21,6 +21,7 @@ public:
     multiTypeTextBoxClass* getMessageLine();
     QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
     void addButtonToButtonLayout();
+    void selectThisTab(int number);
     void setButtonInButtonLayoutVisible(bool visible);
     static const QString currentVersionName;
 public slots:

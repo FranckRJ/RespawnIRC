@@ -40,9 +40,9 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionGoToTopic = menuDiscussion->addAction("Accéder au topic");
     QAction* actionGoToForum = menuDiscussion->addAction("Accéder au forum");
     actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
-    actionUpdateTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
-    actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
-    actionEditLastMessage->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+    actionUpdateTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+    actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+    actionEditLastMessage->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
     actionGoToTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     actionGoToForum->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
 
@@ -115,4 +115,51 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
     QObject::connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
+}
+void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
+{
+    QString keyPressed = QKeySequence(thisKey->key()).toString();
+    if(thisKey->modifiers().testFlag(Qt::ControlModifier) == true)
+    {
+        if(keyPressed == "&")
+        {
+            respawnIrc.selectThisTab(0);
+        }
+        else if(keyPressed == "\u00C9")
+        {
+            respawnIrc.selectThisTab(1);
+        }
+        else if(keyPressed == "\"")
+        {
+            respawnIrc.selectThisTab(2);
+        }
+        else if(keyPressed == "'")
+        {
+            respawnIrc.selectThisTab(3);
+        }
+        else if(keyPressed == "(")
+        {
+            respawnIrc.selectThisTab(4);
+        }
+        else if(keyPressed == "-")
+        {
+            respawnIrc.selectThisTab(5);
+        }
+        else if(keyPressed == "\u00C8")
+        {
+            respawnIrc.selectThisTab(6);
+        }
+        else if(keyPressed == "_")
+        {
+            respawnIrc.selectThisTab(7);
+        }
+        else if(keyPressed == "\u00C7")
+        {
+            respawnIrc.selectThisTab(8);
+        }
+        else if(keyPressed == "@")
+        {
+            respawnIrc.selectThisTab(9);
+        }
+    }
 }

@@ -15,6 +15,7 @@ INPUT(
 ./debug\checkUpdate.o
 ./debug\accountListWindow.o
 ./debug\colorPseudoListWindow.o
+./debug\moc_mainWindow.o
 ./debug\moc_respawnIrc.o
 ./debug\moc_connectWindow.o
 ./debug\moc_selectTopicWindow.o

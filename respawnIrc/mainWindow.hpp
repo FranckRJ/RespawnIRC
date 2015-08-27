@@ -8,8 +8,11 @@
 
 class mainWindowClass : public QMainWindow
 {
+    Q_OBJECT
 public:
     mainWindowClass();
+protected:
+    void keyPressEvent(QKeyEvent* thisKey);
 private:
     respawnIrcClass respawnIrc;
 };

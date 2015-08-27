@@ -7,7 +7,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.11");
+const QString respawnIrcClass::currentVersionName("v1.11.1");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -182,6 +182,14 @@ void respawnIrcClass::addButtonToButtonLayout()
     QObject::connect(buttonQuote, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addQuote);
     QObject::connect(buttonCode, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addCode);
     QObject::connect(buttonSpoil, &QPushButton::pressed, &messageLine, &multiTypeTextBoxClass::addSpoil);
+}
+
+void respawnIrcClass::selectThisTab(int number)
+{
+    if(listOfShowTopicMessages.size() > number)
+    {
+        tabList.setCurrentIndex(number);
+    }
 }
 
 void respawnIrcClass::setButtonInButtonLayoutVisible(bool visible)
