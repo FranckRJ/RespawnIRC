@@ -7,7 +7,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.11.1");
+const QString respawnIrcClass::currentVersionName("v1.11.2");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -683,14 +683,24 @@ void respawnIrcClass::setEditLastMessage()
 {
     if(inSending == false)
     {
-        sendButton.setEnabled(false);
-        sendButton.setText("Editer");
-        if(getCurrentWidget()->getEditInfo() == false)
+        if(isInEdit == false)
         {
-            QMessageBox messageBox;
-            messageBox.warning(this, "Erreur", "Impossible d'éditer le dernier message.");
+            sendButton.setEnabled(false);
+            sendButton.setText("Editer");
+            if(getCurrentWidget()->getEditInfo() == false)
+            {
+                QMessageBox messageBox;
+                messageBox.warning(this, "Erreur", "Impossible d'éditer le dernier message.");
+                sendButton.setText("Envoyer");
+                sendButton.setEnabled(true);
+            }
+        }
+        else
+        {
+            isInEdit = false;
             sendButton.setText("Envoyer");
             sendButton.setEnabled(true);
+            messageLine.clear();
         }
     }
 }

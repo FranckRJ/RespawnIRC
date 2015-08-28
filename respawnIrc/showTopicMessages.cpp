@@ -429,6 +429,7 @@ void showTopicMessagesClass::analyzeMessages()
             QMessageBox messageBox;
             messageBox.warning(this, "Erreur sur " + topicName + " avec " + pseudoOfUser, "Le compte semble invalide, si tel est vraiment le cas veuillez supprimer celui-ci de la liste des comptes et vous reconnecter avec.");
             pseudoOfUser.clear();
+            emit newNumberOfConnected();
         }
     }
 

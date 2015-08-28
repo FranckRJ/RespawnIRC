@@ -121,7 +121,7 @@ void connectWindowClass::startLogin()
         QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/login");
         QString data;
 
-        data += "login_pseudo=" + pseudoLine.text() + "&login_password=" + passwordLine.text();
+        data += "login_pseudo=" + QUrl::toPercentEncoding(pseudoLine.text()) + "&login_password=" + QUrl::toPercentEncoding(passwordLine.text());
 
         for(int i = 0; i < listOfInput.size(); ++i)
         {
