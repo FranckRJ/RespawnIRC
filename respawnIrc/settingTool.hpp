@@ -16,6 +16,9 @@ public:
     static QList<QString> getListOfIgnoredPseudo();
     static QList<pseudoWithColorStruct> getListOfColorPseudo();
     static QList<QString> getListOfTopicLink();
+    static bool getShowQuoteButton();
+    static bool getShowBlacklistButton();
+    static bool getShowEditButton();
     static bool getShowTextDecorationButton();
     static bool getSetMultilineEdit();
     static bool getLoadTwoLastPage();
@@ -29,6 +32,9 @@ public:
     static void saveListOfIgnoredPseudo(QList<QString>& newList);
     static void saveListOfColorPseudo(QList<pseudoWithColorStruct>& newListOfColorPseudo);
     static void saveListOfTopicLink(QList<QString>& newList);
+    static void saveShowQuoteButton(bool newVal);
+    static void saveShowBlacklistButton(bool newVal);
+    static void saveShowEditButton(bool newVal);
     static void saveShowTextDecoration(bool newVal);
     static void saveSetMultilineEdit(bool newVal);
     static void saveLoadTwoLastPage(bool newVal);

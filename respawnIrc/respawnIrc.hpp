@@ -40,8 +40,13 @@ public slots:
     void reloadTopic();
     void goToCurrentTopic();
     void goToCurrentForum();
+    void quoteThisMessage(QString messageToQuote);
+    void addThisPeudoToBlacklist(QString pseudoToAdd);
     void setUpdateTopicTime(int newTime);
     void setNumberOfMessageShowedFirstTime(int newNumber);
+    void setShowQuoteButton(bool newVal);
+    void setShowBlacklistButton(bool newVal);
+    void setShowEditButton(bool newVal);
     void setShowTextDecorationButton(bool newVal);
     void setMultilineEdit(bool newVal);
     void setLoadTwoLastPage(bool newVal);
@@ -61,7 +66,7 @@ public slots:
     void currentTabChanged(int newIndex);
     void postMessage();
     void deleteReplyForSendMessage();
-    void setEditLastMessage();
+    void setEditMessage(int idOfMessageToEdit = 0);
     void setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString captchaLink);
     void clipboardChanged();
 protected:

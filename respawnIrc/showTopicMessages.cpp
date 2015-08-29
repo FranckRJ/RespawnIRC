@@ -5,7 +5,8 @@
 showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent) : QWidget(parent)
 {
     messagesBox.setReadOnly(true);
-    messagesBox.setOpenExternalLinks(true);
+    messagesBox.setOpenExternalLinks(false);
+    messagesBox.setOpenLinks(false);
     timerForGetMessage.setTimerType(Qt::CoarseTimer);
     timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
     timerForGetMessage.stop();
@@ -15,12 +16,16 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     replyForFirstPage = 0;
     replyForSecondPage = 0;
     replyForEditInfo = 0;
+    replyForQuoteInfo = 0;
     firstTimeGetMessages = true;
     retrievesMessage = false;
     idOfLastMessage = 0;
     idOfLastMessageOfUser = 0;
     linkHasChanged = false;
     errorMode = false;
+    showQuoteButton = settingToolClass::getShowQuoteButton();
+    showBlacklistButton = settingToolClass::getShowBlacklistButton();
+    showEditButton = settingToolClass::getShowEditButton();
     loadTwoLastPage = settingToolClass::getLoadTwoLastPage();
     ignoreNetworkError = settingToolClass::getIgnoreNetworkError();
     numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
@@ -33,6 +38,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     setLayout(layout);
 
     QObject::connect(&timerForGetMessage, &QTimer::timeout, this, &showTopicMessagesClass::getMessages);
+    QObject::connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
 }
 
 void showTopicMessagesClass::startGetMessage()
@@ -99,6 +105,7 @@ const QList<QNetworkCookie>& showTopicMessagesClass::getListOfCookies()
 
 void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser)
 {
+    networkManager.clearAccessCache();
     networkManager.setCookieJar(new QNetworkCookieJar(this));
     networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
     currentCookieList = newCookies;
@@ -177,21 +184,60 @@ void showTopicMessagesClass::setTopicToErrorMode()
 
 void showTopicMessagesClass::updateSettingInfo()
 {
+    showQuoteButton = settingToolClass::getShowQuoteButton();
+    showBlacklistButton = settingToolClass::getShowBlacklistButton();
+    showEditButton = settingToolClass::getShowEditButton();
     loadTwoLastPage = settingToolClass::getLoadTwoLastPage();
     ignoreNetworkError = settingToolClass::getIgnoreNetworkError();
     timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
     numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
 }
 
-bool showTopicMessagesClass::getEditInfo()
+void showTopicMessagesClass::linkClicked(const QUrl &link)
+{
+    QString linkInString = link.toDisplayString();
+
+    if(linkInString.startsWith("quote"))
+    {
+        lastMessageQuoted.clear();
+        linkInString.remove(0, linkInString.indexOf(':') + 1);
+        lastMessageQuoted = linkInString.mid(linkInString.indexOf(':') + 1);
+        getQuoteInfo(linkInString.left(linkInString.indexOf(':')));
+    }
+    else if(linkInString.startsWith("blacklist"))
+    {
+        emit addToBlacklist(linkInString.remove(0, linkInString.indexOf(':') + 1));
+    }
+    else if(linkInString.startsWith("edit"))
+    {
+        emit editThisMessage(linkInString.remove(0, linkInString.indexOf(':') + 1).toInt());
+    }
+    else
+    {
+        QDesktopServices::openUrl(link);
+    }
+}
+
+bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit)
 {
     if(ajaxInfo.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
     {
         if(replyForEditInfo == 0)
         {
-            QString urlToGet = "http://www.jeuxvideo.com/forums/ajax_edit_message.php?id_message=" + QString::number(idOfLastMessageOfUser) + "&" + ajaxInfo + "&action=get";
-            QNetworkRequest requestForEditInfo = parsingToolClass::buildRequestWithThisUrl(urlToGet);
-            oldIdOfLastMessageOfUser = idOfLastMessageOfUser;
+            QString urlToGet;
+            QNetworkRequest requestForEditInfo;
+
+            if(idOfMessageToEdit == 0)
+            {
+                oldIdOfLastMessageOfUser = idOfLastMessageOfUser;
+            }
+            else
+            {
+                oldIdOfLastMessageOfUser = idOfMessageToEdit;
+            }
+
+            urlToGet = "http://www.jeuxvideo.com/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfLastMessageOfUser) + "&" + ajaxInfo + "&action=get";
+            requestForEditInfo = parsingToolClass::buildRequestWithThisUrl(urlToGet);
             oldAjaxInfo = ajaxInfo;
             ajaxInfo.clear();
             replyForEditInfo = networkManager.get(requestForEditInfo);
@@ -202,6 +248,22 @@ bool showTopicMessagesClass::getEditInfo()
     }
 
     return false;
+}
+
+void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
+{
+    if(ajaxInfo.isEmpty() == false && replyForQuoteInfo == 0)
+    {
+        QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/forums/ajax_citation.php");
+        QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo;
+        replyForQuoteInfo = networkManager.post(requestForQuoteInfo, dataForQuote.toLatin1());
+        QObject::connect(replyForQuoteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeQuoteInfo);
+    }
+    else
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Erreur, impossible de citer ce message, réessayez.");
+    }
 }
 
 void showTopicMessagesClass::getMessages()
@@ -285,11 +347,26 @@ void showTopicMessagesClass::analyzeEditInfo()
     replyForEditInfo = 0;
 }
 
+void showTopicMessagesClass::analyzeQuoteInfo()
+{
+    QString messageQuote;
+    QString source = replyForQuoteInfo->readAll();
+    replyForQuoteInfo->deleteLater();
+
+    messageQuote = parsingToolClass::getMessageQuote(source);
+
+    messageQuote = ">" + QUrl::fromPercentEncoding(lastMessageQuoted.toLatin1()) + "\n>" + messageQuote;
+    replyForQuoteInfo = 0;
+
+    emit quoteThisMessage(messageQuote);
+}
+
 void showTopicMessagesClass::analyzeMessages()
 {
     QString newTopicLink;
     QString colorOfPseudo;
     QString colorOfDate;
+    QString buttonString;
     QString sourceFirst;
     QString sourceSecond;
 
@@ -365,6 +442,7 @@ void showTopicMessagesClass::analyzeMessages()
             if((listOfEntireMessage.at(i).idOfMessage > idOfLastMessage || (listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit))
                     && listOfIgnoredPseudo->indexOf(listOfEntireMessage.at(i).pseudo.toLower()) == -1)
             {
+                buttonString.clear();
                 colorOfPseudo.clear();
                 colorOfPseudo = getColorOfThisPseudo(listOfEntireMessage.at(i).pseudo.toLower());
 
@@ -395,7 +473,25 @@ void showTopicMessagesClass::analyzeMessages()
                     }
                 }
 
-                messagesBox.append("<table><tr><td>[<a style=\"color: " + colorOfDate + ";text-decoration: none\" href=\"http://www.jeuxvideo.com/" +
+                if(showQuoteButton == true)
+                {
+                    buttonString += "<a style=\"color: black;text-decoration: none\" href=\"quote:" + QString::number(listOfEntireMessage.at(i).idOfMessage) + ":[" +
+                            listOfEntireMessage.at(i).date + "] <" + listOfEntireMessage.at(i).pseudo + ">\">[C]</a> ";
+                }
+
+                if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
+                {
+                    if(showEditButton == true)
+                    {
+                        buttonString += "<a style=\"color: black;text-decoration: none\" href=\"edit:" + QString::number(listOfEntireMessage.at(i).idOfMessage) + "\">[E]</a> ";
+                    }
+                }
+                else if(showBlacklistButton == true)
+                {
+                    buttonString += "<a style=\"color: black;text-decoration: none\" href=\"blacklist:" + listOfEntireMessage.at(i).pseudo.toLower() + "\">[B]</a> ";
+                }
+
+                messagesBox.append("<table><tr><td>" + buttonString + "[<a style=\"color: " + colorOfDate + ";text-decoration: none\" href=\"http://www.jeuxvideo.com/" +
                                    listOfEntireMessage.at(i).pseudo.toLower() +
                                    "/forums/message/" + QString::number(listOfEntireMessage.at(i).idOfMessage) + "\">" + listOfEntireMessage.at(i).date +
                                    "</a>] &lt;<a href=\"http://www.jeuxvideo.com/profil/" + listOfEntireMessage.at(i).pseudo.toLower() +

@@ -18,6 +18,7 @@ class parsingToolClass
 public:
     static QString getAjaxInfo(const QString& source);
     static QString getMessageEdit(QString& source);
+    static QString getMessageQuote(QString& source);
     static QString getVersionName(const QString& source);
     static QString getVersionChangelog(const QString& source);
     static void getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
@@ -30,6 +31,7 @@ public:
     static QString getForumOfTopic(const QString& source);
     static QString jvfLinkToJvcLink(const QString& source);
     static QString parsingMessages(QString thisMessage);
+    static QString parsingAjaxMessages(QString thisMessage);
     static QNetworkRequest buildRequestWithThisUrl(QString url);
     static QList<QString> getListOfThisCapNumber(const QString &source, QRegularExpression& exp, int capNumber, bool globalMatch = true);
     static void replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, bool createLink = false, QString stringBefore = "",
@@ -38,6 +40,7 @@ private:
     static QRegularExpression expForAjaxTimestamp;
     static QRegularExpression expForAjaxHash;
     static QRegularExpression expForMessageEdit;
+    static QRegularExpression expForMessageQuote;
     static QRegularExpression expForVersionName;
     static QRegularExpression expForVersionChangelog;
     static QRegularExpression expForFormTopic;

@@ -7,7 +7,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.11.2");
+const QString respawnIrcClass::currentVersionName("v1.12");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -301,6 +301,9 @@ void respawnIrcClass::addNewTab()
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::setEditInfo, this, &respawnIrcClass::setInfoForEditMessage);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::quoteThisMessage, this, &respawnIrcClass::quoteThisMessage);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
     tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
     tabList.setCurrentIndex(listOfShowTopicMessages.size() - 1);
 }
@@ -360,6 +363,26 @@ void respawnIrcClass::goToCurrentForum()
     }
 }
 
+
+void respawnIrcClass::quoteThisMessage(QString messageToQuote)
+{
+    if(messageLine.text().isEmpty() == false)
+    {
+        messageLine.insertText("\n");
+    }
+    messageLine.insertText(messageToQuote);
+    messageLine.insertText("\n\n");
+}
+
+void respawnIrcClass::addThisPeudoToBlacklist(QString pseudoToAdd)
+{
+    if(listOfIgnoredPseudo.indexOf(pseudoToAdd) == -1)
+    {
+        listOfIgnoredPseudo.append(pseudoToAdd);
+        saveListOfIgnoredPseudo();
+    }
+}
+
 void respawnIrcClass::setUpdateTopicTime(int newTime)
 {
     settingToolClass::saveUpdateTopicTime(newTime);
@@ -379,6 +402,37 @@ void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
         listOfShowTopicMessages.at(i)->updateSettingInfo();
     }
 }
+
+void respawnIrcClass::setShowQuoteButton(bool newVal)
+{
+    settingToolClass::saveShowQuoteButton(newVal);
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->updateSettingInfo();
+    }
+}
+
+void respawnIrcClass::setShowBlacklistButton(bool newVal)
+{
+    settingToolClass::saveShowBlacklistButton(newVal);
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->updateSettingInfo();
+    }
+}
+
+void respawnIrcClass::setShowEditButton(bool newVal)
+{
+    settingToolClass::saveShowEditButton(newVal);
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->updateSettingInfo();
+    }
+}
+
 
 void respawnIrcClass::setShowTextDecorationButton(bool newVal)
 {
@@ -679,7 +733,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
     getCurrentWidget()->startGetMessage();
 }
 
-void respawnIrcClass::setEditLastMessage()
+void respawnIrcClass::setEditMessage(int idOfMessageToEdit)
 {
     if(inSending == false)
     {
@@ -687,10 +741,10 @@ void respawnIrcClass::setEditLastMessage()
         {
             sendButton.setEnabled(false);
             sendButton.setText("Editer");
-            if(getCurrentWidget()->getEditInfo() == false)
+            if(getCurrentWidget()->getEditInfo(idOfMessageToEdit) == false)
             {
                 QMessageBox messageBox;
-                messageBox.warning(this, "Erreur", "Impossible d'éditer le dernier message.");
+                messageBox.warning(this, "Erreur", "Impossible d'éditer ce message.");
                 sendButton.setText("Envoyer");
                 sendButton.setEnabled(true);
             }
@@ -718,7 +772,7 @@ void respawnIrcClass::setInfoForEditMessage(int idOfMessageEdit, QString message
     else
     {
         QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Impossible d'éditer le dernier message.");
+        messageBox.warning(this, "Erreur", "Impossible d'éditer ce message.");
         sendButton.setText("Envoyer");
     }
 

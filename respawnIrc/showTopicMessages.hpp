@@ -29,13 +29,19 @@ public:
     void setTopicToErrorMode();
     void updateSettingInfo();
 public slots:
-    bool getEditInfo();
+    void linkClicked(const QUrl& link);
+    bool getEditInfo(int idOfMessageToEdit = 0);
+    void getQuoteInfo(QString idOfMessageQuoted);
     void getMessages();
     void loadFirstPageFinish();
     void loadSecondPageFinish();
     void analyzeEditInfo();
+    void analyzeQuoteInfo();
     void analyzeMessages();
 signals:
+    void quoteThisMessage(QString messageToQuote);
+    void addToBlacklist(QString pseudoToBlacklist);
+    void editThisMessage(int idOfMessageEdit);
     void newMessageStatus();
     void newNumberOfConnected();
     void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString cpatchaLink);
@@ -47,6 +53,7 @@ private:
     QNetworkReply* replyForFirstPage;
     QNetworkReply* replyForSecondPage;
     QNetworkReply* replyForEditInfo;
+    QNetworkReply* replyForQuoteInfo;
     QNetworkAccessManager networkManager;
     QTimer timerForGetMessage;
     QList<QPair<QString, QString> > listOfInput;
@@ -61,6 +68,10 @@ private:
     QString captchaLink;
     QString ajaxInfo;
     QString oldAjaxInfo;
+    QString lastMessageQuoted;
+    bool showQuoteButton;
+    bool showBlacklistButton;
+    bool showEditButton;
     bool loadTwoLastPage;
     bool ignoreNetworkError;
     bool secondPageLoading;

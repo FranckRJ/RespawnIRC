@@ -87,6 +87,21 @@ QList<QString> settingToolClass::getListOfTopicLink()
     return listOfTopicLink;
 }
 
+bool settingToolClass::getShowQuoteButton()
+{
+    return setting.value("showQuoteButton", true).toBool();
+}
+
+bool settingToolClass::getShowBlacklistButton()
+{
+    return setting.value("showBlacklistButton", true).toBool();
+}
+
+bool settingToolClass::getShowEditButton()
+{
+    return setting.value("showEditButton", true).toBool();
+}
+
 bool settingToolClass::getShowTextDecorationButton()
 {
     return setting.value("showTextDecorationButton", true).toBool();
@@ -189,6 +204,21 @@ void settingToolClass::saveListOfColorPseudo(QList<pseudoWithColorStruct>& newLi
 void settingToolClass::saveListOfTopicLink(QList<QString>& newList)
 {
     setting.setValue("listOfTopicLink", createQVariantListWithThisList(newList));
+}
+
+void settingToolClass::saveShowQuoteButton(bool newVal)
+{
+    setting.setValue("showQuoteButton", newVal);
+}
+
+void settingToolClass::saveShowBlacklistButton(bool newVal)
+{
+    setting.setValue("showBlacklistButton", newVal);
+}
+
+void settingToolClass::saveShowEditButton(bool newVal)
+{
+    setting.setValue("showEditButton", newVal);
 }
 
 void settingToolClass::saveShowTextDecoration(bool newVal)
