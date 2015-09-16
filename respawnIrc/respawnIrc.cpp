@@ -372,6 +372,7 @@ void respawnIrcClass::quoteThisMessage(QString messageToQuote)
     }
     messageLine.insertText(messageToQuote);
     messageLine.insertText("\n\n");
+    messageLine.setFocus();
 }
 
 void respawnIrcClass::addThisPeudoToBlacklist(QString pseudoToAdd)
@@ -644,6 +645,7 @@ void respawnIrcClass::postMessage()
         QString captchaLink;
 
         cookieListForPostMsg = getCurrentWidget()->getListOfCookies();
+        networkManager.clearAccessCache();
         networkManager.setCookieJar(new QNetworkCookieJar(this));
         networkManager.cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://www.jeuxvideo.com"));
 
@@ -731,6 +733,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
     }
 
     getCurrentWidget()->startGetMessage();
+    messageLine.setFocus();
 }
 
 void respawnIrcClass::setEditMessage(int idOfMessageToEdit)

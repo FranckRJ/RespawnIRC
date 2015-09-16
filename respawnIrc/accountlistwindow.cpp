@@ -9,7 +9,7 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
     QPushButton* buttonAddAccount = new QPushButton("Ajouter", this);
     QPushButton* buttonRemoveAccount = new QPushButton("Supprimer", this);
     QPushButton* buttonLogin = new QPushButton("Se connecter sur tous les onglets", this);
-    QPushButton* buttonLoginOneTopic = new QPushButton("Se connecter sur l'onglet acutel", this);
+    QPushButton* buttonLoginOneTopic = new QPushButton("Se connecter sur l'onglet actuel", this);
 
     rememberBox.setChecked(true);
     viewListOfAccount.setEditTriggers(QAbstractItemView::NoEditTriggers);
