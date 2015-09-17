@@ -8,7 +8,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     messagesBox.setOpenExternalLinks(false);
     messagesBox.setOpenLinks(false);
     timerForGetMessage.setTimerType(Qt::CoarseTimer);
-    timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
+    updateSettingInfo();
     timerForGetMessage.stop();
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
     listOfColorPseudo = newListOfColorPseudo;
@@ -23,12 +23,6 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     idOfLastMessageOfUser = 0;
     linkHasChanged = false;
     errorMode = false;
-    showQuoteButton = settingToolClass::getShowQuoteButton();
-    showBlacklistButton = settingToolClass::getShowBlacklistButton();
-    showEditButton = settingToolClass::getShowEditButton();
-    loadTwoLastPage = settingToolClass::getLoadTwoLastPage();
-    ignoreNetworkError = settingToolClass::getIgnoreNetworkError();
-    numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
     secondPageLoading = false;
 
     QHBoxLayout* layout = new QHBoxLayout(this);
@@ -170,13 +164,30 @@ void showTopicMessagesClass::setTopicToErrorMode()
 
 void showTopicMessagesClass::updateSettingInfo()
 {
-    showQuoteButton = settingToolClass::getShowQuoteButton();
-    showBlacklistButton = settingToolClass::getShowBlacklistButton();
-    showEditButton = settingToolClass::getShowEditButton();
-    loadTwoLastPage = settingToolClass::getLoadTwoLastPage();
-    ignoreNetworkError = settingToolClass::getIgnoreNetworkError();
-    timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
-    numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
+    showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
+    showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
+    showEditButton = settingToolClass::getThisBoolOption("showEditButton");
+    loadTwoLastPage = settingToolClass::getThisBoolOption("loadTwoLastPage");
+    ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
+    timerForGetMessage.setInterval(settingToolClass::getThisIntOption("updateTopicTime"));
+    numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime");
+
+    if(settingToolClass::getThisBoolOption("showListOfTopic") == true)
+    {
+        if(showListOfTopic.isVisible() == false)
+        {
+            showListOfTopic.setForumLink(parsingToolClass::getForumOfTopic(topicLink));
+        }
+    }
+    else
+    {
+        if(showListOfTopic.isVisible() == true)
+        {
+            showListOfTopic.setForumLink("");
+        }
+    }
+
+    showListOfTopic.setVisible(settingToolClass::getThisBoolOption("showListOfTopic"));
 }
 
 void showTopicMessagesClass::setNewTopic(QString newTopic)

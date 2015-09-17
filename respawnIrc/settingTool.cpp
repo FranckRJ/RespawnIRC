@@ -1,6 +1,63 @@
 #include "settingTool.hpp"
 
 QSettings settingToolClass::setting("config.ini", QSettings::IniFormat);
+QMap<QString, bool> settingToolClass::listOfDefaultBoolOption;
+QMap<QString, int> settingToolClass::listOfDefaultIntOption;
+
+void settingToolClass::initializeDefaultListsOption()
+{
+    listOfDefaultBoolOption["showQuoteButton"] = true;
+    listOfDefaultBoolOption["showBlacklistButton"] = true;
+    listOfDefaultBoolOption["showEditButton"] = true;
+    listOfDefaultBoolOption["showTextDecorationButton"] = true;
+    listOfDefaultBoolOption["showListOfTopic"] = true;
+    listOfDefaultBoolOption["setMultilineEdit"] = true;
+    listOfDefaultBoolOption["loadTwoLastPage"] = false;
+    listOfDefaultBoolOption["ignoreNetworkError"] = false;
+    listOfDefaultBoolOption["searchForUpdateAtLaunch"] = true;
+    listOfDefaultIntOption["updateTopicTime"] = 4000;
+    listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
+}
+
+
+QAction* settingToolClass::createActionForBoolOption(QString actionName, QString optionName, QMenu* menuForAction)
+{
+    QAction* newAction = menuForAction->addAction(actionName);
+    newAction->setCheckable(true);
+    newAction->setChecked(getThisBoolOption(optionName));
+
+    return newAction;
+}
+
+bool settingToolClass::getThisBoolOption(QString optionName)
+{
+    QMap<QString, bool>::iterator iteForList = listOfDefaultBoolOption.find(optionName);
+
+    if(iteForList != listOfDefaultBoolOption.end())
+    {
+        return setting.value(optionName, iteForList.value()).toBool();
+    }
+    else
+    {
+        qDebug() << "Erreur : cette option booléenne \"" + optionName + "\" n'existe pas.";
+        return setting.value(optionName, false).toBool();
+    }
+}
+
+int settingToolClass::getThisIntOption(QString optionName)
+{
+    QMap<QString, int>::iterator iteForList = listOfDefaultIntOption.find(optionName);
+
+    if(iteForList != listOfDefaultIntOption.end())
+    {
+        return setting.value(optionName, iteForList.value()).toInt();
+    }
+    else
+    {
+        qDebug() << "Erreur : cette option entière \"" + optionName + "\" n'existe pas.";
+        return setting.value(optionName, 0).toInt();
+    }
+}
 
 QList<accountStruct> settingToolClass::getListOfAccount()
 {
@@ -87,56 +144,6 @@ QList<QString> settingToolClass::getListOfTopicLink()
     return listOfTopicLink;
 }
 
-bool settingToolClass::getShowQuoteButton()
-{
-    return setting.value("showQuoteButton", true).toBool();
-}
-
-bool settingToolClass::getShowBlacklistButton()
-{
-    return setting.value("showBlacklistButton", true).toBool();
-}
-
-bool settingToolClass::getShowEditButton()
-{
-    return setting.value("showEditButton", true).toBool();
-}
-
-bool settingToolClass::getShowTextDecorationButton()
-{
-    return setting.value("showTextDecorationButton", true).toBool();
-}
-
-bool settingToolClass::getSetMultilineEdit()
-{
-    return setting.value("setMultilineEdit", true).toBool();
-}
-
-bool settingToolClass::getLoadTwoLastPage()
-{
-    return setting.value("loadTwoLastPage", false).toBool();
-}
-
-bool settingToolClass::getIgnoreNetworkError()
-{
-    return setting.value("ignoreNetworkError", false).toBool();
-}
-
-bool settingToolClass::getSearchForUpdateAtLaunch()
-{
-    return setting.value("searchForUpdateAtLaunch", true).toBool();
-}
-
-int settingToolClass::getUpdateTopicTime()
-{
-    return setting.value("updateTopicTime", 4000).toInt();
-}
-
-int settingToolClass::getNumberOfMessageShowedFirstTime()
-{
-    return setting.value("numberOfMessageShowedFirstTime", 10).toInt();
-}
-
 void settingToolClass::saveListOfAccount(QList<accountStruct>& newListOfAccount)
 {
     QList<QNetworkCookie> listOfHelloCookie;
@@ -206,54 +213,14 @@ void settingToolClass::saveListOfTopicLink(QList<QString>& newList)
     setting.setValue("listOfTopicLink", createQVariantListWithThisList(newList));
 }
 
-void settingToolClass::saveShowQuoteButton(bool newVal)
+void settingToolClass::saveThisBoolOption(QString optionName, bool value)
 {
-    setting.setValue("showQuoteButton", newVal);
+    setting.setValue(optionName, value);
 }
 
-void settingToolClass::saveShowBlacklistButton(bool newVal)
+void settingToolClass::saveThisIntOption(QString optionName, int value)
 {
-    setting.setValue("showBlacklistButton", newVal);
-}
-
-void settingToolClass::saveShowEditButton(bool newVal)
-{
-    setting.setValue("showEditButton", newVal);
-}
-
-void settingToolClass::saveShowTextDecoration(bool newVal)
-{
-    setting.setValue("showTextDecorationButton", newVal);
-}
-
-void settingToolClass::saveSetMultilineEdit(bool newVal)
-{
-    setting.setValue("setMultilineEdit", newVal);
-}
-
-void settingToolClass::saveLoadTwoLastPage(bool newVal)
-{
-    setting.setValue("loadTwoLastPage", newVal);
-}
-
-void settingToolClass::saveIgnoreNetworkError(bool newVal)
-{
-    setting.setValue("ignoreNetworkError", newVal);
-}
-
-void settingToolClass::saveSearchForUpdateAtLaunch(bool newVal)
-{
-    setting.setValue("searchForUpdateAtLaunch", newVal);
-}
-
-void settingToolClass::saveUpdateTopicTime(int newTime)
-{
-    setting.setValue("updateTopicTime", newTime);
-}
-
-void settingToolClass::saveNumberOfMessageShowedFirstTime(int newNumber)
-{
-    setting.setValue("numberOfMessageShowedFirstTime", newNumber);
+    setting.setValue(optionName, value);
 }
 
 QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString)

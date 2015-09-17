@@ -10,44 +10,32 @@
 class settingToolClass
 {
 public:
+    static void initializeDefaultListsOption();
+    static QAction* createActionForBoolOption(QString actionName, QString optionName, QMenu* menuForAction);
+    static bool getThisBoolOption(QString optionName);
+    static int getThisIntOption(QString optionName);
     static QList<accountStruct> getListOfAccount();
     static QString getPseudoOfUser();
     static QList<QString> getListOfPseudoForTopic();
     static QList<QString> getListOfIgnoredPseudo();
     static QList<pseudoWithColorStruct> getListOfColorPseudo();
     static QList<QString> getListOfTopicLink();
-    static bool getShowQuoteButton();
-    static bool getShowBlacklistButton();
-    static bool getShowEditButton();
-    static bool getShowTextDecorationButton();
-    static bool getSetMultilineEdit();
-    static bool getLoadTwoLastPage();
-    static bool getIgnoreNetworkError();
-    static bool getSearchForUpdateAtLaunch();
-    static int getUpdateTopicTime();
-    static int getNumberOfMessageShowedFirstTime();
+    static void saveThisBoolOption(QString optionName, bool value);
+    static void saveThisIntOption(QString optionName, int value);
     static void saveListOfAccount(QList<accountStruct>& newListOfAccount);
     static void savePseudoOfUser(QString newPseudo);
     static void saveListOfPseudoForTopic(QList<QString>& newList);
     static void saveListOfIgnoredPseudo(QList<QString>& newList);
     static void saveListOfColorPseudo(QList<pseudoWithColorStruct>& newListOfColorPseudo);
     static void saveListOfTopicLink(QList<QString>& newList);
-    static void saveShowQuoteButton(bool newVal);
-    static void saveShowBlacklistButton(bool newVal);
-    static void saveShowEditButton(bool newVal);
-    static void saveShowTextDecoration(bool newVal);
-    static void saveSetMultilineEdit(bool newVal);
-    static void saveLoadTwoLastPage(bool newVal);
-    static void saveIgnoreNetworkError(bool newVal);
-    static void saveSearchForUpdateAtLaunch(bool newVal);
-    static void saveUpdateTopicTime(int newTime);
-    static void saveNumberOfMessageShowedFirstTime(int newNumber);
     static QList<QVariant> createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString = true);
     static QList<QVariant> createQVariantListWithThisList(QList<QNetworkCookie> list);
     static QList<QString> createStringListWithThisQVariantList(QList<QVariant> list);
     static QList<QNetworkCookie> createCookieListWithThisQVariantList(QList<QVariant> list);
 private:
     static QSettings setting;
+    static QMap<QString, bool> listOfDefaultBoolOption;
+    static QMap<QString, int> listOfDefaultIntOption;
 };
 
 #endif

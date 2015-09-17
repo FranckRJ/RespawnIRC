@@ -49,6 +49,7 @@ public slots:
     void setShowBlacklistButton(bool newVal);
     void setShowEditButton(bool newVal);
     void setShowTextDecorationButton(bool newVal);
+    void setShowListOfTopic(bool newVal);
     void setMultilineEdit(bool newVal);
     void setLoadTwoLastPage(bool newVal);
     void setIgnoreNetworkError(bool newVal);
@@ -73,7 +74,6 @@ public slots:
 protected:
     void focusInEvent(QFocusEvent * event);
 private:
-    QGridLayout* mainLayout;
     QHBoxLayout* buttonLayout;
     QTabWidget tabList;
     QList<QNetworkCookie> currentCookieList;

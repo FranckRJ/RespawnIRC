@@ -24,7 +24,15 @@ showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
 void showListOfTopicClass::setForumLink(QString newForumLink)
 {
     forumLink = newForumLink;
-    startGetListOfTopic();
+    modelForListView.setStringList(QList<QString>());
+    if(newForumLink.isEmpty() == false)
+    {
+        startGetListOfTopic();
+    }
+    else
+    {
+        timerForGetList.stop();
+    }
 }
 
 void showListOfTopicClass::startGetListOfTopic()

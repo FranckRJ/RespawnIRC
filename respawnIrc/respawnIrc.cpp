@@ -26,7 +26,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     infoLayout->addWidget(&messagesStatus);
     infoLayout->addWidget(&numberOfConnectedAndPseudoUsed, 1, Qt::AlignRight);
 
-    mainLayout = new QGridLayout(this);
+    QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(&tabList, 0, 0, 1, 2);
     mainLayout->addLayout(buttonLayout, 1, 0, 1, 2, Qt::AlignLeft);
     mainLayout->addWidget(&messageLine, 2, 0);
@@ -88,14 +88,14 @@ void respawnIrcClass::loadSettings()
     messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
     setNewNumberOfConnectedAndPseudoUsed();
 
-    if(settingToolClass::getShowTextDecorationButton() == false)
+    if(settingToolClass::getThisBoolOption("showTextDecorationButton") == false)
     {
         setShowTextDecorationButton(false);
     }
 
-    setMultilineEdit(settingToolClass::getSetMultilineEdit());
+    setMultilineEdit(settingToolClass::getThisBoolOption("setMultilineEdit"));
 
-    if(settingToolClass::getSearchForUpdateAtLaunch() == true)
+    if(settingToolClass::getThisBoolOption("searchForUpdateAtLaunch") == true)
     {
         checkUpdate.startDownloadOfLatestUpdatePage();
     }
@@ -239,14 +239,14 @@ void respawnIrcClass::showColorPseudoListWindow()
 
 void respawnIrcClass::showUpdateTopicTimeWindow()
 {
-    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(2500, 10000, settingToolClass::getUpdateTopicTime(), this);
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(2500, 10000, settingToolClass::getThisIntOption("updateTopicTime"), this);
     QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setUpdateTopicTime);
     myChooseNumberWindow->exec();
 }
 
 void respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow()
 {
-    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(1, 40, settingToolClass::getNumberOfMessageShowedFirstTime(), this);
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(1, 40, settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime"), this);
     QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setNumberOfMessageShowedFirstTime);
     myChooseNumberWindow->exec();
 }
@@ -394,7 +394,7 @@ void respawnIrcClass::addThisPeudoToBlacklist(QString pseudoToAdd)
 
 void respawnIrcClass::setUpdateTopicTime(int newTime)
 {
-    settingToolClass::saveUpdateTopicTime(newTime);
+    settingToolClass::saveThisIntOption("updateTopicTime", newTime);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -404,7 +404,7 @@ void respawnIrcClass::setUpdateTopicTime(int newTime)
 
 void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
 {
-    settingToolClass::saveNumberOfMessageShowedFirstTime(newNumber);
+    settingToolClass::saveThisIntOption("numberOfMessageShowedFirstTime", newNumber);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -414,7 +414,7 @@ void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
 
 void respawnIrcClass::setShowQuoteButton(bool newVal)
 {
-    settingToolClass::saveShowQuoteButton(newVal);
+    settingToolClass::saveThisBoolOption("showQuoteButton", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -424,7 +424,7 @@ void respawnIrcClass::setShowQuoteButton(bool newVal)
 
 void respawnIrcClass::setShowBlacklistButton(bool newVal)
 {
-    settingToolClass::saveShowBlacklistButton(newVal);
+    settingToolClass::saveThisBoolOption("showBlacklistButton", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -434,7 +434,7 @@ void respawnIrcClass::setShowBlacklistButton(bool newVal)
 
 void respawnIrcClass::setShowEditButton(bool newVal)
 {
-    settingToolClass::saveShowEditButton(newVal);
+    settingToolClass::saveThisBoolOption("showEditButton", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -447,17 +447,17 @@ void respawnIrcClass::setShowTextDecorationButton(bool newVal)
 {
     setButtonInButtonLayoutVisible(newVal);
 
-    if(newVal == false)
-    {
-        mainLayout->removeItem(buttonLayout);
-    }
-    else if(newVal == true)
-    {
-        mainLayout->addLayout(buttonLayout, 1, 0, 1, 2, Qt::AlignLeft);
-        mainLayout->update();
-    }
+    settingToolClass::saveThisBoolOption("showTextDecorationButton", newVal);
+}
 
-    settingToolClass::saveShowTextDecoration(newVal);
+void respawnIrcClass::setShowListOfTopic(bool newVal)
+{
+    settingToolClass::saveThisBoolOption("showListOfTopic", newVal);
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->updateSettingInfo();
+    }
 }
 
 void respawnIrcClass::setMultilineEdit(bool newVal)
@@ -465,12 +465,12 @@ void respawnIrcClass::setMultilineEdit(bool newVal)
     messageLine.setTextEditSelected(newVal);
     messageLine.setFocus();
 
-    settingToolClass::saveSetMultilineEdit(newVal);
+    settingToolClass::saveThisBoolOption("setMultilineEdit", newVal);
 }
 
 void respawnIrcClass::setLoadTwoLastPage(bool newVal)
 {
-    settingToolClass::saveLoadTwoLastPage(newVal);
+    settingToolClass::saveThisBoolOption("loadTwoLastPage", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -480,7 +480,7 @@ void respawnIrcClass::setLoadTwoLastPage(bool newVal)
 
 void respawnIrcClass::setIgnoreNetworkError(bool newVal)
 {
-    settingToolClass::saveIgnoreNetworkError(newVal);
+    settingToolClass::saveThisBoolOption("ignoreNetworkError", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -490,7 +490,7 @@ void respawnIrcClass::setIgnoreNetworkError(bool newVal)
 
 void respawnIrcClass::setSearchForUpdateAtLaunch(bool newVal)
 {
-    settingToolClass::saveSearchForUpdateAtLaunch(newVal);
+    settingToolClass::saveThisBoolOption("searchForUpdateAtLaunch", newVal);
 }
 
 void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo)
