@@ -6,6 +6,7 @@
 #include <QtNetwork>
 
 #include "colorPseudoListWindow.hpp"
+#include "showListOfTopic.hpp"
 
 class showTopicMessagesClass : public QWidget
 {
@@ -23,12 +24,12 @@ public:
     QString getColorOfThisPseudo(QString pseudo);
     const QList<QNetworkCookie>& getListOfCookies();
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser);
-    void setNewTopic(QString newTopic);
     void setMessageStatus(QString newStatus);
     void setNumberOfConnected(QString newNumber, bool forceSet = false);
     void setTopicToErrorMode();
     void updateSettingInfo();
 public slots:
+    void setNewTopic(QString newTopic);
     void linkClicked(const QUrl& link);
     bool getEditInfo(int idOfMessageToEdit = 0);
     void getQuoteInfo(QString idOfMessageQuoted);
@@ -47,8 +48,10 @@ signals:
     void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString cpatchaLink);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
+    void openThisTopicInNewTab(QString topicLink);
 private:
     QTextBrowser messagesBox;
+    showListOfTopicClass showListOfTopic;
     QList<QNetworkCookie> currentCookieList;
     QNetworkReply* replyForFirstPage;
     QNetworkReply* replyForSecondPage;

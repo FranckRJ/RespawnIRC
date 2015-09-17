@@ -31,14 +31,17 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
     secondPageLoading = false;
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->addWidget(&messagesBox);
+    QHBoxLayout* layout = new QHBoxLayout(this);
+    layout->addWidget(&messagesBox, 1);
+    layout->addWidget(&showListOfTopic);
     layout->setMargin(0);
 
     setLayout(layout);
 
     QObject::connect(&timerForGetMessage, &QTimer::timeout, this, &showTopicMessagesClass::getMessages);
     QObject::connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
+    QObject::connect(&showListOfTopic, &showListOfTopicClass::openThisTopic, this, &showTopicMessagesClass::setNewTopic);
+    QObject::connect(&showListOfTopic, &showListOfTopicClass::openThisTopicInNewTab, this, &showTopicMessagesClass::openThisTopicInNewTab);
 }
 
 void showTopicMessagesClass::startGetMessage()
@@ -114,23 +117,6 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
     startGetMessage();
 }
 
-void showTopicMessagesClass::setNewTopic(QString newTopic)
-{
-    messagesBox.clear();
-    topicName.clear();
-    listOfEdit.clear();
-    topicLink = newTopic;
-    linkHasChanged = true;
-    firstTimeGetMessages = true;
-    errorMode = false;
-    idOfLastMessage = 0;
-    idOfLastMessageOfUser = 0;
-
-    setMessageStatus("Nouveau topic.");
-    setNumberOfConnected("", true);
-    startGetMessage();
-}
-
 void showTopicMessagesClass::setMessageStatus(QString newStatus)
 {
     messagesStatus = newStatus;
@@ -191,6 +177,25 @@ void showTopicMessagesClass::updateSettingInfo()
     ignoreNetworkError = settingToolClass::getIgnoreNetworkError();
     timerForGetMessage.setInterval(settingToolClass::getUpdateTopicTime());
     numberOfMessageShowedFirstTime = settingToolClass::getNumberOfMessageShowedFirstTime();
+}
+
+void showTopicMessagesClass::setNewTopic(QString newTopic)
+{
+    messagesBox.clear();
+    topicName.clear();
+    listOfEdit.clear();
+    topicLink = newTopic;
+    linkHasChanged = true;
+    firstTimeGetMessages = true;
+    errorMode = false;
+    idOfLastMessage = 0;
+    idOfLastMessageOfUser = 0;
+
+    showListOfTopic.setForumLink(parsingToolClass::getForumOfTopic(topicLink));
+
+    setMessageStatus("Nouveau topic.");
+    setNumberOfConnected("", true);
+    startGetMessage();
 }
 
 void showTopicMessagesClass::linkClicked(const QUrl &link)

@@ -34,6 +34,7 @@ public slots:
     void showNumberOfMessageShowedFirstTimeWindow();
     void showAbout();
     void addNewTab();
+    void addNewTabWithTopic(QString newTopicLink);
     void removeTab(int index);
     void checkForUpdate();
     void updateTopic();

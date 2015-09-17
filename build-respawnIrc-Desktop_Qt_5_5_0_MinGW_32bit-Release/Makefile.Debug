@@ -58,7 +58,8 @@ SOURCES       = ..\respawnIrc\main.cpp \
 		..\respawnIrc\chooseNumberWindow.cpp \
 		..\respawnIrc\checkUpdate.cpp \
 		..\respawnIrc\accountListWindow.cpp \
-		..\respawnIrc\colorPseudoListWindow.cpp debug\moc_mainWindow.cpp \
+		..\respawnIrc\colorPseudoListWindow.cpp \
+		..\respawnIrc\showListOfTopic.cpp debug\moc_mainWindow.cpp \
 		debug\moc_respawnIrc.cpp \
 		debug\moc_connectWindow.cpp \
 		debug\moc_selectTopicWindow.cpp \
@@ -87,6 +88,7 @@ OBJECTS       = debug/main.o \
 		debug/checkUpdate.o \
 		debug/accountListWindow.o \
 		debug/colorPseudoListWindow.o \
+		debug/showListOfTopic.o \
 		debug/moc_mainWindow.o \
 		debug/moc_respawnIrc.o \
 		debug/moc_connectWindow.o \
@@ -115,7 +117,8 @@ DIST          =  ..\respawnIrc\mainWindow.hpp \
 		..\respawnIrc\chooseNumberWindow.hpp \
 		..\respawnIrc\checkUpdate.hpp \
 		..\respawnIrc\colorPseudoListWindow.hpp \
-		..\respawnIrc\accountListWindow.hpp ..\respawnIrc\main.cpp \
+		..\respawnIrc\accountListWindow.hpp \
+		..\respawnIrc\showListOfTopic.hpp ..\respawnIrc\main.cpp \
 		..\respawnIrc\mainWindow.cpp \
 		..\respawnIrc\respawnIrc.cpp \
 		..\respawnIrc\connectWindow.cpp \
@@ -130,7 +133,8 @@ DIST          =  ..\respawnIrc\mainWindow.hpp \
 		..\respawnIrc\chooseNumberWindow.cpp \
 		..\respawnIrc\checkUpdate.cpp \
 		..\respawnIrc\accountListWindow.cpp \
-		..\respawnIrc\colorPseudoListWindow.cpp
+		..\respawnIrc\colorPseudoListWindow.cpp \
+		..\respawnIrc\showListOfTopic.cpp
 QMAKE_TARGET  = respawnIrc
 DESTDIR        = debug\ #avoid trailing-slash linebreak
 TARGET         = respawnIrc.exe
@@ -172,7 +176,7 @@ dist:
 	$(ZIP) respawnIrc.zip $(SOURCES) $(DIST) ..\respawnIrc\respawnIrc.pro C:\Qt\5.5\mingw492_32\mkspecs\features\spec_pre.prf C:\Qt\5.5\mingw492_32\mkspecs\qdevice.pri C:\Qt\5.5\mingw492_32\mkspecs\features\device_config.prf C:\Qt\5.5\mingw492_32\mkspecs\qconfig.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dquickrenderer.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dquickrenderer_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3drenderer.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3drenderer_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axbase.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axserver.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_bootstrap_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_clucene_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_core.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_core_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_dbus.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_declarative.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_declarative_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_designer.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_enginio.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_enginio_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_gui.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_help.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_help_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_location.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_location_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_network.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_network_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_nfc.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_opengl.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_openglextensions.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_openglextensions_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_platformsupport_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_positioning.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qml.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qmldevtools_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quick.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_script.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_script_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_scripttools.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_scripttools_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_sensors.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_serialport.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_sql.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_svg.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_testlib.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_uitools.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webkit.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webkit_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webkitwidgets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webkitwidgets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_websockets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_widgets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_winextras.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_winextras_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_xml.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_xmlpatterns.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_xmlpatterns_private.pri C:\Qt\5.5\mingw492_32\mkspecs\features\qt_functions.prf C:\Qt\5.5\mingw492_32\mkspecs\features\qt_config.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\qt_config.prf C:\Qt\5.5\mingw492_32\mkspecs\win32-g++\qmake.conf C:\Qt\5.5\mingw492_32\mkspecs\features\spec_post.prf C:\Qt\5.5\mingw492_32\mkspecs\features\exclusive_builds.prf C:\Qt\5.5\mingw492_32\mkspecs\features\default_pre.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\default_pre.prf C:\Qt\5.5\mingw492_32\mkspecs\features\resolve_config.prf C:\Qt\5.5\mingw492_32\mkspecs\features\exclusive_builds_post.prf C:\Qt\5.5\mingw492_32\mkspecs\features\default_post.prf C:\Qt\5.5\mingw492_32\mkspecs\features\build_pass.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\rtti.prf C:\Qt\5.5\mingw492_32\mkspecs\features\precompile_header.prf C:\Qt\5.5\mingw492_32\mkspecs\features\warn_on.prf C:\Qt\5.5\mingw492_32\mkspecs\features\qt.prf C:\Qt\5.5\mingw492_32\mkspecs\features\resources.prf C:\Qt\5.5\mingw492_32\mkspecs\features\moc.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\opengl.prf C:\Qt\5.5\mingw492_32\mkspecs\features\uic.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\windows.prf C:\Qt\5.5\mingw492_32\mkspecs\features\testcase_targets.prf C:\Qt\5.5\mingw492_32\mkspecs\features\exceptions.prf C:\Qt\5.5\mingw492_32\mkspecs\features\yacc.prf C:\Qt\5.5\mingw492_32\mkspecs\features\lex.prf ..\respawnIrc\respawnIrc.pro C:/Qt/5.5/mingw492_32/lib/qtmaind.prl C:/Qt/5.5/mingw492_32/lib/Qt5Widgetsd.prl C:/Qt/5.5/mingw492_32/lib/Qt5Guid.prl C:/Qt/5.5/mingw492_32/lib/Qt5Networkd.prl C:/Qt/5.5/mingw492_32/lib/Qt5Cored.prl  NO_PCH_SOURCES RESOURCES HEADERS SOURCES OBJECTIVE_SOURCES FORMS YACCSOURCES YACCSOURCES LEXSOURCES 
 
 clean: compiler_clean 
-	-$(DEL_FILE) debug\main.o debug\mainWindow.o debug\respawnIrc.o debug\connectWindow.o debug\parsingTool.o debug\selectTopicWindow.o debug\captchaWindow.o debug\showTopicMessages.o debug\ignoreListWindow.o debug\addPseudoWindow.o debug\settingTool.o debug\multiTypeTextBox.o debug\chooseNumberWindow.o debug\checkUpdate.o debug\accountListWindow.o debug\colorPseudoListWindow.o debug\moc_mainWindow.o debug\moc_respawnIrc.o debug\moc_connectWindow.o debug\moc_selectTopicWindow.o debug\moc_captchaWindow.o debug\moc_showTopicMessages.o debug\moc_ignoreListWindow.o debug\moc_addPseudoWindow.o debug\moc_multiTypeTextBox.o debug\moc_chooseNumberWindow.o debug\moc_checkUpdate.o debug\moc_colorPseudoListWindow.o debug\moc_accountListWindow.o
+	-$(DEL_FILE) debug\main.o debug\mainWindow.o debug\respawnIrc.o debug\connectWindow.o debug\parsingTool.o debug\selectTopicWindow.o debug\captchaWindow.o debug\showTopicMessages.o debug\ignoreListWindow.o debug\addPseudoWindow.o debug\settingTool.o debug\multiTypeTextBox.o debug\chooseNumberWindow.o debug\checkUpdate.o debug\accountListWindow.o debug\colorPseudoListWindow.o debug\showListOfTopic.o debug\moc_mainWindow.o debug\moc_respawnIrc.o debug\moc_connectWindow.o debug\moc_selectTopicWindow.o debug\moc_captchaWindow.o debug\moc_showTopicMessages.o debug\moc_ignoreListWindow.o debug\moc_addPseudoWindow.o debug\moc_multiTypeTextBox.o debug\moc_chooseNumberWindow.o debug\moc_checkUpdate.o debug\moc_colorPseudoListWindow.o debug\moc_accountListWindow.o
 	-$(DEL_FILE) debug\respawnIrc_res.o
 
 distclean: clean 
@@ -701,7 +705,7 @@ debug/moc_mainWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		../respawnIrc/multiTypeTextBox.hpp \
 		../respawnIrc/checkUpdate.hpp \
 		../respawnIrc/mainWindow.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\mainWindow.hpp -o debug\moc_mainWindow.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\mainWindow.hpp -o debug\moc_mainWindow.cpp
 
 debug/moc_respawnIrc.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -1211,7 +1215,7 @@ debug/moc_respawnIrc.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		../respawnIrc/multiTypeTextBox.hpp \
 		../respawnIrc/checkUpdate.hpp \
 		../respawnIrc/respawnIrc.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\respawnIrc.hpp -o debug\moc_respawnIrc.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\respawnIrc.hpp -o debug\moc_respawnIrc.cpp
 
 debug/moc_connectWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -1716,7 +1720,7 @@ debug/moc_connectWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qsslkey.h \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
 		../respawnIrc/connectWindow.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\connectWindow.hpp -o debug\moc_connectWindow.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\connectWindow.hpp -o debug\moc_connectWindow.cpp
 
 debug/moc_selectTopicWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -2174,7 +2178,7 @@ debug/moc_selectTopicWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidge
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
 		../respawnIrc/selectTopicWindow.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\selectTopicWindow.hpp -o debug\moc_selectTopicWindow.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\selectTopicWindow.hpp -o debug\moc_selectTopicWindow.cpp
 
 debug/moc_captchaWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -2679,7 +2683,7 @@ debug/moc_captchaWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qsslkey.h \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
 		../respawnIrc/captchaWindow.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\captchaWindow.hpp -o debug\moc_captchaWindow.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\captchaWindow.hpp -o debug\moc_captchaWindow.cpp
 
 debug/moc_showTopicMessages.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -3185,7 +3189,7 @@ debug/moc_showTopicMessages.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidge
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
 		../respawnIrc/colorPseudoListWindow.hpp \
 		../respawnIrc/showTopicMessages.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\showTopicMessages.hpp -o debug\moc_showTopicMessages.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\showTopicMessages.hpp -o debug\moc_showTopicMessages.cpp
 
 debug/moc_ignoreListWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -3643,7 +3647,7 @@ debug/moc_ignoreListWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidget
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
 		../respawnIrc/ignoreListWindow.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\ignoreListWindow.hpp -o debug\moc_ignoreListWindow.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\ignoreListWindow.hpp -o debug\moc_ignoreListWindow.cpp
 
 debug/moc_addPseudoWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -4101,7 +4105,7 @@ debug/moc_addPseudoWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
 		../respawnIrc/addPseudoWindow.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\addPseudoWindow.hpp -o debug\moc_addPseudoWindow.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\addPseudoWindow.hpp -o debug\moc_addPseudoWindow.cpp
 
 debug/moc_multiTypeTextBox.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -4559,7 +4563,7 @@ debug/moc_multiTypeTextBox.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidget
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
 		../respawnIrc/multiTypeTextBox.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\multiTypeTextBox.hpp -o debug\moc_multiTypeTextBox.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\multiTypeTextBox.hpp -o debug\moc_multiTypeTextBox.cpp
 
 debug/moc_chooseNumberWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -5017,7 +5021,7 @@ debug/moc_chooseNumberWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidg
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
 		../respawnIrc/chooseNumberWindow.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\chooseNumberWindow.hpp -o debug\moc_chooseNumberWindow.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\chooseNumberWindow.hpp -o debug\moc_chooseNumberWindow.cpp
 
 debug/moc_checkUpdate.cpp: C:/Qt/5.5/mingw492_32/include/QtCore/QtCore \
 		C:/Qt/5.5/mingw492_32/include/QtCore/QtCoreDepends \
@@ -5256,7 +5260,7 @@ debug/moc_checkUpdate.cpp: C:/Qt/5.5/mingw492_32/include/QtCore/QtCore \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qsslkey.h \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
 		../respawnIrc/checkUpdate.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\checkUpdate.hpp -o debug\moc_checkUpdate.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\checkUpdate.hpp -o debug\moc_checkUpdate.cpp
 
 debug/moc_colorPseudoListWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -5714,7 +5718,7 @@ debug/moc_colorPseudoListWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtW
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
 		../respawnIrc/colorPseudoListWindow.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\colorPseudoListWindow.hpp -o debug\moc_colorPseudoListWindow.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\colorPseudoListWindow.hpp -o debug\moc_colorPseudoListWindow.cpp
 
 debug/moc_accountListWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgetsDepends \
@@ -6219,7 +6223,7 @@ debug/moc_accountListWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidge
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qsslkey.h \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
 		../respawnIrc/accountListWindow.hpp
-	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/Logi/respawnIrc/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\accountListWindow.hpp -o debug\moc_accountListWindow.cpp
+	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\accountListWindow.hpp -o debug\moc_accountListWindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -13854,6 +13858,9 @@ debug/colorPseudoListWindow.o: ../respawnIrc/colorPseudoListWindow.cpp ../respaw
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
 		../respawnIrc/addPseudoWindow.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\colorPseudoListWindow.o ..\respawnIrc\colorPseudoListWindow.cpp
+
+debug/showListOfTopic.o: ../respawnIrc/showListOfTopic.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\showListOfTopic.o ..\respawnIrc\showListOfTopic.cpp
 
 debug/moc_mainWindow.o: debug/moc_mainWindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\moc_mainWindow.o debug\moc_mainWindow.cpp

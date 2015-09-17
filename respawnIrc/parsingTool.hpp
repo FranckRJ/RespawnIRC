@@ -13,6 +13,12 @@ struct messageStruct
     QString lastTimeEdit;
 };
 
+struct topicStruct
+{
+    QString name;
+    QString link;
+};
+
 class parsingToolClass
 {
 public:
@@ -28,6 +34,7 @@ public:
     static QString getNameOfTopic(const QString& source);
     static QString getNumberOfConnected(const QString& source);
     static QList<messageStruct> getListOfEntireMessages(const QString& source);
+    static QList<topicStruct> getListOfTopic(const QString& source);
     static QString getForumOfTopic(const QString& source);
     static QString jvfLinkToJvcLink(const QString& source);
     static QString parsingMessages(QString thisMessage);
@@ -53,6 +60,7 @@ private:
     static QRegularExpression expForNameOfTopic;
     static QRegularExpression expForNumberOfConnected;
     static QRegularExpression expForEntireMessage;
+    static QRegularExpression expForListOfTopic;
     static QRegularExpression expForMessageID;
     static QRegularExpression expForPseudo;
     static QRegularExpression expForDate;
