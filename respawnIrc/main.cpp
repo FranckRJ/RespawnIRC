@@ -2,11 +2,13 @@
 
 #include "mainWindow.hpp"
 #include "settingTool.hpp"
+#include "styleTool.hpp"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     settingToolClass::initializeDefaultListsOption();
+    styleToolClass::loadStyles();
 
     mainWindowClass mainWindow;
     mainWindow.show();

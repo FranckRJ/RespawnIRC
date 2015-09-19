@@ -4,6 +4,7 @@ QSettings settingToolClass::setting("config.ini", QSettings::IniFormat);
 QMap<QString, bool> settingToolClass::listOfDefaultBoolOption;
 QMap<QString, int> settingToolClass::listOfDefaultIntOption;
 QMap<QString, QString> settingToolClass::listOfDefaultStringOption;
+QMap<QString, QByteArray> settingToolClass::listOfDefaultByteOption;
 
 void settingToolClass::initializeDefaultListsOption()
 {
@@ -16,15 +17,19 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["loadTwoLastPage"] = false;
     listOfDefaultBoolOption["ignoreNetworkError"] = false;
     listOfDefaultBoolOption["searchForUpdateAtLaunch"] = true;
+    listOfDefaultBoolOption["saveWindowGeometry"] = true;
     listOfDefaultIntOption["updateTopicTime"] = 4000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
     listOfDefaultStringOption["pseudo"] = "";
+    listOfDefaultStringOption["windowGeometry"] = "";
 
     for(int i = 0; i < 10; ++i)
     {
         listOfDefaultStringOption["favoriteLink" + QString::number(i)] = "";
         listOfDefaultStringOption["favoriteName" + QString::number(i)] = "";
     }
+
+    listOfDefaultByteOption["windowGeometry"] = "";
 }
 
 
@@ -79,6 +84,21 @@ QString settingToolClass::getThisStringOption(QString optionName)
     {
         qDebug() << "Erreur : cette option string \"" + optionName + "\" n existe pas.";
         return setting.value(optionName, "").toString();
+    }
+}
+
+QByteArray settingToolClass::getThisByteOption(QString optionName)
+{
+    QMap<QString, QByteArray>::iterator iteForList = listOfDefaultByteOption.find(optionName);
+
+    if(iteForList != listOfDefaultByteOption.end())
+    {
+        return setting.value(optionName, iteForList.value()).toByteArray();
+    }
+    else
+    {
+        qDebug() << "Erreur : cette option byte \"" + optionName + "\" n existe pas.";
+        return setting.value(optionName, "").toByteArray();
     }
 }
 

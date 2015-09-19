@@ -1,6 +1,7 @@
 #include "showTopicMessages.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
+#include "styleTool.hpp"
 
 showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent) : QWidget(parent)
 {
@@ -31,6 +32,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     layout->setMargin(0);
 
     setLayout(layout);
+    messagesBox.setStyleSheet(styleToolClass::getStyle("messageslist.css"));
 
     QObject::connect(&timerForGetMessage, &QTimer::timeout, this, &showTopicMessagesClass::getMessages);
     QObject::connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);

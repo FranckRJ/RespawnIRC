@@ -15,7 +15,8 @@ SOURCES += \
     checkUpdate.cpp \
     accountListWindow.cpp \
     colorPseudoListWindow.cpp \
-    showListOfTopic.cpp
+    showListOfTopic.cpp \
+    styleTool.cpp
 
 QT += \
     network \
@@ -37,6 +38,7 @@ HEADERS += \
     checkUpdate.hpp \
     colorPseudoListWindow.hpp \
     accountListWindow.hpp \
-    showListOfTopic.hpp
+    showListOfTopic.hpp \
+    styleTool.hpp
 
 RC_FILE = respawnIrc.rc

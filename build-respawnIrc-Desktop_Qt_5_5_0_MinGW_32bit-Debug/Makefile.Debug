@@ -59,7 +59,8 @@ SOURCES       = ..\respawnIrc\main.cpp \
 		..\respawnIrc\checkUpdate.cpp \
 		..\respawnIrc\accountListWindow.cpp \
 		..\respawnIrc\colorPseudoListWindow.cpp \
-		..\respawnIrc\showListOfTopic.cpp debug\moc_mainWindow.cpp \
+		..\respawnIrc\showListOfTopic.cpp \
+		..\respawnIrc\styleTool.cpp debug\moc_mainWindow.cpp \
 		debug\moc_respawnIrc.cpp \
 		debug\moc_connectWindow.cpp \
 		debug\moc_selectTopicWindow.cpp \
@@ -90,6 +91,7 @@ OBJECTS       = debug/main.o \
 		debug/accountListWindow.o \
 		debug/colorPseudoListWindow.o \
 		debug/showListOfTopic.o \
+		debug/styleTool.o \
 		debug/moc_mainWindow.o \
 		debug/moc_respawnIrc.o \
 		debug/moc_connectWindow.o \
@@ -120,7 +122,8 @@ DIST          =  ..\respawnIrc\mainWindow.hpp \
 		..\respawnIrc\checkUpdate.hpp \
 		..\respawnIrc\colorPseudoListWindow.hpp \
 		..\respawnIrc\accountListWindow.hpp \
-		..\respawnIrc\showListOfTopic.hpp ..\respawnIrc\main.cpp \
+		..\respawnIrc\showListOfTopic.hpp \
+		..\respawnIrc\styleTool.hpp ..\respawnIrc\main.cpp \
 		..\respawnIrc\mainWindow.cpp \
 		..\respawnIrc\respawnIrc.cpp \
 		..\respawnIrc\connectWindow.cpp \
@@ -136,7 +139,8 @@ DIST          =  ..\respawnIrc\mainWindow.hpp \
 		..\respawnIrc\checkUpdate.cpp \
 		..\respawnIrc\accountListWindow.cpp \
 		..\respawnIrc\colorPseudoListWindow.cpp \
-		..\respawnIrc\showListOfTopic.cpp
+		..\respawnIrc\showListOfTopic.cpp \
+		..\respawnIrc\styleTool.cpp
 QMAKE_TARGET  = respawnIrc
 DESTDIR        = debug\ #avoid trailing-slash linebreak
 TARGET         = respawnIrc.exe
@@ -178,7 +182,7 @@ dist:
 	$(ZIP) respawnIrc.zip $(SOURCES) $(DIST) ..\respawnIrc\respawnIrc.pro C:\Qt\5.5\mingw492_32\mkspecs\features\spec_pre.prf C:\Qt\5.5\mingw492_32\mkspecs\qdevice.pri C:\Qt\5.5\mingw492_32\mkspecs\features\device_config.prf C:\Qt\5.5\mingw492_32\mkspecs\qconfig.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dquickrenderer.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3dquickrenderer_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3drenderer.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_3drenderer_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axbase.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axserver.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_bootstrap_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_clucene_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_core.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_core_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_dbus.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_declarative.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_declarative_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_designer.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_enginio.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_enginio_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_gui.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_help.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_help_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_location.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_location_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_network.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_network_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_nfc.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_opengl.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_openglextensions.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_openglextensions_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_platformsupport_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_positioning.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qml.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qmldevtools_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quick.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_script.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_script_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_scripttools.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_scripttools_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_sensors.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_serialport.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_sql.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_svg.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_testlib.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_uitools.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webkit.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webkit_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webkitwidgets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_webkitwidgets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_websockets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_widgets.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_winextras.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_winextras_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_xml.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_xmlpatterns.pri C:\Qt\5.5\mingw492_32\mkspecs\modules\qt_lib_xmlpatterns_private.pri C:\Qt\5.5\mingw492_32\mkspecs\features\qt_functions.prf C:\Qt\5.5\mingw492_32\mkspecs\features\qt_config.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\qt_config.prf C:\Qt\5.5\mingw492_32\mkspecs\win32-g++\qmake.conf C:\Qt\5.5\mingw492_32\mkspecs\features\spec_post.prf C:\Qt\5.5\mingw492_32\mkspecs\features\exclusive_builds.prf C:\Qt\5.5\mingw492_32\mkspecs\features\default_pre.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\default_pre.prf C:\Qt\5.5\mingw492_32\mkspecs\features\resolve_config.prf C:\Qt\5.5\mingw492_32\mkspecs\features\exclusive_builds_post.prf C:\Qt\5.5\mingw492_32\mkspecs\features\default_post.prf C:\Qt\5.5\mingw492_32\mkspecs\features\build_pass.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\rtti.prf C:\Qt\5.5\mingw492_32\mkspecs\features\precompile_header.prf C:\Qt\5.5\mingw492_32\mkspecs\features\warn_on.prf C:\Qt\5.5\mingw492_32\mkspecs\features\qt.prf C:\Qt\5.5\mingw492_32\mkspecs\features\resources.prf C:\Qt\5.5\mingw492_32\mkspecs\features\moc.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\opengl.prf C:\Qt\5.5\mingw492_32\mkspecs\features\uic.prf C:\Qt\5.5\mingw492_32\mkspecs\features\win32\windows.prf C:\Qt\5.5\mingw492_32\mkspecs\features\testcase_targets.prf C:\Qt\5.5\mingw492_32\mkspecs\features\exceptions.prf C:\Qt\5.5\mingw492_32\mkspecs\features\yacc.prf C:\Qt\5.5\mingw492_32\mkspecs\features\lex.prf ..\respawnIrc\respawnIrc.pro C:/Qt/5.5/mingw492_32/lib/qtmaind.prl C:/Qt/5.5/mingw492_32/lib/Qt5Widgetsd.prl C:/Qt/5.5/mingw492_32/lib/Qt5Guid.prl C:/Qt/5.5/mingw492_32/lib/Qt5Networkd.prl C:/Qt/5.5/mingw492_32/lib/Qt5Cored.prl  NO_PCH_SOURCES RESOURCES HEADERS SOURCES OBJECTIVE_SOURCES FORMS YACCSOURCES YACCSOURCES LEXSOURCES 
 
 clean: compiler_clean 
-	-$(DEL_FILE) debug\main.o debug\mainWindow.o debug\respawnIrc.o debug\connectWindow.o debug\parsingTool.o debug\selectTopicWindow.o debug\captchaWindow.o debug\showTopicMessages.o debug\ignoreListWindow.o debug\addPseudoWindow.o debug\settingTool.o debug\multiTypeTextBox.o debug\chooseNumberWindow.o debug\checkUpdate.o debug\accountListWindow.o debug\colorPseudoListWindow.o debug\showListOfTopic.o debug\moc_mainWindow.o debug\moc_respawnIrc.o debug\moc_connectWindow.o debug\moc_selectTopicWindow.o debug\moc_captchaWindow.o debug\moc_showTopicMessages.o debug\moc_ignoreListWindow.o debug\moc_addPseudoWindow.o debug\moc_multiTypeTextBox.o debug\moc_chooseNumberWindow.o debug\moc_checkUpdate.o debug\moc_colorPseudoListWindow.o debug\moc_accountListWindow.o debug\moc_showListOfTopic.o
+	-$(DEL_FILE) debug\main.o debug\mainWindow.o debug\respawnIrc.o debug\connectWindow.o debug\parsingTool.o debug\selectTopicWindow.o debug\captchaWindow.o debug\showTopicMessages.o debug\ignoreListWindow.o debug\addPseudoWindow.o debug\settingTool.o debug\multiTypeTextBox.o debug\chooseNumberWindow.o debug\checkUpdate.o debug\accountListWindow.o debug\colorPseudoListWindow.o debug\showListOfTopic.o debug\styleTool.o debug\moc_mainWindow.o debug\moc_respawnIrc.o debug\moc_connectWindow.o debug\moc_selectTopicWindow.o debug\moc_captchaWindow.o debug\moc_showTopicMessages.o debug\moc_ignoreListWindow.o debug\moc_addPseudoWindow.o debug\moc_multiTypeTextBox.o debug\moc_chooseNumberWindow.o debug\moc_checkUpdate.o debug\moc_colorPseudoListWindow.o debug\moc_accountListWindow.o debug\moc_showListOfTopic.o
 	-$(DEL_FILE) debug\respawnIrc_res.o
 
 distclean: clean 
@@ -7261,7 +7265,9 @@ debug/main.o: ../respawnIrc/main.cpp C:/Qt/5.5/mingw492_32/include/QtWidgets/QAp
 		../respawnIrc/showListOfTopic.hpp \
 		../respawnIrc/accountListWindow.hpp \
 		../respawnIrc/multiTypeTextBox.hpp \
-		../respawnIrc/checkUpdate.hpp
+		../respawnIrc/checkUpdate.hpp \
+		../respawnIrc/settingTool.hpp \
+		../respawnIrc/styleTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\main.o ..\respawnIrc\main.cpp
 
 debug/mainWindow.o: ../respawnIrc/mainWindow.cpp ../respawnIrc/mainWindow.hpp \
@@ -7774,7 +7780,8 @@ debug/mainWindow.o: ../respawnIrc/mainWindow.cpp ../respawnIrc/mainWindow.hpp \
 		../respawnIrc/accountListWindow.hpp \
 		../respawnIrc/multiTypeTextBox.hpp \
 		../respawnIrc/checkUpdate.hpp \
-		../respawnIrc/settingTool.hpp
+		../respawnIrc/settingTool.hpp \
+		../respawnIrc/styleTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\mainWindow.o ..\respawnIrc\mainWindow.cpp
 
 debug/respawnIrc.o: ../respawnIrc/respawnIrc.cpp ../respawnIrc/respawnIrc.hpp \
@@ -8292,7 +8299,8 @@ debug/respawnIrc.o: ../respawnIrc/respawnIrc.cpp ../respawnIrc/respawnIrc.hpp \
 		../respawnIrc/chooseNumberWindow.hpp \
 		../respawnIrc/captchaWindow.hpp \
 		../respawnIrc/parsingTool.hpp \
-		../respawnIrc/settingTool.hpp
+		../respawnIrc/settingTool.hpp \
+		../respawnIrc/styleTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\respawnIrc.o ..\respawnIrc\respawnIrc.cpp
 
 debug/connectWindow.o: ../respawnIrc/connectWindow.cpp ../respawnIrc/connectWindow.hpp \
@@ -10559,7 +10567,8 @@ debug/showTopicMessages.o: ../respawnIrc/showTopicMessages.cpp ../respawnIrc/sho
 		../respawnIrc/showListOfTopic.hpp \
 		../respawnIrc/parsingTool.hpp \
 		../respawnIrc/settingTool.hpp \
-		../respawnIrc/accountListWindow.hpp
+		../respawnIrc/accountListWindow.hpp \
+		../respawnIrc/styleTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\showTopicMessages.o ..\respawnIrc\showTopicMessages.cpp
 
 debug/ignoreListWindow.o: ../respawnIrc/ignoreListWindow.cpp ../respawnIrc/ignoreListWindow.hpp \
@@ -12441,7 +12450,8 @@ debug/multiTypeTextBox.o: ../respawnIrc/multiTypeTextBox.cpp ../respawnIrc/multi
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbar.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbox.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
-		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h
+		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
+		../respawnIrc/styleTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\multiTypeTextBox.o ..\respawnIrc\multiTypeTextBox.cpp
 
 debug/chooseNumberWindow.o: ../respawnIrc/chooseNumberWindow.cpp ../respawnIrc/chooseNumberWindow.hpp \
@@ -14875,8 +14885,198 @@ debug/showListOfTopic.o: ../respawnIrc/showListOfTopic.cpp ../respawnIrc/showLis
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qsslellipticcurve.h \
 		C:/Qt/5.5/mingw492_32/include/QtCore/QHash \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qsslkey.h \
-		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h
+		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
+		../respawnIrc/parsingTool.hpp \
+		../respawnIrc/styleTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\showListOfTopic.o ..\respawnIrc\showListOfTopic.cpp
+
+debug/styleTool.o: ../respawnIrc/styleTool.cpp ../respawnIrc/styleTool.hpp \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QtCore \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QtCoreDepends \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qabstractanimation.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qobject.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qobjectdefs.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qnamespace.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qglobal.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qconfig.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfeatures.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsystemdetection.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qprocessordetection.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcompilerdetection.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtypeinfo.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtypetraits.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsysinfo.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qlogging.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qflags.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qbasicatomic.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_bootstrap.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qgenericatomic.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_cxx11.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_gcc.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_msvc.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_armv7.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_armv6.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_armv5.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_ia64.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_mips.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_x86.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qatomic_unix.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qglobalstatic.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmutex.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qnumeric.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qobjectdefs_impl.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstring.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qchar.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qbytearray.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qrefcount.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qarraydata.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstringbuilder.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qlist.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qalgorithms.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qiterator.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qbytearraylist.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstringlist.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qregexp.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstringmatcher.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcoreevent.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qscopedpointer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmetatype.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qvarlengtharray.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcontainerfwd.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qisenum.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qobject_impl.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qanimationgroup.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qparallelanimationgroup.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qpauseanimation.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qpropertyanimation.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qvariantanimation.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qeasingcurve.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qvector.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qpoint.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qvariant.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmap.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qpair.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qdebug.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qhash.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtextstream.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qiodevice.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qlocale.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qshareddata.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qset.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcontiguouscache.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsequentialanimationgroup.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtextcodec.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qendian.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qlibraryinfo.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qdatetime.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qbuffer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qdatastream.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qdir.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfileinfo.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfile.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfiledevice.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qdiriterator.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfileselector.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QObject \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QStringList \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfilesystemwatcher.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qlockfile.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qloggingcategory.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qprocess.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qresource.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsavefile.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsettings.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstandardpaths.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstorageinfo.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtemporarydir.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QScopedPointer \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtemporaryfile.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qurl.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qurlquery.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qabstractitemmodel.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qabstractproxymodel.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qidentityproxymodel.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qitemselectionmodel.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsortfilterproxymodel.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstringlistmodel.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qjsonarray.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qjsonvalue.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qjsondocument.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qjsonobject.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qabstracteventdispatcher.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qeventloop.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qabstractnativeeventfilter.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qbasictimer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcoreapplication.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmath.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmetaobject.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmimedata.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qobjectcleanuphandler.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qpointer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsharedpointer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsharedpointer_impl.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsharedmemory.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsignalmapper.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsocketnotifier.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsystemsemaphore.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtimer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtranslator.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qwineventnotifier.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmimedatabase.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmimetype.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfactoryinterface.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qlibrary.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qplugin.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qpluginloader.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/quuid.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qabstractstate.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qabstracttransition.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qeventtransition.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfinalstate.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qhistorystate.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsignaltransition.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstate.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstatemachine.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qexception.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfuture.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfutureinterface.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qrunnable.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qresultstore.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfuturesynchronizer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfuturewatcher.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qreadwritelock.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsemaphore.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qthread.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qthreadpool.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qthreadstorage.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qwaitcondition.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qarraydataops.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qarraydatapointer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qbitarray.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qbytearraymatcher.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcache.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcollator.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcommandlineoption.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcommandlineparser.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qcryptographichash.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qelapsedtimer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qline.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qlinkedlist.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmargins.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmessageauthenticationcode.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qqueue.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qrect.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsize.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qregularexpression.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qscopedvaluerollback.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qstack.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtextboundaryfinder.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtimeline.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtimezone.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qxmlstream.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtcoreversion.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\styleTool.o ..\respawnIrc\styleTool.cpp
 
 debug/moc_mainWindow.o: debug/moc_mainWindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\moc_mainWindow.o debug\moc_mainWindow.cpp

@@ -16,6 +16,7 @@ INPUT(
 ./debug\accountListWindow.o
 ./debug\colorPseudoListWindow.o
 ./debug\showListOfTopic.o
+./debug\styleTool.o
 ./debug\moc_mainWindow.o
 ./debug\moc_respawnIrc.o
 ./debug\moc_connectWindow.o
@@ -29,4 +30,5 @@ INPUT(
 ./debug\moc_checkUpdate.o
 ./debug\moc_colorPseudoListWindow.o
 ./debug\moc_accountListWindow.o
+./debug\moc_showListOfTopic.o
 );

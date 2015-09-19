@@ -1,5 +1,6 @@
 #include "showListOfTopic.hpp"
 #include "parsingTool.hpp"
+#include "styleTool.hpp"
 
 showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
 {
@@ -15,6 +16,7 @@ showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
     layout->setMargin(0);
 
     setLayout(layout);
+    listViewOfTopic.setStyleSheet(styleToolClass::getStyle("topiclist.css"));
 
     QObject::connect(&listViewOfTopic, &QListView::customContextMenuRequested, this, &showListOfTopicClass::createContextMenu);
     QObject::connect(&listViewOfTopic, &QListView::doubleClicked, this, &showListOfTopicClass::clickedOnLink);

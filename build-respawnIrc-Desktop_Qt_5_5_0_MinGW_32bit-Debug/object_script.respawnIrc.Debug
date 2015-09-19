@@ -16,6 +16,7 @@ INPUT(
 ./debug\accountListWindow.o
 ./debug\colorPseudoListWindow.o
 ./debug\showListOfTopic.o
+./debug\styleTool.o
 ./debug\moc_mainWindow.o
 ./debug\moc_respawnIrc.o
 ./debug\moc_connectWindow.o

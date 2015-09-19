@@ -1,5 +1,6 @@
 #include "mainWindow.hpp"
 #include "settingTool.hpp"
+#include "styleTool.hpp"
 
 mainWindowClass::mainWindowClass() : respawnIrc(this)
 {
@@ -63,6 +64,8 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionLoadTwoLastPage = settingToolClass::createActionForBoolOption("Charger les deux dernières pages", "loadTwoLastPage", menuSetting);
     QAction* actionIgnoreNetworkError = settingToolClass::createActionForBoolOption("Ignorer les erreurs réseau", "ignoreNetworkError", menuSetting);
     QAction* actionSearchForUpdateAtLaunch = settingToolClass::createActionForBoolOption("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch", menuSetting);
+    menuSetting->addSeparator();
+    QAction* actionSaveWindowGeometry = settingToolClass::createActionForBoolOption("Sauvegarder la taille de la fenêtre", "saveWindowGeometry", menuSetting);
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
     actionShowListOfColorPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
 
@@ -123,7 +126,18 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
     setWindowTitle("RespawnIRC " + respawnIrcClass::currentVersionName);
-    resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
+    setStyleSheet(styleToolClass::getStyle("mainwindow.css"));
+    menuBar->setStyleSheet(styleToolClass::getStyle("menubar.css"));
+
+    if(settingToolClass::getThisBoolOption("saveWindowGeometry") == false ||
+            settingToolClass::getThisStringOption("windowGeometry").isEmpty() == true)
+    {
+        resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
+    }
+    else
+    {
+        restoreGeometry(settingToolClass::getThisByteOption("windowGeometry"));
+    }
     respawnIrc.setFocus();
 
     QObject::connect(actionConnect, &QAction::triggered, &respawnIrc, &respawnIrcClass::showConnect);
@@ -158,6 +172,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionLoadTwoLastPage, &QAction::toggled, &respawnIrc, &respawnIrcClass::setLoadTwoLastPage);
     QObject::connect(actionIgnoreNetworkError, &QAction::toggled, &respawnIrc, &respawnIrcClass::setIgnoreNetworkError);
     QObject::connect(actionSearchForUpdateAtLaunch, &QAction::toggled, &respawnIrc, &respawnIrcClass::setSearchForUpdateAtLaunch);
+    QObject::connect(actionSaveWindowGeometry, &QAction::toggled, this, &mainWindowClass::saveWindowGeometry);
     QObject::connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
     QObject::connect(actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
@@ -216,6 +231,11 @@ void mainWindowClass::delFavoriteClicked()
     vectorOfAddFavorite[index]->setText("Emplacement " + QString::number(index));
 }
 
+void mainWindowClass::saveWindowGeometry(bool newVal)
+{
+    settingToolClass::saveThisOption("saveWindowGeometry", newVal);
+}
+
 void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
 {
     QString keyPressed = QKeySequence(thisKey->key()).toString();
@@ -262,4 +282,10 @@ void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
             respawnIrc.selectThisTab(9);
         }
     }
+}
+
+void mainWindowClass::closeEvent(QCloseEvent* event)
+{
+    settingToolClass::saveThisOption("windowGeometry", saveGeometry());
+    QMainWindow::closeEvent(event);
 }

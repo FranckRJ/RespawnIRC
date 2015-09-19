@@ -15,6 +15,7 @@ public:
     static bool getThisBoolOption(QString optionName);
     static int getThisIntOption(QString optionName);
     static QString getThisStringOption(QString optionName);
+    static QByteArray getThisByteOption(QString optionName);
     static QList<accountStruct> getListOfAccount();
     static QList<QString> getListOfPseudoForTopic();
     static QList<QString> getListOfIgnoredPseudo();
@@ -35,6 +36,7 @@ private:
     static QMap<QString, bool> listOfDefaultBoolOption;
     static QMap<QString, int> listOfDefaultIntOption;
     static QMap<QString, QString> listOfDefaultStringOption;
+    static QMap<QString, QByteArray> listOfDefaultByteOption;
 };
 
 #endif

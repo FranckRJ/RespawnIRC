@@ -15,8 +15,10 @@ public slots:
     void useFavoriteClicked();
     void addFavoriteClicked();
     void delFavoriteClicked();
+    void saveWindowGeometry(bool newVal);
 protected:
     void keyPressEvent(QKeyEvent* thisKey);
+    void closeEvent(QCloseEvent* event);
 private:
     respawnIrcClass respawnIrc;
     QVector<QAction*> vectorOfUseFavorite;

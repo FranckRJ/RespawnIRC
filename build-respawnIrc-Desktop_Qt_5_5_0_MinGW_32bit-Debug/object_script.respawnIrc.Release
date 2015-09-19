@@ -16,6 +16,7 @@ INPUT(
 ./release\accountListWindow.o
 ./release\colorPseudoListWindow.o
 ./release\showListOfTopic.o
+./release\styleTool.o
 ./release\moc_mainWindow.o
 ./release\moc_respawnIrc.o
 ./release\moc_connectWindow.o
