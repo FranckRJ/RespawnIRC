@@ -6,9 +6,8 @@
 #include "captchaWindow.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
-#include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.13");
+const QString respawnIrcClass::currentVersionName("v1.13.1");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -34,8 +33,6 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     mainLayout->addLayout(infoLayout, 3, 0, 1, 2);
 
     setLayout(mainLayout);
-    tabList.setStyleSheet(styleToolClass::getStyle("tablist.css"));
-    sendButton.setStyleSheet(styleToolClass::getStyle("sendbutton.css"));
 
     QObject::connect(&sendButton, &QPushButton::pressed, this, &respawnIrcClass::postMessage);
     QObject::connect(&messageLine, &multiTypeTextBoxClass::returnPressed, &sendButton, &QPushButton::click);

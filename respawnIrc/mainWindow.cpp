@@ -126,8 +126,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
     setWindowTitle("RespawnIRC " + respawnIrcClass::currentVersionName);
-    setStyleSheet(styleToolClass::getStyle("mainwindow.css"));
-    menuBar->setStyleSheet(styleToolClass::getStyle("menubar.css"));
+    setStyleSheet(styleToolClass::getStyle("maintheme"));
 
     if(settingToolClass::getThisBoolOption("saveWindowGeometry") == false ||
             settingToolClass::getThisStringOption("windowGeometry").isEmpty() == true)

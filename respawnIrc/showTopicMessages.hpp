@@ -7,6 +7,7 @@
 
 #include "colorPseudoListWindow.hpp"
 #include "showListOfTopic.hpp"
+#include "styleTool.hpp"
 
 class showTopicMessagesClass : public QWidget
 {
@@ -51,6 +52,8 @@ signals:
     void openThisTopicInNewTab(QString topicLink);
 private:
     QTextBrowser messagesBox;
+    QString baseModel;
+    modelInfoStruct baseModelInfo;
     showListOfTopicClass showListOfTopic;
     QList<QNetworkCookie> currentCookieList;
     QNetworkReply* replyForFirstPage;

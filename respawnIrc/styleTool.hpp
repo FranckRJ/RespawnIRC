@@ -3,13 +3,23 @@
 
 #include <QtCore>
 
+struct modelInfoStruct
+{
+    QString quoteModel;
+    QString blacklistModel;
+    QString editModel;
+    QString normalDateColor;
+    QString editDateColor;
+    QString normalPseudoColor;
+    QString userPseudoColor;
+};
+
 class styleToolClass
 {
 public:
-    static void loadStyles();
-    static QString getStyle(QString styleName);
-private:
-    static QMap<QString, QString> listOfStyle;
+    static QString getStyle(QString themeName);
+    static QString getModel(QString themeName);
+    static modelInfoStruct getModelInfo(QString themeName);
 };
 
 #endif // STYLETOOL_HPP

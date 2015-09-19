@@ -1,5 +1,4 @@
 #include "multiTypeTextBox.hpp"
-#include "styleTool.hpp"
 
 multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
 {
@@ -13,8 +12,6 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
     layout.setMargin(0);
 
     setLayout(&layout);
-    textEdit.setStyleSheet(styleToolClass::getStyle("textedit.css"));
-    lineEdit.setStyleSheet(styleToolClass::getStyle("lineedit.css"));
 
     QObject::connect(&lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnIsPressed);
 }

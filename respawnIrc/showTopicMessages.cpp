@@ -1,7 +1,6 @@
 #include "showTopicMessages.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
-#include "styleTool.hpp"
 
 showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent) : QWidget(parent)
 {
@@ -25,6 +24,8 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     linkHasChanged = false;
     errorMode = false;
     secondPageLoading = false;
+    baseModel = styleToolClass::getModel("maintheme");
+    baseModelInfo = styleToolClass::getModelInfo("maintheme");
 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(&messagesBox, 1);
@@ -32,7 +33,6 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     layout->setMargin(0);
 
     setLayout(layout);
-    messagesBox.setStyleSheet(styleToolClass::getStyle("messageslist.css"));
 
     QObject::connect(&timerForGetMessage, &QTimer::timeout, this, &showTopicMessagesClass::getMessages);
     QObject::connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
@@ -463,6 +463,7 @@ void showTopicMessagesClass::analyzeMessages()
             if((listOfEntireMessage.at(i).idOfMessage > idOfLastMessage || (listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit))
                     && listOfIgnoredPseudo->indexOf(listOfEntireMessage.at(i).pseudo.toLower()) == -1)
             {
+                QString newMessageToAppend = baseModel;
                 buttonString.clear();
                 colorOfPseudo.clear();
                 colorOfPseudo = getColorOfThisPseudo(listOfEntireMessage.at(i).pseudo.toLower());
@@ -471,21 +472,21 @@ void showTopicMessagesClass::analyzeMessages()
                 {
                     if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
                     {
-                        colorOfPseudo = "blue";
+                        colorOfPseudo = baseModelInfo.userPseudoColor;
                     }
                     else
                     {
-                        colorOfPseudo = "dimgrey";
+                        colorOfPseudo = baseModelInfo.normalPseudoColor;
                     }
                 }
 
                 if(listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit)
                 {
-                    colorOfDate = "green";
+                    colorOfDate = baseModelInfo.editDateColor;
                 }
                 else
                 {
-                    colorOfDate = "black";
+                    colorOfDate = baseModelInfo.normalDateColor;
                     idOfLastMessage = listOfEntireMessage.at(i).idOfMessage;
 
                     if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
@@ -496,28 +497,30 @@ void showTopicMessagesClass::analyzeMessages()
 
                 if(showQuoteButton == true)
                 {
-                    buttonString += "<a style=\"color: black;text-decoration: none\" href=\"quote:" + QString::number(listOfEntireMessage.at(i).idOfMessage) + ":[" +
-                            listOfEntireMessage.at(i).date + "] <" + listOfEntireMessage.at(i).pseudo + ">\">[C]</a> ";
+                    newMessageToAppend.replace("<%BUTTON_QUOTE%>", baseModelInfo.quoteModel);
                 }
 
                 if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
                 {
                     if(showEditButton == true)
                     {
-                        buttonString += "<a style=\"color: black;text-decoration: none\" href=\"edit:" + QString::number(listOfEntireMessage.at(i).idOfMessage) + "\">[E]</a> ";
+                        newMessageToAppend.replace("<%BUTTON_EDIT%>", baseModelInfo.editModel);
                     }
                 }
                 else if(showBlacklistButton == true)
                 {
-                    buttonString += "<a style=\"color: black;text-decoration: none\" href=\"blacklist:" + listOfEntireMessage.at(i).pseudo.toLower() + "\">[B]</a> ";
+                    newMessageToAppend.replace("<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel);
                 }
 
-                messagesBox.append("<table><tr><td>" + buttonString + "[<a style=\"color: " + colorOfDate + ";text-decoration: none\" href=\"http://www.jeuxvideo.com/" +
-                                   listOfEntireMessage.at(i).pseudo.toLower() +
-                                   "/forums/message/" + QString::number(listOfEntireMessage.at(i).idOfMessage) + "\">" + listOfEntireMessage.at(i).date +
-                                   "</a>] &lt;<a href=\"http://www.jeuxvideo.com/profil/" + listOfEntireMessage.at(i).pseudo.toLower() +
-                                   "?mode=infos\"><span style=\"color: " + colorOfPseudo + ";text-decoration: none\">" +
-                                   listOfEntireMessage.at(i).pseudo + "</span></a>&gt;</td><td>" + listOfEntireMessage.at(i).message + "</td></tr></table>");
+                newMessageToAppend.replace("<%DATE_COLOR%>", colorOfDate);
+                newMessageToAppend.replace("<%PSEUDO_LOWER%>", listOfEntireMessage.at(i).pseudo.toLower());
+                newMessageToAppend.replace("<%ID_MESSAGE%>", QString::number(listOfEntireMessage.at(i).idOfMessage));
+                newMessageToAppend.replace("<%DATE_MESSAGE%>", listOfEntireMessage.at(i).date);
+                newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
+                newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", listOfEntireMessage.at(i).pseudo);
+                newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", listOfEntireMessage.at(i).message);
+
+                messagesBox.append(newMessageToAppend);
                 messagesBox.verticalScrollBar()->updateGeometry();
                 messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
                 listOfEdit[listOfEntireMessage.at(i).idOfMessage] = listOfEntireMessage.at(i).lastTimeEdit;
