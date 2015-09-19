@@ -73,7 +73,7 @@ QString parsingToolClass::getVersionName(const QString &source)
 
 QString parsingToolClass::getVersionChangelog(const QString &source)
 {
-    return expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--");
+    return expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--").replace("    -", "---");
 }
 
 void parsingToolClass::getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput)
