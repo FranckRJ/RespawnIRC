@@ -8,7 +8,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     messagesBox.setOpenExternalLinks(false);
     messagesBox.setOpenLinks(false);
     timerForGetMessage.setTimerType(Qt::CoarseTimer);
-    updateSettingInfo();
+    updateSettingInfo(false);
     timerForGetMessage.stop();
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
     listOfColorPseudo = newListOfColorPseudo;
@@ -162,7 +162,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
     retrievesMessage = false;
 }
 
-void showTopicMessagesClass::updateSettingInfo()
+void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
 {
     showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
     showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
@@ -177,6 +177,10 @@ void showTopicMessagesClass::updateSettingInfo()
         if(showListOfTopic.isVisible() == false)
         {
             showListOfTopic.setForumLink(parsingToolClass::getForumOfTopic(topicLink));
+            if(showListOfTopicIfNeeded == true)
+            {
+                showListOfTopic.setVisible(true);
+            }
         }
     }
     else
@@ -185,9 +189,8 @@ void showTopicMessagesClass::updateSettingInfo()
         {
             showListOfTopic.setForumLink("");
         }
+        showListOfTopic.setVisible(false);
     }
-
-    showListOfTopic.setVisible(settingToolClass::getThisBoolOption("showListOfTopic"));
 }
 
 void showTopicMessagesClass::setNewTopic(QString newTopic)

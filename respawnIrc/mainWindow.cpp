@@ -66,6 +66,54 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
     actionShowListOfColorPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
 
+    QMenu* menuFavorites = menuBar->addMenu("&Favoris");
+    QMenu* menuUseFavorite = menuFavorites->addMenu("Accéder aux favoris");
+    QMenu* menuAddFavorite = menuFavorites->addMenu("Ajouter aux favoris");
+    QMenu* menuDelFavorite = menuFavorites->addMenu("Supprimer un favori");
+
+    for(int i = 0; i < 10; ++i)
+    {
+        QFont thisFont;
+        QString nameForUseAndDel;
+        QString nameForAdd;
+        QString nameOfTopic = settingToolClass::getThisStringOption("favoriteName" + QString::number(i));
+
+        if(nameOfTopic.isEmpty() == false)
+        {
+            nameForUseAndDel = nameOfTopic;
+            nameForAdd = nameOfTopic;
+        }
+        else
+        {
+            nameForUseAndDel = "Vide";
+            nameForAdd = "Emplacement " + QString::number(i + 1);
+        }
+
+        vectorOfUseFavorite.push_back(menuUseFavorite->addAction(nameForUseAndDel));
+        vectorOfUseFavorite.back()->setShortcut(QKeySequence(Qt::CTRL + (Qt::Key_F1 + i)));
+        if(nameOfTopic.isEmpty() == true)
+        {
+            thisFont = vectorOfUseFavorite.back()->font();
+            thisFont.setItalic(true);
+            vectorOfUseFavorite.back()->setFont(thisFont);
+        }
+
+        vectorOfAddFavorite.push_back(menuAddFavorite->addAction(nameForAdd));
+        vectorOfAddFavorite.back()->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + (Qt::Key_F1 + i)));
+
+        vectorOfDelFavorite.push_back(menuDelFavorite->addAction(nameForUseAndDel));
+        if(nameOfTopic.isEmpty() == true)
+        {
+            thisFont = vectorOfDelFavorite.back()->font();
+            thisFont.setItalic(true);
+            vectorOfDelFavorite.back()->setFont(thisFont);
+        }
+
+        QObject::connect(vectorOfUseFavorite.back(), &QAction::triggered, this, &mainWindowClass::useFavoriteClicked);
+        QObject::connect(vectorOfAddFavorite.back(), &QAction::triggered, this, &mainWindowClass::addFavoriteClicked);
+        QObject::connect(vectorOfDelFavorite.back(), &QAction::triggered, this, &mainWindowClass::delFavoriteClicked);
+    }
+
     QMenu* menuHelp = menuBar->addMenu("&Aide");
     QAction* actionAbout = menuHelp->addAction("A propos de RespawnIRC");
     QAction* actionAboutQt = menuHelp->addAction("A propos de Qt");
@@ -115,6 +163,59 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
     QObject::connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
 }
+
+void mainWindowClass::useFavoriteClicked()
+{
+    QAction* thisAction = dynamic_cast<QAction*>(sender());
+
+    respawnIrc.useThisFavorite(vectorOfUseFavorite.indexOf(thisAction));
+}
+
+void mainWindowClass::addFavoriteClicked()
+{
+    QAction* thisAction = dynamic_cast<QAction*>(sender());
+    QString newTopicName = respawnIrc.addThisFavorite(vectorOfAddFavorite.indexOf(thisAction));
+
+    if(newTopicName.isEmpty() == false)
+    {
+        QFont thisFont;
+        int index = vectorOfAddFavorite.indexOf(thisAction);
+
+        vectorOfAddFavorite[index]->setText(newTopicName);
+
+        thisFont = vectorOfUseFavorite[index]->font();
+        thisFont.setItalic(false);
+        vectorOfUseFavorite[index]->setFont(thisFont);
+        vectorOfUseFavorite[index]->setText(newTopicName);
+
+        thisFont = vectorOfDelFavorite[index]->font();
+        thisFont.setItalic(false);
+        vectorOfDelFavorite[index]->setFont(thisFont);
+        vectorOfDelFavorite[index]->setText(newTopicName);
+    }
+}
+
+void mainWindowClass::delFavoriteClicked()
+{
+    QFont thisFont;
+    QAction* thisAction = dynamic_cast<QAction*>(sender());
+    int index = vectorOfDelFavorite.indexOf(thisAction);
+
+    respawnIrc.delThisFavorite(index);
+
+    thisFont = vectorOfDelFavorite[index]->font();
+    thisFont.setItalic(true);
+    vectorOfDelFavorite[index]->setFont(thisFont);
+    vectorOfDelFavorite[index]->setText("Vide");
+
+    thisFont = vectorOfUseFavorite[index]->font();
+    thisFont.setItalic(true);
+    vectorOfUseFavorite[index]->setFont(thisFont);
+    vectorOfUseFavorite[index]->setText("Vide");
+
+    vectorOfAddFavorite[index]->setText("Emplacement " + QString::number(index));
+}
+
 void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
 {
     QString keyPressed = QKeySequence(thisKey->key()).toString();

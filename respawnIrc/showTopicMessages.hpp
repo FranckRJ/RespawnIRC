@@ -27,7 +27,7 @@ public:
     void setMessageStatus(QString newStatus);
     void setNumberOfConnected(QString newNumber, bool forceSet = false);
     void setTopicToErrorMode();
-    void updateSettingInfo();
+    void updateSettingInfo(bool showListOfTopicIfNeeded = true);
 public slots:
     void setNewTopic(QString newTopic);
     void linkClicked(const QUrl& link);

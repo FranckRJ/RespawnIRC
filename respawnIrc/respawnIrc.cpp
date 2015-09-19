@@ -11,7 +11,6 @@ const QString respawnIrcClass::currentVersionName("v1.12");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
-
     tabList.setTabsClosable(true);
     sendButton.setText("Envoyer");
     sendButton.setAutoDefault(true);
@@ -45,7 +44,12 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 
 void respawnIrcClass::loadSettings()
 {
-    pseudoOfUser = settingToolClass::getPseudoOfUser();
+    for(int i = 0; i < 10; ++i)
+    {
+        vectorOfFavoriteLink.push_back(settingToolClass::getThisStringOption("favoriteLink" + QString::number(i)));
+    }
+
+    pseudoOfUser = settingToolClass::getThisStringOption("pseudo");
     listOfAccount = settingToolClass::getListOfAccount();
 
     if(listOfAccount.isEmpty() == true)
@@ -63,7 +67,7 @@ void respawnIrcClass::loadSettings()
         else if(i == listOfAccount.size() - 1)
         {
             pseudoOfUser.clear();
-            settingToolClass::savePseudoOfUser(pseudoOfUser);
+            settingToolClass::saveThisOption("pseudo", pseudoOfUser);
         }
     }
 
@@ -198,6 +202,37 @@ void respawnIrcClass::setButtonInButtonLayoutVisible(bool visible)
     {
         buttonLayout->itemAt(i)->widget()->setVisible(visible);
     }
+}
+
+void respawnIrcClass::useThisFavorite(int index)
+{
+    if(vectorOfFavoriteLink.at(index).isEmpty() == false)
+    {
+        getCurrentWidget()->setNewTopic(vectorOfFavoriteLink.at(index));
+    }
+}
+
+QString respawnIrcClass::addThisFavorite(int index)
+{
+    if(getCurrentWidget()->getTopicLink().isEmpty() == false && getCurrentWidget()->getTopicName().isEmpty() == false)
+    {
+        vectorOfFavoriteLink[index] = getCurrentWidget()->getTopicLink();
+        settingToolClass::saveThisOption("favoriteLink" + QString::number(index), getCurrentWidget()->getTopicLink());
+        settingToolClass::saveThisOption("favoriteName" + QString::number(index), getCurrentWidget()->getTopicName());
+
+        return getCurrentWidget()->getTopicName();
+    }
+    else
+    {
+        return "";
+    }
+}
+
+void respawnIrcClass::delThisFavorite(int index)
+{
+    vectorOfFavoriteLink[index].clear();
+    settingToolClass::saveThisOption("favoriteLink" + QString::number(index), "");
+    settingToolClass::saveThisOption("favoriteName" + QString::number(index), "");
 }
 
 void respawnIrcClass::showConnect()
@@ -394,7 +429,7 @@ void respawnIrcClass::addThisPeudoToBlacklist(QString pseudoToAdd)
 
 void respawnIrcClass::setUpdateTopicTime(int newTime)
 {
-    settingToolClass::saveThisIntOption("updateTopicTime", newTime);
+    settingToolClass::saveThisOption("updateTopicTime", newTime);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -404,7 +439,7 @@ void respawnIrcClass::setUpdateTopicTime(int newTime)
 
 void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
 {
-    settingToolClass::saveThisIntOption("numberOfMessageShowedFirstTime", newNumber);
+    settingToolClass::saveThisOption("numberOfMessageShowedFirstTime", newNumber);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -414,7 +449,7 @@ void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
 
 void respawnIrcClass::setShowQuoteButton(bool newVal)
 {
-    settingToolClass::saveThisBoolOption("showQuoteButton", newVal);
+    settingToolClass::saveThisOption("showQuoteButton", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -424,7 +459,7 @@ void respawnIrcClass::setShowQuoteButton(bool newVal)
 
 void respawnIrcClass::setShowBlacklistButton(bool newVal)
 {
-    settingToolClass::saveThisBoolOption("showBlacklistButton", newVal);
+    settingToolClass::saveThisOption("showBlacklistButton", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -434,7 +469,7 @@ void respawnIrcClass::setShowBlacklistButton(bool newVal)
 
 void respawnIrcClass::setShowEditButton(bool newVal)
 {
-    settingToolClass::saveThisBoolOption("showEditButton", newVal);
+    settingToolClass::saveThisOption("showEditButton", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -447,12 +482,12 @@ void respawnIrcClass::setShowTextDecorationButton(bool newVal)
 {
     setButtonInButtonLayoutVisible(newVal);
 
-    settingToolClass::saveThisBoolOption("showTextDecorationButton", newVal);
+    settingToolClass::saveThisOption("showTextDecorationButton", newVal);
 }
 
 void respawnIrcClass::setShowListOfTopic(bool newVal)
 {
-    settingToolClass::saveThisBoolOption("showListOfTopic", newVal);
+    settingToolClass::saveThisOption("showListOfTopic", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -465,12 +500,12 @@ void respawnIrcClass::setMultilineEdit(bool newVal)
     messageLine.setTextEditSelected(newVal);
     messageLine.setFocus();
 
-    settingToolClass::saveThisBoolOption("setMultilineEdit", newVal);
+    settingToolClass::saveThisOption("setMultilineEdit", newVal);
 }
 
 void respawnIrcClass::setLoadTwoLastPage(bool newVal)
 {
-    settingToolClass::saveThisBoolOption("loadTwoLastPage", newVal);
+    settingToolClass::saveThisOption("loadTwoLastPage", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -480,7 +515,7 @@ void respawnIrcClass::setLoadTwoLastPage(bool newVal)
 
 void respawnIrcClass::setIgnoreNetworkError(bool newVal)
 {
-    settingToolClass::saveThisBoolOption("ignoreNetworkError", newVal);
+    settingToolClass::saveThisOption("ignoreNetworkError", newVal);
 
     for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
     {
@@ -490,7 +525,7 @@ void respawnIrcClass::setIgnoreNetworkError(bool newVal)
 
 void respawnIrcClass::setSearchForUpdateAtLaunch(bool newVal)
 {
-    settingToolClass::saveThisBoolOption("searchForUpdateAtLaunch", newVal);
+    settingToolClass::saveThisOption("searchForUpdateAtLaunch", newVal);
 }
 
 void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo)
@@ -513,7 +548,7 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
 
         if(savePseudo == true)
         {
-            settingToolClass::savePseudoOfUser(pseudoOfUser);
+            settingToolClass::saveThisOption("pseudo", pseudoOfUser);
             for(int i = 0; i < listOfPseudoForTopic.size(); ++i)
             {
                 listOfPseudoForTopic[i].clear();

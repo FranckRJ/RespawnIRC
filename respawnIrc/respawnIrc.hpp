@@ -23,6 +23,9 @@ public:
     void addButtonToButtonLayout();
     void selectThisTab(int number);
     void setButtonInButtonLayoutVisible(bool visible);
+    void useThisFavorite(int index);
+    QString addThisFavorite(int index);
+    void delThisFavorite(int index);
     static const QString currentVersionName;
 public slots:
     void showConnect();
@@ -76,6 +79,7 @@ protected:
 private:
     QHBoxLayout* buttonLayout;
     QTabWidget tabList;
+    QVector<QString> vectorOfFavoriteLink;
     QList<QNetworkCookie> currentCookieList;
     QList<QNetworkCookie> cookieListForPostMsg;
     QList<showTopicMessagesClass*> listOfShowTopicMessages;

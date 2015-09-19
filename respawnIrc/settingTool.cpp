@@ -3,6 +3,7 @@
 QSettings settingToolClass::setting("config.ini", QSettings::IniFormat);
 QMap<QString, bool> settingToolClass::listOfDefaultBoolOption;
 QMap<QString, int> settingToolClass::listOfDefaultIntOption;
+QMap<QString, QString> settingToolClass::listOfDefaultStringOption;
 
 void settingToolClass::initializeDefaultListsOption()
 {
@@ -17,6 +18,13 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["searchForUpdateAtLaunch"] = true;
     listOfDefaultIntOption["updateTopicTime"] = 4000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
+    listOfDefaultStringOption["pseudo"] = "";
+
+    for(int i = 0; i < 10; ++i)
+    {
+        listOfDefaultStringOption["favoriteLink" + QString::number(i)] = "";
+        listOfDefaultStringOption["favoriteName" + QString::number(i)] = "";
+    }
 }
 
 
@@ -39,7 +47,7 @@ bool settingToolClass::getThisBoolOption(QString optionName)
     }
     else
     {
-        qDebug() << "Erreur : cette option booléenne \"" + optionName + "\" n'existe pas.";
+        qDebug() << "Erreur : cette option booleenne \"" + optionName + "\" n existe pas.";
         return setting.value(optionName, false).toBool();
     }
 }
@@ -54,8 +62,23 @@ int settingToolClass::getThisIntOption(QString optionName)
     }
     else
     {
-        qDebug() << "Erreur : cette option entière \"" + optionName + "\" n'existe pas.";
+        qDebug() << "Erreur : cette option entiere \"" + optionName + "\" n existe pas.";
         return setting.value(optionName, 0).toInt();
+    }
+}
+
+QString settingToolClass::getThisStringOption(QString optionName)
+{
+    QMap<QString, QString>::iterator iteForList = listOfDefaultStringOption.find(optionName);
+
+    if(iteForList != listOfDefaultStringOption.end())
+    {
+        return setting.value(optionName, iteForList.value()).toString();
+    }
+    else
+    {
+        qDebug() << "Erreur : cette option string \"" + optionName + "\" n existe pas.";
+        return setting.value(optionName, "").toString();
     }
 }
 
@@ -78,11 +101,6 @@ QList<accountStruct> settingToolClass::getListOfAccount()
     }
 
     return listOfAccount;
-}
-
-QString settingToolClass::getPseudoOfUser()
-{
-    return setting.value("pseudo", "").toString();
 }
 
 QList<QString> settingToolClass::getListOfPseudoForTopic()
@@ -144,6 +162,11 @@ QList<QString> settingToolClass::getListOfTopicLink()
     return listOfTopicLink;
 }
 
+void settingToolClass::saveThisOption(QString optionName, QVariant value)
+{
+    setting.setValue(optionName, value);
+}
+
 void settingToolClass::saveListOfAccount(QList<accountStruct>& newListOfAccount)
 {
     QList<QNetworkCookie> listOfHelloCookie;
@@ -170,11 +193,6 @@ void settingToolClass::saveListOfAccount(QList<accountStruct>& newListOfAccount)
     setting.setValue("listOfHelloCookie", createQVariantListWithThisList(listOfHelloCookie));
     setting.setValue("listOfConnectCookie", createQVariantListWithThisList(listOfConnectCookie));
     setting.setValue("listOfPseudo", createQVariantListWithThisList(listOfPseudo));
-}
-
-void settingToolClass::savePseudoOfUser(QString newPseudo)
-{
-    setting.setValue("pseudo", newPseudo);
 }
 
 void settingToolClass::saveListOfPseudoForTopic(QList<QString>& newList)
@@ -211,16 +229,6 @@ void settingToolClass::saveListOfColorPseudo(QList<pseudoWithColorStruct>& newLi
 void settingToolClass::saveListOfTopicLink(QList<QString>& newList)
 {
     setting.setValue("listOfTopicLink", createQVariantListWithThisList(newList));
-}
-
-void settingToolClass::saveThisBoolOption(QString optionName, bool value)
-{
-    setting.setValue(optionName, value);
-}
-
-void settingToolClass::saveThisIntOption(QString optionName, int value)
-{
-    setting.setValue(optionName, value);
 }
 
 QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString)
