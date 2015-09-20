@@ -41,9 +41,10 @@ public:
     static QString parsingAjaxMessages(QString thisMessage);
     static QNetworkRequest buildRequestWithThisUrl(QString url);
     static QList<QString> getListOfThisCapNumber(const QString &source, QRegularExpression& exp, int capNumber, bool globalMatch = true);
-    static void replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, bool createLink = false, QString stringBefore = "",
-                                     QString stringAfter = "", int secondCapNumber = 0, QString stringAfterAfter = "");
+    static void replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore = "",
+                                     QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "");
 private:
+    static QRegularExpression expForNormalLink;
     static QRegularExpression expForAjaxTimestamp;
     static QRegularExpression expForAjaxHash;
     static QRegularExpression expForMessageEdit;
@@ -72,6 +73,7 @@ private:
     static QRegularExpression expForStickers;
     static QRegularExpression expForLongLink;
     static QRegularExpression expForShortLink;
+    static QRegularExpression expForJvcLink;
     static QRegularExpression expForNoelshack;
     static QRegularExpression expForSpoilLine;
     static QRegularExpression expForSpoilBlock;

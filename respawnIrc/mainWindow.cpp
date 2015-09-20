@@ -127,6 +127,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     setCentralWidget(&respawnIrc);
     setWindowTitle("RespawnIRC " + respawnIrcClass::currentVersionName);
     setStyleSheet(styleToolClass::getStyle("maintheme"));
+    styleToolClass::getModelInfo("maintheme");
 
     if(settingToolClass::getThisBoolOption("saveWindowGeometry") == false ||
             settingToolClass::getThisStringOption("windowGeometry").isEmpty() == true)

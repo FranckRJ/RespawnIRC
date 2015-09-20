@@ -1,5 +1,7 @@
 #include "styleTool.hpp"
 
+colorInfoForMessageStruct styleToolClass::colorInfoForMessage;
+
 QString styleToolClass::getStyle(QString themeName)
 {
     QFile thisFile("theme/" + themeName + ".css");
@@ -44,7 +46,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
             listOfLine.push_back(textStream.readLine());
         }
 
-        if(listOfLine.size() >= 7)
+        if(listOfLine.size() >= 10)
         {
             modelInfo.quoteModel = listOfLine.at(0);
             modelInfo.blacklistModel = listOfLine.at(1);
@@ -53,6 +55,11 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
             modelInfo.editDateColor = listOfLine.at(4);
             modelInfo.normalPseudoColor = listOfLine.at(5);
             modelInfo.userPseudoColor = listOfLine.at(6);
+
+            colorInfoForMessage.linkColor = listOfLine.at(7);
+            colorInfoForMessage.spoilColor = listOfLine.at(8);
+            colorInfoForMessage.tableBorderColor = listOfLine.at(9);
+
             return modelInfo;
         }
     }
@@ -65,5 +72,14 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     modelInfo.normalPseudoColor = "dimgrey";
     modelInfo.userPseudoColor = "blue";
 
+    colorInfoForMessage.linkColor = "blue";
+    colorInfoForMessage.spoilColor = "black";
+    colorInfoForMessage.tableBorderColor = "grey";
+
     return modelInfo;
+}
+
+const colorInfoForMessageStruct& styleToolClass::getColorInfo()
+{
+    return colorInfoForMessage;
 }

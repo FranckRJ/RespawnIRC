@@ -708,6 +708,7 @@ debug/moc_mainWindow.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		../respawnIrc/showTopicMessages.hpp \
 		../respawnIrc/colorPseudoListWindow.hpp \
 		../respawnIrc/showListOfTopic.hpp \
+		../respawnIrc/styleTool.hpp \
 		../respawnIrc/accountListWindow.hpp \
 		../respawnIrc/multiTypeTextBox.hpp \
 		../respawnIrc/checkUpdate.hpp \
@@ -1219,6 +1220,7 @@ debug/moc_respawnIrc.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidgets \
 		../respawnIrc/showTopicMessages.hpp \
 		../respawnIrc/colorPseudoListWindow.hpp \
 		../respawnIrc/showListOfTopic.hpp \
+		../respawnIrc/styleTool.hpp \
 		../respawnIrc/accountListWindow.hpp \
 		../respawnIrc/multiTypeTextBox.hpp \
 		../respawnIrc/checkUpdate.hpp \
@@ -3197,6 +3199,7 @@ debug/moc_showTopicMessages.cpp: C:/Qt/5.5/mingw492_32/include/QtWidgets/QtWidge
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
 		../respawnIrc/colorPseudoListWindow.hpp \
 		../respawnIrc/showListOfTopic.hpp \
+		../respawnIrc/styleTool.hpp \
 		../respawnIrc/showTopicMessages.hpp
 	C:\Qt\5.5\mingw492_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.5/mingw492_32/mkspecs/win32-g++ -IC:/Users/LEpigeon888/Documents/logiciels/RespawnIRC/respawnIrc -IC:/Qt/5.5/mingw492_32/include -IC:/Qt/5.5/mingw492_32/include/QtWidgets -IC:/Qt/5.5/mingw492_32/include/QtGui -IC:/Qt/5.5/mingw492_32/include/QtANGLE -IC:/Qt/5.5/mingw492_32/include/QtNetwork -IC:/Qt/5.5/mingw492_32/include/QtCore -I. ..\respawnIrc\showTopicMessages.hpp -o debug\moc_showTopicMessages.cpp
 
@@ -7263,11 +7266,11 @@ debug/main.o: ../respawnIrc/main.cpp C:/Qt/5.5/mingw492_32/include/QtWidgets/QAp
 		../respawnIrc/showTopicMessages.hpp \
 		../respawnIrc/colorPseudoListWindow.hpp \
 		../respawnIrc/showListOfTopic.hpp \
+		../respawnIrc/styleTool.hpp \
 		../respawnIrc/accountListWindow.hpp \
 		../respawnIrc/multiTypeTextBox.hpp \
 		../respawnIrc/checkUpdate.hpp \
-		../respawnIrc/settingTool.hpp \
-		../respawnIrc/styleTool.hpp
+		../respawnIrc/settingTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\main.o ..\respawnIrc\main.cpp
 
 debug/mainWindow.o: ../respawnIrc/mainWindow.cpp ../respawnIrc/mainWindow.hpp \
@@ -7777,11 +7780,11 @@ debug/mainWindow.o: ../respawnIrc/mainWindow.cpp ../respawnIrc/mainWindow.hpp \
 		../respawnIrc/showTopicMessages.hpp \
 		../respawnIrc/colorPseudoListWindow.hpp \
 		../respawnIrc/showListOfTopic.hpp \
+		../respawnIrc/styleTool.hpp \
 		../respawnIrc/accountListWindow.hpp \
 		../respawnIrc/multiTypeTextBox.hpp \
 		../respawnIrc/checkUpdate.hpp \
-		../respawnIrc/settingTool.hpp \
-		../respawnIrc/styleTool.hpp
+		../respawnIrc/settingTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\mainWindow.o ..\respawnIrc\mainWindow.cpp
 
 debug/respawnIrc.o: ../respawnIrc/respawnIrc.cpp ../respawnIrc/respawnIrc.hpp \
@@ -8290,6 +8293,7 @@ debug/respawnIrc.o: ../respawnIrc/respawnIrc.cpp ../respawnIrc/respawnIrc.hpp \
 		../respawnIrc/showTopicMessages.hpp \
 		../respawnIrc/colorPseudoListWindow.hpp \
 		../respawnIrc/showListOfTopic.hpp \
+		../respawnIrc/styleTool.hpp \
 		../respawnIrc/accountListWindow.hpp \
 		../respawnIrc/multiTypeTextBox.hpp \
 		../respawnIrc/checkUpdate.hpp \
@@ -8299,8 +8303,7 @@ debug/respawnIrc.o: ../respawnIrc/respawnIrc.cpp ../respawnIrc/respawnIrc.hpp \
 		../respawnIrc/chooseNumberWindow.hpp \
 		../respawnIrc/captchaWindow.hpp \
 		../respawnIrc/parsingTool.hpp \
-		../respawnIrc/settingTool.hpp \
-		../respawnIrc/styleTool.hpp
+		../respawnIrc/settingTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\respawnIrc.o ..\respawnIrc\respawnIrc.cpp
 
 debug/connectWindow.o: ../respawnIrc/connectWindow.cpp ../respawnIrc/connectWindow.hpp \
@@ -9045,7 +9048,8 @@ debug/parsingTool.o: ../respawnIrc/parsingTool.cpp ../respawnIrc/parsingTool.hpp
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qsslellipticcurve.h \
 		C:/Qt/5.5/mingw492_32/include/QtCore/QHash \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qsslkey.h \
-		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h
+		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
+		../respawnIrc/styleTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\parsingTool.o ..\respawnIrc\parsingTool.cpp
 
 debug/selectTopicWindow.o: ../respawnIrc/selectTopicWindow.cpp ../respawnIrc/selectTopicWindow.hpp \
@@ -10565,10 +10569,10 @@ debug/showTopicMessages.o: ../respawnIrc/showTopicMessages.cpp ../respawnIrc/sho
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
 		../respawnIrc/colorPseudoListWindow.hpp \
 		../respawnIrc/showListOfTopic.hpp \
+		../respawnIrc/styleTool.hpp \
 		../respawnIrc/parsingTool.hpp \
 		../respawnIrc/settingTool.hpp \
-		../respawnIrc/accountListWindow.hpp \
-		../respawnIrc/styleTool.hpp
+		../respawnIrc/accountListWindow.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\showTopicMessages.o ..\respawnIrc\showTopicMessages.cpp
 
 debug/ignoreListWindow.o: ../respawnIrc/ignoreListWindow.cpp ../respawnIrc/ignoreListWindow.hpp \
@@ -12450,8 +12454,7 @@ debug/multiTypeTextBox.o: ../respawnIrc/multiTypeTextBox.cpp ../respawnIrc/multi
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbar.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbox.h \
 		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtoolbutton.h \
-		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h \
-		../respawnIrc/styleTool.hpp
+		C:/Qt/5.5/mingw492_32/include/QtWidgets/qtwidgetsversion.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\multiTypeTextBox.o ..\respawnIrc\multiTypeTextBox.cpp
 
 debug/chooseNumberWindow.o: ../respawnIrc/chooseNumberWindow.cpp ../respawnIrc/chooseNumberWindow.hpp \
@@ -14886,8 +14889,7 @@ debug/showListOfTopic.o: ../respawnIrc/showListOfTopic.cpp ../respawnIrc/showLis
 		C:/Qt/5.5/mingw492_32/include/QtCore/QHash \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qsslkey.h \
 		C:/Qt/5.5/mingw492_32/include/QtNetwork/qtnetworkversion.h \
-		../respawnIrc/parsingTool.hpp \
-		../respawnIrc/styleTool.hpp
+		../respawnIrc/parsingTool.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\showListOfTopic.o ..\respawnIrc\showListOfTopic.cpp
 
 debug/styleTool.o: ../respawnIrc/styleTool.cpp ../respawnIrc/styleTool.hpp \

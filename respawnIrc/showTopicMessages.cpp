@@ -27,9 +27,13 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     baseModel = styleToolClass::getModel("maintheme");
     baseModelInfo = styleToolClass::getModelInfo("maintheme");
 
+    QSplitter* splitter = new QSplitter;
+    splitter->addWidget(&messagesBox);
+    splitter->addWidget(&showListOfTopic);
+    splitter->setStretchFactor(0, 1);
+
     QHBoxLayout* layout = new QHBoxLayout(this);
-    layout->addWidget(&messagesBox, 1);
-    layout->addWidget(&showListOfTopic);
+    layout->addWidget(splitter);
     layout->setMargin(0);
 
     setLayout(layout);
@@ -521,8 +525,11 @@ void showTopicMessagesClass::analyzeMessages()
                 newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", listOfEntireMessage.at(i).message);
 
                 messagesBox.append(newMessageToAppend);
-                messagesBox.verticalScrollBar()->updateGeometry();
-                messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
+                if(messagesBox.verticalScrollBar()->value() >= messagesBox.verticalScrollBar()->maximum())
+                {
+                    messagesBox.verticalScrollBar()->updateGeometry();
+                    messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
+                }
                 listOfEdit[listOfEntireMessage.at(i).idOfMessage] = listOfEntireMessage.at(i).lastTimeEdit;
                 if(pseudoOfUser.toLower() != listOfEntireMessage.at(i).pseudo.toLower())
                 {

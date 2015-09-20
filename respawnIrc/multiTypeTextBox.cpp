@@ -39,6 +39,8 @@ void multiTypeTextBoxClass::insertText(QString newText)
     if(textEditSelected == true)
     {
         textEdit.insertPlainText(newText);
+        textEdit.verticalScrollBar()->updateGeometry();
+        textEdit.verticalScrollBar()->setValue(textEdit.verticalScrollBar()->maximum());
     }
     else
     {
