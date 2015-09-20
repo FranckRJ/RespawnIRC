@@ -7,7 +7,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.13.2");
+const QString respawnIrcClass::currentVersionName("v1.13.3");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -209,6 +209,9 @@ void respawnIrcClass::useThisFavorite(int index)
     if(vectorOfFavoriteLink.at(index).isEmpty() == false)
     {
         getCurrentWidget()->setNewTopic(vectorOfFavoriteLink.at(index));
+        listOfTopicLink[tabList.currentIndex()] = vectorOfFavoriteLink.at(index);
+
+        settingToolClass::saveListOfTopicLink(listOfTopicLink);
     }
 }
 
