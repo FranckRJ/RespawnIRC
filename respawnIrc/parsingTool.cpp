@@ -18,7 +18,7 @@ QRegularExpression parsingToolClass::expForBeforeLastPage("(http://www.jeuxvideo
 QRegularExpression parsingToolClass::expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForEntireMessage("(<div class=\"bloc-message-forum \".*?)(<div class=\"bloc-message-forum \"|<div class=\"bloc-pagi-default\">)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-QRegularExpression parsingToolClass::expForListOfTopic("<div class=\"titre-topic\">[^<]*<a href=\"([^\"]*\" title=\"[^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForListOfTopic("<div class=\"titre-topic\">[^<]*<a href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessageID("<div class=\"bloc-message-forum \" id=\"post_[^\"]*\" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-[^\"]*\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForDate("<div class=\"bloc-date-msg\">[^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">[^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);

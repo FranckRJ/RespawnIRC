@@ -7,7 +7,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.13.3");
+const QString respawnIrcClass::currentVersionName("v1.13.4");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
