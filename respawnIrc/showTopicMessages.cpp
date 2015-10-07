@@ -2,7 +2,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent) : QWidget(parent)
+showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(false);
@@ -24,8 +24,8 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     linkHasChanged = false;
     errorMode = false;
     secondPageLoading = false;
-    baseModel = styleToolClass::getModel("maintheme");
-    baseModelInfo = styleToolClass::getModelInfo("maintheme");
+
+    setNewTheme(currentThemeName);
 
     QSplitter* splitter = new QSplitter;
     splitter->addWidget(&messagesBox);
@@ -197,6 +197,12 @@ void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
         }
         showListOfTopic.setVisible(false);
     }
+}
+
+void showTopicMessagesClass::setNewTheme(QString newThemeName)
+{
+    baseModel = styleToolClass::getModel(newThemeName);
+    baseModelInfo = styleToolClass::getModelInfo(newThemeName);
 }
 
 void showTopicMessagesClass::setNewTopic(QString newTopic)

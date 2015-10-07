@@ -15,6 +15,7 @@ public slots:
     void useFavoriteClicked();
     void addFavoriteClicked();
     void delFavoriteClicked();
+    void setNewTheme(QString newThemeName);
     void saveWindowGeometry(bool newVal);
 protected:
     void keyPressEvent(QKeyEvent* thisKey);

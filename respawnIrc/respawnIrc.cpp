@@ -1,6 +1,7 @@
 #include "respawnIrc.hpp"
 #include "connectWindow.hpp"
 #include "selectTopicWindow.hpp"
+#include "selectThemeWindow.hpp"
 #include "ignoreListWindow.hpp"
 #include "chooseNumberWindow.hpp"
 #include "captchaWindow.hpp"
@@ -44,6 +45,8 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 
 void respawnIrcClass::loadSettings()
 {
+    setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
+
     for(int i = 0; i < 10; ++i)
     {
         vectorOfFavoriteLink.push_back(settingToolClass::getThisStringOption("favoriteLink" + QString::number(i)));
@@ -256,9 +259,16 @@ void respawnIrcClass::showAccountListWindow()
 
 void respawnIrcClass::showSelectTopic()
 {
-    selectTopicWindow* mySelectTopicWindow = new selectTopicWindow(getCurrentWidget()->getTopicLink(), this);
-    QObject::connect(mySelectTopicWindow, &selectTopicWindow::newTopicSelected, this, &respawnIrcClass::setNewTopic);
+    selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(getCurrentWidget()->getTopicLink(), this);
+    QObject::connect(mySelectTopicWindow, &selectTopicWindowClass::newTopicSelected, this, &respawnIrcClass::setNewTopic);
     mySelectTopicWindow->exec();
+}
+
+void respawnIrcClass::showSelectTheme()
+{
+    selectThemeWindowClass* mySelectThemeWindow = new selectThemeWindowClass("", this);
+    QObject::connect(mySelectThemeWindow, &selectThemeWindowClass::newThemeSelected, this, &respawnIrcClass::setNewTheme);
+    mySelectThemeWindow->exec();
 }
 
 void respawnIrcClass::showIgnoreListWindow()
@@ -301,7 +311,7 @@ void respawnIrcClass::showAbout()
 
 void respawnIrcClass::addNewTab()
 {
-    listOfShowTopicMessages.push_back(new showTopicMessagesClass(&listOfIgnoredPseudo, &listOfColorPseudo, this));
+    listOfShowTopicMessages.push_back(new showTopicMessagesClass(&listOfIgnoredPseudo, &listOfColorPseudo, currentThemeName, this));
 
     if(listOfShowTopicMessages.size() > listOfTopicLink.size())
     {
@@ -579,6 +589,20 @@ void respawnIrcClass::setNewTopic(QString newTopic)
     listOfTopicLink[tabList.currentIndex()] = newTopic;
 
     settingToolClass::saveListOfTopicLink(listOfTopicLink);
+}
+
+void respawnIrcClass::setNewTheme(QString newThemeName)
+{
+    currentThemeName = newThemeName;
+    emit themeChanged(currentThemeName);
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->setNewTheme(currentThemeName);
+        listOfShowTopicMessages.at(i)->setNewTopic(listOfTopicLink[i]);
+    }
+
+    settingToolClass::saveThisOption("themeUsed", currentThemeName);
 }
 
 void respawnIrcClass::setCodeForCaptcha(QString code)

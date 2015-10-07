@@ -13,7 +13,7 @@ class showTopicMessagesClass : public QWidget
 {
     Q_OBJECT
 public:
-    showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct> *newListOfColorPseudo, QWidget* parent = 0);
+    showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct> *newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
     void startGetMessage();
     const QList<QPair<QString, QString> >& getListOfInput();
     QString getTopicLink();
@@ -30,6 +30,7 @@ public:
     void setTopicToErrorMode();
     void updateSettingInfo(bool showListOfTopicIfNeeded = true);
 public slots:
+    void setNewTheme(QString newThemeName);
     void setNewTopic(QString newTopic);
     void linkClicked(const QUrl& link);
     bool getEditInfo(int idOfMessageToEdit = 0);

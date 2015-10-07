@@ -117,6 +117,9 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
         QObject::connect(vectorOfDelFavorite.back(), &QAction::triggered, this, &mainWindowClass::delFavoriteClicked);
     }
 
+    QMenu* menuTheme = menuBar->addMenu("&Thèmes");
+    QAction* actionSelectTheme = menuTheme->addAction("Sélectionner un thème");
+
     QMenu* menuHelp = menuBar->addMenu("&Aide");
     QAction* actionAbout = menuHelp->addAction("A propos de RespawnIRC");
     QAction* actionAboutQt = menuHelp->addAction("A propos de Qt");
@@ -126,11 +129,10 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
     setWindowTitle("RespawnIRC " + respawnIrcClass::currentVersionName);
-    setStyleSheet(styleToolClass::getStyle("maintheme"));
-    styleToolClass::getModelInfo("maintheme");
+    setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
 
     if(settingToolClass::getThisBoolOption("saveWindowGeometry") == false ||
-            settingToolClass::getThisStringOption("windowGeometry").isEmpty() == true)
+            settingToolClass::getThisByteOption("windowGeometry").isEmpty() == true)
     {
         resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     }
@@ -174,9 +176,12 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionSearchForUpdateAtLaunch, &QAction::toggled, &respawnIrc, &respawnIrcClass::setSearchForUpdateAtLaunch);
     QObject::connect(actionSaveWindowGeometry, &QAction::toggled, this, &mainWindowClass::saveWindowGeometry);
     QObject::connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
+    QObject::connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
     QObject::connect(actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
     QObject::connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
+
+    QObject::connect(&respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
 }
 
 void mainWindowClass::useFavoriteClicked()
@@ -229,6 +234,12 @@ void mainWindowClass::delFavoriteClicked()
     vectorOfUseFavorite[index]->setText("Vide");
 
     vectorOfAddFavorite[index]->setText("Emplacement " + QString::number(index));
+}
+
+void mainWindowClass::setNewTheme(QString newThemeName)
+{
+    setStyleSheet(styleToolClass::getStyle(newThemeName));
+    styleToolClass::getModelInfo(newThemeName);
 }
 
 void mainWindowClass::saveWindowGeometry(bool newVal)

@@ -1,0 +1,54 @@
+QMainWindow
+{
+    background: black;
+}
+
+QMenuBar
+{
+    background: orange;
+}
+
+QTextEdit
+{
+    background: pink;
+}
+
+QLineEdit
+{
+    background: pink;
+}
+
+QTextBrowser
+{
+    background: blue;
+}
+
+QPushButton
+{
+    background: red;
+}
+
+QListView
+{
+    background: purple;
+}
+
+QSplitter::handle
+{
+    background: green;
+}
+
+QScrollBar
+{
+    background: magenta;
+}
+
+QTabBar:tab
+{
+    background: yellow;
+}
+
+QTabWidget::pane
+{
+    border: 2px solid cyan;
+}

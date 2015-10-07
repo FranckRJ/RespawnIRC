@@ -1,7 +1,7 @@
 #include "selectTopicWindow.hpp"
 #include "parsingTool.hpp"
 
-selectTopicWindow::selectTopicWindow(QString currentTopic, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+selectTopicWindowClass::selectTopicWindowClass(QString currentTopic, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -25,11 +25,11 @@ selectTopicWindow::selectTopicWindow(QString currentTopic, QWidget* parent) : QD
     setWindowTitle("Choisir un topic");
     topicLine.setFocus();
 
-    QObject::connect(buttonSelect, &QPushButton::pressed, this, &selectTopicWindow::selectThisTopic);
-    QObject::connect(buttonCancel, &QPushButton::pressed, this, &selectTopicWindow::close);
+    QObject::connect(buttonSelect, &QPushButton::pressed, this, &selectTopicWindowClass::selectThisTopic);
+    QObject::connect(buttonCancel, &QPushButton::pressed, this, &selectTopicWindowClass::close);
 }
 
-bool selectTopicWindow::linkIsValid(QString link)
+bool selectTopicWindowClass::linkIsValid(QString link)
 {
     if(link.startsWith("http://www.jeuxvideo.com/") == false && link.startsWith("http://jvforum.fr/") == false)
     {
@@ -39,7 +39,7 @@ bool selectTopicWindow::linkIsValid(QString link)
     return true;
 }
 
-void selectTopicWindow::selectThisTopic()
+void selectTopicWindowClass::selectThisTopic()
 {
     if(linkIsValid(topicLine.text()) == true)
     {

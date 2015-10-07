@@ -21,7 +21,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["updateTopicTime"] = 4000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
     listOfDefaultStringOption["pseudo"] = "";
-    listOfDefaultStringOption["windowGeometry"] = "";
+    listOfDefaultStringOption["themeUsed"] = "";
 
     for(int i = 0; i < 10; ++i)
     {

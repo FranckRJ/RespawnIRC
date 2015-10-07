@@ -4,11 +4,11 @@
 #include <QtWidgets>
 #include <QtCore>
 
-class selectTopicWindow : public QDialog
+class selectTopicWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    selectTopicWindow(QString currentTopic, QWidget* parent);
+    selectTopicWindowClass(QString currentTopic, QWidget* parent);
     bool linkIsValid(QString link);
 public slots:
     void selectThisTopic();

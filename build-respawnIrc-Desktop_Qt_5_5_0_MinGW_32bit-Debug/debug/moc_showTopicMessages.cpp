@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_showTopicMessagesClass_t {
-    QByteArrayData data[33];
-    char stringdata0[484];
+    QByteArrayData data[35];
+    char stringdata0[509];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -48,20 +48,22 @@ QT_MOC_LITERAL(15, 227, 15), // "newNameForTopic"
 QT_MOC_LITERAL(16, 243, 7), // "newName"
 QT_MOC_LITERAL(17, 251, 21), // "openThisTopicInNewTab"
 QT_MOC_LITERAL(18, 273, 9), // "topicLink"
-QT_MOC_LITERAL(19, 283, 11), // "setNewTopic"
-QT_MOC_LITERAL(20, 295, 8), // "newTopic"
-QT_MOC_LITERAL(21, 304, 11), // "linkClicked"
-QT_MOC_LITERAL(22, 316, 4), // "link"
-QT_MOC_LITERAL(23, 321, 11), // "getEditInfo"
-QT_MOC_LITERAL(24, 333, 17), // "idOfMessageToEdit"
-QT_MOC_LITERAL(25, 351, 12), // "getQuoteInfo"
-QT_MOC_LITERAL(26, 364, 17), // "idOfMessageQuoted"
-QT_MOC_LITERAL(27, 382, 11), // "getMessages"
-QT_MOC_LITERAL(28, 394, 19), // "loadFirstPageFinish"
-QT_MOC_LITERAL(29, 414, 20), // "loadSecondPageFinish"
-QT_MOC_LITERAL(30, 435, 15), // "analyzeEditInfo"
-QT_MOC_LITERAL(31, 451, 16), // "analyzeQuoteInfo"
-QT_MOC_LITERAL(32, 468, 15) // "analyzeMessages"
+QT_MOC_LITERAL(19, 283, 11), // "setNewTheme"
+QT_MOC_LITERAL(20, 295, 12), // "newThemeName"
+QT_MOC_LITERAL(21, 308, 11), // "setNewTopic"
+QT_MOC_LITERAL(22, 320, 8), // "newTopic"
+QT_MOC_LITERAL(23, 329, 11), // "linkClicked"
+QT_MOC_LITERAL(24, 341, 4), // "link"
+QT_MOC_LITERAL(25, 346, 11), // "getEditInfo"
+QT_MOC_LITERAL(26, 358, 17), // "idOfMessageToEdit"
+QT_MOC_LITERAL(27, 376, 12), // "getQuoteInfo"
+QT_MOC_LITERAL(28, 389, 17), // "idOfMessageQuoted"
+QT_MOC_LITERAL(29, 407, 11), // "getMessages"
+QT_MOC_LITERAL(30, 419, 19), // "loadFirstPageFinish"
+QT_MOC_LITERAL(31, 439, 20), // "loadSecondPageFinish"
+QT_MOC_LITERAL(32, 460, 15), // "analyzeEditInfo"
+QT_MOC_LITERAL(33, 476, 16), // "analyzeQuoteInfo"
+QT_MOC_LITERAL(34, 493, 15) // "analyzeMessages"
 
     },
     "showTopicMessagesClass\0quoteThisMessage\0"
@@ -72,12 +74,13 @@ QT_MOC_LITERAL(32, 468, 15) // "analyzeMessages"
     "messageEdit\0infoToSend\0cpatchaLink\0"
     "newMessagesAvailable\0newNameForTopic\0"
     "newName\0openThisTopicInNewTab\0topicLink\0"
-    "setNewTopic\0newTopic\0linkClicked\0link\0"
-    "getEditInfo\0idOfMessageToEdit\0"
-    "getQuoteInfo\0idOfMessageQuoted\0"
-    "getMessages\0loadFirstPageFinish\0"
-    "loadSecondPageFinish\0analyzeEditInfo\0"
-    "analyzeQuoteInfo\0analyzeMessages"
+    "setNewTheme\0newThemeName\0setNewTopic\0"
+    "newTopic\0linkClicked\0link\0getEditInfo\0"
+    "idOfMessageToEdit\0getQuoteInfo\0"
+    "idOfMessageQuoted\0getMessages\0"
+    "loadFirstPageFinish\0loadSecondPageFinish\0"
+    "analyzeEditInfo\0analyzeQuoteInfo\0"
+    "analyzeMessages"
 };
 #undef QT_MOC_LITERAL
 
@@ -87,7 +90,7 @@ static const uint qt_meta_data_showTopicMessagesClass[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      20,   14, // methods
+      21,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -95,28 +98,29 @@ static const uint qt_meta_data_showTopicMessagesClass[] = {
        9,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  114,    2, 0x06 /* Public */,
-       4,    1,  117,    2, 0x06 /* Public */,
-       6,    1,  120,    2, 0x06 /* Public */,
-       8,    0,  123,    2, 0x06 /* Public */,
-       9,    0,  124,    2, 0x06 /* Public */,
-      10,    4,  125,    2, 0x06 /* Public */,
-      14,    0,  134,    2, 0x06 /* Public */,
-      15,    1,  135,    2, 0x06 /* Public */,
-      17,    1,  138,    2, 0x06 /* Public */,
+       1,    1,  119,    2, 0x06 /* Public */,
+       4,    1,  122,    2, 0x06 /* Public */,
+       6,    1,  125,    2, 0x06 /* Public */,
+       8,    0,  128,    2, 0x06 /* Public */,
+       9,    0,  129,    2, 0x06 /* Public */,
+      10,    4,  130,    2, 0x06 /* Public */,
+      14,    0,  139,    2, 0x06 /* Public */,
+      15,    1,  140,    2, 0x06 /* Public */,
+      17,    1,  143,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      19,    1,  141,    2, 0x0a /* Public */,
-      21,    1,  144,    2, 0x0a /* Public */,
-      23,    1,  147,    2, 0x0a /* Public */,
-      23,    0,  150,    2, 0x2a /* Public | MethodCloned */,
-      25,    1,  151,    2, 0x0a /* Public */,
-      27,    0,  154,    2, 0x0a /* Public */,
-      28,    0,  155,    2, 0x0a /* Public */,
-      29,    0,  156,    2, 0x0a /* Public */,
-      30,    0,  157,    2, 0x0a /* Public */,
-      31,    0,  158,    2, 0x0a /* Public */,
-      32,    0,  159,    2, 0x0a /* Public */,
+      19,    1,  146,    2, 0x0a /* Public */,
+      21,    1,  149,    2, 0x0a /* Public */,
+      23,    1,  152,    2, 0x0a /* Public */,
+      25,    1,  155,    2, 0x0a /* Public */,
+      25,    0,  158,    2, 0x2a /* Public | MethodCloned */,
+      27,    1,  159,    2, 0x0a /* Public */,
+      29,    0,  162,    2, 0x0a /* Public */,
+      30,    0,  163,    2, 0x0a /* Public */,
+      31,    0,  164,    2, 0x0a /* Public */,
+      32,    0,  165,    2, 0x0a /* Public */,
+      33,    0,  166,    2, 0x0a /* Public */,
+      34,    0,  167,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
@@ -131,10 +135,11 @@ static const uint qt_meta_data_showTopicMessagesClass[] = {
 
  // slots: parameters
     QMetaType::Void, QMetaType::QString,   20,
-    QMetaType::Void, QMetaType::QUrl,   22,
-    QMetaType::Bool, QMetaType::Int,   24,
+    QMetaType::Void, QMetaType::QString,   22,
+    QMetaType::Void, QMetaType::QUrl,   24,
+    QMetaType::Bool, QMetaType::Int,   26,
     QMetaType::Bool,
-    QMetaType::Void, QMetaType::QString,   26,
+    QMetaType::Void, QMetaType::QString,   28,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -160,19 +165,20 @@ void showTopicMessagesClass::qt_static_metacall(QObject *_o, QMetaObject::Call _
         case 6: _t->newMessagesAvailable(); break;
         case 7: _t->newNameForTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 8: _t->openThisTopicInNewTab((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 9: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 10: _t->linkClicked((*reinterpret_cast< const QUrl(*)>(_a[1]))); break;
-        case 11: { bool _r = _t->getEditInfo((*reinterpret_cast< int(*)>(_a[1])));
+        case 9: _t->setNewTheme((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 10: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 11: _t->linkClicked((*reinterpret_cast< const QUrl(*)>(_a[1]))); break;
+        case 12: { bool _r = _t->getEditInfo((*reinterpret_cast< int(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 12: { bool _r = _t->getEditInfo();
+        case 13: { bool _r = _t->getEditInfo();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 13: _t->getQuoteInfo((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 14: _t->getMessages(); break;
-        case 15: _t->loadFirstPageFinish(); break;
-        case 16: _t->loadSecondPageFinish(); break;
-        case 17: _t->analyzeEditInfo(); break;
-        case 18: _t->analyzeQuoteInfo(); break;
-        case 19: _t->analyzeMessages(); break;
+        case 14: _t->getQuoteInfo((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 15: _t->getMessages(); break;
+        case 16: _t->loadFirstPageFinish(); break;
+        case 17: _t->loadSecondPageFinish(); break;
+        case 18: _t->analyzeEditInfo(); break;
+        case 19: _t->analyzeQuoteInfo(); break;
+        case 20: _t->analyzeMessages(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -260,13 +266,13 @@ int showTopicMessagesClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 20)
+        if (_id < 21)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 20;
+        _id -= 21;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 20)
+        if (_id < 21)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 20;
+        _id -= 21;
     }
     return _id;
 }

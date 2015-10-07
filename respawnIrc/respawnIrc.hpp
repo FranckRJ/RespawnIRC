@@ -31,6 +31,7 @@ public slots:
     void showConnect();
     void showAccountListWindow();
     void showSelectTopic();
+    void showSelectTheme();
     void showIgnoreListWindow();
     void showColorPseudoListWindow();
     void showUpdateTopicTimeWindow();
@@ -60,6 +61,7 @@ public slots:
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
     void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);
     void setNewTopic(QString newTopic);
+    void setNewTheme(QString newThemeName);
     void setCodeForCaptcha(QString code);
     void setNewMessageStatus();
     void setNewNumberOfConnectedAndPseudoUsed();
@@ -74,6 +76,8 @@ public slots:
     void setEditMessage(int idOfMessageToEdit = 0);
     void setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString captchaLink);
     void clipboardChanged();
+signals:
+    void themeChanged(QString newThemeName);
 protected:
     void focusInEvent(QFocusEvent * event);
 private:
@@ -101,6 +105,7 @@ private:
     checkUpdateClass checkUpdate;
     QString dataForEditLastMessage;
     QString captchaLinkForEditLastMessage;
+    QString currentThemeName;
     bool inSending;
     bool isInEdit;
 };

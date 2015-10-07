@@ -4,7 +4,7 @@ colorInfoForMessageStruct styleToolClass::colorInfoForMessage;
 
 QString styleToolClass::getStyle(QString themeName)
 {
-    QFile thisFile("theme/" + themeName + ".css");
+    QFile thisFile("theme/" + themeName + "/style.css");
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -18,7 +18,7 @@ QString styleToolClass::getStyle(QString themeName)
 
 QString styleToolClass::getModel(QString themeName)
 {
-    QFile thisFile("theme/" + themeName + ".txt");
+    QFile thisFile("theme/" + themeName + "/model.txt");
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -36,7 +36,7 @@ QString styleToolClass::getModel(QString themeName)
 modelInfoStruct styleToolClass::getModelInfo(QString themeName)
 {
     modelInfoStruct modelInfo;
-    QFile thisFile("theme/" + themeName + ".cfg");
+    QFile thisFile("theme/" + themeName + "/modelInfo.cfg");
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QVector<QString> listOfLine;
