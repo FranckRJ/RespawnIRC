@@ -241,6 +241,14 @@ void respawnIrcClass::delThisFavorite(int index)
     settingToolClass::saveThisOption("favoriteName" + QString::number(index), "");
 }
 
+void respawnIrcClass::updateSettingInfoForList()
+{
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->updateSettingInfo();
+    }
+}
+
 void respawnIrcClass::showConnect()
 {
     connectWindowClass* myConnectWindow = new connectWindowClass(this);
@@ -266,7 +274,7 @@ void respawnIrcClass::showSelectTopic()
 
 void respawnIrcClass::showSelectTheme()
 {
-    selectThemeWindowClass* mySelectThemeWindow = new selectThemeWindowClass("", this);
+    selectThemeWindowClass* mySelectThemeWindow = new selectThemeWindowClass(currentThemeName, this);
     QObject::connect(mySelectThemeWindow, &selectThemeWindowClass::newThemeSelected, this, &respawnIrcClass::setNewTheme);
     mySelectThemeWindow->exec();
 }
@@ -444,50 +452,35 @@ void respawnIrcClass::setUpdateTopicTime(int newTime)
 {
     settingToolClass::saveThisOption("updateTopicTime", newTime);
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
-    {
-        listOfShowTopicMessages.at(i)->updateSettingInfo();
-    }
+    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
 {
     settingToolClass::saveThisOption("numberOfMessageShowedFirstTime", newNumber);
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
-    {
-        listOfShowTopicMessages.at(i)->updateSettingInfo();
-    }
+    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setShowQuoteButton(bool newVal)
 {
     settingToolClass::saveThisOption("showQuoteButton", newVal);
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
-    {
-        listOfShowTopicMessages.at(i)->updateSettingInfo();
-    }
+    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setShowBlacklistButton(bool newVal)
 {
     settingToolClass::saveThisOption("showBlacklistButton", newVal);
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
-    {
-        listOfShowTopicMessages.at(i)->updateSettingInfo();
-    }
+    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setShowEditButton(bool newVal)
 {
     settingToolClass::saveThisOption("showEditButton", newVal);
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
-    {
-        listOfShowTopicMessages.at(i)->updateSettingInfo();
-    }
+    updateSettingInfoForList();
 }
 
 
@@ -502,10 +495,7 @@ void respawnIrcClass::setShowListOfTopic(bool newVal)
 {
     settingToolClass::saveThisOption("showListOfTopic", newVal);
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
-    {
-        listOfShowTopicMessages.at(i)->updateSettingInfo();
-    }
+    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setMultilineEdit(bool newVal)
@@ -520,20 +510,14 @@ void respawnIrcClass::setLoadTwoLastPage(bool newVal)
 {
     settingToolClass::saveThisOption("loadTwoLastPage", newVal);
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
-    {
-        listOfShowTopicMessages.at(i)->updateSettingInfo();
-    }
+    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setIgnoreNetworkError(bool newVal)
 {
     settingToolClass::saveThisOption("ignoreNetworkError", newVal);
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
-    {
-        listOfShowTopicMessages.at(i)->updateSettingInfo();
-    }
+    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setSearchForUpdateAtLaunch(bool newVal)
@@ -603,6 +587,11 @@ void respawnIrcClass::setNewTheme(QString newThemeName)
     }
 
     settingToolClass::saveThisOption("themeUsed", currentThemeName);
+}
+
+void respawnIrcClass::reloadTheme()
+{
+    setNewTheme(currentThemeName);
 }
 
 void respawnIrcClass::setCodeForCaptcha(QString code)

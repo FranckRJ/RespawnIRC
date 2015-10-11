@@ -4,7 +4,7 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QLabel* labTheme = new QLabel("Theme :", this);
+    QLabel* labTheme = new QLabel("Thème actuel :", this);
     QPushButton* buttonSelect = new QPushButton("Choisir ce theme", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
 

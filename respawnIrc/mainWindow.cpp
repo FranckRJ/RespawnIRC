@@ -119,6 +119,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
 
     QMenu* menuTheme = menuBar->addMenu("&Thèmes");
     QAction* actionSelectTheme = menuTheme->addAction("Sélectionner un thème");
+    QAction* actionReloadTheme = menuTheme->addAction("Recharger le thème actuel");
 
     QMenu* menuHelp = menuBar->addMenu("&Aide");
     QAction* actionAbout = menuHelp->addAction("A propos de RespawnIRC");
@@ -177,6 +178,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionSaveWindowGeometry, &QAction::toggled, this, &mainWindowClass::saveWindowGeometry);
     QObject::connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
     QObject::connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
+    QObject::connect(actionReloadTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTheme);
     QObject::connect(actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
     QObject::connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);

@@ -26,6 +26,7 @@ public:
     void useThisFavorite(int index);
     QString addThisFavorite(int index);
     void delThisFavorite(int index);
+    void updateSettingInfoForList();
     static const QString currentVersionName;
 public slots:
     void showConnect();
@@ -62,6 +63,7 @@ public slots:
     void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);
     void setNewTopic(QString newTopic);
     void setNewTheme(QString newThemeName);
+    void reloadTheme();
     void setCodeForCaptcha(QString code);
     void setNewMessageStatus();
     void setNewNumberOfConnectedAndPseudoUsed();
