@@ -54,18 +54,18 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionShowUpdateTopicTime = menuSetting->addAction("Taux de rafraichissement des topics");
     QAction* actionShowNumberOfMessageShowedFirstTime = menuSetting->addAction("Nombre de message affiché au premier chargement");
     menuSetting->addSeparator();
-    QAction* actionShowQuoteButtons = settingToolClass::createActionForBoolOption("Ajouter un bouton pour citer un message", "showQuoteButton", menuSetting);
-    QAction* actionShowBlacklistButtons = settingToolClass::createActionForBoolOption("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton", menuSetting);
-    QAction* actionShowEditButtons = settingToolClass::createActionForBoolOption("Ajouter un bouton pour éditer un message", "showEditButton", menuSetting);
+    settingToolClass::createActionForBoolOption("Ajouter un bouton pour citer un message", "showQuoteButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Ajouter un bouton pour éditer un message", "showEditButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     menuSetting->addSeparator();
-    QAction* actionShowTextDecorationButtons = settingToolClass::createActionForBoolOption("Afficher les boutons de décoration de texte", "showTextDecorationButton", menuSetting);
-    QAction* actionShowListOfTopic = settingToolClass::createActionForBoolOption("Afficher la liste des topics", "showListOfTopic", menuSetting);
-    QAction* actionSetMultilineEdit = settingToolClass::createActionForBoolOption("Saisie du message en mode multiligne", "setMultilineEdit", menuSetting);
-    QAction* actionLoadTwoLastPage = settingToolClass::createActionForBoolOption("Charger les deux dernières pages", "loadTwoLastPage", menuSetting);
-    QAction* actionIgnoreNetworkError = settingToolClass::createActionForBoolOption("Ignorer les erreurs réseau", "ignoreNetworkError", menuSetting);
-    QAction* actionSearchForUpdateAtLaunch = settingToolClass::createActionForBoolOption("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch", menuSetting);
+    settingToolClass::createActionForBoolOption("Afficher les boutons de décoration de texte", "showTextDecorationButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Afficher la liste des topics", "showListOfTopic", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Saisie du message en mode multiligne", "setMultilineEdit", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Charger les deux dernières pages", "loadTwoLastPage", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Ignorer les erreurs réseau", "ignoreNetworkError", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     menuSetting->addSeparator();
-    QAction* actionSaveWindowGeometry = settingToolClass::createActionForBoolOption("Sauvegarder la taille de la fenêtre", "saveWindowGeometry", menuSetting);
+    settingToolClass::createActionForBoolOption("Sauvegarder la taille de la fenêtre", "saveWindowGeometry", menuSetting, this, SLOT(saveWindowGeometry(bool)));
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
     actionShowListOfColorPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
 
@@ -166,23 +166,12 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
     QObject::connect(actionShowUpdateTopicTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showUpdateTopicTimeWindow);
     QObject::connect(actionShowNumberOfMessageShowedFirstTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow);
-    QObject::connect(actionShowQuoteButtons, &QAction::toggled, &respawnIrc, &respawnIrcClass::setShowQuoteButton);
-    QObject::connect(actionShowBlacklistButtons, &QAction::toggled, &respawnIrc, &respawnIrcClass::setShowBlacklistButton);
-    QObject::connect(actionShowEditButtons, &QAction::toggled, &respawnIrc, &respawnIrcClass::setShowEditButton);
-    QObject::connect(actionShowTextDecorationButtons, &QAction::toggled, &respawnIrc, &respawnIrcClass::setShowTextDecorationButton);
-    QObject::connect(actionShowListOfTopic, &QAction::toggled, &respawnIrc, &respawnIrcClass::setShowListOfTopic);
-    QObject::connect(actionSetMultilineEdit, &QAction::toggled, &respawnIrc, &respawnIrcClass::setMultilineEdit);
-    QObject::connect(actionLoadTwoLastPage, &QAction::toggled, &respawnIrc, &respawnIrcClass::setLoadTwoLastPage);
-    QObject::connect(actionIgnoreNetworkError, &QAction::toggled, &respawnIrc, &respawnIrcClass::setIgnoreNetworkError);
-    QObject::connect(actionSearchForUpdateAtLaunch, &QAction::toggled, &respawnIrc, &respawnIrcClass::setSearchForUpdateAtLaunch);
-    QObject::connect(actionSaveWindowGeometry, &QAction::toggled, this, &mainWindowClass::saveWindowGeometry);
     QObject::connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
     QObject::connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
     QObject::connect(actionReloadTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTheme);
     QObject::connect(actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
     QObject::connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
-
     QObject::connect(&respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
 }
 

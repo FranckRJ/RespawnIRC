@@ -33,11 +33,14 @@ void settingToolClass::initializeDefaultListsOption()
 }
 
 
-QAction* settingToolClass::createActionForBoolOption(QString actionName, QString optionName, QMenu* menuForAction)
+QAction* settingToolClass::createActionForBoolOption(QString actionName, QString optionName, QMenu* menuForAction, QObject* pointer, const char* method)
 {
     QAction* newAction = menuForAction->addAction(actionName);
     newAction->setCheckable(true);
     newAction->setChecked(getThisBoolOption(optionName));
+    newAction->setObjectName(optionName);
+
+    QObject::connect(newAction, SIGNAL(toggled(bool)), pointer, method);
 
     return newAction;
 }

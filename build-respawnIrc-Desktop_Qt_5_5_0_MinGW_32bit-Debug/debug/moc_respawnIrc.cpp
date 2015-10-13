@@ -20,8 +20,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_respawnIrcClass_t {
-    QByteArrayData data[74];
-    char stringdata0[1247];
+    QByteArrayData data[68];
+    char stringdata0[1118];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -61,49 +61,43 @@ QT_MOC_LITERAL(27, 432, 18), // "setUpdateTopicTime"
 QT_MOC_LITERAL(28, 451, 7), // "newTime"
 QT_MOC_LITERAL(29, 459, 33), // "setNumberOfMessageShowedFirst..."
 QT_MOC_LITERAL(30, 493, 9), // "newNumber"
-QT_MOC_LITERAL(31, 503, 18), // "setShowQuoteButton"
-QT_MOC_LITERAL(32, 522, 6), // "newVal"
-QT_MOC_LITERAL(33, 529, 22), // "setShowBlacklistButton"
-QT_MOC_LITERAL(34, 552, 17), // "setShowEditButton"
-QT_MOC_LITERAL(35, 570, 27), // "setShowTextDecorationButton"
-QT_MOC_LITERAL(36, 598, 18), // "setShowListOfTopic"
-QT_MOC_LITERAL(37, 617, 16), // "setMultilineEdit"
-QT_MOC_LITERAL(38, 634, 18), // "setLoadTwoLastPage"
-QT_MOC_LITERAL(39, 653, 21), // "setIgnoreNetworkError"
-QT_MOC_LITERAL(40, 675, 26), // "setSearchForUpdateAtLaunch"
-QT_MOC_LITERAL(41, 702, 13), // "setNewCookies"
-QT_MOC_LITERAL(42, 716, 21), // "QList<QNetworkCookie>"
-QT_MOC_LITERAL(43, 738, 10), // "newCookies"
-QT_MOC_LITERAL(44, 749, 15), // "newPseudoOfUser"
-QT_MOC_LITERAL(45, 765, 15), // "saveAccountList"
-QT_MOC_LITERAL(46, 781, 10), // "savePseudo"
-QT_MOC_LITERAL(47, 792, 28), // "setNewCookiesForCurrentTopic"
-QT_MOC_LITERAL(48, 821, 11), // "setNewTopic"
-QT_MOC_LITERAL(49, 833, 8), // "newTopic"
-QT_MOC_LITERAL(50, 842, 11), // "setNewTheme"
-QT_MOC_LITERAL(51, 854, 11), // "reloadTheme"
-QT_MOC_LITERAL(52, 866, 17), // "setCodeForCaptcha"
-QT_MOC_LITERAL(53, 884, 4), // "code"
-QT_MOC_LITERAL(54, 889, 19), // "setNewMessageStatus"
-QT_MOC_LITERAL(55, 909, 36), // "setNewNumberOfConnectedAndPse..."
-QT_MOC_LITERAL(56, 946, 15), // "setNewTopicName"
-QT_MOC_LITERAL(57, 962, 9), // "topicName"
-QT_MOC_LITERAL(58, 972, 17), // "saveListOfAccount"
-QT_MOC_LITERAL(59, 990, 23), // "saveListOfIgnoredPseudo"
-QT_MOC_LITERAL(60, 1014, 21), // "saveListOfColorPseudo"
-QT_MOC_LITERAL(61, 1036, 22), // "warnUserForNewMessages"
-QT_MOC_LITERAL(62, 1059, 17), // "currentTabChanged"
-QT_MOC_LITERAL(63, 1077, 8), // "newIndex"
-QT_MOC_LITERAL(64, 1086, 11), // "postMessage"
-QT_MOC_LITERAL(65, 1098, 25), // "deleteReplyForSendMessage"
-QT_MOC_LITERAL(66, 1124, 14), // "setEditMessage"
-QT_MOC_LITERAL(67, 1139, 17), // "idOfMessageToEdit"
-QT_MOC_LITERAL(68, 1157, 21), // "setInfoForEditMessage"
-QT_MOC_LITERAL(69, 1179, 15), // "idOfMessageEdit"
-QT_MOC_LITERAL(70, 1195, 11), // "messageEdit"
-QT_MOC_LITERAL(71, 1207, 10), // "infoToSend"
-QT_MOC_LITERAL(72, 1218, 11), // "captchaLink"
-QT_MOC_LITERAL(73, 1230, 16) // "clipboardChanged"
+QT_MOC_LITERAL(31, 503, 17), // "setThisBoolOption"
+QT_MOC_LITERAL(32, 521, 6), // "newVal"
+QT_MOC_LITERAL(33, 528, 27), // "setShowTextDecorationButton"
+QT_MOC_LITERAL(34, 556, 16), // "setMultilineEdit"
+QT_MOC_LITERAL(35, 573, 13), // "setNewCookies"
+QT_MOC_LITERAL(36, 587, 21), // "QList<QNetworkCookie>"
+QT_MOC_LITERAL(37, 609, 10), // "newCookies"
+QT_MOC_LITERAL(38, 620, 15), // "newPseudoOfUser"
+QT_MOC_LITERAL(39, 636, 15), // "saveAccountList"
+QT_MOC_LITERAL(40, 652, 10), // "savePseudo"
+QT_MOC_LITERAL(41, 663, 28), // "setNewCookiesForCurrentTopic"
+QT_MOC_LITERAL(42, 692, 11), // "setNewTopic"
+QT_MOC_LITERAL(43, 704, 8), // "newTopic"
+QT_MOC_LITERAL(44, 713, 11), // "setNewTheme"
+QT_MOC_LITERAL(45, 725, 11), // "reloadTheme"
+QT_MOC_LITERAL(46, 737, 17), // "setCodeForCaptcha"
+QT_MOC_LITERAL(47, 755, 4), // "code"
+QT_MOC_LITERAL(48, 760, 19), // "setNewMessageStatus"
+QT_MOC_LITERAL(49, 780, 36), // "setNewNumberOfConnectedAndPse..."
+QT_MOC_LITERAL(50, 817, 15), // "setNewTopicName"
+QT_MOC_LITERAL(51, 833, 9), // "topicName"
+QT_MOC_LITERAL(52, 843, 17), // "saveListOfAccount"
+QT_MOC_LITERAL(53, 861, 23), // "saveListOfIgnoredPseudo"
+QT_MOC_LITERAL(54, 885, 21), // "saveListOfColorPseudo"
+QT_MOC_LITERAL(55, 907, 22), // "warnUserForNewMessages"
+QT_MOC_LITERAL(56, 930, 17), // "currentTabChanged"
+QT_MOC_LITERAL(57, 948, 8), // "newIndex"
+QT_MOC_LITERAL(58, 957, 11), // "postMessage"
+QT_MOC_LITERAL(59, 969, 25), // "deleteReplyForSendMessage"
+QT_MOC_LITERAL(60, 995, 14), // "setEditMessage"
+QT_MOC_LITERAL(61, 1010, 17), // "idOfMessageToEdit"
+QT_MOC_LITERAL(62, 1028, 21), // "setInfoForEditMessage"
+QT_MOC_LITERAL(63, 1050, 15), // "idOfMessageEdit"
+QT_MOC_LITERAL(64, 1066, 11), // "messageEdit"
+QT_MOC_LITERAL(65, 1078, 10), // "infoToSend"
+QT_MOC_LITERAL(66, 1089, 11), // "captchaLink"
+QT_MOC_LITERAL(67, 1101, 16) // "clipboardChanged"
 
     },
     "respawnIrcClass\0themeChanged\0\0"
@@ -120,12 +114,9 @@ QT_MOC_LITERAL(73, 1230, 16) // "clipboardChanged"
     "addThisPeudoToBlacklist\0pseudoToAdd\0"
     "setUpdateTopicTime\0newTime\0"
     "setNumberOfMessageShowedFirstTime\0"
-    "newNumber\0setShowQuoteButton\0newVal\0"
-    "setShowBlacklistButton\0setShowEditButton\0"
+    "newNumber\0setThisBoolOption\0newVal\0"
     "setShowTextDecorationButton\0"
-    "setShowListOfTopic\0setMultilineEdit\0"
-    "setLoadTwoLastPage\0setIgnoreNetworkError\0"
-    "setSearchForUpdateAtLaunch\0setNewCookies\0"
+    "setMultilineEdit\0setNewCookies\0"
     "QList<QNetworkCookie>\0newCookies\0"
     "newPseudoOfUser\0saveAccountList\0"
     "savePseudo\0setNewCookiesForCurrentTopic\0"
@@ -150,7 +141,7 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      51,   14, // methods
+      45,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -158,59 +149,53 @@ static const uint qt_meta_data_respawnIrcClass[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  269,    2, 0x06 /* Public */,
+       1,    1,  239,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       4,    0,  272,    2, 0x0a /* Public */,
-       5,    0,  273,    2, 0x0a /* Public */,
-       6,    0,  274,    2, 0x0a /* Public */,
-       7,    0,  275,    2, 0x0a /* Public */,
-       8,    0,  276,    2, 0x0a /* Public */,
-       9,    0,  277,    2, 0x0a /* Public */,
-      10,    0,  278,    2, 0x0a /* Public */,
-      11,    0,  279,    2, 0x0a /* Public */,
-      12,    0,  280,    2, 0x0a /* Public */,
-      13,    0,  281,    2, 0x0a /* Public */,
-      14,    1,  282,    2, 0x0a /* Public */,
-      16,    1,  285,    2, 0x0a /* Public */,
-      18,    0,  288,    2, 0x0a /* Public */,
-      19,    0,  289,    2, 0x0a /* Public */,
-      20,    0,  290,    2, 0x0a /* Public */,
-      21,    0,  291,    2, 0x0a /* Public */,
-      22,    0,  292,    2, 0x0a /* Public */,
-      23,    1,  293,    2, 0x0a /* Public */,
-      25,    1,  296,    2, 0x0a /* Public */,
-      27,    1,  299,    2, 0x0a /* Public */,
-      29,    1,  302,    2, 0x0a /* Public */,
-      31,    1,  305,    2, 0x0a /* Public */,
-      33,    1,  308,    2, 0x0a /* Public */,
-      34,    1,  311,    2, 0x0a /* Public */,
-      35,    1,  314,    2, 0x0a /* Public */,
-      36,    1,  317,    2, 0x0a /* Public */,
-      37,    1,  320,    2, 0x0a /* Public */,
-      38,    1,  323,    2, 0x0a /* Public */,
-      39,    1,  326,    2, 0x0a /* Public */,
-      40,    1,  329,    2, 0x0a /* Public */,
-      41,    4,  332,    2, 0x0a /* Public */,
-      47,    3,  341,    2, 0x0a /* Public */,
-      48,    1,  348,    2, 0x0a /* Public */,
-      50,    1,  351,    2, 0x0a /* Public */,
-      51,    0,  354,    2, 0x0a /* Public */,
-      52,    1,  355,    2, 0x0a /* Public */,
-      54,    0,  358,    2, 0x0a /* Public */,
-      55,    0,  359,    2, 0x0a /* Public */,
-      56,    1,  360,    2, 0x0a /* Public */,
-      58,    0,  363,    2, 0x0a /* Public */,
-      59,    0,  364,    2, 0x0a /* Public */,
-      60,    0,  365,    2, 0x0a /* Public */,
-      61,    0,  366,    2, 0x0a /* Public */,
-      62,    1,  367,    2, 0x0a /* Public */,
-      64,    0,  370,    2, 0x0a /* Public */,
-      65,    0,  371,    2, 0x0a /* Public */,
-      66,    1,  372,    2, 0x0a /* Public */,
-      66,    0,  375,    2, 0x2a /* Public | MethodCloned */,
-      68,    4,  376,    2, 0x0a /* Public */,
-      73,    0,  385,    2, 0x0a /* Public */,
+       4,    0,  242,    2, 0x0a /* Public */,
+       5,    0,  243,    2, 0x0a /* Public */,
+       6,    0,  244,    2, 0x0a /* Public */,
+       7,    0,  245,    2, 0x0a /* Public */,
+       8,    0,  246,    2, 0x0a /* Public */,
+       9,    0,  247,    2, 0x0a /* Public */,
+      10,    0,  248,    2, 0x0a /* Public */,
+      11,    0,  249,    2, 0x0a /* Public */,
+      12,    0,  250,    2, 0x0a /* Public */,
+      13,    0,  251,    2, 0x0a /* Public */,
+      14,    1,  252,    2, 0x0a /* Public */,
+      16,    1,  255,    2, 0x0a /* Public */,
+      18,    0,  258,    2, 0x0a /* Public */,
+      19,    0,  259,    2, 0x0a /* Public */,
+      20,    0,  260,    2, 0x0a /* Public */,
+      21,    0,  261,    2, 0x0a /* Public */,
+      22,    0,  262,    2, 0x0a /* Public */,
+      23,    1,  263,    2, 0x0a /* Public */,
+      25,    1,  266,    2, 0x0a /* Public */,
+      27,    1,  269,    2, 0x0a /* Public */,
+      29,    1,  272,    2, 0x0a /* Public */,
+      31,    1,  275,    2, 0x0a /* Public */,
+      33,    1,  278,    2, 0x0a /* Public */,
+      34,    1,  281,    2, 0x0a /* Public */,
+      35,    4,  284,    2, 0x0a /* Public */,
+      41,    3,  293,    2, 0x0a /* Public */,
+      42,    1,  300,    2, 0x0a /* Public */,
+      44,    1,  303,    2, 0x0a /* Public */,
+      45,    0,  306,    2, 0x0a /* Public */,
+      46,    1,  307,    2, 0x0a /* Public */,
+      48,    0,  310,    2, 0x0a /* Public */,
+      49,    0,  311,    2, 0x0a /* Public */,
+      50,    1,  312,    2, 0x0a /* Public */,
+      52,    0,  315,    2, 0x0a /* Public */,
+      53,    0,  316,    2, 0x0a /* Public */,
+      54,    0,  317,    2, 0x0a /* Public */,
+      55,    0,  318,    2, 0x0a /* Public */,
+      56,    1,  319,    2, 0x0a /* Public */,
+      58,    0,  322,    2, 0x0a /* Public */,
+      59,    0,  323,    2, 0x0a /* Public */,
+      60,    1,  324,    2, 0x0a /* Public */,
+      60,    0,  327,    2, 0x2a /* Public | MethodCloned */,
+      62,    4,  328,    2, 0x0a /* Public */,
+      67,    0,  337,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
@@ -240,31 +225,25 @@ static const uint qt_meta_data_respawnIrcClass[] = {
     QMetaType::Void, QMetaType::Bool,   32,
     QMetaType::Void, QMetaType::Bool,   32,
     QMetaType::Void, QMetaType::Bool,   32,
-    QMetaType::Void, QMetaType::Bool,   32,
-    QMetaType::Void, QMetaType::Bool,   32,
-    QMetaType::Void, QMetaType::Bool,   32,
-    QMetaType::Void, QMetaType::Bool,   32,
-    QMetaType::Void, QMetaType::Bool,   32,
-    QMetaType::Void, QMetaType::Bool,   32,
-    QMetaType::Void, 0x80000000 | 42, QMetaType::QString, QMetaType::Bool, QMetaType::Bool,   43,   44,   45,   46,
-    QMetaType::Void, 0x80000000 | 42, QMetaType::QString, QMetaType::Bool,   43,   44,   46,
-    QMetaType::Void, QMetaType::QString,   49,
+    QMetaType::Void, 0x80000000 | 36, QMetaType::QString, QMetaType::Bool, QMetaType::Bool,   37,   38,   39,   40,
+    QMetaType::Void, 0x80000000 | 36, QMetaType::QString, QMetaType::Bool,   37,   38,   40,
+    QMetaType::Void, QMetaType::QString,   43,
     QMetaType::Void, QMetaType::QString,    3,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   53,
+    QMetaType::Void, QMetaType::QString,   47,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   57,
+    QMetaType::Void, QMetaType::QString,   51,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   63,
+    QMetaType::Void, QMetaType::Int,   57,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   67,
+    QMetaType::Void, QMetaType::Int,   61,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::QString,   69,   70,   71,   72,
+    QMetaType::Void, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::QString,   63,   64,   65,   66,
     QMetaType::Void,
 
        0        // eod
@@ -298,48 +277,42 @@ void respawnIrcClass::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 19: _t->addThisPeudoToBlacklist((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 20: _t->setUpdateTopicTime((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 21: _t->setNumberOfMessageShowedFirstTime((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 22: _t->setShowQuoteButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 23: _t->setShowBlacklistButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 24: _t->setShowEditButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 25: _t->setShowTextDecorationButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 26: _t->setShowListOfTopic((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 27: _t->setMultilineEdit((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 28: _t->setLoadTwoLastPage((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 29: _t->setIgnoreNetworkError((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 30: _t->setSearchForUpdateAtLaunch((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 31: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
-        case 32: _t->setNewCookiesForCurrentTopic((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
-        case 33: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 34: _t->setNewTheme((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 35: _t->reloadTheme(); break;
-        case 36: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 37: _t->setNewMessageStatus(); break;
-        case 38: _t->setNewNumberOfConnectedAndPseudoUsed(); break;
-        case 39: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 40: _t->saveListOfAccount(); break;
-        case 41: _t->saveListOfIgnoredPseudo(); break;
-        case 42: _t->saveListOfColorPseudo(); break;
-        case 43: _t->warnUserForNewMessages(); break;
-        case 44: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 45: _t->postMessage(); break;
-        case 46: _t->deleteReplyForSendMessage(); break;
-        case 47: _t->setEditMessage((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 48: _t->setEditMessage(); break;
-        case 49: _t->setInfoForEditMessage((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4]))); break;
-        case 50: _t->clipboardChanged(); break;
+        case 22: _t->setThisBoolOption((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 23: _t->setShowTextDecorationButton((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 24: _t->setMultilineEdit((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 25: _t->setNewCookies((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
+        case 26: _t->setNewCookiesForCurrentTopic((*reinterpret_cast< QList<QNetworkCookie>(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 27: _t->setNewTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 28: _t->setNewTheme((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 29: _t->reloadTheme(); break;
+        case 30: _t->setCodeForCaptcha((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 31: _t->setNewMessageStatus(); break;
+        case 32: _t->setNewNumberOfConnectedAndPseudoUsed(); break;
+        case 33: _t->setNewTopicName((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 34: _t->saveListOfAccount(); break;
+        case 35: _t->saveListOfIgnoredPseudo(); break;
+        case 36: _t->saveListOfColorPseudo(); break;
+        case 37: _t->warnUserForNewMessages(); break;
+        case 38: _t->currentTabChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 39: _t->postMessage(); break;
+        case 40: _t->deleteReplyForSendMessage(); break;
+        case 41: _t->setEditMessage((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 42: _t->setEditMessage(); break;
+        case 43: _t->setInfoForEditMessage((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4]))); break;
+        case 44: _t->clipboardChanged(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 31:
+        case 25:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QNetworkCookie> >(); break;
             }
             break;
-        case 32:
+        case 26:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -384,13 +357,13 @@ int respawnIrcClass::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 51)
+        if (_id < 45)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 51;
+        _id -= 45;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 51)
+        if (_id < 45)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 51;
+        _id -= 45;
     }
     return _id;
 }

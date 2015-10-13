@@ -50,15 +50,9 @@ public slots:
     void addThisPeudoToBlacklist(QString pseudoToAdd);
     void setUpdateTopicTime(int newTime);
     void setNumberOfMessageShowedFirstTime(int newNumber);
-    void setShowQuoteButton(bool newVal);
-    void setShowBlacklistButton(bool newVal);
-    void setShowEditButton(bool newVal);
+    void setThisBoolOption(bool newVal);
     void setShowTextDecorationButton(bool newVal);
-    void setShowListOfTopic(bool newVal);
     void setMultilineEdit(bool newVal);
-    void setLoadTwoLastPage(bool newVal);
-    void setIgnoreNetworkError(bool newVal);
-    void setSearchForUpdateAtLaunch(bool newVal);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
     void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);
     void setNewTopic(QString newTopic);

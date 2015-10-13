@@ -15,6 +15,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     tabList.setTabsClosable(true);
     sendButton.setText("Envoyer");
     sendButton.setAutoDefault(true);
+    sendButton.setObjectName("sendButton");
     alertImage.load("ressources/alert.png");
     replyForSendMessage = 0;
     inSending = false;
@@ -462,67 +463,38 @@ void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
     updateSettingInfoForList();
 }
 
-void respawnIrcClass::setShowQuoteButton(bool newVal)
+void respawnIrcClass::setThisBoolOption(bool newVal)
 {
-    settingToolClass::saveThisOption("showQuoteButton", newVal);
+    QObject* senderObject = sender();
 
-    updateSettingInfoForList();
+    if(senderObject != 0)
+    {
+        settingToolClass::saveThisOption(senderObject->objectName(), newVal);
+
+        if(senderObject->objectName() == "showTextDecorationButton")
+        {
+            setShowTextDecorationButton(newVal);
+        }
+        else if(senderObject->objectName() == "setMultilineEdit")
+        {
+            setMultilineEdit(newVal);
+        }
+        else
+        {
+            updateSettingInfoForList();
+        }
+    }
 }
-
-void respawnIrcClass::setShowBlacklistButton(bool newVal)
-{
-    settingToolClass::saveThisOption("showBlacklistButton", newVal);
-
-    updateSettingInfoForList();
-}
-
-void respawnIrcClass::setShowEditButton(bool newVal)
-{
-    settingToolClass::saveThisOption("showEditButton", newVal);
-
-    updateSettingInfoForList();
-}
-
 
 void respawnIrcClass::setShowTextDecorationButton(bool newVal)
 {
     setButtonInButtonLayoutVisible(newVal);
-
-    settingToolClass::saveThisOption("showTextDecorationButton", newVal);
-}
-
-void respawnIrcClass::setShowListOfTopic(bool newVal)
-{
-    settingToolClass::saveThisOption("showListOfTopic", newVal);
-
-    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setMultilineEdit(bool newVal)
 {
     messageLine.setTextEditSelected(newVal);
     messageLine.setFocus();
-
-    settingToolClass::saveThisOption("setMultilineEdit", newVal);
-}
-
-void respawnIrcClass::setLoadTwoLastPage(bool newVal)
-{
-    settingToolClass::saveThisOption("loadTwoLastPage", newVal);
-
-    updateSettingInfoForList();
-}
-
-void respawnIrcClass::setIgnoreNetworkError(bool newVal)
-{
-    settingToolClass::saveThisOption("ignoreNetworkError", newVal);
-
-    updateSettingInfoForList();
-}
-
-void respawnIrcClass::setSearchForUpdateAtLaunch(bool newVal)
-{
-    settingToolClass::saveThisOption("searchForUpdateAtLaunch", newVal);
 }
 
 void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo)
