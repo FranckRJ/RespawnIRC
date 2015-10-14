@@ -33,7 +33,7 @@ public slots:
     void setNewTheme(QString newThemeName);
     void setNewTopic(QString newTopic);
     void linkClicked(const QUrl& link);
-    bool getEditInfo(int idOfMessageToEdit = 0);
+    bool getEditInfo(int idOfMessageToEdit = 0, bool useMessageEdit = true);
     void getQuoteInfo(QString idOfMessageQuoted);
     void getMessages();
     void loadFirstPageFinish();
@@ -44,12 +44,13 @@ public slots:
 signals:
     void quoteThisMessage(QString messageToQuote);
     void addToBlacklist(QString pseudoToBlacklist);
-    void editThisMessage(int idOfMessageEdit);
+    void editThisMessage(int idOfMessageEdit, bool useMessageEdit);
     void newMessageStatus();
     void newNumberOfConnected();
-    void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString cpatchaLink);
+    void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString cpatchaLink, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
+    void topicNeedChanged(QString topicLink);
     void openThisTopicInNewTab(QString topicLink);
 private:
     QTextBrowser messagesBox;
@@ -86,6 +87,7 @@ private:
     bool retrievesMessage;
     bool linkHasChanged;
     bool errorMode;
+    bool oldUseMessageEdit;
     int idOfLastMessage;
     int idOfLastMessageOfUser;
     int oldIdOfLastMessageOfUser;

@@ -42,13 +42,17 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
 void selectThemeWindowClass::loadListOfThemes()
 {
     QDir themeDir("theme/");
+    QStringList listOfTheme;
+
     if(themeDir.exists() == true)
     {
-        QStringList listOfTheme = themeDir.entryList(QDir::Dirs);
+        listOfTheme = themeDir.entryList(QDir::Dirs);
         listOfTheme.removeFirst();
         listOfTheme.removeFirst();
-        modelForListViewOfTheme.setStringList(listOfTheme);
     }
+
+    listOfTheme.push_front("Défaut");
+    modelForListViewOfTheme.setStringList(listOfTheme);
 }
 
 void selectThemeWindowClass::selectThisTheme()

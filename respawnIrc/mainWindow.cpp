@@ -159,7 +159,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionAddQuote, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addQuote);
     QObject::connect(actionAddCode, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addCode);
     QObject::connect(actionAddSpoil, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addSpoil);
-    QObject::connect(actionEditLastMessage, &QAction::triggered, &respawnIrc, &respawnIrcClass::setEditMessage);
+    QObject::connect(actionEditLastMessage, &QAction::triggered, &respawnIrc, &respawnIrcClass::editLastMessage);
     QObject::connect(actionGoToTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentTopic);
     QObject::connect(actionGoToForum, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentForum);
     QObject::connect(actionShowListOfIgnoredPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showIgnoreListWindow);

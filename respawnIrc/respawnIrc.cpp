@@ -8,7 +8,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.13.4");
+const QString respawnIrcClass::currentVersionName("v1.14");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -362,6 +362,7 @@ void respawnIrcClass::addNewTab()
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
     tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
     tabList.setCurrentIndex(listOfShowTopicMessages.size() - 1);
 }
@@ -732,6 +733,7 @@ void respawnIrcClass::postMessage()
 
 void respawnIrcClass::deleteReplyForSendMessage()
 {
+    bool dontEraseEditMessage = false;
     QString source = replyForSendMessage->readAll();
     replyForSendMessage->deleteLater();
     replyForSendMessage = 0;
@@ -746,6 +748,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
     {
         QMessageBox messageBox;
         messageBox.warning(this, "Erreur", "Le code de confirmation est incorrect.");
+        dontEraseEditMessage = true;
     }
     else
     {
@@ -758,16 +761,30 @@ void respawnIrcClass::deleteReplyForSendMessage()
 
     if(isInEdit == true)
     {
-        messageLine.clear();
         sendButton.setText("Envoyer");
         isInEdit = false;
+
+        if(dontEraseEditMessage == false)
+        {
+            messageLine.clear();
+        }
+        else
+        {
+            setEditMessage(idOfLastMessageEdit, false);
+        }
     }
 
     getCurrentWidget()->startGetMessage();
     messageLine.setFocus();
 }
 
-void respawnIrcClass::setEditMessage(int idOfMessageToEdit)
+void respawnIrcClass::editLastMessage()
+{
+    setEditMessage(0, true);
+}
+
+
+void respawnIrcClass::setEditMessage(int idOfMessageToEdit, bool useMessageEdit)
 {
     if(inSending == false)
     {
@@ -775,7 +792,7 @@ void respawnIrcClass::setEditMessage(int idOfMessageToEdit)
         {
             sendButton.setEnabled(false);
             sendButton.setText("Editer");
-            if(getCurrentWidget()->getEditInfo(idOfMessageToEdit) == false)
+            if(getCurrentWidget()->getEditInfo(idOfMessageToEdit, useMessageEdit) == false)
             {
                 QMessageBox messageBox;
                 messageBox.warning(this, "Erreur", "Impossible d'éditer ce message.");
@@ -793,15 +810,19 @@ void respawnIrcClass::setEditMessage(int idOfMessageToEdit)
     }
 }
 
-void respawnIrcClass::setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString captchaLink)
+void respawnIrcClass::setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString captchaLink, bool useMessageEdit)
 {
     if(messageEdit.isEmpty() == false)
     {
-        messageLine.clear();
-        messageLine.insertText(messageEdit);
+        if(useMessageEdit == true)
+        {
+            messageLine.clear();
+            messageLine.insertText(messageEdit);
+        }
         dataForEditLastMessage = "id_message=" + QString::number(idOfMessageEdit) + "&" + infoToSend;
         captchaLinkForEditLastMessage = captchaLink;
         isInEdit = true;
+        idOfLastMessageEdit = idOfMessageEdit;
     }
     else
     {

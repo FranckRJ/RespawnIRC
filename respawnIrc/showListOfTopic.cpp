@@ -35,6 +35,13 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
     }
 }
 
+void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
+{
+    networkManager.clearAccessCache();
+    networkManager.setCookieJar(new QNetworkCookieJar(this));
+    networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+}
+
 void showListOfTopicClass::startGetListOfTopic()
 {
     if(forumLink.isEmpty() == false && reply == 0)

@@ -17,6 +17,7 @@ INPUT(
 ./release\colorPseudoListWindow.o
 ./release\showListOfTopic.o
 ./release\styleTool.o
+./release\selectThemeWindow.o
 ./release\moc_mainWindow.o
 ./release\moc_respawnIrc.o
 ./release\moc_connectWindow.o
@@ -31,4 +32,5 @@ INPUT(
 ./release\moc_colorPseudoListWindow.o
 ./release\moc_accountListWindow.o
 ./release\moc_showListOfTopic.o
+./release\moc_selectThemeWindow.o
 );

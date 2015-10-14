@@ -11,6 +11,7 @@ class showListOfTopicClass : public QWidget
 public:
     showListOfTopicClass(QWidget* parent = 0);
     void setForumLink(QString newForumLink);
+    void setNewCookies(QList<QNetworkCookie> newCookies);
 public slots:
     void startGetListOfTopic();
     void analyzeReply();

@@ -28,12 +28,17 @@ QPushButton
     background: red;
 }
 
+QPushButton#sendButton
+{
+	background: brown;
+}
+
 QListView
 {
     background: purple;
 }
 
-QSplitter::handle
+QSplitter:handle
 {
     background: green;
 }
@@ -48,7 +53,7 @@ QTabBar:tab
     background: yellow;
 }
 
-QTabWidget::pane
+QTabWidget:pane
 {
     border: 2px solid cyan;
 }

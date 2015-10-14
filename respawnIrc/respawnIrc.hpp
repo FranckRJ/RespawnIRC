@@ -69,8 +69,9 @@ public slots:
     void currentTabChanged(int newIndex);
     void postMessage();
     void deleteReplyForSendMessage();
-    void setEditMessage(int idOfMessageToEdit = 0);
-    void setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString captchaLink);
+    void editLastMessage();
+    void setEditMessage(int idOfMessageToEdit = 0, bool useMessageEdit = true);
+    void setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString captchaLink, bool useMessageEdit);
     void clipboardChanged();
 signals:
     void themeChanged(QString newThemeName);
@@ -104,6 +105,7 @@ private:
     QString currentThemeName;
     bool inSending;
     bool isInEdit;
+    int idOfLastMessageEdit;
 };
 
 #endif

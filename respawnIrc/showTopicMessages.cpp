@@ -40,7 +40,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 
     QObject::connect(&timerForGetMessage, &QTimer::timeout, this, &showTopicMessagesClass::getMessages);
     QObject::connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
-    QObject::connect(&showListOfTopic, &showListOfTopicClass::openThisTopic, this, &showTopicMessagesClass::setNewTopic);
+    QObject::connect(&showListOfTopic, &showListOfTopicClass::openThisTopic, this, &showTopicMessagesClass::topicNeedChanged);
     QObject::connect(&showListOfTopic, &showListOfTopicClass::openThisTopicInNewTab, this, &showTopicMessagesClass::openThisTopicInNewTab);
 }
 
@@ -114,6 +114,7 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
     currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
 
+    showListOfTopic.setNewCookies(newCookies);
     startGetMessage();
 }
 
@@ -241,7 +242,7 @@ void showTopicMessagesClass::linkClicked(const QUrl &link)
     }
     else if(linkInString.startsWith("edit"))
     {
-        emit editThisMessage(linkInString.remove(0, linkInString.indexOf(':') + 1).toInt());
+        emit editThisMessage(linkInString.remove(0, linkInString.indexOf(':') + 1).toInt(), true);
     }
     else
     {
@@ -249,7 +250,7 @@ void showTopicMessagesClass::linkClicked(const QUrl &link)
     }
 }
 
-bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit)
+bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageEdit)
 {
     if(ajaxInfo.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
     {
@@ -271,6 +272,7 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit)
             requestForEditInfo = parsingToolClass::buildRequestWithThisUrl(urlToGet);
             oldAjaxInfo = ajaxInfo;
             ajaxInfo.clear();
+            oldUseMessageEdit = useMessageEdit;
             replyForEditInfo = networkManager.get(requestForEditInfo);
             QObject::connect(replyForEditInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeEditInfo);
 
@@ -373,7 +375,7 @@ void showTopicMessagesClass::analyzeEditInfo()
         dataToSend += "&" + listOfEditInput.at(i).first + "=" + listOfEditInput.at(i).second;
     }
 
-    emit setEditInfo(oldIdOfLastMessageOfUser, message, dataToSend, parsingToolClass::getCaptchaLink(source));
+    emit setEditInfo(oldIdOfLastMessageOfUser, message, dataToSend, parsingToolClass::getCaptchaLink(source), oldUseMessageEdit);
 
     replyForEditInfo = 0;
 }
