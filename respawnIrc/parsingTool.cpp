@@ -17,6 +17,7 @@ QRegularExpression parsingToolClass::expForPageLink("<span><a href=\"([^\"]*)\" 
 QRegularExpression parsingToolClass::expForBeforeLastPage("(http://www.jeuxvideo.com/forums/[^-]*-[^-]*-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForMpJvc("<span class=\"picto-nb-mp\">[^<]*<span>Mes MP</span>[^<]*</span>[^<]*<span class=\"sup\">([^<]*)</span>[^<]*</a>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForEntireMessage("(<div class=\"bloc-message-forum \".*?)(<div class=\"bloc-message-forum \"|<div class=\"bloc-pagi-default\">)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForListOfTopic("<div class=\"titre-topic\">[^<]*<a href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessageID("<div class=\"bloc-message-forum \" id=\"post_[^\"]*\" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -182,6 +183,19 @@ QString parsingToolClass::getNameOfTopic(const QString& source)
 QString parsingToolClass::getNumberOfConnected(const QString &source)
 {
     return expForNumberOfConnected.match(source).captured(1);
+}
+
+QString parsingToolClass::getNumberOfMp(const QString &source)
+{
+    int numberOfMp = 0;
+    QRegularExpressionMatch match = expForMpJvc.match(source);
+
+    if(match.hasMatch() == true)
+    {
+        numberOfMp = match.captured(1).toInt();
+    }
+
+    return QString::number(numberOfMp) + " MP";
 }
 
 QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &source)

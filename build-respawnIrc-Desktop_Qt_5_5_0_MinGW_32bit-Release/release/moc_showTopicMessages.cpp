@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_showTopicMessagesClass_t {
     QByteArrayData data[37];
-    char stringdata0[541];
+    char stringdata0[546];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -39,40 +39,40 @@ QT_MOC_LITERAL(6, 89, 15), // "editThisMessage"
 QT_MOC_LITERAL(7, 105, 15), // "idOfMessageEdit"
 QT_MOC_LITERAL(8, 121, 14), // "useMessageEdit"
 QT_MOC_LITERAL(9, 136, 16), // "newMessageStatus"
-QT_MOC_LITERAL(10, 153, 20), // "newNumberOfConnected"
-QT_MOC_LITERAL(11, 174, 11), // "setEditInfo"
-QT_MOC_LITERAL(12, 186, 11), // "messageEdit"
-QT_MOC_LITERAL(13, 198, 10), // "infoToSend"
-QT_MOC_LITERAL(14, 209, 11), // "cpatchaLink"
-QT_MOC_LITERAL(15, 221, 20), // "newMessagesAvailable"
-QT_MOC_LITERAL(16, 242, 15), // "newNameForTopic"
-QT_MOC_LITERAL(17, 258, 7), // "newName"
-QT_MOC_LITERAL(18, 266, 16), // "topicNeedChanged"
-QT_MOC_LITERAL(19, 283, 9), // "topicLink"
-QT_MOC_LITERAL(20, 293, 21), // "openThisTopicInNewTab"
-QT_MOC_LITERAL(21, 315, 11), // "setNewTheme"
-QT_MOC_LITERAL(22, 327, 12), // "newThemeName"
-QT_MOC_LITERAL(23, 340, 11), // "setNewTopic"
-QT_MOC_LITERAL(24, 352, 8), // "newTopic"
-QT_MOC_LITERAL(25, 361, 11), // "linkClicked"
-QT_MOC_LITERAL(26, 373, 4), // "link"
-QT_MOC_LITERAL(27, 378, 11), // "getEditInfo"
-QT_MOC_LITERAL(28, 390, 17), // "idOfMessageToEdit"
-QT_MOC_LITERAL(29, 408, 12), // "getQuoteInfo"
-QT_MOC_LITERAL(30, 421, 17), // "idOfMessageQuoted"
-QT_MOC_LITERAL(31, 439, 11), // "getMessages"
-QT_MOC_LITERAL(32, 451, 19), // "loadFirstPageFinish"
-QT_MOC_LITERAL(33, 471, 20), // "loadSecondPageFinish"
-QT_MOC_LITERAL(34, 492, 15), // "analyzeEditInfo"
-QT_MOC_LITERAL(35, 508, 16), // "analyzeQuoteInfo"
-QT_MOC_LITERAL(36, 525, 15) // "analyzeMessages"
+QT_MOC_LITERAL(10, 153, 25), // "newNumberOfConnectedAndMP"
+QT_MOC_LITERAL(11, 179, 11), // "setEditInfo"
+QT_MOC_LITERAL(12, 191, 11), // "messageEdit"
+QT_MOC_LITERAL(13, 203, 10), // "infoToSend"
+QT_MOC_LITERAL(14, 214, 11), // "cpatchaLink"
+QT_MOC_LITERAL(15, 226, 20), // "newMessagesAvailable"
+QT_MOC_LITERAL(16, 247, 15), // "newNameForTopic"
+QT_MOC_LITERAL(17, 263, 7), // "newName"
+QT_MOC_LITERAL(18, 271, 16), // "topicNeedChanged"
+QT_MOC_LITERAL(19, 288, 9), // "topicLink"
+QT_MOC_LITERAL(20, 298, 21), // "openThisTopicInNewTab"
+QT_MOC_LITERAL(21, 320, 11), // "setNewTheme"
+QT_MOC_LITERAL(22, 332, 12), // "newThemeName"
+QT_MOC_LITERAL(23, 345, 11), // "setNewTopic"
+QT_MOC_LITERAL(24, 357, 8), // "newTopic"
+QT_MOC_LITERAL(25, 366, 11), // "linkClicked"
+QT_MOC_LITERAL(26, 378, 4), // "link"
+QT_MOC_LITERAL(27, 383, 11), // "getEditInfo"
+QT_MOC_LITERAL(28, 395, 17), // "idOfMessageToEdit"
+QT_MOC_LITERAL(29, 413, 12), // "getQuoteInfo"
+QT_MOC_LITERAL(30, 426, 17), // "idOfMessageQuoted"
+QT_MOC_LITERAL(31, 444, 11), // "getMessages"
+QT_MOC_LITERAL(32, 456, 19), // "loadFirstPageFinish"
+QT_MOC_LITERAL(33, 476, 20), // "loadSecondPageFinish"
+QT_MOC_LITERAL(34, 497, 15), // "analyzeEditInfo"
+QT_MOC_LITERAL(35, 513, 16), // "analyzeQuoteInfo"
+QT_MOC_LITERAL(36, 530, 15) // "analyzeMessages"
 
     },
     "showTopicMessagesClass\0quoteThisMessage\0"
     "\0messageToQuote\0addToBlacklist\0"
     "pseudoToBlacklist\0editThisMessage\0"
     "idOfMessageEdit\0useMessageEdit\0"
-    "newMessageStatus\0newNumberOfConnected\0"
+    "newMessageStatus\0newNumberOfConnectedAndMP\0"
     "setEditInfo\0messageEdit\0infoToSend\0"
     "cpatchaLink\0newMessagesAvailable\0"
     "newNameForTopic\0newName\0topicNeedChanged\0"
@@ -167,7 +167,7 @@ void showTopicMessagesClass::qt_static_metacall(QObject *_o, QMetaObject::Call _
         case 1: _t->addToBlacklist((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 2: _t->editThisMessage((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
         case 3: _t->newMessageStatus(); break;
-        case 4: _t->newNumberOfConnected(); break;
+        case 4: _t->newNumberOfConnectedAndMP(); break;
         case 5: _t->setEditInfo((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< bool(*)>(_a[5]))); break;
         case 6: _t->newMessagesAvailable(); break;
         case 7: _t->newNameForTopic((*reinterpret_cast< QString(*)>(_a[1]))); break;
@@ -220,7 +220,7 @@ void showTopicMessagesClass::qt_static_metacall(QObject *_o, QMetaObject::Call _
         }
         {
             typedef void (showTopicMessagesClass::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&showTopicMessagesClass::newNumberOfConnected)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&showTopicMessagesClass::newNumberOfConnectedAndMP)) {
                 *result = 4;
             }
         }
@@ -321,7 +321,7 @@ void showTopicMessagesClass::newMessageStatus()
 }
 
 // SIGNAL 4
-void showTopicMessagesClass::newNumberOfConnected()
+void showTopicMessagesClass::newNumberOfConnectedAndMP()
 {
     QMetaObject::activate(this, &staticMetaObject, 4, Q_NULLPTR);
 }

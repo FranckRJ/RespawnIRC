@@ -20,13 +20,13 @@ public:
     QString getTopicName();
     QString getCaptchaLink();
     QString getMessagesStatus();
-    QString getNumberOfConnected();
+    QString getNumberOfConnectedAndMP();
     QString getPseudoUsed();
     QString getColorOfThisPseudo(QString pseudo);
     const QList<QNetworkCookie>& getListOfCookies();
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser);
     void setMessageStatus(QString newStatus);
-    void setNumberOfConnected(QString newNumber, bool forceSet = false);
+    void setNumberOfConnectedAndMP(QString newNumber, bool forceSet = false);
     void setTopicToErrorMode();
     void updateSettingInfo(bool showListOfTopicIfNeeded = true);
 public slots:
@@ -46,7 +46,7 @@ signals:
     void addToBlacklist(QString pseudoToBlacklist);
     void editThisMessage(int idOfMessageEdit, bool useMessageEdit);
     void newMessageStatus();
-    void newNumberOfConnected();
+    void newNumberOfConnectedAndMP();
     void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString cpatchaLink, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
@@ -69,7 +69,7 @@ private:
     QList<pseudoWithColorStruct> *listOfColorPseudo;
     QMap<int, QString> listOfEdit;
     QString messagesStatus;
-    QString numberOfConnected;
+    QString numberOfConnectedAndMP;
     QString topicLink;
     QString topicName;
     QString pseudoOfUser;

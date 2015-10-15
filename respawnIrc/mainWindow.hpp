@@ -12,6 +12,7 @@ class mainWindowClass : public QMainWindow
 public:
     mainWindowClass();
 public slots:
+    void goToMp();
     void useFavoriteClicked();
     void addFavoriteClicked();
     void delFavoriteClicked();

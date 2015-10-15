@@ -8,7 +8,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.14");
+const QString respawnIrcClass::currentVersionName("v1.15");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -356,7 +356,7 @@ void respawnIrcClass::addNewTab()
     }
 
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNumberOfConnected, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::setEditInfo, this, &respawnIrcClass::setInfoForEditMessage);
@@ -590,7 +590,7 @@ void respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed()
 
     if(listOfShowTopicMessages.isEmpty() == false)
     {
-        textToShow += getCurrentWidget()->getNumberOfConnected();
+        textToShow += getCurrentWidget()->getNumberOfConnectedAndMP();
 
         if(getCurrentWidget()->getPseudoUsed().isEmpty() == false)
         {

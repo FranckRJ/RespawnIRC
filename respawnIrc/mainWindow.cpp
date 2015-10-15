@@ -12,12 +12,14 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     menuFile->addSeparator();
     QAction* actionTabAddTab = menuFile->addAction("Ajouter un onglet");
     menuFile->addSeparator();
+    QAction* actionGoToMp = menuFile->addAction("Accéder à la boîte de réception");
     QAction* actionCheckUpdate = menuFile->addAction("Chercher une mise à jour");
     menuFile->addSeparator();
     QAction* actionQuit = menuFile->addAction("Quitter");
     actionConnect->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
     actionShowAccountList->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
     actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
+    actionGoToMp->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
     actionCheckUpdate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_U));
     actionQuit->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
 
@@ -147,6 +149,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionConnect, &QAction::triggered, &respawnIrc, &respawnIrcClass::showConnect);
     QObject::connect(actionShowAccountList, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAccountListWindow);
     QObject::connect(actionTabAddTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::addNewTab);
+    QObject::connect(actionGoToMp, &QAction::triggered, this, &mainWindowClass::goToMp);
     QObject::connect(actionCheckUpdate, &QAction::triggered, &respawnIrc, &respawnIrcClass::checkForUpdate);
     QObject::connect(actionSelectTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTopic);
     QObject::connect(actionUpdateTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::updateTopic);
@@ -174,6 +177,11 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
     QObject::connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
     QObject::connect(&respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
+}
+
+void mainWindowClass::goToMp()
+{
+    QDesktopServices::openUrl(QUrl("http://www.jeuxvideo.com/messages-prives/boite-reception.php"));
 }
 
 void mainWindowClass::useFavoriteClicked()

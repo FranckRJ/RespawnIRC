@@ -88,9 +88,9 @@ QString showTopicMessagesClass::getMessagesStatus()
     return messagesStatus;
 }
 
-QString showTopicMessagesClass::getNumberOfConnected()
+QString showTopicMessagesClass::getNumberOfConnectedAndMP()
 {
-    return numberOfConnected;
+    return numberOfConnectedAndMP;
 }
 
 QString showTopicMessagesClass::getPseudoUsed()
@@ -134,14 +134,14 @@ void showTopicMessagesClass::setMessageStatus(QString newStatus)
     emit newMessageStatus();
 }
 
-void showTopicMessagesClass::setNumberOfConnected(QString newNumber, bool forceSet)
+void showTopicMessagesClass::setNumberOfConnectedAndMP(QString newNumber, bool forceSet)
 {
     if(newNumber.isEmpty() == false || forceSet == true)
     {
-        if(newNumber != numberOfConnected)
+        if(newNumber != numberOfConnectedAndMP)
         {
-            numberOfConnected = newNumber;
-            emit newNumberOfConnected();
+            numberOfConnectedAndMP = newNumber;
+            emit newNumberOfConnectedAndMP();
         }
     }
 }
@@ -160,7 +160,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
             messagesBox.clear();
             listOfEdit.clear();
             setMessageStatus("Erreur, topic invalide.");
-            setNumberOfConnected("", true);
+            setNumberOfConnectedAndMP("", true);
             messageBox.warning(this, "Erreur", "Le topic n'existe pas.");
         }
         else
@@ -231,7 +231,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     showListOfTopic.setForumLink(parsingToolClass::getForumOfTopic(topicLink));
 
     setMessageStatus("Nouveau topic.");
-    setNumberOfConnected("", true);
+    setNumberOfConnectedAndMP("", true);
     startGetMessage();
 }
 
@@ -412,6 +412,7 @@ void showTopicMessagesClass::analyzeMessages()
     QString buttonString;
     QString sourceFirst;
     QString sourceSecond;
+    QString numberOfConnected;
 
     if(replyForFirstPage == 0)
     {
@@ -436,7 +437,16 @@ void showTopicMessagesClass::analyzeMessages()
     }
 
     setMessageStatus("Récupération des messages terminée !");
-    setNumberOfConnected(parsingToolClass::getNumberOfConnected(sourceFirst));
+
+    if(pseudoOfUser.isEmpty() == false)
+    {
+        numberOfConnected = parsingToolClass::getNumberOfConnected(sourceFirst);
+        setNumberOfConnectedAndMP(numberOfConnected + " - " + parsingToolClass::getNumberOfMp(sourceFirst));
+    }
+    else
+    {
+        setNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(sourceFirst));
+    }
 
     newTopicLink = parsingToolClass::getLastPageOfTopic(sourceFirst);
 
@@ -574,7 +584,7 @@ void showTopicMessagesClass::analyzeMessages()
             QMessageBox messageBox;
             messageBox.warning(this, "Erreur sur " + topicName + " avec " + pseudoOfUser, "Le compte semble invalide, si tel est vraiment le cas veuillez supprimer celui-ci de la liste des comptes et vous reconnecter avec.");
             pseudoOfUser.clear();
-            emit newNumberOfConnected();
+            setNumberOfConnectedAndMP(numberOfConnected);
         }
     }
 

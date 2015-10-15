@@ -33,6 +33,7 @@ public:
     static QString getBeforeLastPageOfTopic(const QString& source);
     static QString getNameOfTopic(const QString& source);
     static QString getNumberOfConnected(const QString& source);
+    static QString getNumberOfMp(const QString& source);
     static QList<messageStruct> getListOfEntireMessages(const QString& source);
     static QList<topicStruct> getListOfTopic(const QString& source);
     static QString getForumOfTopic(const QString& source);
@@ -60,6 +61,7 @@ private:
     static QRegularExpression expForBeforeLastPage;
     static QRegularExpression expForNameOfTopic;
     static QRegularExpression expForNumberOfConnected;
+    static QRegularExpression expForMpJvc;
     static QRegularExpression expForEntireMessage;
     static QRegularExpression expForListOfTopic;
     static QRegularExpression expForMessageID;
