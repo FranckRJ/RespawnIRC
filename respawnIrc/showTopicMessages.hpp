@@ -88,6 +88,7 @@ private:
     bool linkHasChanged;
     bool errorMode;
     bool oldUseMessageEdit;
+    bool needToGetMessages;
     int idOfLastMessage;
     int idOfLastMessageOfUser;
     int oldIdOfLastMessageOfUser;

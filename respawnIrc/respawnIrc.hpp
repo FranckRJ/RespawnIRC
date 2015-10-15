@@ -105,6 +105,7 @@ private:
     QString currentThemeName;
     bool inSending;
     bool isInEdit;
+    bool beepWhenWarn;
     int idOfLastMessageEdit;
 };
 

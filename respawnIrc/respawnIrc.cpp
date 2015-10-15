@@ -20,6 +20,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     replyForSendMessage = 0;
     inSending = false;
     isInEdit = false;
+    beepWhenWarn = true;
 
     addButtonToButtonLayout();
 
@@ -47,6 +48,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 void respawnIrcClass::loadSettings()
 {
     setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
+    beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
 
     for(int i = 0; i < 10; ++i)
     {
@@ -480,6 +482,10 @@ void respawnIrcClass::setThisBoolOption(bool newVal)
         {
             setMultilineEdit(newVal);
         }
+        else if(senderObject->objectName() == "beepWhenWarn")
+        {
+            beepWhenWarn = newVal;
+        }
         else
         {
             updateSettingInfoForList();
@@ -629,8 +635,13 @@ void respawnIrcClass::saveListOfColorPseudo()
 
 void respawnIrcClass::warnUserForNewMessages()
 {
-    QApplication::alert(this);
     QObject* senderObject = sender();
+    QApplication::alert(this);
+
+    if(QApplication::focusWidget() == 0 && beepWhenWarn == true)
+    {
+        QApplication::beep();
+    }
 
     if(senderObject != getCurrentWidget())
     {

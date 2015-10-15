@@ -24,6 +24,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     linkHasChanged = false;
     errorMode = false;
     secondPageLoading = false;
+    needToGetMessages = false;
 
     setNewTheme(currentThemeName);
 
@@ -46,10 +47,19 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 
 void showTopicMessagesClass::startGetMessage()
 {
-    if(retrievesMessage == false && topicLink.isEmpty() == false)
+    needToGetMessages = false;
+
+    if(topicLink.isEmpty() == false)
     {
-        timerForGetMessage.start();
-        getMessages();
+        if(retrievesMessage == false)
+        {
+            timerForGetMessage.start();
+            getMessages();
+        }
+        else
+        {
+            needToGetMessages = true;
+        }
     }
 }
 
@@ -574,6 +584,10 @@ void showTopicMessagesClass::analyzeMessages()
     if(newTopicLink.isEmpty() == false)
     {
         topicLink = newTopicLink;
+        startGetMessage();
+    }
+    else if(needToGetMessages == true)
+    {
         startGetMessage();
     }
 }

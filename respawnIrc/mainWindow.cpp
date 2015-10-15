@@ -64,6 +64,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     settingToolClass::createActionForBoolOption("Charger les deux dernières pages", "loadTwoLastPage", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Ignorer les erreurs réseau", "ignoreNetworkError", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Beeper lors de la réception d'un message", "beepWhenWarn", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     menuSetting->addSeparator();
     settingToolClass::createActionForBoolOption("Sauvegarder la taille de la fenêtre", "saveWindowGeometry", menuSetting, this, SLOT(saveWindowGeometry(bool)));
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));

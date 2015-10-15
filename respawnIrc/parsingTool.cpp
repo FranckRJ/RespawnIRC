@@ -34,6 +34,8 @@ QRegularExpression parsingToolClass::expForJvcLink("<a href=\"([^\"]*)\"( title=
 QRegularExpression parsingToolClass::expForNoelshack("<a href=\"([^\"]*)\" data-def=\"NOELSHACK\" target=\"_blank\"><img class=\"img-shack\" [^>]*></a>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\"><span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForSpoilBlock("<span class=\"bloc-spoil-jv\"><span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForCodeLine("<code class=\"code-jv\">([^<]*)</code>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForCodeBlock("<pre class=\"pre-jv\"><code class=\"code-jv\">([^<]*)</code></pre>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", QRegularExpression::OptimizeOnFirstUsageOption);
 
@@ -264,6 +266,8 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
 
 QString parsingToolClass::parsingMessages(QString thisMessage)
 {
+    replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<pre><code>", "</code></pre>", -1, "", true);
+
     thisMessage.replace("\n", "");
 
     replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"smileys/", "\" />");
@@ -274,6 +278,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
     replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>");
     replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<br /><br /><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>");
+    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code>", "</code> ");
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1);
 
     thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-bottom: 5px;margin-top: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";\"><tr><td>");
@@ -348,7 +353,7 @@ QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, Q
     return listOfString;
 }
 
-void parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter)
+void parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter, bool replaceReturnByBr)
 {
     QRegularExpressionMatchIterator matchIterator = exp.globalMatch(source);
     int lenghtChanged = 0;
@@ -365,6 +370,11 @@ void parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression&
         {
             newString += match.captured(secondCapNumber);
             newString += stringAfterAfter;
+        }
+
+        if(replaceReturnByBr == true)
+        {
+            newString.replace("\n", "<br />");
         }
 
         source.replace(match.capturedStart(0) + lenghtChanged, match.capturedLength(0), newString);

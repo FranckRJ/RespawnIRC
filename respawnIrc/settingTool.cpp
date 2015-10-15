@@ -18,6 +18,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["ignoreNetworkError"] = false;
     listOfDefaultBoolOption["searchForUpdateAtLaunch"] = true;
     listOfDefaultBoolOption["saveWindowGeometry"] = true;
+    listOfDefaultBoolOption["beepWhenWarn"] = true;
     listOfDefaultIntOption["updateTopicTime"] = 4000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
     listOfDefaultStringOption["pseudo"] = "";
