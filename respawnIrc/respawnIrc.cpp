@@ -1,3 +1,5 @@
+#include <QSound>
+
 #include "respawnIrc.hpp"
 #include "connectWindow.hpp"
 #include "selectTopicWindow.hpp"
@@ -640,7 +642,7 @@ void respawnIrcClass::warnUserForNewMessages()
 
     if(QApplication::focusWidget() == 0 && beepWhenWarn == true)
     {
-        QApplication::beep();
+        QSound::play("ressources/beep.wav");
     }
 
     if(senderObject != getCurrentWidget())

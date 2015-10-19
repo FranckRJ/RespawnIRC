@@ -284,7 +284,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage)
 
     thisMessage.replace("\n", "");
 
-    replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"smileys/", "\" />");
+    replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"ressources/smileys/", "\" />");
     replaceWithCapNumber(thisMessage, expForStickers, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");

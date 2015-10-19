@@ -21,7 +21,8 @@ SOURCES += \
 
 QT += \
     network \
-    widgets
+    widgets \
+    multimedia
 
 HEADERS += \
     mainWindow.hpp \

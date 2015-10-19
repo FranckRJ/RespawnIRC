@@ -1,0 +1,142 @@
+/* Sovex66 */
+QMainWindow
+{
+    background: #C2E3FF;
+}
+
+QMenuBar
+{
+    background: #F5F6F7;
+}
+
+.QTextEdit
+{
+    background: #9ED2FF;
+    border-style: inset;
+    border-width: 1px;
+    border-radius: 10px;
+}
+
+QLineEdit
+{
+    background: #9ED2FF;
+}
+
+QTextBrowser
+{
+    background-color: #9ED2FF;
+    border-left-style: inset;
+    border-left-width: 1px;
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-top-left-radius: 15px;
+	border-bottom-left-radius: 15px;
+}
+
+QPushButton
+{
+    background-color: #306FB5;
+    border-style: outset;
+    border-width: 3px;
+    border-radius: 10px;
+    border-color: #224D7D;
+    font: 12px;
+    min-width: 25px;
+    padding: 16px
+}
+QPushButton:hover
+{
+    background-color: #3784D9;
+    border-style: outset;
+    border-width: 3px;
+    border-radius: 10px;
+    border-color: #224D7D;
+    font: 12px;
+    min-width: 25px;
+    padding: 16px
+}
+
+QPushButton#sendButton
+{
+    background-color: #306FB5;
+    border-style: outset;
+    border-width: 3px;
+    border-radius: 10px;
+    border-color: #224D7D;
+    font: 14px;
+    min-width: 25px;
+    padding: 16px;
+	box-shadow : 10px 10px 5px #888888;
+}
+QPushButton#sendButton:hover
+{
+    background-color: #3784D9;
+    border-style: outset;
+    border-width: 3px;
+    border-radius: 10px;
+    border-color: #224D7D;
+    font: 14px;
+    min-width: 25px;
+    padding: 16px;
+	box-shadow : 10px 10px 5px #888888;
+}
+
+QListView
+{
+    background-color: #9ED2FF;
+    border-right-style: inset;
+    border-right-width: 1px;
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-top-right-radius: 10px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+QDialog QListView {
+	background: #9ED2FF;
+    border-style: inset;
+    border-width: 1px;
+    border-radius: 10px;
+}
+
+QSplitter:handle
+{
+    background: #306FB5;
+}
+
+QScrollBar
+{
+    background-color: #306FB5;
+}
+
+QTabBar:tab
+{
+    background-color: #306FB5;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: #224D7D;
+    min-width: 25px;
+    padding: 6px;
+    margin-bottom: 4px;
+    margin-right: 2px;
+}
+QTabBar:tab:selected, QTabBar:tab:hover
+{
+    background-color: #3784D9;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: #224D7D;
+    min-width: 25px;
+    padding: 6px;
+    margin-bottom: 4px;
+    margin-right: 2px;
+}
+
+QTabWidget:pane
+{
+	border: 0px;
+}
