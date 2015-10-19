@@ -184,6 +184,7 @@ void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
     showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
     showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
     showEditButton = settingToolClass::getThisBoolOption("showEditButton");
+    showStickers = settingToolClass::getThisBoolOption("showStickers");
     loadTwoLastPage = settingToolClass::getThisBoolOption("loadTwoLastPage");
     ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
     timerForGetMessage.setInterval(settingToolClass::getThisIntOption("updateTopicTime"));
@@ -466,10 +467,10 @@ void showTopicMessagesClass::analyzeMessages()
 
         if(sourceSecond.isEmpty() == false)
         {
-            listOfEntireMessage = parsingToolClass::getListOfEntireMessages(sourceSecond);
+            listOfEntireMessage = parsingToolClass::getListOfEntireMessages(sourceSecond, showStickers);
         }
 
-        listOfEntireMessage.append(parsingToolClass::getListOfEntireMessages(sourceFirst));
+        listOfEntireMessage.append(parsingToolClass::getListOfEntireMessages(sourceFirst, showStickers));
 
         if(listOfEntireMessage.size() == 0)
         {

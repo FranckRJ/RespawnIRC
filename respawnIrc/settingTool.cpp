@@ -19,6 +19,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["searchForUpdateAtLaunch"] = true;
     listOfDefaultBoolOption["saveWindowGeometry"] = true;
     listOfDefaultBoolOption["beepWhenWarn"] = true;
+    listOfDefaultBoolOption["showStickers"] = true;
     listOfDefaultIntOption["updateTopicTime"] = 4000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
     listOfDefaultStringOption["pseudo"] = "";

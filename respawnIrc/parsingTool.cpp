@@ -28,7 +28,7 @@ QRegularExpression parsingToolClass::expForEdit("<div class=\"info-edition-msg\"
 QRegularExpression parsingToolClass::expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />", QRegularExpression::OptimizeOnFirstUsageOption);
-QRegularExpression parsingToolClass::expForStickers("<img class=\"img-stickers\" src=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForStickers("<img class=\"img-stickers\" src=\"(http://jv.stkr.fr/p/([^\"]*))\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForLongLink("<span class=\"JvCare [^\"]*\"[^i]*itle=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForJvcLink("<a href=\"([^\"]*)\"( title=\"[^\"]*\")?>.*?</a>", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -198,7 +198,7 @@ QString parsingToolClass::getNumberOfMp(const QString &source)
     return QString::number(numberOfMp) + " MP";
 }
 
-QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &source)
+QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &source, bool showStickers)
 {
     QList<QString> listOfEntireMessage;
     QList<messageStruct> listOfMessages;
@@ -211,7 +211,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &so
         listOfMessages.back().idOfMessage = expForMessageID.match(listOfEntireMessage.at(i)).captured(1).toInt();
         listOfMessages.back().pseudo = expForPseudo.match(listOfEntireMessage.at(i)).captured(1);
         listOfMessages.back().date = expForDate.match(listOfEntireMessage.at(i)).captured(1);
-        listOfMessages.back().message = parsingMessages(expForMessage.match(listOfEntireMessage.at(i)).captured(1));
+        listOfMessages.back().message = parsingMessages(expForMessage.match(listOfEntireMessage.at(i)).captured(1), showStickers);
         listOfMessages.back().lastTimeEdit = expForEdit.match(listOfEntireMessage.at(i)).captured(1);
     }
 
@@ -278,14 +278,22 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
     }
 }
 
-QString parsingToolClass::parsingMessages(QString thisMessage)
+QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers)
 {
     replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<pre><code>", "</code></pre>", -1, "", true);
 
     thisMessage.replace("\n", "");
 
+    if(showStickers == false)
+    {
+        replaceWithCapNumber(thisMessage, expForStickers, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
+    }
+    else
+    {
+        replaceWithCapNumber(thisMessage, expForStickers, 2, "<img src=\"ressources/stickers/", ".png\" />");
+    }
+
     replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"ressources/smileys/", "\" />");
-    replaceWithCapNumber(thisMessage, expForStickers, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForJvcLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");

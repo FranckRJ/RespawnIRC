@@ -80,6 +80,7 @@ private:
     bool showQuoteButton;
     bool showBlacklistButton;
     bool showEditButton;
+    bool showStickers;
     bool loadTwoLastPage;
     bool ignoreNetworkError;
     bool secondPageLoading;
