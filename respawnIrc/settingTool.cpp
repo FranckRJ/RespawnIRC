@@ -22,6 +22,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["showStickers"] = true;
     listOfDefaultIntOption["updateTopicTime"] = 4000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
+    listOfDefaultIntOption["stickersSize"] = 70;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

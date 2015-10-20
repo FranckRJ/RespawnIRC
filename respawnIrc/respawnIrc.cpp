@@ -10,7 +10,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.16");
+const QString respawnIrcClass::currentVersionName("v1.16.1");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -312,6 +312,13 @@ void respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow()
     myChooseNumberWindow->exec();
 }
 
+void respawnIrcClass::showStickersSizeWindow()
+{
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(0, 1000, settingToolClass::getThisIntOption("stickersSize"), this);
+    QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setStickersSize);
+    myChooseNumberWindow->exec();
+}
+
 void respawnIrcClass::showAbout()
 {
     QString versionName = currentVersionName;
@@ -464,6 +471,13 @@ void respawnIrcClass::setUpdateTopicTime(int newTime)
 void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
 {
     settingToolClass::saveThisOption("numberOfMessageShowedFirstTime", newNumber);
+
+    updateSettingInfoForList();
+}
+
+void respawnIrcClass::setStickersSize(int newSize)
+{
+    settingToolClass::saveThisOption("stickersSize", newSize);
 
     updateSettingInfoForList();
 }

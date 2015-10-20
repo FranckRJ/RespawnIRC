@@ -189,6 +189,7 @@ void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
     ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
     timerForGetMessage.setInterval(settingToolClass::getThisIntOption("updateTopicTime"));
     numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime");
+    stickersSize = settingToolClass::getThisIntOption("stickersSize");
 
     if(settingToolClass::getThisBoolOption("showListOfTopic") == true)
     {
@@ -467,10 +468,10 @@ void showTopicMessagesClass::analyzeMessages()
 
         if(sourceSecond.isEmpty() == false)
         {
-            listOfEntireMessage = parsingToolClass::getListOfEntireMessages(sourceSecond, showStickers);
+            listOfEntireMessage = parsingToolClass::getListOfEntireMessages(sourceSecond, showStickers, stickersSize);
         }
 
-        listOfEntireMessage.append(parsingToolClass::getListOfEntireMessages(sourceFirst, showStickers));
+        listOfEntireMessage.append(parsingToolClass::getListOfEntireMessages(sourceFirst, showStickers, stickersSize));
 
         if(listOfEntireMessage.size() == 0)
         {

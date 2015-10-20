@@ -34,11 +34,11 @@ public:
     static QString getNameOfTopic(const QString& source);
     static QString getNumberOfConnected(const QString& source);
     static QString getNumberOfMp(const QString& source);
-    static QList<messageStruct> getListOfEntireMessages(const QString& source, bool showStickers = true);
+    static QList<messageStruct> getListOfEntireMessages(const QString& source, bool showStickers = true, int stickersSize = 70);
     static QList<topicStruct> getListOfTopic(const QString& source);
     static QString getForumOfTopic(const QString& source);
     static QString jvfLinkToJvcLink(const QString& source);
-    static QString parsingMessages(QString thisMessage, bool showStickers);
+    static QString parsingMessages(QString thisMessage, bool showStickers, int stickersSize);
     static QString parsingAjaxMessages(QString thisMessage);
     static QNetworkRequest buildRequestWithThisUrl(QString url);
     static QList<QString> getListOfThisCapNumber(const QString &source, QRegularExpression& exp, int capNumber, bool globalMatch = true);

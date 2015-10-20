@@ -55,6 +55,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     menuSetting->addSeparator();
     QAction* actionShowUpdateTopicTime = menuSetting->addAction("Taux de rafraichissement des topics");
     QAction* actionShowNumberOfMessageShowedFirstTime = menuSetting->addAction("Nombre de message affiché au premier chargement");
+    QAction* actionShowStickersSize = menuSetting->addAction("Taille des stickers");
     menuSetting->addSeparator();
     settingToolClass::createActionForBoolOption("Ajouter un bouton pour citer un message", "showQuoteButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
@@ -171,6 +172,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
     QObject::connect(actionShowUpdateTopicTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showUpdateTopicTimeWindow);
     QObject::connect(actionShowNumberOfMessageShowedFirstTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow);
+    QObject::connect(actionShowStickersSize, &QAction::triggered, &respawnIrc, &respawnIrcClass::showStickersSizeWindow);
     QObject::connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
     QObject::connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
     QObject::connect(actionReloadTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTheme);
