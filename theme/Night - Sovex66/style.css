@@ -1,30 +1,31 @@
-/* LightAqua Sovex66 v1.1 */
+/* Night - Sovex66 v1 */
 QMainWindow
 {
-    background: #C2E3FF;
+    background: #222222;
 }
 
 QMenuBar
 {
-    background: #FFFFFF;
+    background: #F5F6F7;
 }
 
 .QTextEdit
 {
-    background: #9ED2FF;
+    background: #323232;
     border-style: inset;
     border-width: 1px;
     border-radius: 10px;
+    color: #000000;
 }
 
 QLineEdit
 {
-    background: #9ED2FF;
+    background: #323232;
 }
 
 QTextBrowser
 {
-    background-color: #9ED2FF;
+    background-color: #323232;
     border-left-style: inset;
     border-left-width: 1px;
     border-top-style: solid;
@@ -33,11 +34,12 @@ QTextBrowser
     border-bottom-width: 1px;
     border-top-left-radius: 15px;
 	border-bottom-left-radius: 15px;
+	color: #000000;
 }
 
 QPushButton
 {
-    background-color: #306FB5;
+    background-color: #147AB0;
     border-style: outset;
     border-width: 3px;
     border-radius: 10px;
@@ -48,7 +50,7 @@ QPushButton
 }
 QPushButton:hover
 {
-    background-color: #3784D9;
+    background-color: #126D9D;
     border-style: outset;
     border-width: 3px;
     border-radius: 10px;
@@ -60,7 +62,7 @@ QPushButton:hover
 
 QPushButton#sendButton
 {
-    background-color: #306FB5;
+    background-color: #147AB0;
     border-style: outset;
     border-width: 3px;
     border-radius: 10px;
@@ -72,7 +74,7 @@ QPushButton#sendButton
 }
 QPushButton#sendButton:hover
 {
-    background-color: #3784D9;
+    background-color: #126D9D;
     border-style: outset;
     border-width: 3px;
     border-radius: 10px;
@@ -85,7 +87,7 @@ QPushButton#sendButton:hover
 
 QListView
 {
-    background-color: #9ED2FF;
+    background-color: #323232;
     border-right-style: inset;
     border-right-width: 1px;
     border-top-style: solid;
@@ -95,7 +97,7 @@ QListView
     border-bottom-width: 1px;
 }
 QDialog QListView {
-	background: #9ED2FF;
+	background: #323232;
     border-style: inset;
     border-width: 1px;
     border-radius: 10px;
@@ -103,17 +105,17 @@ QDialog QListView {
 
 QSplitter:handle
 {
-    background: #306FB5;
+    background: #147AB0;
 }
 
 QScrollBar
 {
-    background-color: #306FB5;
+    background-color: #147AB0;
 }
 
 QTabBar:tab
 {
-    background-color: #306FB5;
+    background-color: #126D9D;
     border-style: outset;
     border-width: 2px;
     border-radius: 10px;
@@ -125,7 +127,7 @@ QTabBar:tab
 }
 QTabBar:tab:selected, QTabBar:tab:hover
 {
-    background-color: #3784D9;
+    background-color: #147AB0;
     border-style: outset;
     border-width: 2px;
     border-radius: 10px;
