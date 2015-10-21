@@ -80,7 +80,7 @@ QString parsingToolClass::getVersionName(const QString &source)
 QString parsingToolClass::getVersionChangelog(const QString &source)
 {
     QString changelog = expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--").replace("   --", "---");
-    replaceWithCapNumber(changelog, expForNormalLink, 0, "<a href=\"", "\">", 0, "</a>");
+    replaceWithCapNumber(changelog, expForNormalLink, 0, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 0, "</a>");
     return changelog;
 }
 

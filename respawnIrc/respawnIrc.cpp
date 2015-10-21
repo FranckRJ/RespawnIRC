@@ -9,8 +9,9 @@
 #include "captchaWindow.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
+#include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.16.1");
+const QString respawnIrcClass::currentVersionName("v1.16.2");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -326,7 +327,8 @@ void respawnIrcClass::showAbout()
     versionName.remove(0, 1);
     messageBox.information(this, "A propos de RespawnIRC", "<b>RespawnIRC version " + versionName + ".</b><br /><br />" +
                            "Ce logiciel à été developpé à l'aide Qt 5.<br />" +
-                           "Lien du dépôt github : <a href=\"https://github.com/LEpigeon888/RespawnIRC\">https://github.com/LEpigeon888/RespawnIRC</a>");
+                           "Lien du dépôt github : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/LEpigeon888/RespawnIRC\">https://github.com/LEpigeon888/RespawnIRC</a><br />" +
+                           "Lien du site : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://lepigeon888.github.io/RespawnIRC/\">http://lepigeon888.github.io/RespawnIRC/</a>");
 }
 
 void respawnIrcClass::addNewTab()

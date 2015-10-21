@@ -40,6 +40,11 @@ QMenu::item:selected
 	color: black;
 }
 
+QMenu::item:disabled
+{
+	color: dimgrey;
+}
+
 .QTextEdit, QLineEdit
 {
 	background: darkgrey;
