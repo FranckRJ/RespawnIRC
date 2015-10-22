@@ -52,7 +52,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
     }
     else
     {
-        QFileInfo fileInfoForUserDic("ressources/user_" + spellDic + ".dic");
+        QFileInfo fileInfoForUserDic("user_" + spellDic + ".dic");
         if(fileInfoForUserDic.exists() == true && fileInfoForUserDic.isReadable() == true)
         {
             spellChecker->add_dic(fileInfoForUserDic.filePath().toLatin1());

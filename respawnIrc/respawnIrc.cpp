@@ -326,7 +326,7 @@ void respawnIrcClass::showAbout()
     QMessageBox messageBox;
     versionName.remove(0, 1);
     messageBox.information(this, "A propos de RespawnIRC", "<b>RespawnIRC version " + versionName + ".</b><br /><br />" +
-                           "Ce logiciel à été developpé à l'aide Qt 5.<br />" +
+                           "Ce logiciel à été developpé à l'aide de Qt 5 ainsi que de Hunspell <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://hunspell.sourceforge.net/\">http://hunspell.sourceforge.net/</a>.<br />" +
                            "Lien du dépôt github : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/LEpigeon888/RespawnIRC\">https://github.com/LEpigeon888/RespawnIRC</a><br />" +
                            "Lien du site : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://lepigeon888.github.io/RespawnIRC/\">http://lepigeon888.github.io/RespawnIRC/</a>");
 }

@@ -1,0 +1,135 @@
+QMainWindow, QDialog
+{
+	background: black;
+}
+
+QLabel
+{
+	color: white;
+	font-family: consolas;
+}
+
+QMenuBar
+{
+	background: black;
+	font-family: consolas;
+}
+
+QMenuBar::item
+{
+	background: black;
+	color: white;
+	font-family: consolas;
+}
+
+QMenuBar::item:selected
+{
+	background: #333333;
+	color: white;
+	font-family: consolas;
+}
+
+QMenu
+{
+	background: black;
+	color: white;
+	font-family: consolas;
+	border: 1px solid white;
+}
+
+QMenu::item:selected
+{
+	background: #333333;
+	color: white;
+}
+
+QMenu::item:disabled
+{
+	color: #666666;
+}
+
+QMenu::separator
+{
+    height: 1px;
+    background: white;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+QTextEdit, QLineEdit
+{
+	background: black;
+	color: white;
+	border: 1px solid white;
+	font-family: consolas;
+}
+
+QLineEdit:disabled
+{
+    background: #333333;
+}
+
+QTextBrowser
+{
+	background: black;
+	color: white;
+	font-family: consolas;
+	border: 0px;
+}
+
+QListView
+{
+	background: black;
+	color: white;
+	font-family: consolas;
+	border: 0px;
+}
+
+QDialog QListView
+{
+	background: black;
+	color: white;
+	border: 1px solid white;
+}
+
+QListView::item:hover
+{
+	background: #191919;
+}
+
+QListView::item:selected
+{
+	background: #333333;
+}
+
+QTabWidget::pane
+{
+    border: 2px solid white;
+}
+
+QSplitter:handle
+{
+    background: white;
+}
+
+QTabBar::tab
+{
+    border: 2px solid white;
+	color: white;
+	/*font-family: consolas;*/
+	border-bottom: 0px;
+    padding-bottom: 5px;
+    padding-left: 4px;
+    padding-top: 2px;
+}
+
+QTabBar::tab:!selected
+{
+	background: black;
+	margin-top: 2px;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover
+{
+	background: #333333;
+}

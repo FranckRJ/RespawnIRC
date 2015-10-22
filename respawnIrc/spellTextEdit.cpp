@@ -13,7 +13,7 @@ spellTextEditClass::spellTextEditClass(QWidget *parent) : QTextEdit(parent)
 
 spellTextEditClass::~spellTextEditClass()
 {
-    QFile file("ressources/user_" + spellDic + ".dic");
+    QFile file("user_" + spellDic + ".dic");
     if(file.open(QIODevice::ReadOnly | QIODevice::Text) == true)
     {
         QTextStream readStream(&file);
@@ -98,7 +98,7 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
         codecUsed = QTextCodec::codecForName(QString(spellChecker->get_dic_encoding()).toLatin1());
     }
 
-    QFileInfo fileInfoForUserDic("ressources/user_" + spellDic + ".dic");
+    QFileInfo fileInfoForUserDic("user_" + spellDic + ".dic");
     if(fileInfoForUserDic.exists() == true && fileInfoForUserDic.isReadable() == true)
     {
         spellChecker->add_dic(fileInfoForUserDic.filePath().toLatin1());
