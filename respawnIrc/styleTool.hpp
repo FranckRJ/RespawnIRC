@@ -14,11 +14,12 @@ struct modelInfoStruct
     QString userPseudoColor;
 };
 
-struct colorInfoForMessageStruct
+struct colorInfoForMessageAndOtherStruct
 {
     QString linkColor;
     QString spoilColor;
     QString tableBorderColor;
+    QString underlineColor;
 };
 
 class styleToolClass
@@ -27,9 +28,9 @@ public:
     static QString getStyle(QString themeName);
     static QString getModel(QString themeName);
     static modelInfoStruct getModelInfo(QString themeName);
-    static const colorInfoForMessageStruct& getColorInfo();
+    static const colorInfoForMessageAndOtherStruct& getColorInfo();
 private:
-    static colorInfoForMessageStruct colorInfoForMessage;
+    static colorInfoForMessageAndOtherStruct colorInfoForMessageAndOther;
 };
 
 #endif // STYLETOOL_HPP

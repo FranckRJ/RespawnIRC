@@ -11,7 +11,7 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.16.2");
+const QString respawnIrcClass::currentVersionName("v1.17");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -50,7 +50,6 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 
 void respawnIrcClass::loadSettings()
 {
-    setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
     beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
 
     for(int i = 0; i < 10; ++i)
@@ -504,6 +503,10 @@ void respawnIrcClass::setThisBoolOption(bool newVal)
         {
             beepWhenWarn = newVal;
         }
+        else if(senderObject->objectName() == "useSpellChecker")
+        {
+            messageLine.settingsChanged();
+        }
         else
         {
             updateSettingInfoForList();
@@ -582,6 +585,8 @@ void respawnIrcClass::setNewTheme(QString newThemeName)
         listOfShowTopicMessages.at(i)->setNewTheme(currentThemeName);
         listOfShowTopicMessages.at(i)->setNewTopic(listOfTopicLink[i]);
     }
+
+    messageLine.styleChanged();
 
     settingToolClass::saveThisOption("themeUsed", currentThemeName);
 }

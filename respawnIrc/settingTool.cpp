@@ -20,6 +20,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["saveWindowGeometry"] = true;
     listOfDefaultBoolOption["beepWhenWarn"] = true;
     listOfDefaultBoolOption["showStickers"] = true;
+    listOfDefaultBoolOption["useSpellChecker"] = true;
     listOfDefaultIntOption["updateTopicTime"] = 4000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
     listOfDefaultIntOption["stickersSize"] = 70;

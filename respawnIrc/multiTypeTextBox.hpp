@@ -17,6 +17,8 @@ public:
     void insertText(QString newText);
     void moveCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);
     void setFocus();
+    void styleChanged();
+    void settingsChanged();
 public slots:
     void setTextEditSelected(bool newVal);
     void returnIsPressed();
@@ -37,6 +39,7 @@ private:
     highlighterClass* highlighter;
     QLineEdit lineEdit;
     bool textEditSelected;
+    bool dicAreLoaded;
 };
 
 #endif

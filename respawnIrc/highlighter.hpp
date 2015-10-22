@@ -13,6 +13,7 @@ public:
     ~highlighterClass();
     void enableSpellChecking(const bool state);
     bool setDic(const QString newSpellDic);
+    void styleChanged();
 public slots:
     void addWordToDic(QString word);
 protected:

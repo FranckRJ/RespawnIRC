@@ -1,8 +1,9 @@
 #include "highlighter.hpp"
+#include "styleTool.hpp"
 
 highlighterClass::highlighterClass(QTextDocument* parent) : QSyntaxHighlighter(parent)
 {
-    spellCheckFormat.setUnderlineColor(QColor(Qt::red));
+    spellCheckFormat.setUnderlineColor(QColor(styleToolClass::getColorInfo().underlineColor));
     spellCheckFormat.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
     spellCheckActive = false;
     spellerError = true;
@@ -70,6 +71,12 @@ bool highlighterClass::setDic(const QString newSpellDic)
     {
         return true;
     }
+}
+
+void highlighterClass::styleChanged()
+{
+    spellCheckFormat.setUnderlineColor(QColor(styleToolClass::getColorInfo().underlineColor));
+    rehighlight();
 }
 
 void highlighterClass::addWordToDic(QString word)
