@@ -4,6 +4,9 @@
 #include <QtWidgets>
 #include <QtCore>
 
+#include "spellTextEdit.hpp"
+#include "highlighter.hpp"
+
 class multiTypeTextBoxClass : public QWidget
 {
     Q_OBJECT
@@ -30,7 +33,8 @@ signals:
     void returnPressed();
 private:
     QVBoxLayout layout;
-    QTextEdit textEdit;
+    spellTextEditClass textEdit;
+    highlighterClass* highlighter;
     QLineEdit lineEdit;
     bool textEditSelected;
 };

@@ -2,10 +2,15 @@
 
 multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
 {
+    highlighter = new highlighterClass(textEdit.document());
+
     textEdit.setTabChangesFocus(true);
     textEdit.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     textEdit.setMaximumHeight(65);
     textEdit.setAcceptRichText(false);
+    textEdit.setDic("ressources/fr");
+    highlighter->setDic("ressources/fr");
+    highlighter->enableSpellChecking(true);
     textEditSelected = true;
 
     layout.addWidget(&textEdit);
@@ -14,6 +19,7 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
     setLayout(&layout);
 
     QObject::connect(&lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnIsPressed);
+    QObject::connect(&textEdit, &spellTextEditClass::addWord, highlighter, &highlighterClass::addWordToDic);
 }
 
 void multiTypeTextBoxClass::clear()

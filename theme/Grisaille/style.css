@@ -43,7 +43,7 @@ QMenu::item:disabled
 	color: dimgrey;
 }
 
-.QTextEdit, QLineEdit
+QTextEdit, QLineEdit
 {
 	background: darkgrey;
 	color: black;
