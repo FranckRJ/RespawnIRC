@@ -1,144 +1,103 @@
-/* Night - Sovex66 v1 */
+/* Night Sovex66 v1.1 */
 QMainWindow
 {
-    background: #222222;
+    background: #373737;
 }
-
-QMenuBar
-{
-    background: #F5F6F7;
-}
-
-.QTextEdit
-{
-    background: #323232;
-    border-style: inset;
-    border-width: 1px;
-    border-radius: 10px;
-    color: #000000;
-}
-
-QLineEdit
-{
-    background: #323232;
-}
-
-QTextBrowser
-{
-    background-color: #323232;
-    border-left-style: inset;
-    border-left-width: 1px;
-    border-top-style: solid;
-    border-top-width: 1px;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-    border-top-left-radius: 15px;
-	border-bottom-left-radius: 15px;
-	color: #000000;
-}
-
-QPushButton
-{
-    background-color: #147AB0;
-    border-style: outset;
-    border-width: 3px;
-    border-radius: 10px;
-    border-color: #224D7D;
-    font: 12px;
-    min-width: 25px;
-    padding: 16px
-}
-QPushButton:hover
-{
-    background-color: #126D9D;
-    border-style: outset;
-    border-width: 3px;
-    border-radius: 10px;
-    border-color: #224D7D;
-    font: 12px;
-    min-width: 25px;
-    padding: 16px
-}
-
-QPushButton#sendButton
-{
-    background-color: #147AB0;
-    border-style: outset;
-    border-width: 3px;
-    border-radius: 10px;
-    border-color: #224D7D;
-    font: 14px;
-    min-width: 25px;
-    padding: 16px;
-	box-shadow : 10px 10px 5px #888888;
-}
-QPushButton#sendButton:hover
-{
-    background-color: #126D9D;
-    border-style: outset;
-    border-width: 3px;
-    border-radius: 10px;
-    border-color: #224D7D;
-    font: 14px;
-    min-width: 25px;
-    padding: 16px;
-	box-shadow : 10px 10px 5px #888888;
-}
-
-QListView
-{
-    background-color: #323232;
-    border-right-style: inset;
-    border-right-width: 1px;
-    border-top-style: solid;
-    border-top-width: 1px;
-    border-top-right-radius: 10px;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-}
-QDialog QListView {
-	background: #323232;
-    border-style: inset;
-    border-width: 1px;
-    border-radius: 10px;
-}
-
-QSplitter:handle
-{
-    background: #147AB0;
-}
-
-QScrollBar
-{
-    background-color: #147AB0;
-}
-
-QTabBar:tab
-{
-    background-color: #126D9D;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: #224D7D;
-    min-width: 25px;
-    padding: 6px;
-    margin-bottom: 4px;
-    margin-right: 2px;
-}
-QTabBar:tab:selected, QTabBar:tab:hover
-{
-    background-color: #147AB0;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: #224D7D;
-    min-width: 25px;
-    padding: 6px;
-    margin-bottom: 4px;
-    margin-right: 2px;
-}
-
 QTabWidget:pane
 {
 	border: 0px;
+}
+QLineEdit
+{
+    background: #C1C1C1;
+}
+QDialog QListView {
+	background: #303030;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 6px;
+    color: white;
+}
+QTabBar:tab
+{
+    background-color: #404040;
+    border-style: outset;
+    border-width: 3px;
+    border-radius: 2px;
+    border-color: #303030;
+    margin-top: 6px;
+    padding: 3px;
+    margin-right: 4px;
+    color: white;
+}
+QTabBar:tab:selected, QTabBar:tab:hover
+{
+    background-color: #434343;
+    border-color: #303030;
+    padding: 3px;
+    margin-top: 1px;
+    color: #1691D2;
+}
+QTextEdit
+{
+    background: #121212;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 4px;
+    color: white;
+}
+QTextBrowser
+{
+    background-color: #121212;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-radius: 4px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	color: white;
+}
+QListView
+{
+    background-color: #121212;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-top-right-radius: 4px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    color: white;
+}
+QSplitter:handle
+{
+    background: #373737;
+}
+QScrollBar
+{
+    background-color: #373737;
+}
+QPushButton
+{
+    background-color: #404040;
+    border-style: outset;
+    border-width: 3px;
+    border-radius: 2px;
+    border-color: #303030;
+    font: 13px;
+    min-width: 25px;
+    padding: 16px;
+    color: white;
+}
+QPushButton:hover
+{
+    background-color: #505050;
+    padding: 18px;
+}
+QPushButton#sendButton
+{
+    font: 15px;
+}
+QPushButton#sendButton:hover
+{
+    background-color: #505050;
 }
