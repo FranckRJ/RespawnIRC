@@ -94,6 +94,7 @@ private:
     int idOfLastMessageOfUser;
     int oldIdOfLastMessageOfUser;
     int numberOfMessageShowedFirstTime;
+    int stickersSize;
 };
 
 #endif

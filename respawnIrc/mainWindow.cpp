@@ -55,6 +55,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     menuSetting->addSeparator();
     QAction* actionShowUpdateTopicTime = menuSetting->addAction("Taux de rafraichissement des topics");
     QAction* actionShowNumberOfMessageShowedFirstTime = menuSetting->addAction("Nombre de message affiché au premier chargement");
+    QAction* actionShowStickersSize = menuSetting->addAction("Taille des stickers");
     menuSetting->addSeparator();
     settingToolClass::createActionForBoolOption("Ajouter un bouton pour citer un message", "showQuoteButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
@@ -64,6 +65,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     settingToolClass::createActionForBoolOption("Afficher les boutons de décoration de texte", "showTextDecorationButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Afficher la liste des topics", "showListOfTopic", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Saisie du message en mode multiligne", "setMultilineEdit", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Vérifier l'orthographe", "useSpellChecker", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Charger les deux dernières pages", "loadTwoLastPage", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Ignorer les erreurs réseau", "ignoreNetworkError", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
@@ -134,7 +136,6 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     setMenuBar(menuBar);
     setCentralWidget(&respawnIrc);
     setWindowTitle("RespawnIRC " + respawnIrcClass::currentVersionName);
-    setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
 
     if(settingToolClass::getThisBoolOption("saveWindowGeometry") == false ||
             settingToolClass::getThisByteOption("windowGeometry").isEmpty() == true)
@@ -171,6 +172,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
     QObject::connect(actionShowUpdateTopicTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showUpdateTopicTimeWindow);
     QObject::connect(actionShowNumberOfMessageShowedFirstTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow);
+    QObject::connect(actionShowStickersSize, &QAction::triggered, &respawnIrc, &respawnIrcClass::showStickersSizeWindow);
     QObject::connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
     QObject::connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
     QObject::connect(actionReloadTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTheme);
@@ -178,6 +180,8 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
     QObject::connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
     QObject::connect(&respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
+
+    respawnIrc.setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
 }
 
 void mainWindowClass::goToMp()

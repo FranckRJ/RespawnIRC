@@ -1,6 +1,6 @@
 #include "styleTool.hpp"
 
-colorInfoForMessageStruct styleToolClass::colorInfoForMessage;
+colorInfoForMessageAndOtherStruct styleToolClass::colorInfoForMessageAndOther;
 
 QString styleToolClass::getStyle(QString themeName)
 {
@@ -35,51 +35,55 @@ QString styleToolClass::getModel(QString themeName)
 
 modelInfoStruct styleToolClass::getModelInfo(QString themeName)
 {
+    QStringList listOfInfos;
+    QVector<QString> listOfLine;
     modelInfoStruct modelInfo;
     QFile thisFile("theme/" + themeName + "/modelInfo.cfg");
+
+    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"quote:<%ID_MESSAGE%>:[<%DATE_MESSAGE%>] <<%PSEUDO_PSEUDO%>>\">[C]</a> ");
+    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"blacklist:<%PSEUDO_LOWER%>\">[B]</a> ");
+    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"edit:<%ID_MESSAGE%>\">[E]</a> ");
+    listOfInfos.push_back("black");
+    listOfInfos.push_back("green");
+    listOfInfos.push_back("dimgrey");
+    listOfInfos.push_back("blue");
+
+    listOfInfos.push_back("blue");
+    listOfInfos.push_back("black");
+    listOfInfos.push_back("grey");
+    listOfInfos.push_back("red");
+
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
-        QVector<QString> listOfLine;
         QTextStream textStream(&thisFile);
         while(textStream.atEnd() == false)
         {
             listOfLine.push_back(textStream.readLine());
         }
-
-        if(listOfLine.size() >= 10)
-        {
-            modelInfo.quoteModel = listOfLine.at(0);
-            modelInfo.blacklistModel = listOfLine.at(1);
-            modelInfo.editModel = listOfLine.at(2);
-            modelInfo.normalDateColor = listOfLine.at(3);
-            modelInfo.editDateColor = listOfLine.at(4);
-            modelInfo.normalPseudoColor = listOfLine.at(5);
-            modelInfo.userPseudoColor = listOfLine.at(6);
-
-            colorInfoForMessage.linkColor = listOfLine.at(7);
-            colorInfoForMessage.spoilColor = listOfLine.at(8);
-            colorInfoForMessage.tableBorderColor = listOfLine.at(9);
-
-            return modelInfo;
-        }
     }
 
-    modelInfo.quoteModel = "<a style=\"color: black;text-decoration: none\" href=\"quote:<%ID_MESSAGE%>:[<%DATE_MESSAGE%>] <<%PSEUDO_PSEUDO%>>\">[C]</a> ";
-    modelInfo.blacklistModel = "<a style=\"color: black;text-decoration: none\" href=\"blacklist:<%PSEUDO_LOWER%>\">[B]</a> ";
-    modelInfo.editModel = "<a style=\"color: black;text-decoration: none\" href=\"edit:<%ID_MESSAGE%>\">[E]</a> ";
-    modelInfo.normalDateColor = "black";
-    modelInfo.editDateColor = "green";
-    modelInfo.normalPseudoColor = "dimgrey";
-    modelInfo.userPseudoColor = "blue";
+    while(listOfLine.size() < 11)
+    {
+        listOfLine.push_back(listOfInfos.at(listOfLine.size()));
+    }
 
-    colorInfoForMessage.linkColor = "blue";
-    colorInfoForMessage.spoilColor = "black";
-    colorInfoForMessage.tableBorderColor = "grey";
+    modelInfo.quoteModel = listOfLine.at(0);
+    modelInfo.blacklistModel = listOfLine.at(1);
+    modelInfo.editModel = listOfLine.at(2);
+    modelInfo.normalDateColor = listOfLine.at(3);
+    modelInfo.editDateColor = listOfLine.at(4);
+    modelInfo.normalPseudoColor = listOfLine.at(5);
+    modelInfo.userPseudoColor = listOfLine.at(6);
+
+    colorInfoForMessageAndOther.linkColor = listOfLine.at(7);
+    colorInfoForMessageAndOther.spoilColor = listOfLine.at(8);
+    colorInfoForMessageAndOther.tableBorderColor = listOfLine.at(9);
+    colorInfoForMessageAndOther.underlineColor = listOfLine.at(10);
 
     return modelInfo;
 }
 
-const colorInfoForMessageStruct& styleToolClass::getColorInfo()
+const colorInfoForMessageAndOtherStruct &styleToolClass::getColorInfo()
 {
-    return colorInfoForMessage;
+    return colorInfoForMessageAndOther;
 }

@@ -9,8 +9,9 @@
 #include "captchaWindow.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
+#include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.16");
+const QString respawnIrcClass::currentVersionName("v1.17");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -49,7 +50,6 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 
 void respawnIrcClass::loadSettings()
 {
-    setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
     beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
 
     for(int i = 0; i < 10; ++i)
@@ -312,14 +312,22 @@ void respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow()
     myChooseNumberWindow->exec();
 }
 
+void respawnIrcClass::showStickersSizeWindow()
+{
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(0, 1000, settingToolClass::getThisIntOption("stickersSize"), this);
+    QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setStickersSize);
+    myChooseNumberWindow->exec();
+}
+
 void respawnIrcClass::showAbout()
 {
     QString versionName = currentVersionName;
     QMessageBox messageBox;
     versionName.remove(0, 1);
     messageBox.information(this, "A propos de RespawnIRC", "<b>RespawnIRC version " + versionName + ".</b><br /><br />" +
-                           "Ce logiciel à été developpé à l'aide Qt 5.<br />" +
-                           "Lien du dépôt github : <a href=\"https://github.com/LEpigeon888/RespawnIRC\">https://github.com/LEpigeon888/RespawnIRC</a>");
+                           "Ce logiciel à été developpé à l'aide de Qt 5 ainsi que de Hunspell <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://hunspell.sourceforge.net/\">http://hunspell.sourceforge.net/</a>.<br />" +
+                           "Lien du dépôt github : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/LEpigeon888/RespawnIRC\">https://github.com/LEpigeon888/RespawnIRC</a><br />" +
+                           "Lien du site : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://lepigeon888.github.io/RespawnIRC/\">http://lepigeon888.github.io/RespawnIRC/</a>");
 }
 
 void respawnIrcClass::addNewTab()
@@ -468,6 +476,13 @@ void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
     updateSettingInfoForList();
 }
 
+void respawnIrcClass::setStickersSize(int newSize)
+{
+    settingToolClass::saveThisOption("stickersSize", newSize);
+
+    updateSettingInfoForList();
+}
+
 void respawnIrcClass::setThisBoolOption(bool newVal)
 {
     QObject* senderObject = sender();
@@ -487,6 +502,10 @@ void respawnIrcClass::setThisBoolOption(bool newVal)
         else if(senderObject->objectName() == "beepWhenWarn")
         {
             beepWhenWarn = newVal;
+        }
+        else if(senderObject->objectName() == "useSpellChecker")
+        {
+            messageLine.settingsChanged();
         }
         else
         {
@@ -566,6 +585,8 @@ void respawnIrcClass::setNewTheme(QString newThemeName)
         listOfShowTopicMessages.at(i)->setNewTheme(currentThemeName);
         listOfShowTopicMessages.at(i)->setNewTopic(listOfTopicLink[i]);
     }
+
+    messageLine.styleChanged();
 
     settingToolClass::saveThisOption("themeUsed", currentThemeName);
 }
@@ -853,92 +874,92 @@ void respawnIrcClass::clipboardChanged()
     const QMimeData* data = clipboard->mimeData();
     QString dataInHtml = data->html();
 
-    if(dataInHtml.contains("<img src=\"smileys/"))
+    if(dataInHtml.contains("<img src=\"ressources/smileys/"))
     {
         QTextDocument doc;
         QString newDataInHtml = dataInHtml;
         //a changer, si possible
-        newDataInHtml.replace("<img src=\"smileys/1.gif\" />", ":)");
-        newDataInHtml.replace("<img src=\"smileys/2.gif\" />", ":question:");
-        newDataInHtml.replace("<img src=\"smileys/3.gif\" />", ":g)");
-        newDataInHtml.replace("<img src=\"smileys/4.gif\" />", ":d)");
-        newDataInHtml.replace("<img src=\"smileys/5.gif\" />", ":cd:");
-        newDataInHtml.replace("<img src=\"smileys/6.gif\" />", ":globe:");
-        newDataInHtml.replace("<img src=\"smileys/7.gif\" />", ":p)");
-        newDataInHtml.replace("<img src=\"smileys/8.gif\" />", ":malade:");
-        newDataInHtml.replace("<img src=\"smileys/9.gif\" />", ":pacg:");
-        newDataInHtml.replace("<img src=\"smileys/10.gif\" />", ":pacd:");
-        newDataInHtml.replace("<img src=\"smileys/11.gif\" />", ":noel:");
-        newDataInHtml.replace("<img src=\"smileys/12.gif\" />", ":o))");
-        newDataInHtml.replace("<img src=\"smileys/13.gif\" />", ":snif2:");
-        newDataInHtml.replace("<img src=\"smileys/14.gif\" />", ":-(");
-        newDataInHtml.replace("<img src=\"smileys/15.gif\" />", ":-((");
-        newDataInHtml.replace("<img src=\"smileys/16.gif\" />", ":mac:");
-        newDataInHtml.replace("<img src=\"smileys/17.gif\" />", ":gba:");
-        newDataInHtml.replace("<img src=\"smileys/18.gif\" />", ":hap:");
-        newDataInHtml.replace("<img src=\"smileys/19.gif\" />", ":nah:");
-        newDataInHtml.replace("<img src=\"smileys/20.gif\" />", ":snif:");
-        newDataInHtml.replace("<img src=\"smileys/21.gif\" />", ":mort:");
-        newDataInHtml.replace("<img src=\"smileys/22.gif\" />", ":ouch:");
-        newDataInHtml.replace("<img src=\"smileys/23.gif\" />", ":-)))");
-        newDataInHtml.replace("<img src=\"smileys/24.gif\" />", ":content:");
-        newDataInHtml.replace("<img src=\"smileys/25.gif\" />", ":nonnon:");
-        newDataInHtml.replace("<img src=\"smileys/26.gif\" />", ":cool:");
-        newDataInHtml.replace("<img src=\"smileys/27.gif\" />", ":sleep:");
-        newDataInHtml.replace("<img src=\"smileys/28.gif\" />", ":doute:");
-        newDataInHtml.replace("<img src=\"smileys/29.gif\" />", ":hello:");
-        newDataInHtml.replace("<img src=\"smileys/30.gif\" />", ":honte:");
-        newDataInHtml.replace("<img src=\"smileys/31.gif\" />", ":-p");
-        newDataInHtml.replace("<img src=\"smileys/32.gif\" />", ":lol:");
-        newDataInHtml.replace("<img src=\"smileys/33.gif\" />", ":non2:");
-        newDataInHtml.replace("<img src=\"smileys/34.gif\" />", ":monoeil:");
-        newDataInHtml.replace("<img src=\"smileys/35.gif\" />", ":non:");
-        newDataInHtml.replace("<img src=\"smileys/36.gif\" />", ":ok:");
-        newDataInHtml.replace("<img src=\"smileys/37.gif\" />", ":oui:");
-        newDataInHtml.replace("<img src=\"smileys/38.gif\" />", ":rechercher:");
-        newDataInHtml.replace("<img src=\"smileys/39.gif\" />", ":rire:");
-        newDataInHtml.replace("<img src=\"smileys/40.gif\" />", ":-D");
-        newDataInHtml.replace("<img src=\"smileys/41.gif\" />", ":rire2:");
-        newDataInHtml.replace("<img src=\"smileys/42.gif\" />", ":salut:");
-        newDataInHtml.replace("<img src=\"smileys/43.gif\" />", ":sarcastic:");
-        newDataInHtml.replace("<img src=\"smileys/44.gif\" />", ":up:");
-        newDataInHtml.replace("<img src=\"smileys/45.gif\" />", ":(");
-        newDataInHtml.replace("<img src=\"smileys/46.gif\" />", ":-)");
-        newDataInHtml.replace("<img src=\"smileys/47.gif\" />", ":peur:");
-        newDataInHtml.replace("<img src=\"smileys/48.gif\" />", ":bye:");
-        newDataInHtml.replace("<img src=\"smileys/49.gif\" />", ":dpdr:");
-        newDataInHtml.replace("<img src=\"smileys/50.gif\" />", ":fou:");
-        newDataInHtml.replace("<img src=\"smileys/51.gif\" />", ":gne:");
-        newDataInHtml.replace("<img src=\"smileys/52.gif\" />", ":dehors:");
-        newDataInHtml.replace("<img src=\"smileys/53.gif\" />", ":fier:");
-        newDataInHtml.replace("<img src=\"smileys/54.gif\" />", ":coeur:");
-        newDataInHtml.replace("<img src=\"smileys/55.gif\" />", ":rouge:");
-        newDataInHtml.replace("<img src=\"smileys/56.gif\" />", ":sors:");
-        newDataInHtml.replace("<img src=\"smileys/57.gif\" />", ":ouch:");
-        newDataInHtml.replace("<img src=\"smileys/58.gif\" />", ":merci:");
-        newDataInHtml.replace("<img src=\"smileys/59.gif\" />", ":svp:");
-        newDataInHtml.replace("<img src=\"smileys/60.gif\" />", ":ange:");
-        newDataInHtml.replace("<img src=\"smileys/61.gif\" />", ":diable:");
-        newDataInHtml.replace("<img src=\"smileys/62.gif\" />", ":gni:");
-        newDataInHtml.replace("<img src=\"smileys/63.gif\" />", ":spoiler:");
-        newDataInHtml.replace("<img src=\"smileys/64.gif\" />", ":hs:");
-        newDataInHtml.replace("<img src=\"smileys/65.gif\" />", ":desole:");
-        newDataInHtml.replace("<img src=\"smileys/66.gif\" />", ":fete:");
-        newDataInHtml.replace("<img src=\"smileys/67.gif\" />", ":sournois:");
-        newDataInHtml.replace("<img src=\"smileys/68.gif\" />", ":hum:");
-        newDataInHtml.replace("<img src=\"smileys/69.gif\" />", ":bravo:");
-        newDataInHtml.replace("<img src=\"smileys/70.gif\" />", ":banzai:");
-        newDataInHtml.replace("<img src=\"smileys/71.gif\" />", ":bave:");
-        newDataInHtml.replace("<img src=\"smileys/cimer.gif\" />", ":cimer:");
-        newDataInHtml.replace("<img src=\"smileys/ddb.gif\" />", ":ddb:");
-        newDataInHtml.replace("<img src=\"smileys/hapoelparty.gif\" />", ":hapoelparty:");
-        newDataInHtml.replace("<img src=\"smileys/loveyou.gif\" />", ":loveyou:");
-        newDataInHtml.replace("<img src=\"smileys/nyu.gif\" />", ":cute:");
-        newDataInHtml.replace("<img src=\"smileys/objection.gif\" />", ":objection:");
-        newDataInHtml.replace("<img src=\"smileys/pave.gif\" />", ":pave:");
-        newDataInHtml.replace("<img src=\"smileys/pf.gif\" />", ":pf:");
-        newDataInHtml.replace("<img src=\"smileys/play.gif\" />", ":play:");
-        newDataInHtml.replace("<img src=\"smileys/siffle.gif\" />", ":siffle:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/1.gif\" />", ":)");
+        newDataInHtml.replace("<img src=\"ressources/smileys/2.gif\" />", ":question:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/3.gif\" />", ":g)");
+        newDataInHtml.replace("<img src=\"ressources/smileys/4.gif\" />", ":d)");
+        newDataInHtml.replace("<img src=\"ressources/smileys/5.gif\" />", ":cd:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/6.gif\" />", ":globe:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/7.gif\" />", ":p)");
+        newDataInHtml.replace("<img src=\"ressources/smileys/8.gif\" />", ":malade:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/9.gif\" />", ":pacg:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/10.gif\" />", ":pacd:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/11.gif\" />", ":noel:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/12.gif\" />", ":o))");
+        newDataInHtml.replace("<img src=\"ressources/smileys/13.gif\" />", ":snif2:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/14.gif\" />", ":-(");
+        newDataInHtml.replace("<img src=\"ressources/smileys/15.gif\" />", ":-((");
+        newDataInHtml.replace("<img src=\"ressources/smileys/16.gif\" />", ":mac:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/17.gif\" />", ":gba:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/18.gif\" />", ":hap:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/19.gif\" />", ":nah:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/20.gif\" />", ":snif:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/21.gif\" />", ":mort:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/22.gif\" />", ":ouch:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/23.gif\" />", ":-)))");
+        newDataInHtml.replace("<img src=\"ressources/smileys/24.gif\" />", ":content:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/25.gif\" />", ":nonnon:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/26.gif\" />", ":cool:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/27.gif\" />", ":sleep:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/28.gif\" />", ":doute:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/29.gif\" />", ":hello:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/30.gif\" />", ":honte:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/31.gif\" />", ":-p");
+        newDataInHtml.replace("<img src=\"ressources/smileys/32.gif\" />", ":lol:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/33.gif\" />", ":non2:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/34.gif\" />", ":monoeil:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/35.gif\" />", ":non:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/36.gif\" />", ":ok:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/37.gif\" />", ":oui:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/38.gif\" />", ":rechercher:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/39.gif\" />", ":rire:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/40.gif\" />", ":-D");
+        newDataInHtml.replace("<img src=\"ressources/smileys/41.gif\" />", ":rire2:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/42.gif\" />", ":salut:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/43.gif\" />", ":sarcastic:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/44.gif\" />", ":up:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/45.gif\" />", ":(");
+        newDataInHtml.replace("<img src=\"ressources/smileys/46.gif\" />", ":-)");
+        newDataInHtml.replace("<img src=\"ressources/smileys/47.gif\" />", ":peur:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/48.gif\" />", ":bye:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/49.gif\" />", ":dpdr:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/50.gif\" />", ":fou:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/51.gif\" />", ":gne:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/52.gif\" />", ":dehors:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/53.gif\" />", ":fier:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/54.gif\" />", ":coeur:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/55.gif\" />", ":rouge:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/56.gif\" />", ":sors:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/57.gif\" />", ":ouch:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/58.gif\" />", ":merci:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/59.gif\" />", ":svp:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/60.gif\" />", ":ange:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/61.gif\" />", ":diable:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/62.gif\" />", ":gni:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/63.gif\" />", ":spoiler:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/64.gif\" />", ":hs:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/65.gif\" />", ":desole:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/66.gif\" />", ":fete:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/67.gif\" />", ":sournois:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/68.gif\" />", ":hum:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/69.gif\" />", ":bravo:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/70.gif\" />", ":banzai:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/71.gif\" />", ":bave:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/cimer.gif\" />", ":cimer:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/ddb.gif\" />", ":ddb:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/hapoelparty.gif\" />", ":hapoelparty:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/loveyou.gif\" />", ":loveyou:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/nyu.gif\" />", ":cute:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/objection.gif\" />", ":objection:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/pave.gif\" />", ":pave:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/pf.gif\" />", ":pf:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/play.gif\" />", ":play:");
+        newDataInHtml.replace("<img src=\"ressources/smileys/siffle.gif\" />", ":siffle:");
         //fin
         doc.setHtml(newDataInHtml);
         QString text = doc.toPlainText();

@@ -1,0 +1,108 @@
+QMainWindow, QDialog
+{
+	background: dimgrey;
+}
+
+QLabel
+{
+	color: lightgrey;
+}
+
+QMenuBar
+{
+	background: grey;
+}
+
+QMenuBar::item
+{
+	background: grey;
+	color: lightgrey;
+}
+
+QMenuBar::item:selected
+{
+	background: darkgrey;
+	color: black;
+}
+
+QMenu
+{
+	background: grey;
+	color: lightgrey;
+	border: 1px solid darkgrey;
+}
+
+QMenu::item:selected
+{
+	background: darkgrey;
+	color: black;
+}
+
+QMenu::item:disabled
+{
+	color: dimgrey;
+}
+
+QTextEdit, QLineEdit
+{
+	background: darkgrey;
+	color: black;
+	border: 1px solid grey;
+}
+
+QLineEdit:disabled
+{
+    background: grey;
+}
+
+QTextBrowser
+{
+	background: grey;
+	color: lightgrey;
+	border: 0px;
+}
+
+QListView
+{
+	background: grey;
+	color: lightgrey;
+	border: 0px;
+}
+
+QDialog QListView
+{
+	background: grey;
+	color: lightgrey;
+	border: 1px solid darkgrey;
+}
+
+QTabWidget::pane
+{
+    border: 2px solid darkgrey;
+}
+
+QSplitter:handle
+{
+    background: darkgrey;
+}
+
+QTabBar::tab
+{
+    border: 2px solid darkgrey;
+	color: lightgrey;
+	border-bottom: 0px;
+    padding-bottom: 5px;
+    padding-left: 4px;
+    padding-top: 2px;
+}
+
+QTabBar::tab:!selected
+{
+	background: dimgrey;
+	margin-top: 2px;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover
+{
+	background: grey;
+}

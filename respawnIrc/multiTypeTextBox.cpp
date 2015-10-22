@@ -1,12 +1,27 @@
 #include "multiTypeTextBox.hpp"
+#include "settingTool.hpp"
 
 multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
 {
+    highlighter = new highlighterClass(textEdit.document());
+
     textEdit.setTabChangesFocus(true);
     textEdit.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     textEdit.setMaximumHeight(65);
     textEdit.setAcceptRichText(false);
     textEditSelected = true;
+
+    if(settingToolClass::getThisBoolOption("useSpellChecker") == true)
+    {
+        textEdit.setDic("ressources/fr");
+        highlighter->setDic("ressources/fr");
+        highlighter->enableSpellChecking(true);
+        dicAreLoaded = true;
+    }
+    else
+    {
+        dicAreLoaded = false;
+    }
 
     layout.addWidget(&textEdit);
     layout.setMargin(0);
@@ -14,6 +29,7 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
     setLayout(&layout);
 
     QObject::connect(&lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnIsPressed);
+    QObject::connect(&textEdit, &spellTextEditClass::addWord, highlighter, &highlighterClass::addWordToDic);
 }
 
 void multiTypeTextBoxClass::clear()
@@ -90,6 +106,23 @@ void multiTypeTextBoxClass::setFocus()
     {
         lineEdit.setFocus();
     }
+}
+
+void multiTypeTextBoxClass::styleChanged()
+{
+    highlighter->styleChanged();
+}
+
+void multiTypeTextBoxClass::settingsChanged()
+{
+    if(settingToolClass::getThisBoolOption("useSpellChecker") == true && dicAreLoaded == false)
+    {
+        textEdit.setDic("ressources/fr");
+        highlighter->setDic("ressources/fr");
+        dicAreLoaded = true;
+    }
+
+    highlighter->enableSpellChecking(settingToolClass::getThisBoolOption("useSpellChecker"));
 }
 
 void multiTypeTextBoxClass::setTextEditSelected(bool newVal)

@@ -37,6 +37,7 @@ public slots:
     void showColorPseudoListWindow();
     void showUpdateTopicTimeWindow();
     void showNumberOfMessageShowedFirstTimeWindow();
+    void showStickersSizeWindow();
     void showAbout();
     void addNewTab();
     void addNewTabWithTopic(QString newTopicLink);
@@ -50,6 +51,7 @@ public slots:
     void addThisPeudoToBlacklist(QString pseudoToAdd);
     void setUpdateTopicTime(int newTime);
     void setNumberOfMessageShowedFirstTime(int newNumber);
+    void setStickersSize(int newSize);
     void setThisBoolOption(bool newVal);
     void setShowTextDecorationButton(bool newVal);
     void setMultilineEdit(bool newVal);

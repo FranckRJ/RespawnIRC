@@ -80,7 +80,7 @@ QString parsingToolClass::getVersionName(const QString &source)
 QString parsingToolClass::getVersionChangelog(const QString &source)
 {
     QString changelog = expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--").replace("   --", "---");
-    replaceWithCapNumber(changelog, expForNormalLink, 0, "<a href=\"", "\">", 0, "</a>");
+    replaceWithCapNumber(changelog, expForNormalLink, 0, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 0, "</a>");
     return changelog;
 }
 
@@ -198,7 +198,7 @@ QString parsingToolClass::getNumberOfMp(const QString &source)
     return QString::number(numberOfMp) + " MP";
 }
 
-QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &source, bool showStickers)
+QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &source, bool showStickers, int stickersSize)
 {
     QList<QString> listOfEntireMessage;
     QList<messageStruct> listOfMessages;
@@ -211,7 +211,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &so
         listOfMessages.back().idOfMessage = expForMessageID.match(listOfEntireMessage.at(i)).captured(1).toInt();
         listOfMessages.back().pseudo = expForPseudo.match(listOfEntireMessage.at(i)).captured(1);
         listOfMessages.back().date = expForDate.match(listOfEntireMessage.at(i)).captured(1);
-        listOfMessages.back().message = parsingMessages(expForMessage.match(listOfEntireMessage.at(i)).captured(1), showStickers);
+        listOfMessages.back().message = parsingMessages(expForMessage.match(listOfEntireMessage.at(i)).captured(1), showStickers, stickersSize);
         listOfMessages.back().lastTimeEdit = expForEdit.match(listOfEntireMessage.at(i)).captured(1);
     }
 
@@ -278,7 +278,7 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
     }
 }
 
-QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers)
+QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers, int stickersSize)
 {
     replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<pre><code>", "</code></pre>", -1, "", true);
 
@@ -290,7 +290,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
     }
     else
     {
-        replaceWithCapNumber(thisMessage, expForStickers, 2, "<img src=\"ressources/stickers/", ".png\" />");
+        replaceWithCapNumber(thisMessage, expForStickers, 2, "<img width=" + QString::number(stickersSize) + " height=" + QString::number(stickersSize) + " src=\"ressources/stickers/", ".png\" />");
     }
 
     replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"ressources/smileys/", "\" />");
