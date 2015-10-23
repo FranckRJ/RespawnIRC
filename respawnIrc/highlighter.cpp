@@ -40,9 +40,9 @@ bool highlighterClass::setDic(const QString newSpellDic)
     {
         delete spellChecker;
     }
-    spellChecker = new Hunspell(spellDic.toLatin1() + ".aff", spellDic.toLatin1() + ".dic");
+    spellChecker = new Hunspell("ressources/" + spellDic.toLatin1() + ".aff", "ressources/" + spellDic.toLatin1() + ".dic");
 
-    QFileInfo fileInfoForDic(spellDic + ".dic");
+    QFileInfo fileInfoForDic("ressources/" + spellDic + ".dic");
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
         delete spellChecker;
@@ -99,7 +99,7 @@ void highlighterClass::spellCheck(const QString &text)
         QString simplifiedText = text.simplified();
         if(simplifiedText.isEmpty() == false)
         {
-            QStringList checkList = simplifiedText.split(QRegExp("([^\\w,^\\\\]|(?=\\\\))+"), QString::SkipEmptyParts);
+            QStringList checkList = simplifiedText.split(QRegExp("[^\\w'-]+"), QString::SkipEmptyParts);
             for(int i = 0; i < checkList.size(); ++i)
             {
                 simplifiedText = checkList.at(i);

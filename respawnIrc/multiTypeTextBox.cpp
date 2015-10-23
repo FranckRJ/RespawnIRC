@@ -13,8 +13,8 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
 
     if(settingToolClass::getThisBoolOption("useSpellChecker") == true)
     {
-        textEdit.setDic("ressources/fr");
-        highlighter->setDic("ressources/fr");
+        textEdit.setDic("fr");
+        highlighter->setDic("fr");
         highlighter->enableSpellChecking(true);
         dicAreLoaded = true;
     }
@@ -117,8 +117,8 @@ void multiTypeTextBoxClass::settingsChanged()
 {
     if(settingToolClass::getThisBoolOption("useSpellChecker") == true && dicAreLoaded == false)
     {
-        textEdit.setDic("ressources/fr");
-        highlighter->setDic("ressources/fr");
+        textEdit.setDic("fr");
+        highlighter->setDic("fr");
         dicAreLoaded = true;
     }
 

@@ -83,9 +83,9 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
     {
         delete spellChecker;
     }
-    spellChecker = new Hunspell(spellDic.toLatin1() + ".aff", spellDic.toLatin1() + ".dic");
+    spellChecker = new Hunspell("ressources/" + spellDic.toLatin1() + ".aff", "ressources/" + spellDic.toLatin1() + ".dic");
 
-    QFileInfo fileInfoForDic(spellDic + ".dic");
+    QFileInfo fileInfoForDic("ressources/" + spellDic + ".dic");
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
         delete spellChecker;
@@ -112,8 +112,8 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos)
     QTextCursor cursor = cursorForPosition(cursorPos);
     QString textBlock = cursor.block().text();
     int pos = cursor.columnNumber();
-    int end = textBlock.indexOf(QRegExp("\\W+"), pos);
-    int begin = textBlock.lastIndexOf(QRegExp("\\W+"), pos);
+    int end = textBlock.indexOf(QRegExp("[^\\w'-]"), pos);
+    int begin = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), pos);
 
     textBlock = textBlock.mid(begin + 1, end - begin - 1);
 
@@ -163,8 +163,14 @@ void spellTextEditClass::correctWord()
     {
         QString replacement = thisAction->text();
         QTextCursor cursor = cursorForPosition(lastPos);
+        QString textBlock = cursor.block().text();
+        int pos = cursor.columnNumber();
+        int end = textBlock.indexOf(QRegExp("[^\\w'-]"), pos);
+        int begin = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), pos);
 
-        cursor.select(QTextCursor::WordUnderCursor);
+        cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, pos - begin - 1);
+        cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, end - begin - 1);
+
         cursor.deleteChar();
         cursor.insertText(replacement);
     }
