@@ -25,6 +25,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     errorMode = false;
     secondPageLoading = false;
     needToGetMessages = false;
+    errorLastTime = false;
 
     setNewTheme(currentThemeName);
 
@@ -123,6 +124,7 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
     networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
     currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
+    errorLastTime = false;
 
     showListOfTopic.setNewCookies(newCookies);
     startGetMessage();
@@ -227,6 +229,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     linkHasChanged = true;
     firstTimeGetMessages = true;
     errorMode = false;
+    errorLastTime = false;
     idOfLastMessage = 0;
     idOfLastMessageOfUser = 0;
 
@@ -435,6 +438,7 @@ void showTopicMessagesClass::analyzeMessages()
     if(linkHasChanged == true)
     {
         retrievesMessage = false;
+        startGetMessage();
         return;
     }
 
@@ -475,7 +479,14 @@ void showTopicMessagesClass::analyzeMessages()
 
         if(listOfEntireMessage.size() == 0)
         {
-            setTopicToErrorMode();
+            if(errorLastTime == true)
+            {
+                setTopicToErrorMode();
+            }
+            else
+            {
+                errorLastTime = true;
+            }
             return;
         }
         else
@@ -581,13 +592,32 @@ void showTopicMessagesClass::analyzeMessages()
         parsingToolClass::getListOfHiddenInputFromThisForm(sourceFirst, "form-post-topic", listOfInput);
         captchaLink = parsingToolClass::getCaptchaLink(sourceFirst);
 
-        if(listOfInput.isEmpty() == true && ignoreNetworkError == false)
+        if(listOfInput.isEmpty() == true)
         {
-            QMessageBox messageBox;
-            messageBox.warning(this, "Erreur sur " + topicName + " avec " + pseudoOfUser, "Le compte semble invalide, si tel est vraiment le cas veuillez supprimer celui-ci de la liste des comptes et vous reconnecter avec.");
-            pseudoOfUser.clear();
-            setNumberOfConnectedAndMP(numberOfConnected);
+            if(errorLastTime == true)
+            {
+                if(ignoreNetworkError == false)
+                {
+                    QMessageBox messageBox;
+                    messageBox.warning(this, "Erreur sur " + topicName + " avec " + pseudoOfUser,
+                                       "Le compte semble invalide, si tel est vraiment le cas veuillez supprimer celui-ci de la liste des comptes et vous reconnecter avec.");
+                    pseudoOfUser.clear();
+                    setNumberOfConnectedAndMP(numberOfConnected);
+                }
+            }
+            else
+            {
+                errorLastTime = true;
+            }
         }
+        else
+        {
+            errorLastTime = false;
+        }
+    }
+    else
+    {
+        errorLastTime = false;
     }
 
     firstTimeGetMessages = false;

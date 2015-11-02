@@ -90,6 +90,7 @@ private:
     bool errorMode;
     bool oldUseMessageEdit;
     bool needToGetMessages;
+    bool errorLastTime;
     int idOfLastMessage;
     int idOfLastMessageOfUser;
     int oldIdOfLastMessageOfUser;
