@@ -4,7 +4,7 @@ chooseNumberWindowClass::chooseNumberWindowClass(int minNumber, int maxNumber, i
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QLabel* labNumber = new QLabel("Nombre :", this);
+    QLabel* labNumber = new QLabel("Nombre (entre " + QString::number(minNumber) + " et " + QString::number(maxNumber) + ") :", this);
     QPushButton* buttonValide = new QPushButton("Valider", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
 

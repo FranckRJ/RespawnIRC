@@ -300,7 +300,7 @@ void respawnIrcClass::showColorPseudoListWindow()
 
 void respawnIrcClass::showUpdateTopicTimeWindow()
 {
-    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(2500, 10000, settingToolClass::getThisIntOption("updateTopicTime"), this);
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(500, 10000, settingToolClass::getThisIntOption("updateTopicTime"), this);
     QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setUpdateTopicTime);
     myChooseNumberWindow->exec();
 }
