@@ -12,6 +12,7 @@ QRegularExpression parsingToolClass::expForFormTopic("(<form role=\"form\" class
 QRegularExpression parsingToolClass::expForFormConnect("(<form role=\"form\" class=\"form-connect-jv\" method=\"post\" action=\"\">.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForInput("<input ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForError("<div class=\"alert-row\">([^<]*)</div>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForCurrentPage("<span class=\"page-active\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForPageLink("<span><a href=\"([^\"]*)\" class=\"lien-jv\">([^<]*)</a></span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForBeforeLastPage("(http://www.jeuxvideo.com/forums/[^-]*-[^-]*-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -138,6 +139,20 @@ void parsingToolClass::getListOfHiddenInputFromThisForm(QString& source, QString
 QString parsingToolClass::getCaptchaLink(const QString& source)
 {
     return expForCaptcha.match(source).captured(1);
+}
+
+QString parsingToolClass::getErrorMessage(const QString& source)
+{
+    QRegularExpressionMatch match = expForError.match(source);
+
+    if(match.hasMatch() == true)
+    {
+        return expForError.match(source).captured(1);
+    }
+    else
+    {
+        return "Le message n'a pas été envoyé.";
+    }
 }
 
 QString parsingToolClass::getLastPageOfTopic(const QString& source)

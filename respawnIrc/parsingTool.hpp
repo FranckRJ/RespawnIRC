@@ -29,6 +29,7 @@ public:
     static QString getVersionChangelog(const QString& source);
     static void getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
     static QString getCaptchaLink(const QString& source);
+    static QString getErrorMessage(const QString& source);
     static QString getLastPageOfTopic(const QString& source);
     static QString getBeforeLastPageOfTopic(const QString& source);
     static QString getNameOfTopic(const QString& source);
@@ -56,6 +57,7 @@ private:
     static QRegularExpression expForFormConnect;
     static QRegularExpression expForInput;
     static QRegularExpression expForCaptcha;
+    static QRegularExpression expForError;
     static QRegularExpression expForCurrentPage;
     static QRegularExpression expForPageLink;
     static QRegularExpression expForBeforeLastPage;

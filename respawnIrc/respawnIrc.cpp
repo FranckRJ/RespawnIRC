@@ -787,7 +787,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
     else
     {
         QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le message n'a pas été envoyé.");
+        messageBox.warning(this, "Erreur", parsingToolClass::getErrorMessage(source));
     }
 
     sendButton.setEnabled(true);
