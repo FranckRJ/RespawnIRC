@@ -49,7 +49,6 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 void showTopicMessagesClass::startGetMessage()
 {
     needToGetMessages = false;
-
     if(topicLink.isEmpty() == false)
     {
         if(retrievesMessage == false)
@@ -316,6 +315,16 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
 
 void showTopicMessagesClass::getMessages()
 {
+    QNetworkAccessManager tmpManager;
+
+    if(tmpManager.networkAccessible() != QNetworkAccessManager::Accessible)
+    {
+
+        setMessageStatus("Pas de connexion internet.");
+        return;
+    }
+
+    networkManager.setNetworkAccessible(QNetworkAccessManager::Accessible);
     if(retrievesMessage == false)
     {
         retrievesMessage = true;
@@ -421,19 +430,29 @@ void showTopicMessagesClass::analyzeMessages()
 
     if(replyForFirstPage == 0)
     {
+        retrievesMessage = false;
+        setMessageStatus("Erreur.");
         return;
     }
 
-    sourceFirst = replyForFirstPage->readAll();
+    if(replyForFirstPage->isReadable())
+    {
+        sourceFirst = replyForFirstPage->readAll();
+    }
     replyForFirstPage->deleteLater();
     replyForFirstPage = 0;
 
     if(loadTwoLastPage == true && secondPageLoading == true)
     {
-        sourceSecond = replyForSecondPage->readAll();
+        if(replyForSecondPage->isReadable())
+        {
+            sourceSecond = replyForSecondPage->readAll();
+        }
         replyForSecondPage->deleteLater();
         replyForSecondPage = 0;
     }
+
+    setMessageStatus("Récupération des messages terminée !");
 
     if(linkHasChanged == true)
     {
@@ -441,8 +460,6 @@ void showTopicMessagesClass::analyzeMessages()
         startGetMessage();
         return;
     }
-
-    setMessageStatus("Récupération des messages terminée !");
 
     if(pseudoOfUser.isEmpty() == false)
     {
@@ -487,6 +504,7 @@ void showTopicMessagesClass::analyzeMessages()
             {
                 errorLastTime = true;
             }
+            retrievesMessage = false;
             return;
         }
         else

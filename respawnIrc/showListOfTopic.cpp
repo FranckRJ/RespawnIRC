@@ -44,6 +44,14 @@ void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
 
 void showListOfTopicClass::startGetListOfTopic()
 {
+    QNetworkAccessManager tmpManager;
+
+    if(tmpManager.networkAccessible() != QNetworkAccessManager::Accessible)
+    {
+        return;
+    }
+
+    networkManager.setNetworkAccessible(QNetworkAccessManager::Accessible);
     if(forumLink.isEmpty() == false && reply == 0)
     {
         QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(forumLink);

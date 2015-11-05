@@ -704,6 +704,16 @@ void respawnIrcClass::currentTabChanged(int newIndex)
 
 void respawnIrcClass::postMessage()
 {
+    QNetworkAccessManager tmpManager;
+
+    if(tmpManager.networkAccessible() != QNetworkAccessManager::Accessible)
+    {
+        QMessageBox messageBox;
+        messageBox.warning(this, "Erreur", "Impossible de poster pour le moment, pas de connexion internet.");
+        return;
+    }
+
+    networkManager.setNetworkAccessible(QNetworkAccessManager::Accessible);
     if(replyForSendMessage == 0 && getCurrentWidget()->getPseudoUsed().isEmpty() == false && getCurrentWidget()->getTopicLink().isEmpty() == false)
     {
         QNetworkRequest request;
