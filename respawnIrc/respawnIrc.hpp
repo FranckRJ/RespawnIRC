@@ -94,7 +94,7 @@ private:
     QList<QPair<QString, QString> > oldListOfInput;
     multiTypeTextBoxClass messageLine;
     QNetworkReply* replyForSendMessage;
-    QNetworkAccessManager networkManager;
+    QNetworkAccessManager* networkManager;
     QLabel messagesStatus;
     QLabel numberOfConnectedAndPseudoUsed;
     QPushButton sendButton;

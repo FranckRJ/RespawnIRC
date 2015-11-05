@@ -24,7 +24,7 @@ public:
     QString getPseudoUsed();
     QString getColorOfThisPseudo(QString pseudo);
     const QList<QNetworkCookie>& getListOfCookies();
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser);
+    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessagesAndList = true);
     void setMessageStatus(QString newStatus);
     void setNumberOfConnectedAndMP(QString newNumber, bool forceSet = false);
     void setTopicToErrorMode();
@@ -62,7 +62,7 @@ private:
     QNetworkReply* replyForSecondPage;
     QNetworkReply* replyForEditInfo;
     QNetworkReply* replyForQuoteInfo;
-    QNetworkAccessManager networkManager;
+    QNetworkAccessManager* networkManager;
     QTimer timerForGetMessage;
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;

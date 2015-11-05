@@ -13,6 +13,13 @@ checkUpdateClass::checkUpdateClass(QWidget* newParent, QString currentVersionNam
 
 void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpdate)
 {
+    QNetworkAccessManager tmpManager;
+
+    if(tmpManager.networkAccessible() != QNetworkAccessManager::Accessible)
+    {
+        return;
+    }
+
     if(reply == 0)
     {
         reply = networkManager.get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repos/LEpigeon888/RespawnIRC/releases/latest"));

@@ -1,5 +1,6 @@
 #include "showListOfTopic.hpp"
 #include "parsingTool.hpp"
+#include "settingTool.hpp"
 
 showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
 {
@@ -8,7 +9,10 @@ showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
     listViewOfTopic.setContextMenuPolicy(Qt::CustomContextMenu);
     timerForGetList.setTimerType(Qt::CoarseTimer);
     timerForGetList.setInterval(5000);
+    updateSettings();
     reply = 0;
+
+    networkManager = new QNetworkAccessManager(this);
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->addWidget(&listViewOfTopic);
@@ -28,6 +32,7 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
     if(newForumLink.isEmpty() == false)
     {
         startGetListOfTopic();
+        timerForGetList.start();
     }
     else
     {
@@ -37,26 +42,46 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
 
 void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
 {
-    networkManager.clearAccessCache();
-    networkManager.setCookieJar(new QNetworkCookieJar(this));
-    networkManager.cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+    if(networkManager != 0)
+    {
+        networkManager->clearAccessCache();
+        networkManager->setCookieJar(new QNetworkCookieJar(this));
+        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+        currentCookieList = newCookies;
+    }
+}
+
+void showListOfTopicClass::updateSettings()
+{
+    //timeoutReply.setInterval(settingToolClass::getThisIntOption("timeoutInSecond") * 1000);
 }
 
 void showListOfTopicClass::startGetListOfTopic()
 {
-    QNetworkAccessManager tmpManager;
+    bool itsNewManager = false;
 
-    if(tmpManager.networkAccessible() != QNetworkAccessManager::Accessible)
+    if(networkManager == 0)
     {
+        itsNewManager = true;
+        networkManager = new QNetworkAccessManager(this);
+    }
+
+    if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+    {
+        delete networkManager;
+        networkManager = 0;
         return;
     }
 
-    networkManager.setNetworkAccessible(QNetworkAccessManager::Accessible);
+    if(itsNewManager == true)
+    {
+        setNewCookies(currentCookieList);
+    }
+
     if(forumLink.isEmpty() == false && reply == 0)
     {
         QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(forumLink);
-        reply = networkManager.get(request);
-        timerForGetList.start();
+        reply = networkManager->get(request);
 
         QObject::connect(reply, &QNetworkReply::finished, this, &showListOfTopicClass::analyzeReply);
     }
@@ -64,8 +89,13 @@ void showListOfTopicClass::startGetListOfTopic()
 
 void showListOfTopicClass::analyzeReply()
 {
-    QString source = reply->readAll();
-    QString locationHeader = reply->rawHeader("Location");
+    QString source;
+    QString locationHeader;
+    if(reply->isReadable() == true)
+    {
+        source = reply->readAll();
+        locationHeader = reply->rawHeader("Location");
+    }
     reply->deleteLater();
 
     if(source.size() == 0)
@@ -76,11 +106,6 @@ void showListOfTopicClass::analyzeReply()
             reply = 0;
             startGetListOfTopic();
             return;
-        }
-        else
-        {
-            forumLink.clear();
-            timerForGetList.stop();
         }
     }
     else

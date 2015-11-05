@@ -12,6 +12,7 @@ public:
     showListOfTopicClass(QWidget* parent = 0);
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies);
+    void updateSettings();
 public slots:
     void startGetListOfTopic();
     void analyzeReply();
@@ -26,7 +27,8 @@ private:
     QListView listViewOfTopic;
     QStringListModel modelForListView;
     QNetworkReply* reply;
-    QNetworkAccessManager networkManager;
+    QNetworkAccessManager* networkManager;
+    QList<QNetworkCookie> currentCookieList;
     QList<QString> listOfLink;
 };
 

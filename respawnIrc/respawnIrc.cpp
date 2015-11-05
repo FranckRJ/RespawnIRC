@@ -25,6 +25,8 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     isInEdit = false;
     beepWhenWarn = true;
 
+    networkManager = new QNetworkAccessManager(this);
+
     addButtonToButtonLayout();
 
     QHBoxLayout* infoLayout = new QHBoxLayout();
@@ -704,16 +706,20 @@ void respawnIrcClass::currentTabChanged(int newIndex)
 
 void respawnIrcClass::postMessage()
 {
-    QNetworkAccessManager tmpManager;
+    if(networkManager == 0)
+    {
+        networkManager = new QNetworkAccessManager(this);
+    }
 
-    if(tmpManager.networkAccessible() != QNetworkAccessManager::Accessible)
+    if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
     {
         QMessageBox messageBox;
         messageBox.warning(this, "Erreur", "Impossible de poster pour le moment, pas de connexion internet.");
+        delete networkManager;
+        networkManager = 0;
         return;
     }
 
-    networkManager.setNetworkAccessible(QNetworkAccessManager::Accessible);
     if(replyForSendMessage == 0 && getCurrentWidget()->getPseudoUsed().isEmpty() == false && getCurrentWidget()->getTopicLink().isEmpty() == false)
     {
         QNetworkRequest request;
@@ -721,9 +727,9 @@ void respawnIrcClass::postMessage()
         QString captchaLink;
 
         cookieListForPostMsg = getCurrentWidget()->getListOfCookies();
-        networkManager.clearAccessCache();
-        networkManager.setCookieJar(new QNetworkCookieJar(this));
-        networkManager.cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://www.jeuxvideo.com"));
+        networkManager->clearAccessCache();
+        networkManager->setCookieJar(new QNetworkCookieJar(this));
+        networkManager->cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://www.jeuxvideo.com"));
 
         if(isInEdit == true)
         {
@@ -770,7 +776,7 @@ void respawnIrcClass::postMessage()
             }
         }
 
-        replyForSendMessage = networkManager.post(request, data.toLatin1());
+        replyForSendMessage = networkManager->post(request, data.toLatin1());
         QObject::connect(replyForSendMessage, &QNetworkReply::finished, this, &respawnIrcClass::deleteReplyForSendMessage);
     }
 }
