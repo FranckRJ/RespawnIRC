@@ -9,20 +9,27 @@ checkUpdateClass::checkUpdateClass(QWidget* newParent, QString currentVersionNam
     parent = newParent;
     versionName = currentVersionName;
     reply = 0;
+
+    networkManager = new QNetworkAccessManager(this);
 }
 
 void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpdate)
 {
-    QNetworkAccessManager tmpManager;
-
-    if(tmpManager.networkAccessible() != QNetworkAccessManager::Accessible)
+    if(networkManager == 0)
     {
-        return;
+        networkManager = new QNetworkAccessManager(this);
     }
 
     if(reply == 0)
     {
-        reply = networkManager.get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repos/LEpigeon888/RespawnIRC/releases/latest"));
+        if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+        {
+            delete networkManager;
+            networkManager = 0;
+            return;
+        }
+
+        reply = networkManager->get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repos/LEpigeon888/RespawnIRC/releases/latest"));
         alwaysShowMessage = showMessageWhenNoUpdate;
 
         QObject::connect(reply, &QNetworkReply::finished, this, &checkUpdateClass::analyzeLatestUpdatePage);

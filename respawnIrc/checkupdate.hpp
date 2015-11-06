@@ -15,7 +15,7 @@ public slots:
 private:
     QWidget* parent;
     QString versionName;
-    QNetworkAccessManager networkManager;
+    QNetworkAccessManager* networkManager;
     QNetworkReply* reply;
     bool alwaysShowMessage;
 };

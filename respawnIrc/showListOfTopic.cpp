@@ -42,12 +42,12 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
 
 void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
 {
+    currentCookieList = newCookies;
     if(networkManager != 0)
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
         networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
-        currentCookieList = newCookies;
     }
 }
 
@@ -66,24 +66,27 @@ void showListOfTopicClass::startGetListOfTopic()
         networkManager = new QNetworkAccessManager(this);
     }
 
-    if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+    if(reply == 0)
     {
-        delete networkManager;
-        networkManager = 0;
-        return;
-    }
+        if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+        {
+            delete networkManager;
+            networkManager = 0;
+            return;
+        }
 
-    if(itsNewManager == true)
-    {
-        setNewCookies(currentCookieList);
-    }
+        if(itsNewManager == true)
+        {
+            setNewCookies(currentCookieList);
+        }
 
-    if(forumLink.isEmpty() == false && reply == 0)
-    {
-        QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(forumLink);
-        reply = networkManager->get(request);
+        if(forumLink.isEmpty() == false)
+        {
+            QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(forumLink);
+            reply = networkManager->get(request);
 
-        QObject::connect(reply, &QNetworkReply::finished, this, &showListOfTopicClass::analyzeReply);
+            QObject::connect(reply, &QNetworkReply::finished, this, &showListOfTopicClass::analyzeReply);
+        }
     }
 }
 

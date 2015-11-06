@@ -120,13 +120,13 @@ const QList<QNetworkCookie>& showTopicMessagesClass::getListOfCookies()
 
 void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessagesAndList)
 {
+    currentCookieList = newCookies;
+    pseudoOfUser = newPseudoOfUser;
     if(networkManager != 0)
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
         networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
-        currentCookieList = newCookies;
-        pseudoOfUser = newPseudoOfUser;
         errorLastTime = false;
 
         if(updateMessagesAndList == true)
@@ -354,25 +354,25 @@ void showTopicMessagesClass::getMessages()
         networkManager = new QNetworkAccessManager(this);
     }
 
-    if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
-    {
-        setMessageStatus("Pas de connexion internet.");
-        delete networkManager;
-        networkManager = 0;
-        return;
-    }
-
-    if(itsNewManager == true)
-    {
-        setNewCookies(currentCookieList, pseudoOfUser, false);
-    }
-
     if(retrievesMessage == false)
     {
-        retrievesMessage = true;
-
         if(replyForFirstPage == 0)
         {
+            if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+            {
+                setMessageStatus("Pas de connexion internet.");
+                delete networkManager;
+                networkManager = 0;
+                return;
+            }
+
+            if(itsNewManager == true)
+            {
+                setNewCookies(currentCookieList, pseudoOfUser, false);
+            }
+
+            retrievesMessage = true;
+
             QString beforeLastPage = parsingToolClass::getBeforeLastPageOfTopic(topicLink);
             QNetworkRequest requestForFirstPage = parsingToolClass::buildRequestWithThisUrl(topicLink);
             setMessageStatus("Récupération des messages en cours...");
