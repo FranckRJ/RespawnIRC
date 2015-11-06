@@ -11,7 +11,7 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.17.1");
+const QString respawnIrcClass::currentVersionName("v1.18");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -804,6 +804,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
     {
         QMessageBox messageBox;
         messageBox.warning(this, "Erreur", parsingToolClass::getErrorMessage(source));
+        dontEraseEditMessage = true;
     }
 
     sendButton.setEnabled(true);
