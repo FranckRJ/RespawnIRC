@@ -35,7 +35,8 @@ SOURCES += \
 QT += \
     network \
     widgets \
-    multimedia
+    multimedia \
+    webkitwidgets
 
 HEADERS += \
     hunspell/affentry.hxx \
