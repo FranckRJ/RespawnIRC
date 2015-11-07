@@ -283,10 +283,10 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
     {
         return false;
     }
-    if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+    /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
     {
         return false;
-    }
+    }*/
 
     if(ajaxInfo.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
     {
@@ -325,10 +325,10 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
     {
         return;
     }
-    if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+    /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
     {
         return;
-    }
+    }*/
 
     if(ajaxInfo.isEmpty() == false && replyForQuoteInfo == 0)
     {
