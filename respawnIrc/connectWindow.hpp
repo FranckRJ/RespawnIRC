@@ -21,6 +21,6 @@ private:
     QList<QNetworkCookie> cookieList;
     QWebView* webView;
     QLineEdit pseudoLine;
-    bool saveThisAccount;
+    QCheckBox rememberBox;
 };
 #endif
