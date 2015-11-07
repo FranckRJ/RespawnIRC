@@ -14,6 +14,7 @@ public:
 public slots:
     void newPageLoaded(QNetworkReply* reply);
     void valideConnect();
+    void showHelpConnect();
 signals:
     void newCookiesAvailable(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
 private:

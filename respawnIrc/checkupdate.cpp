@@ -22,12 +22,12 @@ void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpd
 
     if(reply == 0)
     {
-        if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+        /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
         {
             delete networkManager;
             networkManager = 0;
             return;
-        }
+        }*/
 
         reply = networkManager->get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repos/LEpigeon888/RespawnIRC/releases/latest"));
         alwaysShowMessage = showMessageWhenNoUpdate;

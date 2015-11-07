@@ -8,6 +8,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     QLabel* labForPseudo = new QLabel("Entrez le pseudo avec lequel vous voulez vous connecter :", this);
     QLabel* labForButton = new QLabel("Une fois connecté, cliquez ici :", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
+    QPushButton* buttonHelp = new QPushButton("Aide pour se connecter", this);
     webView = new QWebView(this);
 
     QHBoxLayout* bottomLayout = new QHBoxLayout;
@@ -19,6 +20,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(webView);
     mainLayout->addLayout(bottomLayout);
+    mainLayout->addWidget(buttonHelp);
 
     setLayout(mainLayout);
 
@@ -30,6 +32,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 
     QObject::connect(tmpManagerForReply, &QNetworkAccessManager::finished, this, &connectWindowClass::newPageLoaded);
     QObject::connect(buttonValidate, &QPushButton::pressed, this, &connectWindowClass::valideConnect);
+    QObject::connect(buttonHelp, &QPushButton::pressed, this, &connectWindowClass::showHelpConnect);
 }
 
 void connectWindowClass::newPageLoaded(QNetworkReply* reply)
@@ -72,4 +75,14 @@ void connectWindowClass::valideConnect()
         QMessageBox messageBox;
         messageBox.warning(this, "Erreur", "Le pseudo n'est pas entré ou vous n'êtes pas connecté.");
     }
+}
+
+void connectWindowClass::showHelpConnect()
+{
+    QMessageBox messageBox;
+    messageBox.information(this, "Aide", "Pour vous connecter, veuillez suivre ces étapes :\n"
+                           "- renseignez le pseudo que vous allez utiliser dans le champ présent en bas de la fenêtre.\n"
+                           "- connectez-vous sur JVC avec ce même pseudo.\n"
+                           "- après avoir cliqué sur le bouton \"VALIDER\" qui possède un fond vert sur la page de JVC, attendez que la page d'accueil ait fini de charger puis "
+                           "cliquez sur le bouton \"Valider\" en bas à droite de la fenêtre.");
 }

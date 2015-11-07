@@ -711,14 +711,14 @@ void respawnIrcClass::postMessage()
         networkManager = new QNetworkAccessManager(this);
     }
 
-    if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+    /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
     {
         QMessageBox messageBox;
         messageBox.warning(this, "Erreur", "Impossible de poster pour le moment, pas de connexion internet.");
         delete networkManager;
         networkManager = 0;
         return;
-    }
+    }*/
 
     if(replyForSendMessage == 0 && getCurrentWidget()->getPseudoUsed().isEmpty() == false && getCurrentWidget()->getTopicLink().isEmpty() == false)
     {

@@ -358,13 +358,13 @@ void showTopicMessagesClass::getMessages()
     {
         if(replyForFirstPage == 0)
         {
-            if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+            /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
             {
                 setMessageStatus("Pas de connexion internet.");
                 delete networkManager;
                 networkManager = 0;
                 return;
-            }
+            }*/
 
             if(itsNewManager == true)
             {

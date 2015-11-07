@@ -68,12 +68,12 @@ void showListOfTopicClass::startGetListOfTopic()
 
     if(reply == 0)
     {
-        if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible)
+        /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
         {
             delete networkManager;
             networkManager = 0;
             return;
-        }
+        }*/
 
         if(itsNewManager == true)
         {
