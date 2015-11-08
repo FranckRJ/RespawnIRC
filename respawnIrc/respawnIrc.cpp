@@ -24,6 +24,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     inSending = false;
     isInEdit = false;
     beepWhenWarn = true;
+    warnUser = true;
 
     networkManager = new QNetworkAccessManager(this);
 
@@ -53,6 +54,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 void respawnIrcClass::loadSettings()
 {
     beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
+    warnUser = settingToolClass::getThisBoolOption("warnUser");
 
     for(int i = 0; i < 10; ++i)
     {
@@ -505,6 +507,10 @@ void respawnIrcClass::setThisBoolOption(bool newVal)
         {
             beepWhenWarn = newVal;
         }
+        else if(senderObject->objectName() == "warnUser")
+        {
+            warnUser = newVal;
+        }
         else if(senderObject->objectName() == "useSpellChecker")
         {
             messageLine.settingsChanged();
@@ -661,7 +667,11 @@ void respawnIrcClass::saveListOfColorPseudo()
 void respawnIrcClass::warnUserForNewMessages()
 {
     QObject* senderObject = sender();
-    QApplication::alert(this);
+
+    if(warnUser == true)
+    {
+        QApplication::alert(this);
+    }
 
     if(QApplication::focusWidget() == 0 && beepWhenWarn == true)
     {

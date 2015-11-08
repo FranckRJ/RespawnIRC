@@ -108,6 +108,7 @@ private:
     bool inSending;
     bool isInEdit;
     bool beepWhenWarn;
+    bool warnUser;
     int idOfLastMessageEdit;
 };
 

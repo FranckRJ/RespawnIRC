@@ -668,7 +668,9 @@ void showTopicMessagesClass::analyzeMessages()
                 {
                     QMessageBox messageBox;
                     messageBox.warning(this, "Erreur sur " + topicName + " avec " + pseudoOfUser,
-                                       "Le compte semble invalide, si tel est vraiment le cas veuillez supprimer celui-ci de la liste des comptes et vous reconnecter avec.");
+                                       "Le compte semble invalide, si tel est vraiment le cas veuillez supprimer celui-ci de la liste des comptes et vous reconnecter avec.\n\n"
+                                       "Information importante : si vous venez tout juste de vous connecter via ce compte, il est préférable de d'abord redémarrer RespawnIRC "
+                                       "et de seulement supprimer le compte si le problème persiste.");
                     pseudoOfUser.clear();
                     setNumberOfConnectedAndMP(numberOfConnected);
                 }

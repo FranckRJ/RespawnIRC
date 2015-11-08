@@ -21,6 +21,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["beepWhenWarn"] = true;
     listOfDefaultBoolOption["showStickers"] = true;
     listOfDefaultBoolOption["useSpellChecker"] = true;
+    listOfDefaultBoolOption["warnUser"] = true;
     listOfDefaultIntOption["updateTopicTime"] = 3500;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
     listOfDefaultIntOption["stickersSize"] = 70;
