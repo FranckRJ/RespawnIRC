@@ -803,11 +803,12 @@ void respawnIrcClass::deleteReplyForSendMessage()
     {
         messageLine.clear();
     }
-    else if(source.contains("<div class=\"alert-row\"> Le code de confirmation est incorrect. </div>") == true ||
-            (isInEdit == true && source.startsWith("{\"erreur\":[\"Le code de confirmation est incorrect.\"]") == true))
+    else if(source.contains("<div class=\"alert-row\"> Le captcha est invalide. </div>") == true ||
+            (isInEdit == true && source.startsWith("{\"erreur\":[\"Le captcha est incorrect.\"]") == true))
     {
         QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le code de confirmation est incorrect.");
+        messageBox.warning(this, "Erreur", "Depuis la mise à jour de JVC les captchas ne sont plus supportés, "
+                                           "veuillez attendre quelques secondes avant d'envoyer votre message.");
         dontEraseEditMessage = true;
     }
     else

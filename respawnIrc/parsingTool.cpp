@@ -151,7 +151,7 @@ QString parsingToolClass::getErrorMessage(const QString& source)
     }
     else
     {
-        return "Le message n'a pas été envoyé (sans doute à cause d'un captcha présent, veuillez réessayer dans quelques secondes).";
+        return "Le message n'a pas été envoyé.";
     }
 }
 
