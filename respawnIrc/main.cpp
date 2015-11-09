@@ -7,8 +7,10 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    QSettings setting(QCoreApplication::applicationDirPath() + "/config.ini", QSettings::IniFormat);
 
     QCoreApplication::addLibraryPath("./");
+    settingToolClass::setSettings(&setting);
     settingToolClass::initializeDefaultListsOption();
     styleToolClass::getModelInfo("");
 

@@ -7,6 +7,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(false);
     messagesBox.setOpenLinks(false);
+    messagesBox.setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
     timerForGetMessage.setTimerType(Qt::CoarseTimer);
     updateSettingInfo(false);
     timerForGetMessage.stop();
@@ -689,7 +690,6 @@ void showTopicMessagesClass::analyzeMessages()
     {
         errorLastTime = false;
     }
-
     firstTimeGetMessages = false;
     retrievesMessage = false;
 

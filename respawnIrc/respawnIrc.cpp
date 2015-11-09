@@ -11,7 +11,7 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.18.1");
+const QString respawnIrcClass::currentVersionName("v1.18.2");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -19,7 +19,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     sendButton.setText("Envoyer");
     sendButton.setAutoDefault(true);
     sendButton.setObjectName("sendButton");
-    alertImage.load("ressources/alert.png");
+    alertImage.load(QCoreApplication::applicationDirPath() + "/ressources/alert.png");
     replyForSendMessage = 0;
     inSending = false;
     isInEdit = false;
@@ -675,7 +675,7 @@ void respawnIrcClass::warnUserForNewMessages()
 
     if(QApplication::focusWidget() == 0 && beepWhenWarn == true)
     {
-        QSound::play("ressources/beep.wav");
+        QSound::play(QCoreApplication::applicationDirPath() + "/ressources/beep.wav");
     }
 
     if(senderObject != getCurrentWidget())

@@ -10,6 +10,7 @@
 class settingToolClass
 {
 public:
+    static void setSettings(QSettings* newSetting);
     static void initializeDefaultListsOption();
     static QAction* createActionForBoolOption(QString actionName, QString optionName, QMenu* menuForAction, QObject* pointer, const char* method);
     static bool getThisBoolOption(QString optionName);
@@ -32,7 +33,7 @@ public:
     static QList<QString> createStringListWithThisQVariantList(QList<QVariant> list);
     static QList<QNetworkCookie> createCookieListWithThisQVariantList(QList<QVariant> list);
 private:
-    static QSettings setting;
+    static QSettings* setting;
     static QMap<QString, bool> listOfDefaultBoolOption;
     static QMap<QString, int> listOfDefaultIntOption;
     static QMap<QString, QString> listOfDefaultStringOption;

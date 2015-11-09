@@ -1,10 +1,15 @@
 #include "settingTool.hpp"
 
-QSettings settingToolClass::setting("config.ini", QSettings::IniFormat);
+QSettings* settingToolClass::setting = 0;
 QMap<QString, bool> settingToolClass::listOfDefaultBoolOption;
 QMap<QString, int> settingToolClass::listOfDefaultIntOption;
 QMap<QString, QString> settingToolClass::listOfDefaultStringOption;
 QMap<QString, QByteArray> settingToolClass::listOfDefaultByteOption;
+
+void settingToolClass::setSettings(QSettings* newSetting)
+{
+    setting = newSetting;
+}
 
 void settingToolClass::initializeDefaultListsOption()
 {
@@ -57,12 +62,12 @@ bool settingToolClass::getThisBoolOption(QString optionName)
 
     if(iteForList != listOfDefaultBoolOption.end())
     {
-        return setting.value(optionName, iteForList.value()).toBool();
+        return setting->value(optionName, iteForList.value()).toBool();
     }
     else
     {
         qDebug() << "Erreur : cette option booleenne \"" + optionName + "\" n existe pas.";
-        return setting.value(optionName, false).toBool();
+        return setting->value(optionName, false).toBool();
     }
 }
 
@@ -72,12 +77,12 @@ int settingToolClass::getThisIntOption(QString optionName)
 
     if(iteForList != listOfDefaultIntOption.end())
     {
-        return setting.value(optionName, iteForList.value()).toInt();
+        return setting->value(optionName, iteForList.value()).toInt();
     }
     else
     {
         qDebug() << "Erreur : cette option entiere \"" + optionName + "\" n existe pas.";
-        return setting.value(optionName, 0).toInt();
+        return setting->value(optionName, 0).toInt();
     }
 }
 
@@ -87,12 +92,12 @@ QString settingToolClass::getThisStringOption(QString optionName)
 
     if(iteForList != listOfDefaultStringOption.end())
     {
-        return setting.value(optionName, iteForList.value()).toString();
+        return setting->value(optionName, iteForList.value()).toString();
     }
     else
     {
         qDebug() << "Erreur : cette option string \"" + optionName + "\" n existe pas.";
-        return setting.value(optionName, "").toString();
+        return setting->value(optionName, "").toString();
     }
 }
 
@@ -102,21 +107,21 @@ QByteArray settingToolClass::getThisByteOption(QString optionName)
 
     if(iteForList != listOfDefaultByteOption.end())
     {
-        return setting.value(optionName, iteForList.value()).toByteArray();
+        return setting->value(optionName, iteForList.value()).toByteArray();
     }
     else
     {
         qDebug() << "Erreur : cette option byte \"" + optionName + "\" n existe pas.";
-        return setting.value(optionName, "").toByteArray();
+        return setting->value(optionName, "").toByteArray();
     }
 }
 
 QList<accountStruct> settingToolClass::getListOfAccount()
 {
     QList<accountStruct> listOfAccount;
-    QList<QNetworkCookie> listOfHelloCookie = createCookieListWithThisQVariantList(setting.value("listOfHelloCookie", QList<QVariant>()).toList());
-    QList<QNetworkCookie> listOfConnectCookie = createCookieListWithThisQVariantList(setting.value("listOfConnectCookie", QList<QVariant>()).toList());
-    QList<QString> listOfPseudo = createStringListWithThisQVariantList(setting.value("listOfPseudo", QList<QVariant>()).toList());
+    QList<QNetworkCookie> listOfHelloCookie = createCookieListWithThisQVariantList(setting->value("listOfHelloCookie", QList<QVariant>()).toList());
+    QList<QNetworkCookie> listOfConnectCookie = createCookieListWithThisQVariantList(setting->value("listOfConnectCookie", QList<QVariant>()).toList());
+    QList<QString> listOfPseudo = createStringListWithThisQVariantList(setting->value("listOfPseudo", QList<QVariant>()).toList());
 
     if(listOfHelloCookie.size() == listOfConnectCookie.size() && listOfConnectCookie.size() == listOfPseudo.size())
     {
@@ -136,9 +141,9 @@ QList<QString> settingToolClass::getListOfPseudoForTopic()
 {
     QList<QString> listOfPseudoForTopic;
 
-    if(setting.value("listOfPseudoForTopic", QList<QVariant>()).toList().isEmpty() == false)
+    if(setting->value("listOfPseudoForTopic", QList<QVariant>()).toList().isEmpty() == false)
     {
-        listOfPseudoForTopic = createStringListWithThisQVariantList(setting.value("listOfPseudoForTopic").toList());
+        listOfPseudoForTopic = createStringListWithThisQVariantList(setting->value("listOfPseudoForTopic").toList());
     }
 
     return listOfPseudoForTopic;
@@ -148,9 +153,9 @@ QList<QString> settingToolClass::getListOfIgnoredPseudo()
 {
     QList<QString> listOfIgnoredPseudo;
 
-    if(setting.value("listOfIgnoredPseudo", QList<QVariant>()).toList().isEmpty() == false)
+    if(setting->value("listOfIgnoredPseudo", QList<QVariant>()).toList().isEmpty() == false)
     {
-        listOfIgnoredPseudo = createStringListWithThisQVariantList(setting.value("listOfIgnoredPseudo").toList());
+        listOfIgnoredPseudo = createStringListWithThisQVariantList(setting->value("listOfIgnoredPseudo").toList());
     }
 
     return listOfIgnoredPseudo;
@@ -159,10 +164,10 @@ QList<QString> settingToolClass::getListOfIgnoredPseudo()
 QList<pseudoWithColorStruct> settingToolClass::getListOfColorPseudo()
 {
     QList<pseudoWithColorStruct> listOfColorPseudo;
-    QList<QString> listOfPseudo = createStringListWithThisQVariantList(setting.value("listOfPseudoForColor", QList<QVariant>()).toList());
-    QList<QString> listOfRed = createStringListWithThisQVariantList(setting.value("listOfRedForColor", QList<QVariant>()).toList());
-    QList<QString> listOfGreen = createStringListWithThisQVariantList(setting.value("listOfGreenForColor", QList<QVariant>()).toList());
-    QList<QString> listOfBlue = createStringListWithThisQVariantList(setting.value("listOfBlueForColor", QList<QVariant>()).toList());
+    QList<QString> listOfPseudo = createStringListWithThisQVariantList(setting->value("listOfPseudoForColor", QList<QVariant>()).toList());
+    QList<QString> listOfRed = createStringListWithThisQVariantList(setting->value("listOfRedForColor", QList<QVariant>()).toList());
+    QList<QString> listOfGreen = createStringListWithThisQVariantList(setting->value("listOfGreenForColor", QList<QVariant>()).toList());
+    QList<QString> listOfBlue = createStringListWithThisQVariantList(setting->value("listOfBlueForColor", QList<QVariant>()).toList());
 
     if(listOfPseudo.size() == listOfRed.size() && listOfRed.size() == listOfGreen.size() && listOfGreen.size() == listOfBlue.size())
     {
@@ -183,9 +188,9 @@ QList<QString> settingToolClass::getListOfTopicLink()
 {
     QList<QString> listOfTopicLink;
 
-    if(setting.value("listOfTopicLink", QList<QVariant>()).toList().isEmpty() == false)
+    if(setting->value("listOfTopicLink", QList<QVariant>()).toList().isEmpty() == false)
     {
-        listOfTopicLink = createStringListWithThisQVariantList(setting.value("listOfTopicLink").toList());
+        listOfTopicLink = createStringListWithThisQVariantList(setting->value("listOfTopicLink").toList());
     }
 
     return listOfTopicLink;
@@ -193,7 +198,7 @@ QList<QString> settingToolClass::getListOfTopicLink()
 
 void settingToolClass::saveThisOption(QString optionName, QVariant value)
 {
-    setting.setValue(optionName, value);
+    setting->setValue(optionName, value);
 }
 
 void settingToolClass::saveListOfAccount(QList<accountStruct>& newListOfAccount)
@@ -219,19 +224,19 @@ void settingToolClass::saveListOfAccount(QList<accountStruct>& newListOfAccount)
         listOfPseudo.push_back(newListOfAccount.at(i).pseudo);
     }
 
-    setting.setValue("listOfHelloCookie", createQVariantListWithThisList(listOfHelloCookie));
-    setting.setValue("listOfConnectCookie", createQVariantListWithThisList(listOfConnectCookie));
-    setting.setValue("listOfPseudo", createQVariantListWithThisList(listOfPseudo));
+    setting->setValue("listOfHelloCookie", createQVariantListWithThisList(listOfHelloCookie));
+    setting->setValue("listOfConnectCookie", createQVariantListWithThisList(listOfConnectCookie));
+    setting->setValue("listOfPseudo", createQVariantListWithThisList(listOfPseudo));
 }
 
 void settingToolClass::saveListOfPseudoForTopic(QList<QString>& newList)
 {
-    setting.setValue("listOfPseudoForTopic", createQVariantListWithThisList(newList, false));
+    setting->setValue("listOfPseudoForTopic", createQVariantListWithThisList(newList, false));
 }
 
 void settingToolClass::saveListOfIgnoredPseudo(QList<QString>& newList)
 {
-    setting.setValue("listOfIgnoredPseudo", createQVariantListWithThisList(newList));
+    setting->setValue("listOfIgnoredPseudo", createQVariantListWithThisList(newList));
 }
 
 void settingToolClass::saveListOfColorPseudo(QList<pseudoWithColorStruct>& newListOfColorPseudo)
@@ -249,15 +254,15 @@ void settingToolClass::saveListOfColorPseudo(QList<pseudoWithColorStruct>& newLi
         blueList.push_back(QString::number(newListOfColorPseudo.at(i).blue));
     }
 
-    setting.setValue("listOfPseudoForColor", createQVariantListWithThisList(pseudoList));
-    setting.setValue("listOfRedForColor", createQVariantListWithThisList(redList));
-    setting.setValue("listOfGreenForColor", createQVariantListWithThisList(greenList));
-    setting.setValue("listOfBlueForColor", createQVariantListWithThisList(blueList));
+    setting->setValue("listOfPseudoForColor", createQVariantListWithThisList(pseudoList));
+    setting->setValue("listOfRedForColor", createQVariantListWithThisList(redList));
+    setting->setValue("listOfGreenForColor", createQVariantListWithThisList(greenList));
+    setting->setValue("listOfBlueForColor", createQVariantListWithThisList(blueList));
 }
 
 void settingToolClass::saveListOfTopicLink(QList<QString>& newList)
 {
-    setting.setValue("listOfTopicLink", createQVariantListWithThisList(newList));
+    setting->setValue("listOfTopicLink", createQVariantListWithThisList(newList));
 }
 
 QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString)

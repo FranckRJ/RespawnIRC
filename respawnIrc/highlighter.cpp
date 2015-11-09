@@ -13,7 +13,10 @@ highlighterClass::highlighterClass(QTextDocument* parent) : QSyntaxHighlighter(p
 
 highlighterClass::~highlighterClass()
 {
-    delete spellChecker;
+    if(spellChecker != 0)
+    {
+        delete spellChecker;
+    }
 }
 
 void highlighterClass::enableSpellChecking(const bool state)
@@ -40,12 +43,10 @@ bool highlighterClass::setDic(const QString newSpellDic)
     {
         delete spellChecker;
     }
-    spellChecker = new Hunspell("ressources/" + spellDic.toLatin1() + ".aff", "ressources/" + spellDic.toLatin1() + ".dic");
 
-    QFileInfo fileInfoForDic("ressources/" + spellDic + ".dic");
+    QFileInfo fileInfoForDic(QCoreApplication::applicationDirPath() + "/ressources/" + spellDic + ".dic");
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
-        delete spellChecker;
         spellChecker = 0;
         spellCheckActive = false;
         spellerError = true;
@@ -53,7 +54,10 @@ bool highlighterClass::setDic(const QString newSpellDic)
     }
     else
     {
-        QFileInfo fileInfoForUserDic("user_" + spellDic + ".dic");
+        QFileInfo fileInfoForUserDic(QCoreApplication::applicationDirPath() + "/user_" + spellDic + ".dic");
+        spellChecker = new Hunspell((QCoreApplication::applicationDirPath() + "/ressources/" + spellDic.toLatin1() + ".aff").toStdString().c_str(),
+                                    (QCoreApplication::applicationDirPath() + "/ressources/" + spellDic.toLatin1() + ".dic").toStdString().c_str());
+
         if(fileInfoForUserDic.exists() == true && fileInfoForUserDic.isReadable() == true)
         {
             spellChecker->add_dic(fileInfoForUserDic.filePath().toLatin1());
@@ -81,10 +85,13 @@ void highlighterClass::styleChanged()
 
 void highlighterClass::addWordToDic(QString word)
 {
-    QByteArray encodedString;
-    encodedString = codec->fromUnicode(word);
-    spellChecker->add(encodedString.data());
-    rehighlight();
+    if(spellChecker != 0)
+    {
+        QByteArray encodedString;
+        encodedString = codec->fromUnicode(word);
+        spellChecker->add(encodedString.data());
+        rehighlight();
+    }
 }
 
 void highlighterClass::highlightBlock(const QString& text)
@@ -127,5 +134,12 @@ void highlighterClass::spellCheck(const QString &text)
 
 bool highlighterClass::checkWord(QString word)
 {
-    return spellChecker->spell(codec->fromUnicode(word).data());
+    if(spellChecker != 0)
+    {
+        return spellChecker->spell(codec->fromUnicode(word).data());
+    }
+    else
+    {
+        return false;
+    }
 }

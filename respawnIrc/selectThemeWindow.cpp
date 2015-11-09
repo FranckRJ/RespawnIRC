@@ -41,7 +41,7 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
 
 void selectThemeWindowClass::loadListOfThemes()
 {
-    QDir themeDir("theme/");
+    QDir themeDir(QCoreApplication::applicationDirPath() + "/theme/");
     QStringList listOfTheme;
 
     if(themeDir.exists() == true)
