@@ -117,6 +117,8 @@ void showListOfTopicClass::analyzeReply()
         QList<QString> listOfTopicName;
 
         listOfLink.clear();
+        listOfTopicName.append(parsingToolClass::getForumName(source));
+        listOfLink.append("");
 
         for(int i = 0; i < listOfTopic.size(); ++i)
         {
@@ -132,13 +134,16 @@ void showListOfTopicClass::analyzeReply()
 
 void showListOfTopicClass::clickedOnLink(QModelIndex index)
 {
-    emit openThisTopic(listOfLink.at(index.row()));
+    if(index.row() >= 1)
+    {
+        emit openThisTopic(listOfLink.at(index.row()));
+    }
 }
 
 void showListOfTopicClass::createContextMenu(const QPoint &thisPoint)
 {
     QModelIndex indexSelected = listViewOfTopic.indexAt(thisPoint);
-    if(indexSelected.row() >= 0)
+    if(indexSelected.row() >= 1)
     {
         QAction* actionSelected = 0;
         QMenu contextMenu;

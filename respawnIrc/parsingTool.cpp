@@ -27,6 +27,7 @@ QRegularExpression parsingToolClass::expForDate("<div class=\"bloc-date-msg\">[^
 QRegularExpression parsingToolClass::expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">(.*?)</div>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForForumName("<title>(.*?)- jeuxvideo.com</title>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForStickers("<img class=\"img-stickers\" src=\"(http://jv.stkr.fr/p/([^\"]*))\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -280,6 +281,18 @@ QString parsingToolClass::getForumOfTopic(const QString& source)
     {
         return "";
     }
+}
+
+QString parsingToolClass::getForumName(const QString &source)
+{
+    QString forumName = expForForumName.match(source).captured(1);
+
+    while(forumName.endsWith(" "))
+    {
+        forumName.remove(forumName.size() - 1, 1);
+    }
+
+    return forumName;
 }
 
 QString parsingToolClass::jvfLinkToJvcLink(const QString &source)

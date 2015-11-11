@@ -39,6 +39,7 @@ public:
     static QList<messageStruct> getListOfEntireMessages(const QString& source, bool showStickers = true, int stickersSize = 70);
     static QList<topicStruct> getListOfTopic(const QString& source);
     static QString getForumOfTopic(const QString& source);
+    static QString getForumName(const QString& source);
     static QString jvfLinkToJvcLink(const QString& source);
     static QString parsingMessages(QString thisMessage, bool showStickers, int stickersSize);
     static QString parsingAjaxMessages(QString thisMessage);
@@ -73,6 +74,7 @@ private:
     static QRegularExpression expForMessage;
     static QRegularExpression expForEdit;
     static QRegularExpression expForForum;
+    static QRegularExpression expForForumName;
     static QRegularExpression expForJvfLink;
     static QRegularExpression expForSmiley;
     static QRegularExpression expForStickers;
