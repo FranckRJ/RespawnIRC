@@ -7,6 +7,7 @@
 
 #include "colorPseudoListWindow.hpp"
 #include "showListOfTopic.hpp"
+#include "parsingTool.hpp"
 #include "styleTool.hpp"
 
 class showTopicMessagesClass : public QWidget
@@ -91,6 +92,8 @@ private:
     bool oldUseMessageEdit;
     bool needToGetMessages;
     bool errorLastTime;
+    bool getFirstMessageOfTopic;
+    messageStruct firstMessageOfTopic;
     int idOfLastMessage;
     int idOfLastMessageOfUser;
     int oldIdOfLastMessageOfUser;

@@ -31,6 +31,7 @@ public:
     static QString getCaptchaLink(const QString& source);
     static QString getErrorMessage(const QString& source);
     static QString getLastPageOfTopic(const QString& source);
+    static QString getFirstPageOfTopic(const QString& source);
     static QString getBeforeLastPageOfTopic(const QString& source);
     static QString getNameOfTopic(const QString& source);
     static QString getNumberOfConnected(const QString& source);

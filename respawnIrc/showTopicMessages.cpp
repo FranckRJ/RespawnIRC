@@ -1,5 +1,4 @@
 #include "showTopicMessages.hpp"
-#include "parsingTool.hpp"
 #include "settingTool.hpp"
 
 showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
@@ -200,6 +199,12 @@ void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
     timerForGetMessage.setInterval(settingToolClass::getThisIntOption("updateTopicTime"));
     numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime");
     stickersSize = settingToolClass::getThisIntOption("stickersSize");
+    getFirstMessageOfTopic = settingToolClass::getThisBoolOption("getFirstMessageOfTopic");
+
+    if(getFirstMessageOfTopic == false)
+    {
+        firstMessageOfTopic.pseudo.clear();
+    }
 
     if(settingToolClass::getThisBoolOption("showListOfTopic") == true)
     {
@@ -235,7 +240,16 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     messagesBox.clear();
     topicName.clear();
     listOfEdit.clear();
-    topicLink = newTopic;
+
+    if(getFirstMessageOfTopic == true)
+    {
+        topicLink = parsingToolClass::getFirstPageOfTopic(newTopic);
+    }
+    else
+    {
+        topicLink = newTopic;
+    }
+
     linkHasChanged = true;
     firstTimeGetMessages = true;
     errorMode = false;
@@ -478,6 +492,7 @@ void showTopicMessagesClass::analyzeMessages()
     QString sourceFirst;
     QString sourceSecond;
     QString numberOfConnected;
+    bool appendHrAtEndOfFirstMessage = false;
 
     if(replyForFirstPage == 0)
     {
@@ -532,6 +547,11 @@ void showTopicMessagesClass::analyzeMessages()
         {
             emit newNameForTopic(topicName);
         }
+
+        if(getFirstMessageOfTopic == true)
+        {
+            firstMessageOfTopic = parsingToolClass::getListOfEntireMessages(sourceFirst, showStickers, stickersSize).first();
+        }
     }
 
     if(firstTimeGetMessages == false || newTopicLink.isEmpty() == true)
@@ -568,6 +588,13 @@ void showTopicMessagesClass::analyzeMessages()
             while(listOfEntireMessage.size() > numberOfMessageShowedFirstTime)
             {
                 listOfEntireMessage.pop_front();
+            }
+
+            if(getFirstMessageOfTopic == true && firstMessageOfTopic.pseudo.isEmpty() == false)
+            {
+                listOfEntireMessage.push_front(firstMessageOfTopic);
+                appendHrAtEndOfFirstMessage = true;
+                firstMessageOfTopic.pseudo.clear();
             }
         }
 
@@ -633,6 +660,12 @@ void showTopicMessagesClass::analyzeMessages()
                 newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
                 newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", listOfEntireMessage.at(i).pseudo);
                 newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", listOfEntireMessage.at(i).message);
+
+                if(appendHrAtEndOfFirstMessage == true)
+                {
+                    newMessageToAppend.append("<hr><span style=\"font-size: 1px;\"><br></span>");
+                    appendHrAtEndOfFirstMessage = false;
+                }
 
                 messagesBox.append(newMessageToAppend);
                 if(messagesBox.verticalScrollBar()->value() >= messagesBox.verticalScrollBar()->maximum())

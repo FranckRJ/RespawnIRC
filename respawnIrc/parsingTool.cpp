@@ -175,6 +175,20 @@ QString parsingToolClass::getLastPageOfTopic(const QString& source)
     return lastPage;
 }
 
+QString parsingToolClass::getFirstPageOfTopic(const QString &source)
+{
+    QRegularExpressionMatch matchForFirstPage = expForBeforeLastPage.match(source);
+
+    if(matchForFirstPage.hasMatch() == true)
+    {
+        return matchForFirstPage.captured(1) + QString::number(1) + matchForFirstPage.captured(3);
+    }
+    else
+    {
+        return "";
+    }
+}
+
 QString parsingToolClass::getBeforeLastPageOfTopic(const QString &source)
 {
     QRegularExpressionMatch matchForBeforeLastPage = expForBeforeLastPage.match(source);

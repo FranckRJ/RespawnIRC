@@ -67,6 +67,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     settingToolClass::createActionForBoolOption("Saisie du message en mode multiligne", "setMultilineEdit", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Vérifier l'orthographe", "useSpellChecker", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Charger les deux dernières pages", "loadTwoLastPage", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Récupérer le premier message du topic", "getFirstMessageOfTopic", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Ignorer les erreurs réseau", "ignoreNetworkError", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Beeper lors de la réception d'un message", "beepWhenWarn", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
