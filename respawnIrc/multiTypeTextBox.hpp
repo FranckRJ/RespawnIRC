@@ -16,6 +16,7 @@ public:
     QString text();
     void insertText(QString newText);
     void moveCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);
+    QString getSelectedText();
     void setFocus();
     void styleChanged();
     void settingsChanged();
