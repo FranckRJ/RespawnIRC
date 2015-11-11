@@ -794,7 +794,11 @@ void respawnIrcClass::postMessage()
 void respawnIrcClass::deleteReplyForSendMessage()
 {
     bool dontEraseEditMessage = false;
-    QString source = replyForSendMessage->readAll();
+    QString source;
+    if(replyForSendMessage->isReadable() == true)
+    {
+        source = replyForSendMessage->readAll();
+    }
     replyForSendMessage->deleteLater();
     replyForSendMessage = 0;
     captchaCode.clear();

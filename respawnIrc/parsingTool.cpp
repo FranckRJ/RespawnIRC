@@ -225,7 +225,14 @@ QString parsingToolClass::getNumberOfMp(const QString &source)
         numberOfMp = match.captured(1).toInt();
     }
 
-    return QString::number(numberOfMp) + " MP";
+    if(numberOfMp == 0)
+    {
+        return QString::number(numberOfMp) + " MP";
+    }
+    else
+    {
+        return "<b>" + QString::number(numberOfMp) + " MP</b>";
+    }
 }
 
 QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &source, bool showStickers, int stickersSize)

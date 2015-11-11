@@ -38,8 +38,13 @@ void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpd
 
 void checkUpdateClass::analyzeLatestUpdatePage()
 {
-    QString source = reply->readAll();
+    QString source;
     QString newVersionName;
+
+    if(reply->isReadable() == true)
+    {
+        source = reply->readAll();
+    }
     reply->deleteLater();
 
     newVersionName = parsingToolClass::getVersionName(source);
