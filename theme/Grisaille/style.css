@@ -76,6 +76,16 @@ QDialog QListView
 	border: 1px solid darkgrey;
 }
 
+QListView::item:hover
+{
+	background: dimgrey;
+}
+
+QListView::item:selected
+{
+	background: dimgrey;
+}
+
 QTabWidget::pane
 {
     border: 2px solid darkgrey;
