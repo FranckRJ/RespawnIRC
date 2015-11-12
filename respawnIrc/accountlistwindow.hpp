@@ -28,6 +28,7 @@ signals:
     void listHasChanged();
     void useThisAccount(QList<QNetworkCookie> withTheseCookie, QString withThisPseudo, bool saveAccountList, bool savePseudo);
     void useThisAccountForOneTopic(QList<QNetworkCookie> withTheseCookie, QString withThisPseudo, bool savePseudo);
+    void eraseThisPseudo(QString thisPseudo);
 private:
     QList<accountStruct>* listOfAccount;
     QListView viewListOfAccount;

@@ -9,6 +9,8 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QMenu* menuFile = menuBar->addMenu("&Fichier");
     QAction* actionConnect = menuFile->addAction("Se connecter");
     QAction* actionShowAccountList = menuFile->addAction("Afficher la liste des comptes");
+    QAction* actionDisconnectFromCurrentTab = menuFile->addAction("Se déconnecter sur l'onglet actuel");
+    QAction* actionDisconnectFromAllTabs = menuFile->addAction("Se déconnecter sur tous les onglets");
     menuFile->addSeparator();
     QAction* actionTabAddTab = menuFile->addAction("Ajouter un onglet");
     menuFile->addSeparator();
@@ -27,6 +29,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionSelectTopic = menuDiscussion->addAction("Choisir un topic");
     QAction* actionUpdateTopic = menuDiscussion->addAction("Forcer la récupération des messages");
     QAction* actionReloadTopic = menuDiscussion->addAction("Recharger le topic");
+    QAction* actionReloadAllTopic = menuDiscussion->addAction("Recharger tous les topics");
     menuDiscussion->addSeparator();
     QMenu* menuTextDecoration = menuDiscussion->addMenu("Ajouter des décorations de texte");
     QAction* actionAddBold = menuTextDecoration->addAction("Gras");
@@ -152,12 +155,15 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
 
     QObject::connect(actionConnect, &QAction::triggered, &respawnIrc, &respawnIrcClass::showConnect);
     QObject::connect(actionShowAccountList, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAccountListWindow);
+    QObject::connect(actionDisconnectFromCurrentTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromCurrentTab);
+    QObject::connect(actionDisconnectFromAllTabs, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromAllTabs);
     QObject::connect(actionTabAddTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::addNewTab);
     QObject::connect(actionGoToMp, &QAction::triggered, this, &mainWindowClass::goToMp);
     QObject::connect(actionCheckUpdate, &QAction::triggered, &respawnIrc, &respawnIrcClass::checkForUpdate);
     QObject::connect(actionSelectTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTopic);
     QObject::connect(actionUpdateTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::updateTopic);
     QObject::connect(actionReloadTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTopic);
+    QObject::connect(actionReloadAllTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadAllTopic);
     QObject::connect(actionAddBold, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addBold);
     QObject::connect(actionAddItalic, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addItalic);
     QObject::connect(actionAddUnderline, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addUnderLine);

@@ -271,6 +271,7 @@ void respawnIrcClass::showAccountListWindow()
     QObject::connect(myAccountListWindow, &accountListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfAccount);
     QObject::connect(myAccountListWindow, &accountListWindowClass::useThisAccount, this, &respawnIrcClass::setNewCookies);
     QObject::connect(myAccountListWindow, &accountListWindowClass::useThisAccountForOneTopic, this, &respawnIrcClass::setNewCookiesForCurrentTopic);
+    QObject::connect(myAccountListWindow, &accountListWindowClass::eraseThisPseudo, this, &respawnIrcClass::disconnectFromThisPseudo);
     myAccountListWindow->exec();
 }
 
@@ -419,6 +420,14 @@ void respawnIrcClass::reloadTopic()
     getCurrentWidget()->setNewTopic(listOfTopicLink[tabList.currentIndex()]);
 }
 
+void respawnIrcClass::reloadAllTopic()
+{
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->setNewTopic(listOfTopicLink[i]);
+    }
+}
+
 void respawnIrcClass::goToCurrentTopic()
 {
     if(getCurrentWidget()->getTopicLink().isEmpty() == false)
@@ -445,6 +454,47 @@ void respawnIrcClass::goToCurrentForum()
     }
 }
 
+void respawnIrcClass::disconnectFromAllTabs()
+{
+    currentCookieList = QList<QNetworkCookie>();
+    pseudoOfUser = "";
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        listOfShowTopicMessages.at(i)->setNewCookies(QList<QNetworkCookie>(), "");
+        listOfPseudoForTopic[i] = "";
+    }
+    settingToolClass::saveThisOption("pseudo", pseudoOfUser);
+    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+    setNewNumberOfConnectedAndPseudoUsed();
+}
+
+void respawnIrcClass::disconnectFromCurrentTab()
+{
+    getCurrentWidget()->setNewCookies(QList<QNetworkCookie>(), ".");
+    listOfPseudoForTopic[tabList.currentIndex()] = ".";
+    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+    setNewNumberOfConnectedAndPseudoUsed();
+}
+
+void respawnIrcClass::disconnectFromThisPseudo(QString thisPseudo)
+{
+    if(pseudoOfUser.toLower() == thisPseudo.toLower())
+    {
+        currentCookieList = QList<QNetworkCookie>();
+        pseudoOfUser = "";
+    }
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        if(listOfShowTopicMessages.at(i)->getPseudoUsed().toLower() == thisPseudo.toLower())
+        {
+            listOfShowTopicMessages.at(i)->setNewCookies(currentCookieList, pseudoOfUser);
+            listOfPseudoForTopic[i] = "";
+        }
+    }
+    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+    setNewNumberOfConnectedAndPseudoUsed();
+}
 
 void respawnIrcClass::quoteThisMessage(QString messageToQuote)
 {

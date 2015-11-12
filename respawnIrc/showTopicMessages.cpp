@@ -26,6 +26,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     secondPageLoading = false;
     needToGetMessages = false;
     errorLastTime = false;
+    needToSetCookies = false;
 
     networkManager = new QNetworkAccessManager(this);
 
@@ -120,19 +121,31 @@ const QList<QNetworkCookie>& showTopicMessagesClass::getListOfCookies()
 
 void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessagesAndList)
 {
+    if(newPseudoOfUser == ".")
+    {
+        newPseudoOfUser.clear();
+    }
+
     currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
     if(networkManager != 0)
     {
-        networkManager->clearAccessCache();
-        networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
-        errorLastTime = false;
-
-        if(updateMessagesAndList == true)
+        if(retrievesMessage == false)
         {
-            showListOfTopic.setNewCookies(newCookies);
-            startGetMessage();
+            networkManager->clearAccessCache();
+            networkManager->setCookieJar(new QNetworkCookieJar(this));
+            networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+            errorLastTime = false;
+
+            if(updateMessagesAndList == true)
+            {
+                showListOfTopic.setNewCookies(newCookies);
+                startGetMessage();
+            }
+        }
+        else
+        {
+            needToSetCookies = true;
         }
     }
 }
@@ -381,9 +394,10 @@ void showTopicMessagesClass::getMessages()
                 return;
             }*/
 
-            if(itsNewManager == true)
+            if(itsNewManager == true || needToSetCookies == true)
             {
                 setNewCookies(currentCookieList, pseudoOfUser, false);
+                needToSetCookies = false;
             }
 
             retrievesMessage = true;

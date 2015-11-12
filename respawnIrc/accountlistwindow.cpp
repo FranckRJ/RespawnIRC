@@ -97,6 +97,7 @@ void accountListWindowClass::removeCurrentAccount()
 {
     if(viewListOfAccount.currentIndex().row() != -1)
     {
+        emit eraseThisPseudo(listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo);
         listOfAccount->removeAt(viewListOfAccount.currentIndex().row());
         updateList();
     }

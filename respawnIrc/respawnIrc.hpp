@@ -45,8 +45,12 @@ public slots:
     void checkForUpdate();
     void updateTopic();
     void reloadTopic();
+    void reloadAllTopic();
     void goToCurrentTopic();
     void goToCurrentForum();
+    void disconnectFromAllTabs();
+    void disconnectFromCurrentTab();
+    void disconnectFromThisPseudo(QString thisPseudo);
     void quoteThisMessage(QString messageToQuote);
     void addThisPeudoToBlacklist(QString pseudoToAdd);
     void setUpdateTopicTime(int newTime);

@@ -92,6 +92,7 @@ private:
     bool oldUseMessageEdit;
     bool needToGetMessages;
     bool errorLastTime;
+    bool needToSetCookies;
     bool getFirstMessageOfTopic;
     messageStruct firstMessageOfTopic;
     int idOfLastMessage;
