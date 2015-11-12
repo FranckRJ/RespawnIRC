@@ -209,6 +209,7 @@ void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
     showStickers = settingToolClass::getThisBoolOption("showStickers");
     loadTwoLastPage = settingToolClass::getThisBoolOption("loadTwoLastPage");
     ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
+    colorModoAndAdminPseudo = settingToolClass::getThisBoolOption("colorModoAndAdminPseudo");
     timerForGetMessage.setInterval(settingToolClass::getThisIntOption("updateTopicTime"));
     numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime");
     stickersSize = settingToolClass::getThisIntOption("stickersSize");
@@ -216,7 +217,7 @@ void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
 
     if(getFirstMessageOfTopic == false)
     {
-        firstMessageOfTopic.pseudo.clear();
+        firstMessageOfTopic.pseudoInfo.pseudoName.clear();
     }
 
     if(settingToolClass::getThisBoolOption("showListOfTopic") == true)
@@ -604,11 +605,11 @@ void showTopicMessagesClass::analyzeMessages()
                 listOfEntireMessage.pop_front();
             }
 
-            if(getFirstMessageOfTopic == true && firstMessageOfTopic.pseudo.isEmpty() == false)
+            if(getFirstMessageOfTopic == true && firstMessageOfTopic.pseudoInfo.pseudoName.isEmpty() == false)
             {
                 listOfEntireMessage.push_front(firstMessageOfTopic);
                 appendHrAtEndOfFirstMessage = true;
-                firstMessageOfTopic.pseudo.clear();
+                firstMessageOfTopic.pseudoInfo.pseudoName.clear();
             }
         }
 
@@ -616,22 +617,44 @@ void showTopicMessagesClass::analyzeMessages()
         {
             QMap<int, QString>::const_iterator listOfEditIterator = listOfEdit.find(listOfEntireMessage.at(i).idOfMessage);
             if((listOfEntireMessage.at(i).idOfMessage > idOfLastMessage || (listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit))
-                    && listOfIgnoredPseudo->indexOf(listOfEntireMessage.at(i).pseudo.toLower()) == -1)
+                    && listOfIgnoredPseudo->indexOf(listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower()) == -1)
             {
                 QString newMessageToAppend = baseModel;
                 buttonString.clear();
                 colorOfPseudo.clear();
-                colorOfPseudo = getColorOfThisPseudo(listOfEntireMessage.at(i).pseudo.toLower());
+                colorOfPseudo = getColorOfThisPseudo(listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower());
 
                 if(colorOfPseudo.isEmpty() == true)
                 {
-                    if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
+                    if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
                     {
                         colorOfPseudo = baseModelInfo.userPseudoColor;
                     }
                     else
                     {
-                        colorOfPseudo = baseModelInfo.normalPseudoColor;
+                        if(colorModoAndAdminPseudo == true)
+                        {
+                            if(listOfEntireMessage.at(i).pseudoInfo.pseudoType == "user")
+                            {
+                                colorOfPseudo = baseModelInfo.normalPseudoColor;
+                            }
+                            else if(listOfEntireMessage.at(i).pseudoInfo.pseudoType == "modo")
+                            {
+                                colorOfPseudo = baseModelInfo.modoPseudoColor;
+                            }
+                            else if(listOfEntireMessage.at(i).pseudoInfo.pseudoType == "admin")
+                            {
+                                colorOfPseudo = baseModelInfo.adminPseudoColor;
+                            }
+                            else
+                            {
+                                colorOfPseudo = baseModelInfo.normalPseudoColor;
+                            }
+                        }
+                        else
+                        {
+                            colorOfPseudo = baseModelInfo.normalPseudoColor;
+                        }
                     }
                 }
 
@@ -644,7 +667,7 @@ void showTopicMessagesClass::analyzeMessages()
                     colorOfDate = baseModelInfo.normalDateColor;
                     idOfLastMessage = listOfEntireMessage.at(i).idOfMessage;
 
-                    if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
+                    if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
                     {
                         idOfLastMessageOfUser = idOfLastMessage;
                     }
@@ -655,7 +678,7 @@ void showTopicMessagesClass::analyzeMessages()
                     newMessageToAppend.replace("<%BUTTON_QUOTE%>", baseModelInfo.quoteModel);
                 }
 
-                if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudo.toLower())
+                if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
                 {
                     if(showEditButton == true)
                     {
@@ -668,11 +691,11 @@ void showTopicMessagesClass::analyzeMessages()
                 }
 
                 newMessageToAppend.replace("<%DATE_COLOR%>", colorOfDate);
-                newMessageToAppend.replace("<%PSEUDO_LOWER%>", listOfEntireMessage.at(i).pseudo.toLower());
+                newMessageToAppend.replace("<%PSEUDO_LOWER%>", listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower());
                 newMessageToAppend.replace("<%ID_MESSAGE%>", QString::number(listOfEntireMessage.at(i).idOfMessage));
                 newMessageToAppend.replace("<%DATE_MESSAGE%>", listOfEntireMessage.at(i).date);
                 newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
-                newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", listOfEntireMessage.at(i).pseudo);
+                newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", listOfEntireMessage.at(i).pseudoInfo.pseudoName);
                 newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", listOfEntireMessage.at(i).message);
 
                 if(appendHrAtEndOfFirstMessage == true)
@@ -688,7 +711,7 @@ void showTopicMessagesClass::analyzeMessages()
                     messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
                 }
                 listOfEdit[listOfEntireMessage.at(i).idOfMessage] = listOfEntireMessage.at(i).lastTimeEdit;
-                if(pseudoOfUser.toLower() != listOfEntireMessage.at(i).pseudo.toLower())
+                if(pseudoOfUser.toLower() != listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
                 {
                     emit newMessagesAvailable();
                 }

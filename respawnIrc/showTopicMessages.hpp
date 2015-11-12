@@ -93,6 +93,7 @@ private:
     bool needToGetMessages;
     bool errorLastTime;
     bool needToSetCookies;
+    bool colorModoAndAdminPseudo;
     bool getFirstMessageOfTopic;
     messageStruct firstMessageOfTopic;
     int idOfLastMessage;

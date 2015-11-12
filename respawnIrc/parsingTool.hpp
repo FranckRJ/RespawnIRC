@@ -4,10 +4,16 @@
 #include <QtCore>
 #include <QtNetwork>
 
+struct pseudoInfoStruct
+{
+    QString pseudoName;
+    QString pseudoType;
+};
+
 struct messageStruct
 {
     int idOfMessage;
-    QString pseudo;
+    pseudoInfoStruct pseudoInfo;
     QString date;
     QString message;
     QString lastTimeEdit;

@@ -22,7 +22,7 @@ QRegularExpression parsingToolClass::expForMpJvc("<span class=\"picto-nb-mp\">[^
 QRegularExpression parsingToolClass::expForEntireMessage("(<div class=\"bloc-message-forum \".*?)(<div class=\"bloc-message-forum \"|<div class=\"bloc-pagi-default\">)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForListOfTopic("<div class=\"titre-topic\">[^<]*<a href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessageID("<div class=\"bloc-message-forum \" id=\"post_[^\"]*\" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
-QRegularExpression parsingToolClass::expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-[^\"]*\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-([^\"]*)\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForDate("<div class=\"bloc-date-msg\">[^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">[^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">(.*?)</div>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -246,7 +246,8 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &so
     {
         listOfMessages.push_back(messageStruct());
         listOfMessages.back().idOfMessage = expForMessageID.match(listOfEntireMessage.at(i)).captured(1).toInt();
-        listOfMessages.back().pseudo = expForPseudo.match(listOfEntireMessage.at(i)).captured(1);
+        listOfMessages.back().pseudoInfo.pseudoName = expForPseudo.match(listOfEntireMessage.at(i)).captured(2);
+        listOfMessages.back().pseudoInfo.pseudoType = expForPseudo.match(listOfEntireMessage.at(i)).captured(1);
         listOfMessages.back().date = expForDate.match(listOfEntireMessage.at(i)).captured(1);
         listOfMessages.back().message = parsingMessages(expForMessage.match(listOfEntireMessage.at(i)).captured(1), showStickers, stickersSize);
         listOfMessages.back().lastTimeEdit = expForEdit.match(listOfEntireMessage.at(i)).captured(1);

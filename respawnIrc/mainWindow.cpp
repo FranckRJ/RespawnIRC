@@ -64,6 +64,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     settingToolClass::createActionForBoolOption("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Ajouter un bouton pour éditer un message", "showEditButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Afficher les stickers", "showStickers", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
+    settingToolClass::createActionForBoolOption("Colorer le pseudo des modo/admin", "colorModoAndAdminPseudo", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     menuSetting->addSeparator();
     settingToolClass::createActionForBoolOption("Afficher les boutons de décoration de texte", "showTextDecorationButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Afficher la liste des topics", "showListOfTopic", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));

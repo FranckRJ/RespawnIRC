@@ -28,6 +28,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["useSpellChecker"] = true;
     listOfDefaultBoolOption["warnUser"] = true;
     listOfDefaultBoolOption["getFirstMessageOfTopic"] = false;
+    listOfDefaultBoolOption["colorModoAndAdminPseudo"] = true;
     listOfDefaultIntOption["updateTopicTime"] = 3500;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
     listOfDefaultIntOption["stickersSize"] = 70;

@@ -43,15 +43,18 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"quote:<%ID_MESSAGE%>:[<%DATE_MESSAGE%>] <<%PSEUDO_PSEUDO%>>\">[C]</a> ");
     listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"blacklist:<%PSEUDO_LOWER%>\">[B]</a> ");
     listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"edit:<%ID_MESSAGE%>\">[E]</a> ");
-    listOfInfos.push_back("black");
-    listOfInfos.push_back("green");
-    listOfInfos.push_back("dimgrey");
-    listOfInfos.push_back("blue");
+    listOfInfos.push_back("black"); //normal date color
+    listOfInfos.push_back("green"); //edited date color
+    listOfInfos.push_back("dimgrey"); //normal pseudo color
+    listOfInfos.push_back("blue");  //user pseudo color
 
-    listOfInfos.push_back("blue");
-    listOfInfos.push_back("black");
-    listOfInfos.push_back("grey");
-    listOfInfos.push_back("red");
+    listOfInfos.push_back("blue"); //link color
+    listOfInfos.push_back("black"); //spoil color
+    listOfInfos.push_back("grey"); //quote color
+    listOfInfos.push_back("red"); //underline color
+
+    listOfInfos.push_back("#3a9d23"); //modo pseudo color
+    listOfInfos.push_back("#db0f0f"); //admin pseudo color
 
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
@@ -62,7 +65,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
         }
     }
 
-    while(listOfLine.size() < 11)
+    while(listOfLine.size() < 13)
     {
         listOfLine.push_back(listOfInfos.at(listOfLine.size()));
     }
@@ -79,6 +82,9 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     colorInfoForMessageAndOther.spoilColor = listOfLine.at(8);
     colorInfoForMessageAndOther.tableBorderColor = listOfLine.at(9);
     colorInfoForMessageAndOther.underlineColor = listOfLine.at(10);
+
+    modelInfo.modoPseudoColor = listOfLine.at(11);
+    modelInfo.adminPseudoColor = listOfLine.at(12);
 
     return modelInfo;
 }
