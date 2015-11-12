@@ -11,7 +11,7 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.18.2");
+const QString respawnIrcClass::currentVersionName("v1.19");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {

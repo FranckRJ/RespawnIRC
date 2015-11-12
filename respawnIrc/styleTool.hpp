@@ -14,6 +14,7 @@ struct modelInfoStruct
     QString userPseudoColor;
     QString modoPseudoColor;
     QString adminPseudoColor;
+    QString pemtDateColor;
 };
 
 struct colorInfoForMessageAndOtherStruct

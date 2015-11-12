@@ -55,6 +55,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
 
     listOfInfos.push_back("#3a9d23"); //modo pseudo color
     listOfInfos.push_back("#db0f0f"); //admin pseudo color
+    listOfInfos.push_back("darkorange"); //pemt date color
 
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
@@ -65,7 +66,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
         }
     }
 
-    while(listOfLine.size() < 13)
+    while(listOfLine.size() < 14)
     {
         listOfLine.push_back(listOfInfos.at(listOfLine.size()));
     }
@@ -85,6 +86,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
 
     modelInfo.modoPseudoColor = listOfLine.at(11);
     modelInfo.adminPseudoColor = listOfLine.at(12);
+    modelInfo.pemtDateColor = listOfLine.at(13);
 
     return modelInfo;
 }

@@ -78,6 +78,7 @@ private:
     QString ajaxInfo;
     QString oldAjaxInfo;
     QString lastMessageQuoted;
+    QString lastDate;
     bool showQuoteButton;
     bool showBlacklistButton;
     bool showEditButton;
@@ -94,6 +95,7 @@ private:
     bool errorLastTime;
     bool needToSetCookies;
     bool colorModoAndAdminPseudo;
+    bool colorPEMT;
     bool getFirstMessageOfTopic;
     messageStruct firstMessageOfTopic;
     int idOfLastMessage;

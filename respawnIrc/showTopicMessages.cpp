@@ -210,6 +210,7 @@ void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
     loadTwoLastPage = settingToolClass::getThisBoolOption("loadTwoLastPage");
     ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
     colorModoAndAdminPseudo = settingToolClass::getThisBoolOption("colorModoAndAdminPseudo");
+    colorPEMT = settingToolClass::getThisBoolOption("colorPEMT");
     timerForGetMessage.setInterval(settingToolClass::getThisIntOption("updateTopicTime"));
     numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime");
     stickersSize = settingToolClass::getThisIntOption("stickersSize");
@@ -254,6 +255,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     messagesBox.clear();
     topicName.clear();
     listOfEdit.clear();
+    lastDate.clear();
 
     if(getFirstMessageOfTopic == true)
     {
@@ -664,8 +666,16 @@ void showTopicMessagesClass::analyzeMessages()
                 }
                 else
                 {
-                    colorOfDate = baseModelInfo.normalDateColor;
+                    if(colorPEMT == true && lastDate == listOfEntireMessage.at(i).date)
+                    {
+                        colorOfDate = baseModelInfo.pemtDateColor;
+                    }
+                    else
+                    {
+                        colorOfDate = baseModelInfo.normalDateColor;
+                    }
                     idOfLastMessage = listOfEntireMessage.at(i).idOfMessage;
+                    lastDate = listOfEntireMessage.at(i).date;
 
                     if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
                     {
