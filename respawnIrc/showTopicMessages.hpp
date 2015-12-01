@@ -53,6 +53,7 @@ signals:
     void newNameForTopic(QString newName);
     void topicNeedChanged(QString topicLink);
     void openThisTopicInNewTab(QString topicLink);
+    void newCookiesHaveToBeSet();
 private:
     QTextBrowser messagesBox;
     QString baseModel;

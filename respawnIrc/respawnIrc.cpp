@@ -11,7 +11,7 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v1.19.1");
+const QString respawnIrcClass::currentVersionName("v1.19.2");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
@@ -380,6 +380,7 @@ void respawnIrcClass::addNewTab()
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
     QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
+    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
     tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
     tabList.setCurrentIndex(listOfShowTopicMessages.size() - 1);
 }
@@ -622,6 +623,29 @@ void respawnIrcClass::setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCook
     {
         listOfPseudoForTopic[tabList.currentIndex()] = newPseudoOfUser;
         settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+    }
+}
+
+void respawnIrcClass::setNewCookiesForPseudo()
+{
+    QObject* senderObject = sender();
+
+    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    {
+        if(senderObject == listOfShowTopicMessages.at(i))
+        {
+            QString pseudoUsed = listOfShowTopicMessages.at(i)->getPseudoUsed();
+
+            for(int j = 0; j < listOfAccount.size(); ++j)
+            {
+                if(listOfAccount.at(j).pseudo.toLower() == pseudoUsed.toLower())
+                {
+                    listOfAccount[j].listOfCookie = listOfShowTopicMessages.at(i)->getListOfCookies();
+                    saveListOfAccount();
+                    break;
+                }
+            }
+        }
     }
 }
 

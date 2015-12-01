@@ -520,7 +520,33 @@ void showTopicMessagesClass::analyzeMessages()
 
     if(replyForFirstPage->isReadable())
     {
+        bool cookiesChanged = false;
+        QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(replyForFirstPage->header(QNetworkRequest::SetCookieHeader));
         sourceFirst = replyForFirstPage->readAll();
+
+        for(int i = 0; i < newCookieList.size(); ++i)
+        {
+            if(newCookieList.at(i).name() == "dlrowolleh" || newCookieList.at(i).name() == "coniunctio")
+            {
+                for(int j = 0; j < currentCookieList.size(); ++j)
+                {
+                    if(currentCookieList.at(j).name() == newCookieList.at(i).name())
+                    {
+                        if(currentCookieList.at(j).toRawForm() != newCookieList.at(i).toRawForm())
+                        {
+                            currentCookieList.replace(j, newCookieList.at(i));
+                            cookiesChanged = true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(cookiesChanged == true)
+        {
+            emit newCookiesHaveToBeSet();
+        }
     }
     replyForFirstPage->deleteLater();
     replyForFirstPage = 0;

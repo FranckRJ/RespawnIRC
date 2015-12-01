@@ -116,7 +116,7 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos)
 {
     QTextCursor cursor = cursorForPosition(cursorPos);
     QString textBlock = cursor.block().text();
-    int pos = cursor.columnNumber();
+    int pos = cursor.positionInBlock();
     int end = textBlock.indexOf(QRegExp("[^\\w'-]"), pos);
     int begin = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), pos);
 
@@ -169,7 +169,7 @@ void spellTextEditClass::correctWord()
         QString replacement = thisAction->text();
         QTextCursor cursor = cursorForPosition(lastPos);
         QString textBlock = cursor.block().text();
-        int pos = cursor.columnNumber();
+        int pos = cursor.positionInBlock();
         int end = textBlock.indexOf(QRegExp("[^\\w'-]"), pos);
         int begin = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), pos);
 

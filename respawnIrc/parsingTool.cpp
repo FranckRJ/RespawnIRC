@@ -330,7 +330,8 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
 
 QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers, int stickersSize)
 {
-    replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<pre><code>", "</code></pre>", -1, "", true);
+    replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", true);
+    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", true);
 
     thisMessage.replace("\n", "");
 
@@ -350,8 +351,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
     replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>");
     replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<br /><br /><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>");
-    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code>", "</code> ");
-    replaceWithCapNumber(thisMessage, expForAllJVCare, 1);
+    replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", false, true);
 
     thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-bottom: 5px;margin-top: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
@@ -425,7 +425,7 @@ QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, Q
     return listOfString;
 }
 
-void parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter, bool replaceReturnByBr)
+void parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter, bool replaceReturnByBr, bool makeLinkIfPossible)
 {
     QRegularExpressionMatchIterator matchIterator = exp.globalMatch(source);
     int lenghtChanged = 0;
@@ -447,6 +447,12 @@ void parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression&
         if(replaceReturnByBr == true)
         {
             newString.replace("\n", "<br />");
+        }
+
+        if(makeLinkIfPossible == true &&
+                (newString.startsWith("http://") || newString.startsWith("https://")) && newString.contains(" ") == false)
+        {
+            newString = "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"" + newString + "\">" + newString + "</a>";
         }
 
         source.replace(match.capturedStart(0) + lenghtChanged, match.capturedLength(0), newString);

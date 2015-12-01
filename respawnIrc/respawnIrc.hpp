@@ -61,6 +61,7 @@ public slots:
     void setMultilineEdit(bool newVal);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
     void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);
+    void setNewCookiesForPseudo();
     void setNewTopic(QString newTopic);
     void setNewTheme(QString newThemeName);
     void reloadTheme();
