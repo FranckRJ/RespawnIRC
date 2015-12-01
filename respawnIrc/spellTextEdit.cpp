@@ -120,6 +120,11 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos)
     int end = textBlock.indexOf(QRegExp("[^\\w'-]"), pos);
     int begin = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), pos);
 
+    if(end == -1)
+    {
+        end = textBlock.size();
+    }
+
     textBlock = textBlock.mid(begin + 1, end - begin - 1);
 
     return textBlock;
@@ -172,6 +177,11 @@ void spellTextEditClass::correctWord()
         int pos = cursor.positionInBlock();
         int end = textBlock.indexOf(QRegExp("[^\\w'-]"), pos);
         int begin = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), pos);
+
+        if(end == -1)
+        {
+            end = textBlock.size();
+        }
 
         cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, pos - begin - 1);
         cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, end - begin - 1);
