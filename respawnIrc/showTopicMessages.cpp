@@ -670,7 +670,7 @@ void showTopicMessagesClass::analyzeMessages()
                             {
                                 colorOfPseudo = baseModelInfo.modoPseudoColor;
                             }
-                            else if(listOfEntireMessage.at(i).pseudoInfo.pseudoType == "admin")
+                            else if(listOfEntireMessage.at(i).pseudoInfo.pseudoType == "admin" || listOfEntireMessage.at(i).pseudoInfo.pseudoType == "staff")
                             {
                                 colorOfPseudo = baseModelInfo.adminPseudoColor;
                             }
