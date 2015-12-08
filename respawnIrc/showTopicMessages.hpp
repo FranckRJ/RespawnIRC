@@ -98,6 +98,7 @@ private:
     bool colorModoAndAdminPseudo;
     bool colorPEMT;
     bool getFirstMessageOfTopic;
+    bool warnWhenEdit;
     messageStruct firstMessageOfTopic;
     int idOfLastMessage;
     int idOfLastMessageOfUser;

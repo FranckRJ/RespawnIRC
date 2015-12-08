@@ -217,6 +217,7 @@ void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
     numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime");
     stickersSize = settingToolClass::getThisIntOption("stickersSize");
     getFirstMessageOfTopic = settingToolClass::getThisBoolOption("getFirstMessageOfTopic");
+    warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
 
     if(getFirstMessageOfTopic == false)
     {
@@ -698,7 +699,7 @@ void showTopicMessagesClass::analyzeMessages()
                     }
                 }
 
-                if(listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit)
+                if(valueOfEditIte != listOfEntireMessage.at(i).lastTimeEdit)
                 {
                     colorOfDate = baseModelInfo.editDateColor;
                 }
@@ -761,7 +762,10 @@ void showTopicMessagesClass::analyzeMessages()
                 listOfEdit[listOfEntireMessage.at(i).idOfMessage] = listOfEntireMessage.at(i).lastTimeEdit;
                 if(pseudoOfUser.toLower() != listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
                 {
-                    emit newMessagesAvailable();
+                    if(warnWhenEdit == true || (warnWhenEdit == false && valueOfEditIte == listOfEntireMessage.at(i).lastTimeEdit))
+                    {
+                        emit newMessagesAvailable();
+                    }
                 }
             }
         }
