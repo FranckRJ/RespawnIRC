@@ -21,6 +21,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     sendButton.setObjectName("sendButton");
     alertImage.load(QCoreApplication::applicationDirPath() + "/ressources/alert.png");
     replyForSendMessage = 0;
+    idOfLastMessageEdit = 0;
     inSending = false;
     isInEdit = false;
     beepWhenWarn = true;

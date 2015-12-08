@@ -8,6 +8,7 @@ highlighterClass::highlighterClass(QTextDocument* parent) : QSyntaxHighlighter(p
     spellCheckActive = false;
     spellerError = true;
     spellChecker = 0;
+    codec = 0;
     setDic("");
 }
 
@@ -85,7 +86,7 @@ void highlighterClass::styleChanged()
 
 void highlighterClass::addWordToDic(QString word)
 {
-    if(spellChecker != 0)
+    if(spellChecker != 0 && codec != 0)
     {
         QByteArray encodedString;
         encodedString = codec->fromUnicode(word);
@@ -134,7 +135,7 @@ void highlighterClass::spellCheck(const QString &text)
 
 bool highlighterClass::checkWord(QString word)
 {
-    if(spellChecker != 0)
+    if(spellChecker != 0 && codec != 0)
     {
         return spellChecker->spell(codec->fromUnicode(word).data());
     }

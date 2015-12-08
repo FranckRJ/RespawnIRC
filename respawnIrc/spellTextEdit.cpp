@@ -3,46 +3,49 @@
 spellTextEditClass::spellTextEditClass(QWidget *parent) : QTextEdit(parent)
 {
     spellChecker = 0;
+    codecUsed = 0;
 
     wordPropositionsActions.fill(new QAction(this), 5);
     createActions();
     setDic("");
-    addedWords.clear();
 }
 
 spellTextEditClass::~spellTextEditClass()
 {
-    QFile file(QCoreApplication::applicationDirPath() + "/user_" + spellDic + ".dic");
-    if(file.open(QIODevice::ReadOnly | QIODevice::Text) == true)
+    if(addedWords.isEmpty() == false)
     {
-        QTextStream readStream(&file);
-
-        readStream.readLine();
-        while(readStream.atEnd() == false)
+        QFile file(QCoreApplication::applicationDirPath() + "/user_" + spellDic + ".dic");
+        if(file.open(QIODevice::ReadOnly | QIODevice::Text) == true)
         {
-            QString line = readStream.readLine();
-            if(addedWords.contains(line) == false)
+            QTextStream readStream(&file);
+
+            readStream.readLine();
+            while(readStream.atEnd() == false)
             {
-                addedWords << line;
+                QString line = readStream.readLine();
+                if(addedWords.contains(line) == false)
+                {
+                    addedWords << line;
+                }
             }
+
+            file.close();
         }
-
-        file.close();
-    }
-    if(file.open(QIODevice::WriteOnly | QIODevice::Text) == true)
-    {
-        QTextStream writeStream(&file);
-        QByteArray encodedString;
-
-        writeStream << addedWords.count() << "\n";
-
-        for(int i = 0; i < addedWords.size(); ++i)
+        if(file.open(QIODevice::WriteOnly | QIODevice::Text) == true && codecUsed != 0)
         {
-            encodedString = codecUsed->fromUnicode(addedWords.at(i));
-            writeStream << encodedString.data() << "\n";
-        }
+            QTextStream writeStream(&file);
+            QByteArray encodedString;
 
-        file.close();
+            writeStream << addedWords.count() << "\n";
+
+            for(int i = 0; i < addedWords.size(); ++i)
+            {
+                encodedString = codecUsed->fromUnicode(addedWords.at(i));
+                writeStream << encodedString.data() << "\n";
+            }
+
+            file.close();
+        }
     }
 
     if(spellChecker != 0)
@@ -54,7 +57,7 @@ spellTextEditClass::~spellTextEditClass()
 QStringList spellTextEditClass::getWordPropositions(const QString word)
 {
     QStringList wordList;
-    if(spellChecker != 0)
+    if(spellChecker != 0 && codecUsed != 0)
     {
         QByteArray encodedString;
         encodedString = codecUsed->fromUnicode(word);
@@ -193,7 +196,7 @@ void spellTextEditClass::correctWord()
 
 void spellTextEditClass::addWordToUserDic()
 {
-    if(spellChecker != 0)
+    if(spellChecker != 0 && codecUsed != 0)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
         QByteArray encodedString;
@@ -208,7 +211,7 @@ void spellTextEditClass::addWordToUserDic()
 
 void spellTextEditClass::ignoreWord()
 {
-    if(spellChecker != 0)
+    if(spellChecker != 0 && codecUsed != 0)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
         QByteArray encodedString;

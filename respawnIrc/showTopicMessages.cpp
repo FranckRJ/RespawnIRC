@@ -21,12 +21,14 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     retrievesMessage = false;
     idOfLastMessage = 0;
     idOfLastMessageOfUser = 0;
+    oldIdOfLastMessageOfUser = 0;
     linkHasChanged = false;
     errorMode = false;
     secondPageLoading = false;
     needToGetMessages = false;
     errorLastTime = false;
     needToSetCookies = false;
+    oldUseMessageEdit = false;
 
     networkManager = new QNetworkAccessManager(this);
 
@@ -272,6 +274,9 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     errorLastTime = false;
     idOfLastMessage = 0;
     idOfLastMessageOfUser = 0;
+    oldIdOfLastMessageOfUser = 0;
+    needToGetMessages = false;
+    oldUseMessageEdit = false;
 
     showListOfTopic.setForumLink(parsingToolClass::getForumOfTopic(topicLink));
 
