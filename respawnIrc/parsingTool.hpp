@@ -42,7 +42,7 @@ public:
     static QString getNameOfTopic(const QString& source);
     static QString getNumberOfConnected(const QString& source);
     static QString getNumberOfMp(const QString& source);
-    static QList<messageStruct> getListOfEntireMessages(const QString& source, bool showStickers = true, int stickersSize = 70);
+    static QList<messageStruct> getListOfEntireMessagesWithoutMessagePars(const QString& source);
     static QList<topicStruct> getListOfTopic(const QString& source);
     static QString getForumOfTopic(const QString& source);
     static QString getForumName(const QString& source);

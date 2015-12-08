@@ -598,7 +598,7 @@ void showTopicMessagesClass::analyzeMessages()
 
         if(getFirstMessageOfTopic == true)
         {
-            firstMessageOfTopic = parsingToolClass::getListOfEntireMessages(sourceFirst, showStickers, stickersSize).first();
+            firstMessageOfTopic = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst).first();
         }
     }
 
@@ -608,10 +608,10 @@ void showTopicMessagesClass::analyzeMessages()
 
         if(sourceSecond.isEmpty() == false)
         {
-            listOfEntireMessage = parsingToolClass::getListOfEntireMessages(sourceSecond, showStickers, stickersSize);
+            listOfEntireMessage = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceSecond);
         }
 
-        listOfEntireMessage.append(parsingToolClass::getListOfEntireMessages(sourceFirst, showStickers, stickersSize));
+        listOfEntireMessage.append(parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst));
 
         if(listOfEntireMessage.size() == 0)
         {
@@ -649,7 +649,14 @@ void showTopicMessagesClass::analyzeMessages()
         for(int i = 0; i < listOfEntireMessage.size(); ++i)
         {
             QMap<int, QString>::const_iterator listOfEditIterator = listOfEdit.find(listOfEntireMessage.at(i).idOfMessage);
-            if((listOfEntireMessage.at(i).idOfMessage > idOfLastMessage || (listOfEditIterator != listOfEdit.end() && listOfEditIterator.value() != listOfEntireMessage.at(i).lastTimeEdit))
+            QString valueOfEditIte = listOfEntireMessage.at(i).lastTimeEdit;
+
+            if(listOfEditIterator != listOfEdit.end())
+            {
+                valueOfEditIte = listOfEditIterator.value();
+            }
+
+            if((listOfEntireMessage.at(i).idOfMessage > idOfLastMessage || (valueOfEditIte != listOfEntireMessage.at(i).lastTimeEdit))
                     && listOfIgnoredPseudo->indexOf(listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower()) == -1)
             {
                 QString newMessageToAppend = baseModel;
@@ -737,7 +744,7 @@ void showTopicMessagesClass::analyzeMessages()
                 newMessageToAppend.replace("<%DATE_MESSAGE%>", listOfEntireMessage.at(i).date);
                 newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
                 newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", listOfEntireMessage.at(i).pseudoInfo.pseudoName);
-                newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", listOfEntireMessage.at(i).message);
+                newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", parsingToolClass::parsingMessages(listOfEntireMessage.at(i).message, showStickers, stickersSize));
 
                 if(appendHrAtEndOfFirstMessage == true)
                 {

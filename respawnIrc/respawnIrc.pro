@@ -77,3 +77,5 @@ HEADERS += \
     highlighter.hpp
 
 RC_FILE = respawnIrc.rc
+
+QMAKE_CXXFLAGS_RELEASE = -O2

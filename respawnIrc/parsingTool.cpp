@@ -235,7 +235,7 @@ QString parsingToolClass::getNumberOfMp(const QString &source)
     }
 }
 
-QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &source, bool showStickers, int stickersSize)
+QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars(const QString &source)
 {
     QList<QString> listOfEntireMessage;
     QList<messageStruct> listOfMessages;
@@ -249,7 +249,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessages(const QString &so
         listOfMessages.back().pseudoInfo.pseudoName = expForPseudo.match(listOfEntireMessage.at(i)).captured(2);
         listOfMessages.back().pseudoInfo.pseudoType = expForPseudo.match(listOfEntireMessage.at(i)).captured(1);
         listOfMessages.back().date = expForDate.match(listOfEntireMessage.at(i)).captured(1);
-        listOfMessages.back().message = parsingMessages(expForMessage.match(listOfEntireMessage.at(i)).captured(1), showStickers, stickersSize);
+        listOfMessages.back().message = expForMessage.match(listOfEntireMessage.at(i)).captured(1);
         listOfMessages.back().lastTimeEdit = expForEdit.match(listOfEntireMessage.at(i)).captured(1);
     }
 
