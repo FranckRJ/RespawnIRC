@@ -85,6 +85,7 @@ signals:
 protected:
     void focusInEvent(QFocusEvent * event);
 private:
+    static QRegularExpression expForSmileyToCode;
     QHBoxLayout* buttonLayout;
     QTabWidget tabList;
     QVector<QString> vectorOfFavoriteLink;
