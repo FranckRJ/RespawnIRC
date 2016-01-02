@@ -17,6 +17,10 @@ struct messageStruct
     QString date;
     QString message;
     QString lastTimeEdit;
+    bool operator<(const messageStruct& otherStruct) const
+    {
+        return (idOfMessage < otherStruct.idOfMessage);
+    }
 };
 
 struct topicStruct
