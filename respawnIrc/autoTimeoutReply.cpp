@@ -4,7 +4,7 @@ autoTimeoutReplyClass::autoTimeoutReplyClass()
 {
     timerForTimeout.setTimerType(Qt::CoarseTimer);
     timerForTimeout.setSingleShot(true);
-    timerForTimeout.setInterval(8000);
+    timerForTimeout.setInterval(10000);
     timerForTimeout.stop();
     currentReply = 0;
 

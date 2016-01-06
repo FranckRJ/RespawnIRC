@@ -566,45 +566,41 @@ void showTopicMessagesClass::analyzeMessages()
     timeoutForFirstPage.resetReply();
     timeoutForSecondPage.resetReply();
 
-    if(replyForFirstPage == 0)
+    if(replyForFirstPage != 0)
     {
-        retrievesMessage = false;
-        setMessageStatus("Erreur.");
-        return;
-    }
-
-    if(replyForFirstPage->isReadable())
-    {
-        bool cookiesChanged = false;
-        QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(replyForFirstPage->header(QNetworkRequest::SetCookieHeader));
-        sourceFirst = replyForFirstPage->readAll();
-
-        for(int i = 0; i < newCookieList.size(); ++i)
+        if(replyForFirstPage->isReadable())
         {
-            if(newCookieList.at(i).name() == "dlrowolleh" || newCookieList.at(i).name() == "coniunctio")
+            bool cookiesChanged = false;
+            QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(replyForFirstPage->header(QNetworkRequest::SetCookieHeader));
+            sourceFirst = replyForFirstPage->readAll();
+
+            for(int i = 0; i < newCookieList.size(); ++i)
             {
-                for(int j = 0; j < currentCookieList.size(); ++j)
+                if(newCookieList.at(i).name() == "dlrowolleh" || newCookieList.at(i).name() == "coniunctio")
                 {
-                    if(currentCookieList.at(j).name() == newCookieList.at(i).name())
+                    for(int j = 0; j < currentCookieList.size(); ++j)
                     {
-                        if(currentCookieList.at(j).toRawForm() != newCookieList.at(i).toRawForm())
+                        if(currentCookieList.at(j).name() == newCookieList.at(i).name())
                         {
-                            currentCookieList.replace(j, newCookieList.at(i));
-                            cookiesChanged = true;
+                            if(currentCookieList.at(j).toRawForm() != newCookieList.at(i).toRawForm())
+                            {
+                                currentCookieList.replace(j, newCookieList.at(i));
+                                cookiesChanged = true;
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }
-        }
 
-        if(cookiesChanged == true)
-        {
-            emit newCookiesHaveToBeSet();
+            if(cookiesChanged == true)
+            {
+                emit newCookiesHaveToBeSet();
+            }
         }
+        replyForFirstPage->deleteLater();
+        replyForFirstPage = 0;
     }
-    replyForFirstPage->deleteLater();
-    replyForFirstPage = 0;
 
     if(loadTwoLastPage == true && secondPageLoading == true)
     {
