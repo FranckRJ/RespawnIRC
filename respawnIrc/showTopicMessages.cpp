@@ -285,6 +285,24 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     {
         setMessageStatus("Nouveau topic.");
     }
+    else
+    {
+        if(replyForFirstPage != 0)
+        {
+            if(replyForFirstPage->isRunning())
+            {
+                replyForFirstPage->abort();
+            }
+        }
+
+        if(replyForSecondPage != 0)
+        {
+            if(replyForSecondPage->isRunning())
+            {
+                replyForSecondPage->abort();
+            }
+        }
+    }
     setNumberOfConnectedAndMP("", true);
     startGetMessage();
 }
@@ -320,10 +338,6 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
     {
         return false;
     }
-    /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
-    {
-        return false;
-    }*/
 
     if(ajaxInfo.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
     {
@@ -346,8 +360,16 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
             oldAjaxInfo = ajaxInfo;
             ajaxInfo.clear();
             oldUseMessageEdit = useMessageEdit;
-            replyForEditInfo = networkManager->get(requestForEditInfo);
-            QObject::connect(replyForEditInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeEditInfo);
+            replyForEditInfo = timeoutForEditInfo.resetReply(networkManager->get(requestForEditInfo));
+
+            if(replyForEditInfo->isOpen() == true)
+            {
+                QObject::connect(replyForEditInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeEditInfo);
+            }
+            else
+            {
+                analyzeEditInfo();
+            }
 
             return true;
         }
@@ -362,17 +384,21 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
     {
         return;
     }
-    /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
-    {
-        return;
-    }*/
 
     if(ajaxInfo.isEmpty() == false && replyForQuoteInfo == 0)
     {
         QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/forums/ajax_citation.php");
         QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo;
-        replyForQuoteInfo = networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1());
-        QObject::connect(replyForQuoteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeQuoteInfo);
+        replyForQuoteInfo = timeoutForQuoteInfo.resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
+
+        if(replyForQuoteInfo->isOpen() == true)
+        {
+            QObject::connect(replyForQuoteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeQuoteInfo);
+        }
+        else
+        {
+            analyzeQuoteInfo();
+        }
     }
     else
     {
@@ -384,6 +410,7 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
 void showTopicMessagesClass::getMessages()
 {
     bool itsNewManager = false;
+    bool errorWhenTryToGetMessages = false;
 
     if(networkManager == 0)
     {
@@ -395,14 +422,6 @@ void showTopicMessagesClass::getMessages()
     {
         if(replyForFirstPage == 0)
         {
-            /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
-            {
-                setMessageStatus("Pas de connexion internet.");
-                delete networkManager;
-                networkManager = 0;
-                return;
-            }*/
-
             if(itsNewManager == true || needToSetCookies == true)
             {
                 setNewCookies(currentCookieList, pseudoOfUser, false);
@@ -416,15 +435,36 @@ void showTopicMessagesClass::getMessages()
             setMessageStatus("Récupération des messages en cours...");
             secondPageLoading = false;
             linkHasChanged = false;
-            replyForFirstPage = networkManager->get(requestForFirstPage);
-            QObject::connect(replyForFirstPage, &QNetworkReply::finished, this, &showTopicMessagesClass::loadFirstPageFinish);
+            replyForFirstPage = timeoutForFirstPage.resetReply(networkManager->get(requestForFirstPage));
+            if(replyForFirstPage->isOpen() == true)
+            {
+                QObject::connect(replyForFirstPage, &QNetworkReply::finished, this, &showTopicMessagesClass::loadFirstPageFinish);
+            }
+            else
+            {
+                errorWhenTryToGetMessages = true;
+            }
 
             if(loadTwoLastPage == true && beforeLastPage.isEmpty() == false)
             {
                 QNetworkRequest requestForSecondPage = parsingToolClass::buildRequestWithThisUrl(beforeLastPage);
                 secondPageLoading = true;
-                replyForSecondPage = networkManager->get(requestForSecondPage);
-                QObject::connect(replyForSecondPage, &QNetworkReply::finished, this, &showTopicMessagesClass::loadSecondPageFinish);
+                replyForSecondPage = timeoutForSecondPage.resetReply(networkManager->get(requestForSecondPage));
+                if(replyForSecondPage->isOpen() == true)
+                {
+                    QObject::connect(replyForSecondPage, &QNetworkReply::finished, this, &showTopicMessagesClass::loadSecondPageFinish);
+                }
+                else
+                {
+                    errorWhenTryToGetMessages = true;
+                }
+            }
+
+            if(errorWhenTryToGetMessages == true)
+            {
+                analyzeMessages();
+                networkManager->deleteLater();
+                networkManager = 0;
             }
         }
         else
@@ -469,6 +509,9 @@ void showTopicMessagesClass::analyzeEditInfo()
     QString dataToSend = oldAjaxInfo + "&action=post";
     QList<QPair<QString, QString> > listOfEditInput;
     QString source;
+
+    timeoutForEditInfo.resetReply();
+
     if(replyForEditInfo->isReadable())
     {
         source = replyForEditInfo->readAll();
@@ -492,6 +535,9 @@ void showTopicMessagesClass::analyzeQuoteInfo()
 {
     QString messageQuote;
     QString source;
+
+    timeoutForQuoteInfo.resetReply();
+
     if(replyForQuoteInfo->isReadable())
     {
         source = replyForQuoteInfo->readAll();
@@ -516,6 +562,9 @@ void showTopicMessagesClass::analyzeMessages()
     QString sourceSecond;
     QString numberOfConnected;
     bool appendHrAtEndOfFirstMessage = false;
+
+    timeoutForFirstPage.resetReply();
+    timeoutForSecondPage.resetReply();
 
     if(replyForFirstPage == 0)
     {
@@ -559,12 +608,15 @@ void showTopicMessagesClass::analyzeMessages()
 
     if(loadTwoLastPage == true && secondPageLoading == true)
     {
-        if(replyForSecondPage->isReadable())
+        if(replyForSecondPage != 0)
         {
-            sourceSecond = replyForSecondPage->readAll();
+            if(replyForSecondPage->isReadable())
+            {
+                sourceSecond = replyForSecondPage->readAll();
+            }
+            replyForSecondPage->deleteLater();
+            replyForSecondPage = 0;
         }
-        replyForSecondPage->deleteLater();
-        replyForSecondPage = 0;
     }
 
     setMessageStatus("Récupération des messages terminée !");
@@ -599,7 +651,12 @@ void showTopicMessagesClass::analyzeMessages()
 
         if(getFirstMessageOfTopic == true)
         {
-            firstMessageOfTopic = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst).first();
+            QList<messageStruct> tmpList = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst);
+
+            if(tmpList.isEmpty() == false)
+            {
+                firstMessageOfTopic = tmpList.first();
+            }
         }
     }
 

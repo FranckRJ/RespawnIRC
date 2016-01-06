@@ -7,6 +7,7 @@
 
 #include "colorPseudoListWindow.hpp"
 #include "showListOfTopic.hpp"
+#include "autoTimeoutReply.hpp"
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
 
@@ -60,6 +61,10 @@ private:
     modelInfoStruct baseModelInfo;
     showListOfTopicClass showListOfTopic;
     QList<QNetworkCookie> currentCookieList;
+    autoTimeoutReplyClass timeoutForFirstPage;
+    autoTimeoutReplyClass timeoutForSecondPage;
+    autoTimeoutReplyClass timeoutForEditInfo;
+    autoTimeoutReplyClass timeoutForQuoteInfo;
     QNetworkReply* replyForFirstPage;
     QNetworkReply* replyForSecondPage;
     QNetworkReply* replyForEditInfo;

@@ -5,6 +5,8 @@
 #include <QtCore>
 #include <QtNetwork>
 
+#include "autoTimeoutReply.hpp"
+
 class showListOfTopicClass : public QWidget
 {
     Q_OBJECT
@@ -26,6 +28,7 @@ private:
     QString forumLink;
     QListView listViewOfTopic;
     QStringListModel modelForListView;
+    autoTimeoutReplyClass timeoutForReply;
     QNetworkReply* reply;
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> currentCookieList;

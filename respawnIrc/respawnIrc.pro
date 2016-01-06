@@ -30,7 +30,8 @@ SOURCES += \
     styleTool.cpp \
     selectThemeWindow.cpp \
     spellTextEdit.cpp \
-    highlighter.cpp
+    highlighter.cpp \
+    autoTimeoutReply.cpp
 
 QT += \
     network \
@@ -74,7 +75,8 @@ HEADERS += \
     styleTool.hpp \
     selectThemeWindow.hpp \
     spellTextEdit.hpp \
-    highlighter.hpp
+    highlighter.hpp \
+    autoTimeoutReply.hpp
 
 RC_FILE = respawnIrc.rc
 

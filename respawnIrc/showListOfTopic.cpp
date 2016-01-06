@@ -27,6 +27,14 @@ showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
 
 void showListOfTopicClass::setForumLink(QString newForumLink)
 {
+    if(reply != 0)
+    {
+        if(reply->isRunning())
+        {
+            reply->abort();
+        }
+    }
+
     forumLink = newForumLink;
     modelForListView.setStringList(QList<QString>());
     if(newForumLink.isEmpty() == false)
@@ -68,13 +76,6 @@ void showListOfTopicClass::startGetListOfTopic()
 
     if(reply == 0)
     {
-        /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
-        {
-            delete networkManager;
-            networkManager = 0;
-            return;
-        }*/
-
         if(itsNewManager == true)
         {
             setNewCookies(currentCookieList);
@@ -83,9 +84,18 @@ void showListOfTopicClass::startGetListOfTopic()
         if(forumLink.isEmpty() == false)
         {
             QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(forumLink);
-            reply = networkManager->get(request);
+            reply = timeoutForReply.resetReply(networkManager->get(request));
 
-            QObject::connect(reply, &QNetworkReply::finished, this, &showListOfTopicClass::analyzeReply);
+            if(reply->isOpen() == true)
+            {
+                QObject::connect(reply, &QNetworkReply::finished, this, &showListOfTopicClass::analyzeReply);
+            }
+            else
+            {
+                analyzeReply();
+                networkManager->deleteLater();
+                networkManager = 0;
+            }
         }
     }
 }
@@ -94,6 +104,9 @@ void showListOfTopicClass::analyzeReply()
 {
     QString source;
     QString locationHeader;
+
+    timeoutForReply.resetReply();
+
     if(reply->isReadable() == true)
     {
         source = reply->readAll();
