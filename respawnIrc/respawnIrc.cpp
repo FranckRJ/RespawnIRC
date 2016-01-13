@@ -797,15 +797,6 @@ void respawnIrcClass::postMessage()
         networkManager = new QNetworkAccessManager(this);
     }
 
-    /*if(networkManager->networkAccessible() != QNetworkAccessManager::Accessible) //a changer
-    {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Impossible de poster pour le moment, pas de connexion internet.");
-        delete networkManager;
-        networkManager = 0;
-        return;
-    }*/
-
     if(replyForSendMessage == 0 && getCurrentWidget()->getPseudoUsed().isEmpty() == false && getCurrentWidget()->getTopicLink().isEmpty() == false)
     {
         QNetworkRequest request;
@@ -863,7 +854,18 @@ void respawnIrcClass::postMessage()
         }
 
         replyForSendMessage = networkManager->post(request, data.toLatin1());
-        QObject::connect(replyForSendMessage, &QNetworkReply::finished, this, &respawnIrcClass::deleteReplyForSendMessage);
+
+        if(replyForSendMessage->isOpen() == true)
+        {
+            QObject::connect(replyForSendMessage, &QNetworkReply::finished, this, &respawnIrcClass::deleteReplyForSendMessage);
+        }
+        else
+        {
+            deleteReplyForSendMessage();
+            networkManager->deleteLater();
+            networkManager = 0;
+        }
+
     }
 }
 
@@ -873,7 +875,18 @@ void respawnIrcClass::deleteReplyForSendMessage()
     QString source;
     if(replyForSendMessage->isReadable() == true)
     {
-        source = replyForSendMessage->readAll();
+        if(replyForSendMessage->rawHeader("Location").isEmpty() == false)
+        {
+            source = replyForSendMessage->readAll();
+        }
+        else
+        {
+            source = "weshgrotavu";
+        }
+    }
+    else
+    {
+        source = "lolmdr";
     }
     replyForSendMessage->deleteLater();
     replyForSendMessage = 0;
