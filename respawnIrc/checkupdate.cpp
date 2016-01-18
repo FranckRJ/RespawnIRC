@@ -10,6 +10,7 @@ checkUpdateClass::checkUpdateClass(QWidget* newParent, QString currentVersionNam
     versionName = currentVersionName;
     alwaysShowMessage = false;
     reply = 0;
+    alertForSameVersion = true; //vrai pour les snapshots, faux pour les releases
 
     networkManager = new QNetworkAccessManager(this);
 }
@@ -39,6 +40,49 @@ void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpd
     }
 }
 
+bool checkUpdateClass::itsANewerVersion(QString newVersionName)
+{
+    QStringList currentVersionNumbers = versionName.right(versionName.size() - 1).split(".", QString::SkipEmptyParts);
+    QStringList newVersionNumbers = newVersionName.right(newVersionName.size() - 1).split(".", QString::SkipEmptyParts);
+    bool versionAreEquals = true;
+
+    while(currentVersionNumbers.size() != newVersionNumbers.size())
+    {
+        if(currentVersionNumbers.size() < newVersionNumbers.size())
+        {
+            currentVersionNumbers.append("0");
+        }
+        else
+        {
+            newVersionNumbers.append("0");
+        }
+    }
+
+    for(int i = 0; i < currentVersionNumbers.size(); ++i)
+    {
+        if(newVersionNumbers.at(i).toInt() > currentVersionNumbers.at(i).toInt())
+        {
+            if(versionAreEquals)
+            {
+                return true;
+            }
+        }
+        else if(newVersionNumbers.at(i).toInt() != currentVersionNumbers.at(i).toInt())
+        {
+            versionAreEquals = false;
+        }
+    }
+
+    if(versionAreEquals)
+    {
+        return alertForSameVersion;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void checkUpdateClass::analyzeLatestUpdatePage()
 {
     QString source;
@@ -54,7 +98,7 @@ void checkUpdateClass::analyzeLatestUpdatePage()
     {
         newVersionName = parsingToolClass::getVersionName(source);
 
-        if(newVersionName.isEmpty() == false && versionName != newVersionName)
+        if(newVersionName.isEmpty() == false && itsANewerVersion(newVersionName) == true)
         {
             QMessageBox message;
             newVersionName.remove(0, 1);

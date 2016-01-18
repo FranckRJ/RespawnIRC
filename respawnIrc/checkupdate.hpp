@@ -10,6 +10,7 @@ class checkUpdateClass : public QObject
 public:
     checkUpdateClass(QWidget* newParent, QString currentVersionName);
     void startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpdate = false);
+    bool itsANewerVersion(QString newVersionName);
 public slots:
     void analyzeLatestUpdatePage();
 private:
@@ -18,6 +19,7 @@ private:
     QNetworkAccessManager* networkManager;
     QNetworkReply* reply;
     bool alwaysShowMessage;
+    bool alertForSameVersion;
 };
 
 #endif
