@@ -6,7 +6,6 @@
 #include <QtNetwork>
 
 #include "colorPseudoListWindow.hpp"
-#include "showListOfTopic.hpp"
 #include "autoTimeoutReply.hpp"
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
@@ -26,11 +25,11 @@ public:
     QString getPseudoUsed();
     QString getColorOfThisPseudo(QString pseudo);
     const QList<QNetworkCookie>& getListOfCookies();
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessagesAndList = true);
+    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages = true);
     void setMessageStatus(QString newStatus);
     void setNumberOfConnectedAndMP(QString newNumber, bool forceSet = false);
     void setTopicToErrorMode();
-    void updateSettingInfo(bool showListOfTopicIfNeeded = true);
+    void updateSettingInfo();
 public slots:
     void setNewTheme(QString newThemeName);
     void setNewTopic(QString newTopic);
@@ -52,14 +51,11 @@ signals:
     void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString cpatchaLink, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
-    void topicNeedChanged(QString topicLink);
-    void openThisTopicInNewTab(QString topicLink);
     void newCookiesHaveToBeSet();
 private:
     QTextBrowser messagesBox;
     QString baseModel;
     modelInfoStruct baseModelInfo;
-    showListOfTopicClass showListOfTopic;
     QList<QNetworkCookie> currentCookieList;
     autoTimeoutReplyClass timeoutForFirstPage;
     autoTimeoutReplyClass timeoutForSecondPage;

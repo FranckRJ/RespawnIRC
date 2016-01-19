@@ -15,6 +15,7 @@ public:
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies);
     void updateSettings();
+    void setLoadNeeded(bool newVal);
 public slots:
     void startGetListOfTopic();
     void analyzeReply();

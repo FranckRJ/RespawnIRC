@@ -64,6 +64,18 @@ void showListOfTopicClass::updateSettings()
     //timeoutReply.setInterval(settingToolClass::getThisIntOption("timeoutInSecond") * 1000);
 }
 
+void showListOfTopicClass::setLoadNeeded(bool newVal)
+{
+    if(newVal == false)
+    {
+        timerForGetList.stop();
+    }
+    else
+    {
+        timerForGetList.start();
+    }
+}
+
 void showListOfTopicClass::startGetListOfTopic()
 {
     bool itsNewManager = false;

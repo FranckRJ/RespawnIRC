@@ -5,7 +5,7 @@
 #include <QtCore>
 #include <QtNetwork>
 
-#include "showTopicMessages.hpp"
+#include "containerForTopicsInfos.hpp"
 #include "colorPseudoListWindow.hpp"
 #include "accountListWindow.hpp"
 #include "multiTypeTextBox.hpp"
@@ -17,7 +17,7 @@ class respawnIrcClass : public QWidget
 public:
     respawnIrcClass(QWidget* parent = 0);
     void loadSettings();
-    showTopicMessagesClass* getCurrentWidget();
+    containerForTopicsInfosClass* getCurrentWidget();
     multiTypeTextBoxClass* getMessageLine();
     QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
     void addButtonToButtonLayout();
@@ -91,7 +91,7 @@ private:
     QVector<QString> vectorOfFavoriteLink;
     QList<QNetworkCookie> currentCookieList;
     QList<QNetworkCookie> cookieListForPostMsg;
-    QList<showTopicMessagesClass*> listOfShowTopicMessages;
+    QList<containerForTopicsInfosClass*> listOfContainerForTopicsInfos;
     QList<QString> listOfTopicLink;
     QList<QString> listOfIgnoredPseudo;
     QList<pseudoWithColorStruct> listOfColorPseudo;

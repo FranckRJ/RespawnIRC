@@ -98,12 +98,12 @@ void respawnIrcClass::loadSettings()
         tabList.setCurrentIndex(0);
     }
 
-    if(listOfShowTopicMessages.isEmpty() == true)
+    if(listOfContainerForTopicsInfos.isEmpty() == true)
     {
         addNewTab();
     }
 
-    messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
+    messagesStatus.setText(getCurrentWidget()->getShowTopicMessages().getMessagesStatus());
     setNewNumberOfConnectedAndPseudoUsed();
 
     if(settingToolClass::getThisBoolOption("showTextDecorationButton") == false)
@@ -119,9 +119,9 @@ void respawnIrcClass::loadSettings()
     }
 }
 
-showTopicMessagesClass* respawnIrcClass::getCurrentWidget()
+containerForTopicsInfosClass* respawnIrcClass::getCurrentWidget()
 {
-    return listOfShowTopicMessages.at(tabList.currentIndex());
+    return listOfContainerForTopicsInfos.at(tabList.currentIndex());
 }
 
 multiTypeTextBoxClass* respawnIrcClass::getMessageLine()
@@ -204,7 +204,7 @@ void respawnIrcClass::addButtonToButtonLayout()
 
 void respawnIrcClass::selectThisTab(int number)
 {
-    if(listOfShowTopicMessages.size() > number)
+    if(listOfContainerForTopicsInfos.size() > number)
     {
         tabList.setCurrentIndex(number);
     }
@@ -222,7 +222,7 @@ void respawnIrcClass::useThisFavorite(int index)
 {
     if(vectorOfFavoriteLink.at(index).isEmpty() == false)
     {
-        getCurrentWidget()->setNewTopic(vectorOfFavoriteLink.at(index));
+        getCurrentWidget()->setNewTopicForInfo(vectorOfFavoriteLink.at(index));
         listOfTopicLink[tabList.currentIndex()] = vectorOfFavoriteLink.at(index);
 
         settingToolClass::saveListOfTopicLink(listOfTopicLink);
@@ -231,13 +231,13 @@ void respawnIrcClass::useThisFavorite(int index)
 
 QString respawnIrcClass::addThisFavorite(int index)
 {
-    if(getCurrentWidget()->getTopicLink().isEmpty() == false && getCurrentWidget()->getTopicName().isEmpty() == false)
+    if(getCurrentWidget()->getShowTopicMessages().getTopicLink().isEmpty() == false && getCurrentWidget()->getShowTopicMessages().getTopicName().isEmpty() == false)
     {
-        vectorOfFavoriteLink[index] = getCurrentWidget()->getTopicLink();
-        settingToolClass::saveThisOption("favoriteLink" + QString::number(index), getCurrentWidget()->getTopicLink());
-        settingToolClass::saveThisOption("favoriteName" + QString::number(index), getCurrentWidget()->getTopicName());
+        vectorOfFavoriteLink[index] = getCurrentWidget()->getShowTopicMessages().getTopicLink();
+        settingToolClass::saveThisOption("favoriteLink" + QString::number(index), getCurrentWidget()->getShowTopicMessages().getTopicLink());
+        settingToolClass::saveThisOption("favoriteName" + QString::number(index), getCurrentWidget()->getShowTopicMessages().getTopicName());
 
-        return getCurrentWidget()->getTopicName();
+        return getCurrentWidget()->getShowTopicMessages().getTopicName();
     }
     else
     {
@@ -254,9 +254,9 @@ void respawnIrcClass::delThisFavorite(int index)
 
 void respawnIrcClass::updateSettingInfoForList()
 {
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
     {
-        listOfShowTopicMessages.at(i)->updateSettingInfo();
+        listOfContainerForTopicsInfos.at(i)->updateSettingsForInfo();
     }
 }
 
@@ -279,7 +279,7 @@ void respawnIrcClass::showAccountListWindow()
 
 void respawnIrcClass::showSelectTopic()
 {
-    selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(getCurrentWidget()->getTopicLink(), this);
+    selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(getCurrentWidget()->getShowTopicMessages().getTopicLink(), this);
     QObject::connect(mySelectTopicWindow, &selectTopicWindowClass::newTopicSelected, this, &respawnIrcClass::setNewTopic);
     mySelectTopicWindow->exec();
 }
@@ -339,52 +339,52 @@ void respawnIrcClass::showAbout()
 
 void respawnIrcClass::addNewTab()
 {
-    listOfShowTopicMessages.push_back(new showTopicMessagesClass(&listOfIgnoredPseudo, &listOfColorPseudo, currentThemeName, this));
+    listOfContainerForTopicsInfos.push_back(new containerForTopicsInfosClass(&listOfIgnoredPseudo, &listOfColorPseudo, currentThemeName, this));
 
-    if(listOfShowTopicMessages.size() > listOfTopicLink.size())
+    if(listOfContainerForTopicsInfos.size() > listOfTopicLink.size())
     {
         listOfTopicLink.push_back(QString());
     }
 
-    if(listOfShowTopicMessages.size() > listOfPseudoForTopic.size())
+    if(listOfContainerForTopicsInfos.size() > listOfPseudoForTopic.size())
     {
         listOfPseudoForTopic.push_back(QString());
     }
 
-    if(listOfPseudoForTopic.at(listOfShowTopicMessages.size() - 1).isEmpty() == false)
+    if(listOfPseudoForTopic.at(listOfContainerForTopicsInfos.size() - 1).isEmpty() == false)
     {
         for(int j = 0; j < listOfAccount.size(); ++j)
         {
-            if(listOfAccount.at(j).pseudo.toLower() == listOfPseudoForTopic.at(listOfShowTopicMessages.size() - 1).toLower())
+            if(listOfAccount.at(j).pseudo.toLower() == listOfPseudoForTopic.at(listOfContainerForTopicsInfos.size() - 1).toLower())
             {
-                listOfShowTopicMessages.back()->setNewCookies(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo);
+                listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo);
                 break;
             }
             else if(j == listOfAccount.size() - 1)
             {
-                listOfPseudoForTopic[listOfShowTopicMessages.size() - 1].clear();
+                listOfPseudoForTopic[listOfContainerForTopicsInfos.size() - 1].clear();
                 settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
             }
         }
     }
     else if(pseudoOfUser.isEmpty() == false)
     {
-        listOfShowTopicMessages.back()->setNewCookies(currentCookieList, pseudoOfUser);
+        listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(currentCookieList, pseudoOfUser);
     }
 
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::setEditInfo, this, &respawnIrcClass::setInfoForEditMessage);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::quoteThisMessage, this, &respawnIrcClass::quoteThisMessage);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
-    QObject::connect(listOfShowTopicMessages.back(), &showTopicMessagesClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
-    tabList.addTab(listOfShowTopicMessages.back(), "Onglet " + QString::number(listOfShowTopicMessages.size()));
-    tabList.setCurrentIndex(listOfShowTopicMessages.size() - 1);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::setEditInfo, this, &respawnIrcClass::setInfoForEditMessage);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::quoteThisMessage, this, &respawnIrcClass::quoteThisMessage);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
+    QObject::connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
+    QObject::connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
+    tabList.addTab(listOfContainerForTopicsInfos.back(), "Onglet " + QString::number(listOfContainerForTopicsInfos.size()));
+    tabList.setCurrentIndex(listOfContainerForTopicsInfos.size() - 1);
 }
 
 
@@ -396,14 +396,14 @@ void respawnIrcClass::addNewTabWithTopic(QString newTopicLink)
 
 void respawnIrcClass::removeTab(int index)
 {
-    if(listOfShowTopicMessages.size() > 1)
+    if(listOfContainerForTopicsInfos.size() > 1)
     {
         tabList.removeTab(index);
         listOfTopicLink.removeAt(index);
         settingToolClass::saveListOfTopicLink(listOfTopicLink);
         listOfPseudoForTopic.removeAt(index);
         settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
-        delete listOfShowTopicMessages.takeAt(index);
+        delete listOfContainerForTopicsInfos.takeAt(index);
         currentTabChanged(-1);
     }
 }
@@ -415,27 +415,27 @@ void respawnIrcClass::checkForUpdate()
 
 void respawnIrcClass::updateTopic()
 {
-    getCurrentWidget()->startGetMessage();
+    getCurrentWidget()->getShowTopicMessages().startGetMessage();
 }
 
 void respawnIrcClass::reloadTopic()
 {
-    getCurrentWidget()->setNewTopic(listOfTopicLink[tabList.currentIndex()]);
+    getCurrentWidget()->setNewTopicForInfo(listOfTopicLink[tabList.currentIndex()]);
 }
 
 void respawnIrcClass::reloadAllTopic()
 {
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
     {
-        listOfShowTopicMessages.at(i)->setNewTopic(listOfTopicLink[i]);
+        listOfContainerForTopicsInfos.at(i)->setNewTopicForInfo(listOfTopicLink[i]);
     }
 }
 
 void respawnIrcClass::goToCurrentTopic()
 {
-    if(getCurrentWidget()->getTopicLink().isEmpty() == false)
+    if(getCurrentWidget()->getShowTopicMessages().getTopicLink().isEmpty() == false)
     {
-        QDesktopServices::openUrl(QUrl(getCurrentWidget()->getTopicLink()));
+        QDesktopServices::openUrl(QUrl(getCurrentWidget()->getShowTopicMessages().getTopicLink()));
     }
     else
     {
@@ -446,9 +446,9 @@ void respawnIrcClass::goToCurrentTopic()
 
 void respawnIrcClass::goToCurrentForum()
 {
-    if(parsingToolClass::getForumOfTopic(getCurrentWidget()->getTopicLink()).isEmpty() == false)
+    if(parsingToolClass::getForumOfTopic(getCurrentWidget()->getShowTopicMessages().getTopicLink()).isEmpty() == false)
     {
-        QDesktopServices::openUrl(QUrl(parsingToolClass::getForumOfTopic(getCurrentWidget()->getTopicLink())));
+        QDesktopServices::openUrl(QUrl(parsingToolClass::getForumOfTopic(getCurrentWidget()->getShowTopicMessages().getTopicLink())));
     }
     else
     {
@@ -461,9 +461,9 @@ void respawnIrcClass::disconnectFromAllTabs()
 {
     currentCookieList = QList<QNetworkCookie>();
     pseudoOfUser = "";
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
     {
-        listOfShowTopicMessages.at(i)->setNewCookies(QList<QNetworkCookie>(), "");
+        listOfContainerForTopicsInfos.at(i)->setNewCookiesForInfo(QList<QNetworkCookie>(), "");
         listOfPseudoForTopic[i] = "";
     }
     settingToolClass::saveThisOption("pseudo", pseudoOfUser);
@@ -473,7 +473,7 @@ void respawnIrcClass::disconnectFromAllTabs()
 
 void respawnIrcClass::disconnectFromCurrentTab()
 {
-    getCurrentWidget()->setNewCookies(QList<QNetworkCookie>(), ".");
+    getCurrentWidget()->setNewCookiesForInfo(QList<QNetworkCookie>(), ".");
     listOfPseudoForTopic[tabList.currentIndex()] = ".";
     settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
     setNewNumberOfConnectedAndPseudoUsed();
@@ -487,11 +487,11 @@ void respawnIrcClass::disconnectFromThisPseudo(QString thisPseudo)
         pseudoOfUser = "";
     }
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
     {
-        if(listOfShowTopicMessages.at(i)->getPseudoUsed().toLower() == thisPseudo.toLower())
+        if(listOfContainerForTopicsInfos.at(i)->getShowTopicMessages().getPseudoUsed().toLower() == thisPseudo.toLower())
         {
-            listOfShowTopicMessages.at(i)->setNewCookies(currentCookieList, pseudoOfUser);
+            listOfContainerForTopicsInfos.at(i)->setNewCookiesForInfo(currentCookieList, pseudoOfUser);
             listOfPseudoForTopic[i] = "";
         }
     }
@@ -592,9 +592,9 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
     {
         currentCookieList = newCookies;
         pseudoOfUser = newPseudoOfUser;
-        for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+        for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
         {
-            listOfShowTopicMessages.at(i)->setNewCookies(currentCookieList, newPseudoOfUser);
+            listOfContainerForTopicsInfos.at(i)->setNewCookiesForInfo(currentCookieList, newPseudoOfUser);
         }
         setNewNumberOfConnectedAndPseudoUsed();
 
@@ -618,7 +618,7 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
 
 void respawnIrcClass::setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo)
 {
-    getCurrentWidget()->setNewCookies(newCookies, newPseudoOfUser);
+    getCurrentWidget()->setNewCookiesForInfo(newCookies, newPseudoOfUser);
     setNewNumberOfConnectedAndPseudoUsed();
 
     if(savePseudo == true)
@@ -632,17 +632,17 @@ void respawnIrcClass::setNewCookiesForPseudo()
 {
     QObject* senderObject = sender();
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
     {
-        if(senderObject == listOfShowTopicMessages.at(i))
+        if(senderObject == &listOfContainerForTopicsInfos.at(i)->getShowTopicMessages())
         {
-            QString pseudoUsed = listOfShowTopicMessages.at(i)->getPseudoUsed();
+            QString pseudoUsed = listOfContainerForTopicsInfos.at(i)->getShowTopicMessages().getPseudoUsed();
 
             for(int j = 0; j < listOfAccount.size(); ++j)
             {
                 if(listOfAccount.at(j).pseudo.toLower() == pseudoUsed.toLower())
                 {
-                    listOfAccount[j].listOfCookie = listOfShowTopicMessages.at(i)->getListOfCookies();
+                    listOfAccount[j].listOfCookie = listOfContainerForTopicsInfos.at(i)->getShowTopicMessages().getListOfCookies();
                     saveListOfAccount();
                     break;
                 }
@@ -653,7 +653,7 @@ void respawnIrcClass::setNewCookiesForPseudo()
 
 void respawnIrcClass::setNewTopic(QString newTopic)
 {
-    getCurrentWidget()->setNewTopic(newTopic);
+    getCurrentWidget()->setNewTopicForInfo(newTopic);
     listOfTopicLink[tabList.currentIndex()] = newTopic;
 
     settingToolClass::saveListOfTopicLink(listOfTopicLink);
@@ -664,10 +664,10 @@ void respawnIrcClass::setNewTheme(QString newThemeName)
     currentThemeName = newThemeName;
     emit themeChanged(currentThemeName);
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
     {
-        listOfShowTopicMessages.at(i)->setNewTheme(currentThemeName);
-        listOfShowTopicMessages.at(i)->setNewTopic(listOfTopicLink[i]);
+        listOfContainerForTopicsInfos.at(i)->setNewThemeForInfo(currentThemeName);
+        listOfContainerForTopicsInfos.at(i)->setNewTopicForInfo(listOfTopicLink[i]);
     }
 
     messageLine.styleChanged();
@@ -688,24 +688,24 @@ void respawnIrcClass::setCodeForCaptcha(QString code)
 
 void respawnIrcClass::setNewMessageStatus()
 {
-    messagesStatus.setText(getCurrentWidget()->getMessagesStatus());
+    messagesStatus.setText(getCurrentWidget()->getShowTopicMessages().getMessagesStatus());
 }
 
 void respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed()
 {
     QString textToShow;
 
-    if(listOfShowTopicMessages.isEmpty() == false)
+    if(listOfContainerForTopicsInfos.isEmpty() == false)
     {
-        textToShow += getCurrentWidget()->getNumberOfConnectedAndMP();
+        textToShow += getCurrentWidget()->getShowTopicMessages().getNumberOfConnectedAndMP();
 
-        if(getCurrentWidget()->getPseudoUsed().isEmpty() == false)
+        if(getCurrentWidget()->getShowTopicMessages().getPseudoUsed().isEmpty() == false)
         {
             if(textToShow.isEmpty() == false)
             {
                 textToShow += " - ";
             }
-            textToShow += getCurrentWidget()->getPseudoUsed();
+            textToShow += getCurrentWidget()->getShowTopicMessages().getPseudoUsed();
         }
     }
 
@@ -716,9 +716,9 @@ void respawnIrcClass::setNewTopicName(QString topicName)
 {
     QObject* senderObject = sender();
 
-    for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
     {
-        if(senderObject == listOfShowTopicMessages.at(i))
+        if(senderObject == &listOfContainerForTopicsInfos.at(i)->getShowTopicMessages())
         {
             tabList.setTabText(i, topicName);
         }
@@ -754,11 +754,11 @@ void respawnIrcClass::warnUserForNewMessages()
         QSound::play(QCoreApplication::applicationDirPath() + "/ressources/beep.wav");
     }
 
-    if(senderObject != getCurrentWidget())
+    if(senderObject != &getCurrentWidget()->getShowTopicMessages())
     {
-        for(int i = 0; i < listOfShowTopicMessages.size(); ++i)
+        for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
         {
-            if(senderObject == listOfShowTopicMessages.at(i))
+            if(senderObject == &listOfContainerForTopicsInfos.at(i)->getShowTopicMessages())
             {
                 tabList.setTabIcon(i, QIcon(alertImage));
             }
@@ -797,13 +797,13 @@ void respawnIrcClass::postMessage()
         networkManager = new QNetworkAccessManager(this);
     }
 
-    if(replyForSendMessage == 0 && getCurrentWidget()->getPseudoUsed().isEmpty() == false && getCurrentWidget()->getTopicLink().isEmpty() == false)
+    if(replyForSendMessage == 0 && getCurrentWidget()->getShowTopicMessages().getPseudoUsed().isEmpty() == false && getCurrentWidget()->getShowTopicMessages().getTopicLink().isEmpty() == false)
     {
         QNetworkRequest request;
         QString data;
         QString captchaLink;
 
-        cookieListForPostMsg = getCurrentWidget()->getListOfCookies();
+        cookieListForPostMsg = getCurrentWidget()->getShowTopicMessages().getListOfCookies();
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
         networkManager->cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://www.jeuxvideo.com"));
@@ -815,15 +815,15 @@ void respawnIrcClass::postMessage()
         }
         else
         {
-            captchaLink = getCurrentWidget()->getCaptchaLink();
-            request = parsingToolClass::buildRequestWithThisUrl(getCurrentWidget()->getTopicLink());
+            captchaLink = getCurrentWidget()->getShowTopicMessages().getCaptchaLink();
+            request = parsingToolClass::buildRequestWithThisUrl(getCurrentWidget()->getShowTopicMessages().getTopicLink());
         }
 
         if(captchaLink.isEmpty() == false && captchaCode.isEmpty() == true)
         {
             captchaWindowClass* myCaptchaWindow = new captchaWindowClass(captchaLink, cookieListForPostMsg, this);
             QObject::connect(myCaptchaWindow, &captchaWindowClass::codeForCaptcha, this, &respawnIrcClass::setCodeForCaptcha);
-            oldListOfInput = getCurrentWidget()->getListOfInput();
+            oldListOfInput = getCurrentWidget()->getShowTopicMessages().getListOfInput();
             myCaptchaWindow->exec();
             return;
         }
@@ -835,7 +835,7 @@ void respawnIrcClass::postMessage()
         {
             if(captchaCode.isEmpty() == true)
             {
-                data = buildDataWithThisListOfInput(getCurrentWidget()->getListOfInput());
+                data = buildDataWithThisListOfInput(getCurrentWidget()->getShowTopicMessages().getListOfInput());
             }
             else
             {
@@ -929,7 +929,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
         }
     }
 
-    getCurrentWidget()->startGetMessage();
+    getCurrentWidget()->getShowTopicMessages().startGetMessage();
     messageLine.setFocus();
 }
 
@@ -947,7 +947,7 @@ void respawnIrcClass::setEditMessage(int idOfMessageToEdit, bool useMessageEdit)
         {
             sendButton.setEnabled(false);
             sendButton.setText("Editer");
-            if(getCurrentWidget()->getEditInfo(idOfMessageToEdit, useMessageEdit) == false)
+            if(getCurrentWidget()->getShowTopicMessages().getEditInfo(idOfMessageToEdit, useMessageEdit) == false)
             {
                 QMessageBox messageBox;
                 messageBox.warning(this, "Erreur", "Impossible d'éditer ce message.");

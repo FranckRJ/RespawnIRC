@@ -8,7 +8,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     messagesBox.setOpenLinks(false);
     messagesBox.setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
     timerForGetMessage.setTimerType(Qt::CoarseTimer);
-    updateSettingInfo(false);
+    updateSettingInfo();
     timerForGetMessage.stop();
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
     listOfColorPseudo = newListOfColorPseudo;
@@ -34,21 +34,14 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 
     setNewTheme(currentThemeName);
 
-    QSplitter* splitter = new QSplitter;
-    splitter->addWidget(&messagesBox);
-    splitter->addWidget(&showListOfTopic);
-    splitter->setStretchFactor(0, 1);
-
-    QHBoxLayout* layout = new QHBoxLayout(this);
-    layout->addWidget(splitter);
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->addWidget(&messagesBox);
     layout->setMargin(0);
 
     setLayout(layout);
 
     QObject::connect(&timerForGetMessage, &QTimer::timeout, this, &showTopicMessagesClass::getMessages);
     QObject::connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
-    QObject::connect(&showListOfTopic, &showListOfTopicClass::openThisTopic, this, &showTopicMessagesClass::topicNeedChanged);
-    QObject::connect(&showListOfTopic, &showListOfTopicClass::openThisTopicInNewTab, this, &showTopicMessagesClass::openThisTopicInNewTab);
 }
 
 void showTopicMessagesClass::startGetMessage()
@@ -121,7 +114,7 @@ const QList<QNetworkCookie>& showTopicMessagesClass::getListOfCookies()
     return currentCookieList;
 }
 
-void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessagesAndList)
+void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages)
 {
     if(newPseudoOfUser == ".")
     {
@@ -141,9 +134,8 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
             networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
             errorLastTime = false;
 
-            if(updateMessagesAndList == true)
+            if(updateMessages == true)
             {
-                showListOfTopic.setNewCookies(newCookies);
                 startGetMessage();
             }
         }
@@ -205,7 +197,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
     retrievesMessage = false;
 }
 
-void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
+void showTopicMessagesClass::updateSettingInfo()
 {
     showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
     showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
@@ -225,28 +217,6 @@ void showTopicMessagesClass::updateSettingInfo(bool showListOfTopicIfNeeded)
     {
         firstMessageOfTopic.pseudoInfo.pseudoName.clear();
     }
-
-    if(settingToolClass::getThisBoolOption("showListOfTopic") == true)
-    {
-        if(showListOfTopic.isVisible() == false)
-        {
-            showListOfTopic.setForumLink(parsingToolClass::getForumOfTopic(topicLink));
-            if(showListOfTopicIfNeeded == true)
-            {
-                showListOfTopic.setVisible(true);
-            }
-        }
-    }
-    else
-    {
-        if(showListOfTopic.isVisible() == true)
-        {
-            showListOfTopic.setForumLink("");
-        }
-        showListOfTopic.setVisible(false);
-    }
-
-    showListOfTopic.updateSettings();
 }
 
 void showTopicMessagesClass::setNewTheme(QString newThemeName)
@@ -280,8 +250,6 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     oldIdOfLastMessageOfUser = 0;
     needToGetMessages = false;
     oldUseMessageEdit = false;
-
-    showListOfTopic.setForumLink(parsingToolClass::getForumOfTopic(topicLink));
 
     if(retrievesMessage == false)
     {
