@@ -130,6 +130,8 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
 
     currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
+    listOfInput.clear();
+
     if(networkManager != 0)
     {
         if(retrievesMessage == false)
@@ -829,7 +831,7 @@ void showTopicMessagesClass::analyzeMessages()
         }
     }
 
-    if(pseudoOfUser.isEmpty() == false)
+    if(pseudoOfUser.isEmpty() == false && needToSetCookies == false)
     {
         ajaxInfo = parsingToolClass::getAjaxInfo(sourceFirst);
         listOfInput.clear();
