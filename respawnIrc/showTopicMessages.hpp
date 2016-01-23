@@ -19,7 +19,6 @@ public:
     const QList<QPair<QString, QString> >& getListOfInput();
     QString getTopicLink();
     QString getTopicName();
-    QString getCaptchaLink();
     QString getMessagesStatus();
     QString getNumberOfConnectedAndMP();
     QString getPseudoUsed();
@@ -48,7 +47,7 @@ signals:
     void editThisMessage(int idOfMessageEdit, bool useMessageEdit);
     void newMessageStatus();
     void newNumberOfConnectedAndMP();
-    void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, QString cpatchaLink, bool useMessageEdit);
+    void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
     void newCookiesHaveToBeSet();
@@ -76,7 +75,6 @@ private:
     QString topicLink;
     QString topicName;
     QString pseudoOfUser;
-    QString captchaLink;
     QString ajaxInfo;
     QString oldAjaxInfo;
     QString lastMessageQuoted;

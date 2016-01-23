@@ -32,7 +32,8 @@ SOURCES += \
     spellTextEdit.cpp \
     highlighter.cpp \
     autoTimeoutReply.cpp \
-    containerForTopicsInfos.cpp
+    containerForTopicsInfos.cpp \
+    sendMessages.cpp
 
 QT += \
     network \
@@ -78,7 +79,8 @@ HEADERS += \
     spellTextEdit.hpp \
     highlighter.hpp \
     autoTimeoutReply.hpp \
-    containerForTopicsInfos.hpp
+    containerForTopicsInfos.hpp \
+    sendMessages.hpp
 
 RC_FILE = respawnIrc.rc
 

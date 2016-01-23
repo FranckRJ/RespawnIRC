@@ -76,11 +76,6 @@ QString showTopicMessagesClass::getTopicName()
     return topicName;
 }
 
-QString showTopicMessagesClass::getCaptchaLink()
-{
-    return captchaLink;
-}
-
 QString showTopicMessagesClass::getMessagesStatus()
 {
     return messagesStatus;
@@ -496,7 +491,7 @@ void showTopicMessagesClass::analyzeEditInfo()
         dataToSend += "&" + listOfEditInput.at(i).first + "=" + listOfEditInput.at(i).second;
     }
 
-    emit setEditInfo(oldIdOfLastMessageOfUser, message, dataToSend, parsingToolClass::getCaptchaLink(source), oldUseMessageEdit);
+    emit setEditInfo(oldIdOfLastMessageOfUser, message, dataToSend, oldUseMessageEdit);
 
     replyForEditInfo = 0;
 }
@@ -804,7 +799,6 @@ void showTopicMessagesClass::analyzeMessages()
         ajaxInfo = parsingToolClass::getAjaxInfo(sourceFirst);
         listOfInput.clear();
         parsingToolClass::getListOfHiddenInputFromThisForm(sourceFirst, "form-post-topic", listOfInput);
-        captchaLink = parsingToolClass::getCaptchaLink(sourceFirst);
 
         if(listOfInput.isEmpty() == true)
         {
