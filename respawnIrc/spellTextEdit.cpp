@@ -145,9 +145,12 @@ void spellTextEditClass::createActions()
 
 void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 {
+    QFont thisFont;
     QMenu* menuRightClick = createStandardContextMenu();
     lastPos = event->pos();
     QStringList listOfWord = getWordPropositions(getWordUnderCursor(lastPos));
+
+    thisFont.setBold(true);
 
     if(listOfWord.isEmpty() == false)
     {
@@ -160,6 +163,7 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
         {
             wordPropositionsActions[i]->setText(listOfWord.at(i).trimmed());
             wordPropositionsActions[i]->setVisible(true);
+            wordPropositionsActions[i]->setFont(thisFont);
             menuRightClick->addAction(wordPropositionsActions[i]);
         }
 
@@ -172,6 +176,7 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 void spellTextEditClass::correctWord()
 {
     QAction* thisAction = qobject_cast<QAction*>(sender());
+
     if(thisAction != 0)
     {
         QString replacement = thisAction->text();
