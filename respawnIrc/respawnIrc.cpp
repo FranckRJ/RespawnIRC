@@ -875,7 +875,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
     QString source;
     if(replyForSendMessage->isReadable() == true)
     {
-        if(replyForSendMessage->rawHeader("Location").isEmpty() == false)
+        if(replyForSendMessage->rawHeaderList().isEmpty() == false)
         {
             source = replyForSendMessage->readAll();
         }
@@ -919,11 +919,7 @@ void respawnIrcClass::deleteReplyForSendMessage()
         sendButton.setText("Envoyer");
         isInEdit = false;
 
-        if(dontEraseEditMessage == false)
-        {
-            messageLine.clear();
-        }
-        else
+        if(dontEraseEditMessage == true)
         {
             setEditMessage(idOfLastMessageEdit, false);
         }
