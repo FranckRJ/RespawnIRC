@@ -533,7 +533,7 @@ void showTopicMessagesClass::analyzeMessages()
 
     if(replyForFirstPage != 0)
     {
-        if(replyForFirstPage->isReadable())
+        if(replyForFirstPage->isReadable() && needToSetCookies == false)
         {
             bool cookiesChanged = false;
             QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(replyForFirstPage->header(QNetworkRequest::SetCookieHeader));
