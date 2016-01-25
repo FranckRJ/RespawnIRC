@@ -31,6 +31,7 @@ public:
 public slots:
     void showConnect();
     void showAccountListWindow();
+    void showSelectSticker();
     void showSelectTopic();
     void showSelectTheme();
     void showIgnoreListWindow();

@@ -4,6 +4,7 @@
 #include "connectWindow.hpp"
 #include "selectTopicWindow.hpp"
 #include "selectThemeWindow.hpp"
+#include "selectStickerWindow.hpp"
 #include "ignoreListWindow.hpp"
 #include "chooseNumberWindow.hpp"
 #include "captchaWindow.hpp"
@@ -252,6 +253,13 @@ void respawnIrcClass::showSelectTopic()
     selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(getCurrentWidget()->getShowTopicMessages().getTopicLink(), this);
     QObject::connect(mySelectTopicWindow, &selectTopicWindowClass::newTopicSelected, this, &respawnIrcClass::setNewTopic);
     mySelectTopicWindow->exec();
+}
+
+void respawnIrcClass::showSelectSticker()
+{
+    selectStickerWindowClass* mySelectStickerWindow = new selectStickerWindowClass(this);
+    QObject::connect(mySelectStickerWindow, &selectStickerWindowClass::addThisSticker, sendMessages.getMessageLine(), &multiTypeTextBoxClass::insertText);
+    mySelectStickerWindow->exec();
 }
 
 void respawnIrcClass::showSelectTheme()

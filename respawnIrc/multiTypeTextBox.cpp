@@ -50,20 +50,6 @@ QString multiTypeTextBoxClass::text()
     }
 }
 
-void multiTypeTextBoxClass::insertText(QString newText)
-{
-    if(textEditSelected == true)
-    {
-        textEdit.insertPlainText(newText);
-        textEdit.verticalScrollBar()->updateGeometry();
-        textEdit.verticalScrollBar()->setValue(textEdit.verticalScrollBar()->maximum());
-    }
-    else
-    {
-        lineEdit.insert(newText);
-    }
-}
-
 void multiTypeTextBoxClass::moveCursor(QTextCursor::MoveOperation operation, int numberOfTime)
 {
     if(textEditSelected == true)
@@ -135,6 +121,20 @@ void multiTypeTextBoxClass::settingsChanged()
     }
 
     highlighter->enableSpellChecking(settingToolClass::getThisBoolOption("useSpellChecker"));
+}
+
+void multiTypeTextBoxClass::insertText(QString newText)
+{
+    if(textEditSelected == true)
+    {
+        textEdit.insertPlainText(newText);
+        textEdit.verticalScrollBar()->updateGeometry();
+        textEdit.verticalScrollBar()->setValue(textEdit.verticalScrollBar()->maximum());
+    }
+    else
+    {
+        lineEdit.insert(newText);
+    }
 }
 
 void multiTypeTextBoxClass::setTextEditSelected(bool newVal)

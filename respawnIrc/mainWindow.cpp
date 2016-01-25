@@ -31,6 +31,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionReloadTopic = menuDiscussion->addAction("Recharger le topic");
     QAction* actionReloadAllTopic = menuDiscussion->addAction("Recharger tous les topics");
     menuDiscussion->addSeparator();
+    QAction* actionSelectSticker = menuDiscussion->addAction("Sélectionner un sticker");
     QMenu* menuTextDecoration = menuDiscussion->addMenu("Ajouter des décorations de texte");
     QAction* actionAddBold = menuTextDecoration->addAction("Gras");
     QAction* actionAddItalic = menuTextDecoration->addAction("Italique");
@@ -48,6 +49,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
     actionUpdateTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
     actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+    actionSelectSticker->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
     actionEditLastMessage->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
     actionGoToTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     actionGoToForum->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
@@ -167,6 +169,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionUpdateTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::updateTopic);
     QObject::connect(actionReloadTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTopic);
     QObject::connect(actionReloadAllTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadAllTopic);
+    QObject::connect(actionSelectSticker, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectSticker);
     QObject::connect(actionAddBold, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addBold);
     QObject::connect(actionAddItalic, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addItalic);
     QObject::connect(actionAddUnderline, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addUnderLine);

@@ -33,7 +33,8 @@ SOURCES += \
     highlighter.cpp \
     autoTimeoutReply.cpp \
     containerForTopicsInfos.cpp \
-    sendMessages.cpp
+    sendMessages.cpp \
+    selectStickerWindow.cpp
 
 QT += \
     network \
@@ -80,7 +81,8 @@ HEADERS += \
     highlighter.hpp \
     autoTimeoutReply.hpp \
     containerForTopicsInfos.hpp \
-    sendMessages.hpp
+    sendMessages.hpp \
+    selectStickerWindow.hpp
 
 RC_FILE = respawnIrc.rc
 
