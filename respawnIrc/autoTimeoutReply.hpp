@@ -12,7 +12,7 @@ public:
 public slots:
     void timeoutCurrentReply();
 private:
-    QNetworkReply* currentReply;
+    QNetworkReply* currentReply = 0;
     QTimer timerForTimeout;
 };
 

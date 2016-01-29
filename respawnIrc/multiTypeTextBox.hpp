@@ -39,7 +39,7 @@ private:
     spellTextEditClass textEdit;
     highlighterClass* highlighter;
     QLineEdit lineEdit;
-    bool textEditSelected;
+    bool textEditSelected = true;
     bool dicAreLoaded;
 };
 

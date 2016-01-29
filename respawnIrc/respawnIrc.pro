@@ -34,7 +34,8 @@ SOURCES += \
     autoTimeoutReply.cpp \
     containerForTopicsInfos.cpp \
     sendMessages.cpp \
-    selectStickerWindow.cpp
+    selectStickerWindow.cpp \
+    getTopicMessages.cpp
 
 QT += \
     network \
@@ -82,8 +83,11 @@ HEADERS += \
     autoTimeoutReply.hpp \
     containerForTopicsInfos.hpp \
     sendMessages.hpp \
-    selectStickerWindow.hpp
+    selectStickerWindow.hpp \
+    getTopicMessages.hpp
 
 RC_FILE = respawnIrc.rc
 
 QMAKE_CXXFLAGS_RELEASE = -O2
+
+CONFIG += c++11

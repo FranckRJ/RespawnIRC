@@ -6,7 +6,6 @@ autoTimeoutReplyClass::autoTimeoutReplyClass()
     timerForTimeout.setSingleShot(true);
     timerForTimeout.setInterval(10000);
     timerForTimeout.stop();
-    currentReply = 0;
 
     QObject::connect(&timerForTimeout, &QTimer::timeout, this, &autoTimeoutReplyClass::timeoutCurrentReply);
 }

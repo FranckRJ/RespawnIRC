@@ -10,7 +10,6 @@ showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
     timerForGetList.setTimerType(Qt::CoarseTimer);
     timerForGetList.setInterval(5000);
     updateSettings();
-    reply = 0;
 
     networkManager = new QNetworkAccessManager(this);
 

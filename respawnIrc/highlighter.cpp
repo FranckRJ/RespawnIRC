@@ -5,10 +5,6 @@ highlighterClass::highlighterClass(QTextDocument* parent) : QSyntaxHighlighter(p
 {
     spellCheckFormat.setUnderlineColor(QColor(styleToolClass::getColorInfo().underlineColor));
     spellCheckFormat.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
-    spellCheckActive = false;
-    spellerError = true;
-    spellChecker = 0;
-    codec = 0;
     setDic("");
 }
 

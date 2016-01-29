@@ -23,12 +23,11 @@ protected:
 private:
     QString spellDic;
     QString spellEncoding;
-    Hunspell* spellChecker;
-    bool spellCheckActive;
-    bool spellerError;
+    Hunspell* spellChecker = 0;
+    bool spellCheckActive = false;
+    bool spellerError = true;
     QTextCharFormat spellCheckFormat;
-    QTextCodec* codec;
-
+    QTextCodec* codec = 0;
 };
 
 #endif

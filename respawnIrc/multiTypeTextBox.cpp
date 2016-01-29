@@ -9,7 +9,6 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
     textEdit.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     textEdit.setMaximumHeight(65);
     textEdit.setAcceptRichText(false);
-    textEditSelected = true;
 
     if(settingToolClass::getThisBoolOption("useSpellChecker") == true)
     {

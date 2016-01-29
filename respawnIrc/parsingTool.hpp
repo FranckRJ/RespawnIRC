@@ -13,6 +13,7 @@ struct pseudoInfoStruct
 struct messageStruct
 {
     int idOfMessage;
+    bool isAnEdit;
     pseudoInfoStruct pseudoInfo;
     QString date;
     QString message;

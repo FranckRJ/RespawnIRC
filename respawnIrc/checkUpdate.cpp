@@ -8,9 +8,6 @@ checkUpdateClass::checkUpdateClass(QWidget* newParent, QString currentVersionNam
 {
     parent = newParent;
     versionName = currentVersionName;
-    alwaysShowMessage = false;
-    reply = 0;
-    alertForSameVersion = true; //vrai pour les snapshots, faux pour les releases
 
     networkManager = new QNetworkAccessManager(this);
 }

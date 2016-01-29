@@ -19,8 +19,6 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 {
     tabList.setTabsClosable(true);
     alertImage.load(QCoreApplication::applicationDirPath() + "/ressources/alert.png");
-    beepWhenWarn = true;
-    warnUser = true;
 
     addButtonToButtonLayout();
 

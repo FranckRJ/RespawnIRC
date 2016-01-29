@@ -12,23 +12,6 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     timerForGetMessage.stop();
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
     listOfColorPseudo = newListOfColorPseudo;
-    messagesStatus = "Rien.";
-    replyForFirstPage = 0;
-    replyForSecondPage = 0;
-    replyForEditInfo = 0;
-    replyForQuoteInfo = 0;
-    firstTimeGetMessages = true;
-    retrievesMessage = false;
-    idOfLastMessage = 0;
-    idOfLastMessageOfUser = 0;
-    oldIdOfLastMessageOfUser = 0;
-    linkHasChanged = false;
-    errorMode = false;
-    secondPageLoading = false;
-    needToGetMessages = false;
-    errorLastTime = false;
-    needToSetCookies = false;
-    oldUseMessageEdit = false;
 
     networkManager = new QNetworkAccessManager(this);
 

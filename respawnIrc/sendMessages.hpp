@@ -34,13 +34,13 @@ signals:
 private:
     multiTypeTextBoxClass messageLine;
     QPushButton sendButton;
-    QNetworkReply* replyForSendMessage;
+    QNetworkReply* replyForSendMessage = 0;
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> cookieListForPostMsg;
     QString dataForEditLastMessage;
-    bool isInEdit;
-    bool inSending;
-    int idOfLastMessageEdit;
+    bool isInEdit = false;
+    bool inSending = false;
+    int idOfLastMessageEdit = 0;
 };
 
 #endif

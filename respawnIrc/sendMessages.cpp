@@ -7,11 +7,6 @@ sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
     sendButton.setAutoDefault(true);
     sendButton.setObjectName("sendButton");
 
-    replyForSendMessage = 0;
-    idOfLastMessageEdit = 0;
-    inSending = false;
-    isInEdit = false;
-
     networkManager = new QNetworkAccessManager(this);
 
     QHBoxLayout* layout = new QHBoxLayout(this);

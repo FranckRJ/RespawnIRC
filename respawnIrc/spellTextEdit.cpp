@@ -2,9 +2,6 @@
 
 spellTextEditClass::spellTextEditClass(QWidget *parent) : QTextEdit(parent)
 {
-    spellChecker = 0;
-    codecUsed = 0;
-
     wordPropositionsActions.fill(new QAction(this), 5);
     createActions();
     setDic("");
