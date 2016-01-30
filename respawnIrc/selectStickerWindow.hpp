@@ -13,6 +13,7 @@ public:
 public slots:
     void linkClicked(const QUrl &link);
     void createContextMenu(const QPoint& thisPoint);
+    void scrollBarSizeChanged();
 signals:
     void addThisSticker(QString stringSticker);
 private:
