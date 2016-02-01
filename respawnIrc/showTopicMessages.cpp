@@ -134,6 +134,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
             setMessageStatus("Erreur, topic invalide.");
             setNumberOfConnectedAndMP("", "", true);
             messageBox.warning(this, "Erreur", "Le topic n'existe pas.");
+            QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, topicLink), Q_ARG(bool, getFirstMessageOfTopic));
         }
         else
         {

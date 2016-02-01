@@ -19,6 +19,17 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
 {
     needToGetFirstMessage = getFirstMessage;
     listOfEdit.clear();
+    linkHasChanged = true;
+    firstTimeGetMessages = true;
+    idOfLastMessage = 0;
+    needToGetMessages = false;
+
+    if(newTopicLink.isEmpty() == true)
+    {
+        topicLink.clear();
+        timerForGetMessage->stop();
+        return;
+    }
 
     if(needToGetFirstMessage == true)
     {
@@ -28,11 +39,6 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
     {
         topicLink = newTopicLink;
     }
-
-    linkHasChanged = true;
-    firstTimeGetMessages = true;
-    idOfLastMessage = 0;
-    needToGetMessages = false;
 
     if(retrievesMessage == false)
     {
