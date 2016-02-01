@@ -245,7 +245,7 @@ void getTopicMessagesClass::analyzeMessages()
                         {
                             if(currentCookieList.at(j).name() == newCookieList.at(i).name())
                             {
-                                if(currentCookieList.at(j).toRawForm() != newCookieList.at(i).toRawForm())
+                                if(currentCookieList.at(j).expirationDate() <= QDateTime::currentDateTime().addDays(7))
                                 {
                                     currentCookieList.replace(j, newCookieList.at(i));
                                     cookiesChanged = true;
