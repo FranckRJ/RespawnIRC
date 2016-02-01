@@ -56,7 +56,8 @@ public:
     static QNetworkRequest buildRequestWithThisUrl(QString url);
     static QList<QString> getListOfThisCapNumber(const QString &source, QRegularExpression& exp, int capNumber, bool globalMatch = true);
     static void replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore = "",
-                                     QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "", bool replaceReturnByBr = false, bool makeLinkIfPossible = false);
+                                     QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "",
+                                     bool replaceReturnByBr = false, bool makeLinkIfPossible = false, bool replacePByBr = false);
 private:
     static QRegularExpression expForNormalLink;
     static QRegularExpression expForAjaxTimestamp;
