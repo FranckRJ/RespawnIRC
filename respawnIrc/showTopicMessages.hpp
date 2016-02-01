@@ -6,6 +6,7 @@
 #include <QtNetwork>
 
 #include "colorPseudoListWindow.hpp"
+#include "getTopicMessages.hpp"
 #include "autoTimeoutReply.hpp"
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
@@ -15,6 +16,7 @@ class showTopicMessagesClass : public QWidget
     Q_OBJECT
 public:
     showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct> *newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    ~showTopicMessagesClass();
     void startGetMessage();
     const QList<QPair<QString, QString> >& getListOfInput();
     QString getTopicLink();
@@ -25,8 +27,6 @@ public:
     QString getColorOfThisPseudo(QString pseudo);
     const QList<QNetworkCookie>& getListOfCookies();
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages = true);
-    void setMessageStatus(QString newStatus);
-    void setNumberOfConnectedAndMP(QString newNumber, bool forceSet = false);
     void setTopicToErrorMode();
     void updateSettingInfo();
 public slots:
@@ -35,12 +35,14 @@ public slots:
     void linkClicked(const QUrl& link);
     bool getEditInfo(int idOfMessageToEdit = 0, bool useMessageEdit = true);
     void getQuoteInfo(QString idOfMessageQuoted);
-    void getMessages();
-    void loadFirstPageFinish();
-    void loadSecondPageFinish();
     void analyzeEditInfo();
     void analyzeQuoteInfo();
-    void analyzeMessages();
+    void analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
+                         QString newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
+    void setMessageStatus(QString newStatus);
+    void setNumberOfConnectedAndMP(QString newNumberConnected, QString newNumberMP, bool forceSet = false);
+    void setTopicName(QString newTopicName);
+    void setCookiesFromRequest(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser);
 signals:
     void quoteThisMessage(QString messageToQuote);
     void addToBlacklist(QString pseudoToBlacklist);
@@ -54,22 +56,18 @@ signals:
 private:
     QTextBrowser messagesBox;
     QString baseModel;
+    QThread threadForGetMessages;
+    getTopicMessagesClass* getTopicMessages;
     modelInfoStruct baseModelInfo;
     QList<QNetworkCookie> currentCookieList;
-    autoTimeoutReplyClass timeoutForFirstPage;
-    autoTimeoutReplyClass timeoutForSecondPage;
     autoTimeoutReplyClass timeoutForEditInfo;
     autoTimeoutReplyClass timeoutForQuoteInfo;
-    QNetworkReply* replyForFirstPage = 0;
-    QNetworkReply* replyForSecondPage = 0;
     QNetworkReply* replyForEditInfo = 0;
     QNetworkReply* replyForQuoteInfo = 0;
     QNetworkAccessManager* networkManager;
-    QTimer timerForGetMessage;
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;
     QList<pseudoWithColorStruct> *listOfColorPseudo;
-    QMap<int, QString> listOfEdit;
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;
     QString topicLink;
@@ -79,31 +77,24 @@ private:
     QString oldAjaxInfo;
     QString lastMessageQuoted;
     QString lastDate;
+    QString numberOfConnected;
+    messageStruct firstMessageOfTopic;
     bool showQuoteButton;
     bool showBlacklistButton;
     bool showEditButton;
-    bool showStickers;
-    bool loadTwoLastPage;
     bool ignoreNetworkError;
-    bool secondPageLoading = false;
     bool firstTimeGetMessages = true;
-    bool retrievesMessage = false;
-    bool linkHasChanged = false;
     bool errorMode = false;
     bool oldUseMessageEdit = false;
     bool needToGetMessages = false;
     bool errorLastTime = false;
-    bool needToSetCookies = false;
     bool colorModoAndAdminPseudo;
     bool colorPEMT;
     bool getFirstMessageOfTopic;
     bool warnWhenEdit;
-    messageStruct firstMessageOfTopic;
-    int idOfLastMessage = 0;
     int idOfLastMessageOfUser = 0;
     int oldIdOfLastMessageOfUser = 0;
     int numberOfMessageShowedFirstTime;
-    int stickersSize;
 };
 
 #endif

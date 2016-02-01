@@ -3,17 +3,19 @@
 
 showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
+    networkManager = new QNetworkAccessManager(this);
+    getTopicMessages = new getTopicMessagesClass();
+    getTopicMessages->moveToThread(&threadForGetMessages);
+
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(false);
     messagesBox.setOpenLinks(false);
     messagesBox.setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
-    timerForGetMessage.setTimerType(Qt::CoarseTimer);
+
     updateSettingInfo();
-    timerForGetMessage.stop();
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
     listOfColorPseudo = newListOfColorPseudo;
-
-    networkManager = new QNetworkAccessManager(this);
+    firstMessageOfTopic.isFirstMessage = false;
 
     setNewTheme(currentThemeName);
 
@@ -23,25 +25,27 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 
     setLayout(layout);
 
-    QObject::connect(&timerForGetMessage, &QTimer::timeout, this, &showTopicMessagesClass::getMessages);
     QObject::connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
+
+    QObject::connect(&threadForGetMessages, &QThread::finished, getTopicMessages, &QObject::deleteLater);
+    QObject::connect(getTopicMessages, &getTopicMessagesClass::newMessagesAreAvailable, this, &showTopicMessagesClass::analyzeMessages);
+    QObject::connect(getTopicMessages, &getTopicMessagesClass::newMessageStatus, this, &showTopicMessagesClass::setMessageStatus);
+    QObject::connect(getTopicMessages, &getTopicMessagesClass::newNumberOfConnectedAndMP, this, &showTopicMessagesClass::setNumberOfConnectedAndMP);
+    QObject::connect(getTopicMessages, &getTopicMessagesClass::newNameForTopic, this, &showTopicMessagesClass::setTopicName);
+    QObject::connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicMessagesClass::setCookiesFromRequest);
+
+    threadForGetMessages.start();
+}
+
+showTopicMessagesClass::~showTopicMessagesClass()
+{
+    threadForGetMessages.quit();
+    threadForGetMessages.wait();
 }
 
 void showTopicMessagesClass::startGetMessage()
 {
-    needToGetMessages = false;
-    if(topicLink.isEmpty() == false)
-    {
-        if(retrievesMessage == false)
-        {
-            timerForGetMessage.start();
-            getMessages();
-        }
-        else
-        {
-            needToGetMessages = true;
-        }
-    }
+    QMetaObject::invokeMethod(getTopicMessages, "startGetMessage", Qt::QueuedConnection);
 }
 
 const QList<QPair<QString, QString> >& showTopicMessagesClass::getListOfInput()
@@ -105,41 +109,14 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
 
     if(networkManager != 0)
     {
-        if(retrievesMessage == false)
-        {
-            networkManager->clearAccessCache();
-            networkManager->setCookieJar(new QNetworkCookieJar(this));
-            networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
-            errorLastTime = false;
-
-            if(updateMessages == true)
-            {
-                startGetMessage();
-            }
-        }
-        else
-        {
-            needToSetCookies = true;
-        }
+        networkManager->clearAccessCache();
+        networkManager->setCookieJar(new QNetworkCookieJar(this));
+        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+        errorLastTime = false;
     }
-}
 
-void showTopicMessagesClass::setMessageStatus(QString newStatus)
-{
-    messagesStatus = newStatus;
-    emit newMessageStatus();
-}
-
-void showTopicMessagesClass::setNumberOfConnectedAndMP(QString newNumber, bool forceSet)
-{
-    if(newNumber.isEmpty() == false || forceSet == true)
-    {
-        if(newNumber != numberOfConnectedAndMP)
-        {
-            numberOfConnectedAndMP = newNumber;
-            emit newNumberOfConnectedAndMP();
-        }
-    }
+    QMetaObject::invokeMethod(getTopicMessages, "setNewCookies", Qt::QueuedConnection,
+                              Q_ARG(QList<QNetworkCookie>, newCookies), Q_ARG(QString, pseudoOfUser), Q_ARG(bool, updateMessages));
 }
 
 void showTopicMessagesClass::setTopicToErrorMode()
@@ -152,11 +129,10 @@ void showTopicMessagesClass::setTopicToErrorMode()
         {
             topicLink.clear();
             topicName.clear();
-            timerForGetMessage.stop();
             messagesBox.clear();
-            listOfEdit.clear();
+            firstMessageOfTopic.isFirstMessage = false;
             setMessageStatus("Erreur, topic invalide.");
-            setNumberOfConnectedAndMP("", true);
+            setNumberOfConnectedAndMP("", "", true);
             messageBox.warning(this, "Erreur", "Le topic n'existe pas.");
         }
         else
@@ -172,7 +148,6 @@ void showTopicMessagesClass::setTopicToErrorMode()
     {
         setMessageStatus("Erreur, impossible de récupérer les messages.");
     }
-    retrievesMessage = false;
 }
 
 void showTopicMessagesClass::updateSettingInfo()
@@ -180,21 +155,18 @@ void showTopicMessagesClass::updateSettingInfo()
     showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
     showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
     showEditButton = settingToolClass::getThisBoolOption("showEditButton");
-    showStickers = settingToolClass::getThisBoolOption("showStickers");
-    loadTwoLastPage = settingToolClass::getThisBoolOption("loadTwoLastPage");
     ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
     colorModoAndAdminPseudo = settingToolClass::getThisBoolOption("colorModoAndAdminPseudo");
     colorPEMT = settingToolClass::getThisBoolOption("colorPEMT");
-    timerForGetMessage.setInterval(settingToolClass::getThisIntOption("updateTopicTime"));
     numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime");
-    stickersSize = settingToolClass::getThisIntOption("stickersSize");
     getFirstMessageOfTopic = settingToolClass::getThisBoolOption("getFirstMessageOfTopic");
     warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
 
-    if(getFirstMessageOfTopic == false)
-    {
-        firstMessageOfTopic.pseudoInfo.pseudoName.clear();
-    }
+    QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection,
+                              Q_ARG(bool, settingToolClass::getThisBoolOption("loadTwoLastPage")),
+                              Q_ARG(int, settingToolClass::getThisIntOption("updateTopicTime")),
+                              Q_ARG(bool, settingToolClass::getThisBoolOption("showStickers")),
+                              Q_ARG(int, settingToolClass::getThisIntOption("stickersSize")));
 }
 
 void showTopicMessagesClass::setNewTheme(QString newThemeName)
@@ -207,52 +179,17 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
 {
     messagesBox.clear();
     topicName.clear();
-    listOfEdit.clear();
     lastDate.clear();
-
-    if(getFirstMessageOfTopic == true)
-    {
-        topicLink = parsingToolClass::getFirstPageOfTopic(newTopic);
-    }
-    else
-    {
-        topicLink = newTopic;
-    }
-
-    linkHasChanged = true;
+    firstMessageOfTopic.isFirstMessage = false;
+    topicLink = parsingToolClass::getFirstPageOfTopic(newTopic);
     firstTimeGetMessages = true;
     errorMode = false;
     errorLastTime = false;
-    idOfLastMessage = 0;
     idOfLastMessageOfUser = 0;
     oldIdOfLastMessageOfUser = 0;
     needToGetMessages = false;
     oldUseMessageEdit = false;
-
-    if(retrievesMessage == false)
-    {
-        setMessageStatus("Nouveau topic.");
-    }
-    else
-    {
-        if(replyForFirstPage != 0)
-        {
-            if(replyForFirstPage->isRunning())
-            {
-                replyForFirstPage->abort();
-            }
-        }
-
-        if(replyForSecondPage != 0)
-        {
-            if(replyForSecondPage->isRunning())
-            {
-                replyForSecondPage->abort();
-            }
-        }
-    }
-    setNumberOfConnectedAndMP("", true);
-    startGetMessage();
+    QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, newTopic), Q_ARG(bool, getFirstMessageOfTopic));
 }
 
 void showTopicMessagesClass::linkClicked(const QUrl &link)
@@ -284,7 +221,8 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
 {
     if(networkManager == 0)
     {
-        return false;
+        networkManager = new QNetworkAccessManager(this);
+        setNewCookies(currentCookieList, pseudoOfUser, false);
     }
 
     if(ajaxInfo.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
@@ -317,6 +255,8 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
             else
             {
                 analyzeEditInfo();
+                networkManager->deleteLater();
+                networkManager = 0;
             }
 
             return true;
@@ -330,7 +270,8 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
 {
     if(networkManager == 0)
     {
-        return;
+        networkManager = new QNetworkAccessManager(this);
+        setNewCookies(currentCookieList, pseudoOfUser, false);
     }
 
     if(ajaxInfo.isEmpty() == false && replyForQuoteInfo == 0)
@@ -346,108 +287,14 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
         else
         {
             analyzeQuoteInfo();
+            networkManager->deleteLater();
+            networkManager = 0;
         }
     }
     else
     {
         QMessageBox messageBox;
         messageBox.warning(this, "Erreur", "Erreur, impossible de citer ce message, réessayez.");
-    }
-}
-
-void showTopicMessagesClass::getMessages()
-{
-    bool itsNewManager = false;
-    bool errorWhenTryToGetMessages = false;
-
-    if(networkManager == 0)
-    {
-        itsNewManager = true;
-        networkManager = new QNetworkAccessManager(this);
-    }
-
-    if(retrievesMessage == false)
-    {
-        if(replyForFirstPage == 0)
-        {
-            if(itsNewManager == true || needToSetCookies == true)
-            {
-                setNewCookies(currentCookieList, pseudoOfUser, false);
-                needToSetCookies = false;
-            }
-
-            retrievesMessage = true;
-
-            QString beforeLastPage = parsingToolClass::getBeforeLastPageOfTopic(topicLink);
-            QNetworkRequest requestForFirstPage = parsingToolClass::buildRequestWithThisUrl(topicLink);
-            setMessageStatus("Récupération des messages en cours...");
-            secondPageLoading = false;
-            linkHasChanged = false;
-            replyForFirstPage = timeoutForFirstPage.resetReply(networkManager->get(requestForFirstPage));
-            if(replyForFirstPage->isOpen() == true)
-            {
-                QObject::connect(replyForFirstPage, &QNetworkReply::finished, this, &showTopicMessagesClass::loadFirstPageFinish);
-            }
-            else
-            {
-                errorWhenTryToGetMessages = true;
-            }
-
-            if(loadTwoLastPage == true && beforeLastPage.isEmpty() == false)
-            {
-                QNetworkRequest requestForSecondPage = parsingToolClass::buildRequestWithThisUrl(beforeLastPage);
-                secondPageLoading = true;
-                replyForSecondPage = timeoutForSecondPage.resetReply(networkManager->get(requestForSecondPage));
-                if(replyForSecondPage->isOpen() == true)
-                {
-                    QObject::connect(replyForSecondPage, &QNetworkReply::finished, this, &showTopicMessagesClass::loadSecondPageFinish);
-                }
-                else
-                {
-                    errorWhenTryToGetMessages = true;
-                }
-            }
-
-            if(errorWhenTryToGetMessages == true)
-            {
-                analyzeMessages();
-                networkManager->deleteLater();
-                networkManager = 0;
-            }
-        }
-        else
-        {
-            retrievesMessage = false;
-        }
-    }
-}
-
-void showTopicMessagesClass::loadFirstPageFinish()
-{
-    if(loadTwoLastPage == true && secondPageLoading == true)
-    {
-        if(replyForSecondPage != 0)
-        {
-            if(replyForSecondPage->isFinished() == true)
-            {
-                analyzeMessages();
-            }
-        }
-    }
-    else
-    {
-        analyzeMessages();
-    }
-}
-
-void showTopicMessagesClass::loadSecondPageFinish()
-{
-    if(replyForFirstPage != 0)
-    {
-        if(replyForFirstPage->isFinished() == true)
-        {
-            analyzeMessages();
-        }
     }
 }
 
@@ -500,288 +347,178 @@ void showTopicMessagesClass::analyzeQuoteInfo()
     emit quoteThisMessage(messageQuote);
 }
 
-void showTopicMessagesClass::analyzeMessages()
+void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
+                                             QString newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty)
 {
-    QString newTopicLink;
     QString colorOfPseudo;
     QString colorOfDate;
-    QString buttonString;
-    QString sourceFirst;
-    QString sourceSecond;
-    QString numberOfConnected;
     bool appendHrAtEndOfFirstMessage = false;
 
-    timeoutForFirstPage.resetReply();
-    timeoutForSecondPage.resetReply();
-
-    if(replyForFirstPage != 0)
+    if(parsingToolClass::getFirstPageOfTopic(fromThisTopic) != topicLink)
     {
-        if(replyForFirstPage->isReadable() && needToSetCookies == false)
-        {
-            bool cookiesChanged = false;
-            QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(replyForFirstPage->header(QNetworkRequest::SetCookieHeader));
-            sourceFirst = replyForFirstPage->readAll();
+        return;
+    }
 
-            for(int i = 0; i < newCookieList.size(); ++i)
+    if(listOfNewMessages.size() == 0 && listIsReallyEmpty == true)
+    {
+        if(errorLastTime == true)
+        {
+            setTopicToErrorMode();
+        }
+        else
+        {
+            errorLastTime = true;
+        }
+        return;
+    }
+    else
+    {
+        errorMode = false;
+    }
+
+    if(firstTimeGetMessages == true)
+    {
+        if(listOfNewMessages.isEmpty() == false)
+        {
+            if(getFirstMessageOfTopic == true && listOfNewMessages.first().isFirstMessage == true)
             {
-                if(newCookieList.at(i).name() == "dlrowolleh" || newCookieList.at(i).name() == "coniunctio")
+                firstMessageOfTopic = listOfNewMessages.first();
+                listOfNewMessages.pop_front();
+            }
+        }
+    }
+
+    if(messagesBox.toPlainText().isEmpty() == true)
+    {
+        while(listOfNewMessages.size() > numberOfMessageShowedFirstTime)
+        {
+            listOfNewMessages.pop_front();
+        }
+
+        if(listOfNewMessages.isEmpty() == false && getFirstMessageOfTopic == true && firstMessageOfTopic.isFirstMessage == true)
+        {
+            listOfNewMessages.push_front(firstMessageOfTopic);
+            firstMessageOfTopic.isFirstMessage = false;
+            appendHrAtEndOfFirstMessage = true;
+        }
+    }
+
+    for(messageStruct& currentMessage : listOfNewMessages)
+    {
+        QString newMessageToAppend = baseModel;
+        colorOfPseudo = getColorOfThisPseudo(currentMessage.pseudoInfo.pseudoName.toLower());
+
+        if(colorOfPseudo.isEmpty() == true)
+        {
+            if(pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower())
+            {
+                colorOfPseudo = baseModelInfo.userPseudoColor;
+            }
+            else
+            {
+                if(colorModoAndAdminPseudo == true)
                 {
-                    for(int j = 0; j < currentCookieList.size(); ++j)
+                    if(currentMessage.pseudoInfo.pseudoType == "user")
                     {
-                        if(currentCookieList.at(j).name() == newCookieList.at(i).name())
-                        {
-                            if(currentCookieList.at(j).toRawForm() != newCookieList.at(i).toRawForm())
-                            {
-                                currentCookieList.replace(j, newCookieList.at(i));
-                                cookiesChanged = true;
-                            }
-                            break;
-                        }
+                        colorOfPseudo = baseModelInfo.normalPseudoColor;
+                    }
+                    else if(currentMessage.pseudoInfo.pseudoType == "modo")
+                    {
+                        colorOfPseudo = baseModelInfo.modoPseudoColor;
+                    }
+                    else if(currentMessage.pseudoInfo.pseudoType == "admin" || currentMessage.pseudoInfo.pseudoType == "staff")
+                    {
+                        colorOfPseudo = baseModelInfo.adminPseudoColor;
+                    }
+                    else
+                    {
+                        colorOfPseudo = baseModelInfo.normalPseudoColor;
                     }
                 }
-            }
-
-            if(cookiesChanged == true)
-            {
-                emit newCookiesHaveToBeSet();
+                else
+                {
+                    colorOfPseudo = baseModelInfo.normalPseudoColor;
+                }
             }
         }
-        replyForFirstPage->deleteLater();
-        replyForFirstPage = 0;
-    }
 
-    if(loadTwoLastPage == true && secondPageLoading == true)
-    {
-        if(replyForSecondPage != 0)
+        if(currentMessage.isAnEdit == true)
         {
-            if(replyForSecondPage->isReadable())
-            {
-                sourceSecond = replyForSecondPage->readAll();
-            }
-            replyForSecondPage->deleteLater();
-            replyForSecondPage = 0;
+            colorOfDate = baseModelInfo.editDateColor;
         }
-    }
+        else
+        {
+            if(colorPEMT == true && lastDate == currentMessage.date)
+            {
+                colorOfDate = baseModelInfo.pemtDateColor;
+            }
+            else
+            {
+                colorOfDate = baseModelInfo.normalDateColor;
+            }
 
-    setMessageStatus("Récupération des messages terminée !");
+            if(currentMessage.isFirstMessage == false)
+            {
+                lastDate = currentMessage.date;
+            }
 
-    if(linkHasChanged == true)
-    {
-        retrievesMessage = false;
-        startGetMessage();
-        return;
+            if(pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower())
+            {
+                idOfLastMessageOfUser = currentMessage.idOfMessage;
+            }
+        }
+
+        if(showQuoteButton == true)
+        {
+            newMessageToAppend.replace("<%BUTTON_QUOTE%>", baseModelInfo.quoteModel);
+        }
+
+        if(pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower())
+        {
+            if(showEditButton == true)
+            {
+                newMessageToAppend.replace("<%BUTTON_EDIT%>", baseModelInfo.editModel);
+            }
+        }
+        else if(showBlacklistButton == true)
+        {
+            newMessageToAppend.replace("<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel);
+        }
+
+        newMessageToAppend.replace("<%DATE_COLOR%>", colorOfDate);
+        newMessageToAppend.replace("<%PSEUDO_LOWER%>", currentMessage.pseudoInfo.pseudoName.toLower());
+        newMessageToAppend.replace("<%ID_MESSAGE%>", QString::number(currentMessage.idOfMessage));
+        newMessageToAppend.replace("<%DATE_MESSAGE%>", currentMessage.date);
+        newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
+        newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", currentMessage.pseudoInfo.pseudoName);
+        newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", currentMessage.message);
+
+        if(appendHrAtEndOfFirstMessage == true)
+        {
+            newMessageToAppend.append("<hr><span style=\"font-size: 1px;\"><br></span>");
+            appendHrAtEndOfFirstMessage = false;
+        }
+
+        messagesBox.append(newMessageToAppend);
+        if(messagesBox.verticalScrollBar()->value() >= messagesBox.verticalScrollBar()->maximum())
+        {
+            messagesBox.verticalScrollBar()->updateGeometry();
+            messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
+        }
+
+        if(pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower())
+        {
+            if(warnWhenEdit == true || (warnWhenEdit == false && currentMessage.isAnEdit == false))
+            {
+                emit newMessagesAvailable();
+            }
+        }
     }
 
     if(pseudoOfUser.isEmpty() == false)
     {
-        numberOfConnected = parsingToolClass::getNumberOfConnected(sourceFirst);
-        setNumberOfConnectedAndMP(numberOfConnected + " - " + parsingToolClass::getNumberOfMp(sourceFirst));
-    }
-    else
-    {
-        setNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(sourceFirst));
-    }
-
-    newTopicLink = parsingToolClass::getLastPageOfTopic(sourceFirst);
-
-    if(firstTimeGetMessages == true)
-    {
-        topicName = parsingToolClass::getNameOfTopic(sourceFirst);
-
-        if(topicName.isEmpty() == false)
-        {
-            emit newNameForTopic(topicName);
-        }
-
-        if(getFirstMessageOfTopic == true)
-        {
-            QList<messageStruct> tmpList = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst);
-
-            if(tmpList.isEmpty() == false)
-            {
-                firstMessageOfTopic = tmpList.first();
-            }
-        }
-    }
-
-    if(firstTimeGetMessages == false || newTopicLink.isEmpty() == true)
-    {
-        QList<messageStruct> listOfEntireMessage;
-
-        if(sourceSecond.isEmpty() == false)
-        {
-            listOfEntireMessage = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceSecond);
-        }
-
-        listOfEntireMessage.append(parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst));
-
-        if(listOfEntireMessage.size() == 0)
-        {
-            if(errorLastTime == true)
-            {
-                setTopicToErrorMode();
-            }
-            else
-            {
-                errorLastTime = true;
-            }
-            retrievesMessage = false;
-            return;
-        }
-        else
-        {
-            errorMode = false;
-        }
-
-        if(messagesBox.toPlainText().isEmpty() == true)
-        {
-            while(listOfEntireMessage.size() > numberOfMessageShowedFirstTime)
-            {
-                listOfEntireMessage.pop_front();
-            }
-
-            if(getFirstMessageOfTopic == true && firstMessageOfTopic.pseudoInfo.pseudoName.isEmpty() == false)
-            {
-                listOfEntireMessage.push_front(firstMessageOfTopic);
-                appendHrAtEndOfFirstMessage = true;
-                firstMessageOfTopic.pseudoInfo.pseudoName.clear();
-            }
-        }
-
-        for(int i = 0; i < listOfEntireMessage.size(); ++i)
-        {
-            QMap<int, QString>::const_iterator listOfEditIterator = listOfEdit.find(listOfEntireMessage.at(i).idOfMessage);
-            QString valueOfEditIte = listOfEntireMessage.at(i).lastTimeEdit;
-
-            if(listOfEditIterator != listOfEdit.end())
-            {
-                valueOfEditIte = listOfEditIterator.value();
-            }
-
-            if((listOfEntireMessage.at(i).idOfMessage > idOfLastMessage || (valueOfEditIte != listOfEntireMessage.at(i).lastTimeEdit))
-                    && listOfIgnoredPseudo->indexOf(listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower()) == -1)
-            {
-                QString newMessageToAppend = baseModel;
-                buttonString.clear();
-                colorOfPseudo.clear();
-                colorOfPseudo = getColorOfThisPseudo(listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower());
-
-                if(colorOfPseudo.isEmpty() == true)
-                {
-                    if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
-                    {
-                        colorOfPseudo = baseModelInfo.userPseudoColor;
-                    }
-                    else
-                    {
-                        if(colorModoAndAdminPseudo == true)
-                        {
-                            if(listOfEntireMessage.at(i).pseudoInfo.pseudoType == "user")
-                            {
-                                colorOfPseudo = baseModelInfo.normalPseudoColor;
-                            }
-                            else if(listOfEntireMessage.at(i).pseudoInfo.pseudoType == "modo")
-                            {
-                                colorOfPseudo = baseModelInfo.modoPseudoColor;
-                            }
-                            else if(listOfEntireMessage.at(i).pseudoInfo.pseudoType == "admin" || listOfEntireMessage.at(i).pseudoInfo.pseudoType == "staff")
-                            {
-                                colorOfPseudo = baseModelInfo.adminPseudoColor;
-                            }
-                            else
-                            {
-                                colorOfPseudo = baseModelInfo.normalPseudoColor;
-                            }
-                        }
-                        else
-                        {
-                            colorOfPseudo = baseModelInfo.normalPseudoColor;
-                        }
-                    }
-                }
-
-                if(valueOfEditIte != listOfEntireMessage.at(i).lastTimeEdit)
-                {
-                    colorOfDate = baseModelInfo.editDateColor;
-                }
-                else
-                {
-                    if(colorPEMT == true && lastDate == listOfEntireMessage.at(i).date)
-                    {
-                        colorOfDate = baseModelInfo.pemtDateColor;
-                    }
-                    else
-                    {
-                        colorOfDate = baseModelInfo.normalDateColor;
-                    }
-                    idOfLastMessage = listOfEntireMessage.at(i).idOfMessage;
-                    lastDate = listOfEntireMessage.at(i).date;
-
-                    if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
-                    {
-                        idOfLastMessageOfUser = idOfLastMessage;
-                    }
-                }
-
-                if(showQuoteButton == true)
-                {
-                    newMessageToAppend.replace("<%BUTTON_QUOTE%>", baseModelInfo.quoteModel);
-                }
-
-                if(pseudoOfUser.toLower() == listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
-                {
-                    if(showEditButton == true)
-                    {
-                        newMessageToAppend.replace("<%BUTTON_EDIT%>", baseModelInfo.editModel);
-                    }
-                }
-                else if(showBlacklistButton == true)
-                {
-                    newMessageToAppend.replace("<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel);
-                }
-
-                newMessageToAppend.replace("<%DATE_COLOR%>", colorOfDate);
-                newMessageToAppend.replace("<%PSEUDO_LOWER%>", listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower());
-                newMessageToAppend.replace("<%ID_MESSAGE%>", QString::number(listOfEntireMessage.at(i).idOfMessage));
-                newMessageToAppend.replace("<%DATE_MESSAGE%>", listOfEntireMessage.at(i).date);
-                newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
-                newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", listOfEntireMessage.at(i).pseudoInfo.pseudoName);
-                newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", parsingToolClass::parsingMessages(listOfEntireMessage.at(i).message, showStickers, stickersSize));
-
-                if(appendHrAtEndOfFirstMessage == true)
-                {
-                    newMessageToAppend.append("<hr><span style=\"font-size: 1px;\"><br></span>");
-                    appendHrAtEndOfFirstMessage = false;
-                }
-
-                messagesBox.append(newMessageToAppend);
-                if(messagesBox.verticalScrollBar()->value() >= messagesBox.verticalScrollBar()->maximum())
-                {
-                    messagesBox.verticalScrollBar()->updateGeometry();
-                    messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
-                }
-                listOfEdit[listOfEntireMessage.at(i).idOfMessage] = listOfEntireMessage.at(i).lastTimeEdit;
-                if(pseudoOfUser.toLower() != listOfEntireMessage.at(i).pseudoInfo.pseudoName.toLower())
-                {
-                    if(warnWhenEdit == true || (warnWhenEdit == false && valueOfEditIte == listOfEntireMessage.at(i).lastTimeEdit))
-                    {
-                        emit newMessagesAvailable();
-                    }
-                }
-            }
-        }
-
-        while(listOfEdit.size() > 40)
-        {
-            listOfEdit.erase(listOfEdit.begin());
-        }
-    }
-
-    if(pseudoOfUser.isEmpty() == false && needToSetCookies == false)
-    {
-        ajaxInfo = parsingToolClass::getAjaxInfo(sourceFirst);
-        listOfInput.clear();
-        parsingToolClass::getListOfHiddenInputFromThisForm(sourceFirst, "form-post-topic", listOfInput);
+        ajaxInfo = newAjaxInfo;
+        listOfInput = newListOfInput;
 
         if(listOfInput.isEmpty() == true)
         {
@@ -794,7 +531,7 @@ void showTopicMessagesClass::analyzeMessages()
                                        "Le compte semble invalide, veuillez vous déconnecter de l'onglet puis vous y reconnecter (sans supprimer le compte de la liste des comptes).\n"
                                        "Si le problème persiste, redémarrez RespawnIRC ou supprimez le pseudo de la liste des comptes et ajoutez-le à nouveau.");
                     pseudoOfUser.clear();
-                    setNumberOfConnectedAndMP(numberOfConnected);
+                    setNumberOfConnectedAndMP(numberOfConnected, "");
                 }
             }
             else
@@ -812,15 +549,46 @@ void showTopicMessagesClass::analyzeMessages()
         errorLastTime = false;
     }
     firstTimeGetMessages = false;
-    retrievesMessage = false;
+}
 
-    if(newTopicLink.isEmpty() == false)
+void showTopicMessagesClass::setMessageStatus(QString newStatus)
+{
+    messagesStatus = newStatus;
+    emit newMessageStatus();
+}
+
+void showTopicMessagesClass::setNumberOfConnectedAndMP(QString newNumberConnected, QString newNumberMP, bool forceSet)
+{
+    QString newMessageToShow = newNumberConnected;
+
+    if(newNumberMP.isEmpty() == false)
     {
-        topicLink = newTopicLink;
-        startGetMessage();
+        newMessageToShow += " - " + newNumberMP;
     }
-    else if(needToGetMessages == true)
+
+    numberOfConnected = newNumberConnected;
+
+    if(newMessageToShow.isEmpty() == false || forceSet == true)
     {
-        startGetMessage();
+        if(newMessageToShow != numberOfConnectedAndMP)
+        {
+            numberOfConnectedAndMP = newMessageToShow;
+            emit newNumberOfConnectedAndMP();
+        }
+    }
+}
+
+void showTopicMessagesClass::setTopicName(QString newTopicName)
+{
+    topicName = newTopicName;
+    emit newNameForTopic(topicName);
+}
+
+void showTopicMessagesClass::setCookiesFromRequest(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser)
+{
+    if(currentPseudoOfUser == pseudoOfUser)
+    {
+        setNewCookies(newListOfCookies, pseudoOfUser, false);
+        emit newCookiesHaveToBeSet();
     }
 }

@@ -11,10 +11,10 @@ class getTopicMessagesClass : public QObject
 {
     Q_OBJECT
 public:
-    getTopicMessagesClass(QObject* parent);
+    getTopicMessagesClass(QObject* parent = 0);
 public slots:
     void setNewTopic(QString newTopicLink, bool getFirstMessage);
-    void setNewCookies(QList<QNetworkCookie> newCookies, bool updateMessages);
+    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages);
     void settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize);
     void startGetMessage();
     void getMessages();
@@ -25,19 +25,20 @@ signals:
     void newMessagesAreAvailable(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
                                  QString newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
     void newNameForTopic(QString newName);
-    void newCookiesHaveToBeSet(QList<QNetworkCookie> newListOfCookies);
+    void newCookiesHaveToBeSet(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser);
     void newMessageStatus(QString newStatus);
     void newNumberOfConnectedAndMP(QString newNumberConnected, QString newNumberMP, bool forceSet);
 private:
     QNetworkAccessManager* networkManager;
-    autoTimeoutReplyClass timeoutForFirstPage;
-    autoTimeoutReplyClass timeoutForSecondPage;
+    autoTimeoutReplyClass* timeoutForFirstPage;
+    autoTimeoutReplyClass* timeoutForSecondPage;
     QNetworkReply* replyForFirstPage = 0;
     QNetworkReply* replyForSecondPage = 0;
     QList<QNetworkCookie> currentCookieList;
     QMap<int, QString> listOfEdit;
-    QTimer timerForGetMessage;
+    QTimer* timerForGetMessage;
     QString topicLink;
+    QString pseudoOfUser;
     bool needToGetFirstMessage = false;
     bool linkHasChanged = false;
     bool firstTimeGetMessages = true;

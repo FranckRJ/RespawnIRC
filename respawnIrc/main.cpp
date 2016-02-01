@@ -2,6 +2,7 @@
 
 #include "mainWindow.hpp"
 #include "settingTool.hpp"
+#include "parsingTool.hpp"
 #include "styleTool.hpp"
 
 int main(int argc, char *argv[])
@@ -13,6 +14,11 @@ int main(int argc, char *argv[])
     settingToolClass::setSettings(&setting);
     settingToolClass::initializeDefaultListsOption();
     styleToolClass::getModelInfo("");
+
+    qRegisterMetaType<messageStruct>("messageStruct");
+    qRegisterMetaType<QList<messageStruct> >("QList<messageStruct>");
+    qRegisterMetaType<QPair<QString,QString> > ("QPair<QString,QString>");
+    qRegisterMetaType<QList<QPair<QString,QString> > >("QList<QPair<QString,QString> >");
 
     mainWindowClass mainWindow;
     mainWindow.show();

@@ -2,10 +2,17 @@
 
 getTopicMessagesClass::getTopicMessagesClass(QObject* parent) : QObject(parent)
 {
-    timerForGetMessage.setTimerType(Qt::CoarseTimer);
-    timerForGetMessage.setInterval(5000);
-
     networkManager = new QNetworkAccessManager(this);
+
+    timeoutForFirstPage = new autoTimeoutReplyClass(this);
+    timeoutForSecondPage = new autoTimeoutReplyClass(this);
+
+    timerForGetMessage = new QTimer(this);
+
+    timerForGetMessage->setTimerType(Qt::CoarseTimer);
+    timerForGetMessage->setInterval(5000);
+
+    QObject::connect(timerForGetMessage, &QTimer::timeout, this, &getTopicMessagesClass::getMessages);
 }
 
 void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessage)
@@ -53,9 +60,10 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
     startGetMessage();
 }
 
-void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, bool updateMessages)
+void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages)
 {
     currentCookieList = newCookies;
+    pseudoOfUser = newPseudoOfUser;
 
     if(networkManager != 0)
     {
@@ -83,7 +91,7 @@ void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime,
     showStickers = newShowStickers;
     stickersSize = newStickerSize;
 
-    timerForGetMessage.setInterval(timerTime);
+    timerForGetMessage->setInterval(timerTime);
 }
 
 void getTopicMessagesClass::startGetMessage()
@@ -93,7 +101,7 @@ void getTopicMessagesClass::startGetMessage()
     {
         if(retrievesMessage == false)
         {
-            timerForGetMessage.start();
+            timerForGetMessage->start();
             getMessages();
         }
         else
@@ -120,7 +128,7 @@ void getTopicMessagesClass::getMessages()
         {
             if(itsNewManager == true || needToSetCookies == true)
             {
-                setNewCookies(currentCookieList, false);
+                setNewCookies(currentCookieList, pseudoOfUser, false);
                 needToSetCookies = false;
             }
 
@@ -131,7 +139,7 @@ void getTopicMessagesClass::getMessages()
             emit newMessageStatus("Récupération des messages en cours...");
             secondPageLoading = false;
             linkHasChanged = false;
-            replyForFirstPage = timeoutForFirstPage.resetReply(networkManager->get(requestForFirstPage));
+            replyForFirstPage = timeoutForFirstPage->resetReply(networkManager->get(requestForFirstPage));
             if(replyForFirstPage->isOpen() == true)
             {
                 QObject::connect(replyForFirstPage, &QNetworkReply::finished, this, &getTopicMessagesClass::loadFirstPageFinish);
@@ -145,7 +153,7 @@ void getTopicMessagesClass::getMessages()
             {
                 QNetworkRequest requestForSecondPage = parsingToolClass::buildRequestWithThisUrl(beforeLastPage);
                 secondPageLoading = true;
-                replyForSecondPage = timeoutForSecondPage.resetReply(networkManager->get(requestForSecondPage));
+                replyForSecondPage = timeoutForSecondPage->resetReply(networkManager->get(requestForSecondPage));
                 if(replyForSecondPage->isOpen() == true)
                 {
                     QObject::connect(replyForSecondPage, &QNetworkReply::finished, this, &getTopicMessagesClass::loadSecondPageFinish);
@@ -210,8 +218,8 @@ void getTopicMessagesClass::analyzeMessages()
     QList<messageStruct> listOfNewMessages;
     QList<QPair<QString, QString> > listOfInput;
 
-    timeoutForFirstPage.resetReply();
-    timeoutForSecondPage.resetReply();
+    timeoutForFirstPage->resetReply();
+    timeoutForSecondPage->resetReply();
 
     if(replyForFirstPage != 0)
     {
@@ -242,7 +250,7 @@ void getTopicMessagesClass::analyzeMessages()
 
             if(cookiesChanged == true)
             {
-                emit newCookiesHaveToBeSet(currentCookieList);
+                emit newCookiesHaveToBeSet(currentCookieList, pseudoOfUser);
             }
         }
         replyForFirstPage->deleteLater();
@@ -298,54 +306,60 @@ void getTopicMessagesClass::analyzeMessages()
 
             if(tmpList.isEmpty() == false)
             {
-                listOfNewMessages.push_front(tmpList.first());
+                messageStruct tmpMsg = tmpList.first();
+
+                tmpMsg.isFirstMessage = true;
+                tmpMsg.isAnEdit = false;
+                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, showStickers, stickersSize);
+
+                listOfNewMessages.push_front(tmpMsg);
             }
         }
     }
 
     if(firstTimeGetMessages == false || newTopicLink.isEmpty() == true)
     {
-        QList<messageStruct> listOfEntireMessage;
-
+        QList<messageStruct> listOfEntireMessages;
         if(sourceSecond.isEmpty() == false)
         {
-            listOfEntireMessage = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceSecond);
+            listOfEntireMessages = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceSecond);
         }
 
-        listOfEntireMessage.append(parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst));
+        listOfEntireMessages.append(parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst));
 
-        if(listOfEntireMessage.size() == 0)
+        if(listOfEntireMessages.size() == 0)
         {
-            emit newMessagesAreAvailable(listOfNewMessages, listOfInput, ajaxInfo, topicLink, true);
+            emit newMessagesAreAvailable(listOfEntireMessages, listOfInput, ajaxInfo, topicLink, true);
             retrievesMessage = false;
             return;
         }
 
-        for(int i = 0; i < listOfEntireMessage.size(); ++i)
+        for(messageStruct& currentMessage : listOfEntireMessages)
         {
-            QMap<int, QString>::const_iterator listOfEditIterator = listOfEdit.find(listOfEntireMessage.at(i).idOfMessage);
-            QString valueOfEditIte = listOfEntireMessage.at(i).lastTimeEdit;
+            QMap<int, QString>::const_iterator listOfEditIterator = listOfEdit.find(currentMessage.idOfMessage);
+            QString valueOfEditIte = currentMessage.lastTimeEdit;
 
             if(listOfEditIterator != listOfEdit.end())
             {
                 valueOfEditIte = listOfEditIterator.value();
             }
 
-            if(listOfEntireMessage.at(i).idOfMessage > idOfLastMessage || (valueOfEditIte != listOfEntireMessage.at(i).lastTimeEdit))
+            if(currentMessage.idOfMessage > idOfLastMessage || (valueOfEditIte != currentMessage.lastTimeEdit))
             {
-                if(valueOfEditIte != listOfEntireMessage.at(i).lastTimeEdit)
+                if(valueOfEditIte != currentMessage.lastTimeEdit)
                 {
-                    listOfEntireMessage[i].isAnEdit = true;
+                    currentMessage.isAnEdit = true;
                 }
                 else
                 {
-                    listOfEntireMessage[i].isAnEdit = false;
-                    idOfLastMessage = listOfEntireMessage.at(i).idOfMessage;
+                    currentMessage.isAnEdit = false;
+                    idOfLastMessage = currentMessage.idOfMessage;
                 }
 
-                listOfEntireMessage[i].message = parsingToolClass::parsingMessages(listOfEntireMessage.at(i).message, showStickers, stickersSize);
+                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, showStickers, stickersSize);
+                listOfNewMessages.push_back(currentMessage);
 
-                listOfEdit[listOfEntireMessage.at(i).idOfMessage] = listOfEntireMessage.at(i).lastTimeEdit;
+                listOfEdit[currentMessage.idOfMessage] = currentMessage.lastTimeEdit;
             }
         }
 
@@ -363,7 +377,7 @@ void getTopicMessagesClass::analyzeMessages()
     firstTimeGetMessages = false;
     retrievesMessage = false;
 
-    emit newMessagesAreAvailable(listOfNewMessages, listOfInput, "", topicLink, true);
+    emit newMessagesAreAvailable(listOfNewMessages, listOfInput, "", topicLink, false);
 
     if(newTopicLink.isEmpty() == false)
     {
