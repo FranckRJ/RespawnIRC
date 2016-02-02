@@ -24,9 +24,9 @@ QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QStrin
 {
     QString data;
 
-    for(int i = 0; i < listOfInput.size(); ++i)
+    for(const QPair<QString, QString>& thisInput : listOfInput)
     {
-        data += listOfInput.at(i).first + "=" + listOfInput.at(i).second + "&";
+        data += thisInput.first + "=" + thisInput.second + "&";
     }
 
     data += "message_topic=" + QUrl::toPercentEncoding(messageLine.text());

@@ -40,9 +40,9 @@ bool accountListWindowClass::addAcountToThisList(QList<QNetworkCookie> newCookie
 {
     if(newCookies.isEmpty() == false)
     {
-        for(int i = 0; i < thisList->size(); ++i)
+        for(const accountStruct& thisAccount : *thisList)
         {
-            if(thisList->at(i).pseudo.toLower() == newPseudoOfUser.toLower())
+            if(thisAccount.pseudo.toLower() == newPseudoOfUser.toLower())
             {
                 return false;
             }
@@ -62,9 +62,9 @@ void accountListWindowClass::updateList()
 {
     QList<QString> listOfAccountName;
 
-    for(int i = 0; i < listOfAccount->size(); ++i)
+    for(const accountStruct& thisAccount : *listOfAccount)
     {
-        listOfAccountName.append(listOfAccount->at(i).pseudo);
+        listOfAccountName.append(thisAccount.pseudo);
     }
 
     modelForListView.setStringList(listOfAccountName);

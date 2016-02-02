@@ -144,10 +144,10 @@ void showListOfTopicClass::analyzeReply()
         listOfTopicName.append(parsingToolClass::getForumName(source));
         listOfLink.append("");
 
-        for(int i = 0; i < listOfTopic.size(); ++i)
+        for(const topicStruct& thisTopic : listOfTopic)
         {
-            listOfTopicName.append(listOfTopic.at(i).name);
-            listOfLink.append(listOfTopic.at(i).link);
+            listOfTopicName.append(thisTopic.name);
+            listOfLink.append(thisTopic.link);
         }
 
         modelForListView.setStringList(listOfTopicName);

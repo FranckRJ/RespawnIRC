@@ -237,17 +237,17 @@ void getTopicMessagesClass::analyzeMessages()
                 bool cookiesChanged = false;
                 QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(replyForFirstPage->header(QNetworkRequest::SetCookieHeader));
 
-                for(int i = 0; i < newCookieList.size(); ++i)
+                for(const QNetworkCookie& thisNewCookie : newCookieList)
                 {
-                    if(newCookieList.at(i).name() == "dlrowolleh" || newCookieList.at(i).name() == "coniunctio")
+                    if(thisNewCookie.name() == "dlrowolleh" || thisNewCookie.name() == "coniunctio")
                     {
                         for(int j = 0; j < currentCookieList.size(); ++j)
                         {
-                            if(currentCookieList.at(j).name() == newCookieList.at(i).name())
+                            if(currentCookieList.at(j).name() == thisNewCookie.name())
                             {
                                 if(currentCookieList.at(j).expirationDate() <= QDateTime::currentDateTime().addDays(7))
                                 {
-                                    currentCookieList.replace(j, newCookieList.at(i));
+                                    currentCookieList.replace(j, thisNewCookie);
                                     cookiesChanged = true;
                                 }
                                 break;

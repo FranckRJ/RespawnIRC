@@ -80,11 +80,11 @@ QString showTopicMessagesClass::getPseudoUsed()
 
 QString showTopicMessagesClass::getColorOfThisPseudo(QString pseudo)
 {
-    for(int i = 0; i < listOfColorPseudo->size(); ++i)
+    for(const pseudoWithColorStruct& thisColor : *listOfColorPseudo)
     {
-        if(listOfColorPseudo->at(i).pseudo == pseudo)
+        if(thisColor.pseudo == pseudo)
         {
-            return "rgb(" + QString::number(listOfColorPseudo->at(i).red) + ", " + QString::number(listOfColorPseudo->at(i).green) + ", " + QString::number(listOfColorPseudo->at(i).blue) + ")";
+            return "rgb(" + QString::number(thisColor.red) + ", " + QString::number(thisColor.green) + ", " + QString::number(thisColor.blue) + ")";
         }
     }
 
@@ -317,9 +317,9 @@ void showTopicMessagesClass::analyzeEditInfo()
     message = parsingToolClass::getMessageEdit(source);
     parsingToolClass::getListOfHiddenInputFromThisForm(source, "form-post-topic", listOfEditInput);
 
-    for(int i = 0; i < listOfEditInput.size(); ++i)
+    for(const QPair<QString, QString>& thisInput : listOfEditInput)
     {
-        dataToSend += "&" + listOfEditInput.at(i).first + "=" + listOfEditInput.at(i).second;
+        dataToSend += "&" + thisInput.first + "=" + thisInput.second;
     }
 
     emit setEditInfo(oldIdOfLastMessageOfUser, message, dataToSend, oldUseMessageEdit);

@@ -58,19 +58,19 @@ void connectWindowClass::newPageLoaded(QNetworkReply* reply)
         {
             QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(reply->header(QNetworkRequest::SetCookieHeader));
 
-            for(int i = 0; i < newCookieList.size(); ++i)
+            for(const QNetworkCookie& thisNewCookie : newCookieList)
             {
-                if(newCookieList.at(i).name() == "dlrowolleh" || newCookieList.at(i).name() == "coniunctio")
+                if(thisNewCookie.name() == "dlrowolleh" || thisNewCookie.name() == "coniunctio")
                 {
                     for(int j = 0; j < cookieList.size(); ++j)
                     {
-                        if(cookieList.at(j).name() == newCookieList.at(i).name())
+                        if(cookieList.at(j).name() == thisNewCookie.name())
                         {
                             cookieList.removeAt(j);
                             break;
                         }
                     }
-                    cookieList.append(newCookieList.at(i));
+                    cookieList.append(thisNewCookie);
                 }
             }
         }

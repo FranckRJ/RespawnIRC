@@ -104,9 +104,9 @@ void highlighterClass::spellCheck(const QString &text)
         if(simplifiedText.isEmpty() == false)
         {
             QStringList checkList = simplifiedText.split(QRegExp("[^\\w'-]+"), QString::SkipEmptyParts);
-            for(int i = 0; i < checkList.size(); ++i)
+            for(const QString& thisString : checkList)
             {
-                simplifiedText = checkList.at(i);
+                simplifiedText = thisString;
                 if(simplifiedText.length() > 1)
                 {
                     if(checkWord(simplifiedText) == false)

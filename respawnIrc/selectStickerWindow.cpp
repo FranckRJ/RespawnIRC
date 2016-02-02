@@ -36,10 +36,10 @@ void selectStickerWindowClass::loadListOfStickers()
         listOfStickers = themeDir.entryList(QDir::Files);
     }
 
-    for(int i = 0; i < listOfStickers.size(); ++i)
+    for(const QString& thisSticker : listOfStickers)
     {
-        stickerBrowser.insertHtml("<a href=\"sticker:" + listOfStickers.at(i).left(listOfStickers.at(i).size() - 4) +
-                                  "\"><img src=\"ressources/stickers/" + listOfStickers.at(i) + "\" /></a>");
+        stickerBrowser.insertHtml("<a href=\"sticker:" + thisSticker.left(thisSticker.size() - 4) +
+                                  "\"><img src=\"ressources/stickers/" + thisSticker + "\" /></a>");
     }
 }
 

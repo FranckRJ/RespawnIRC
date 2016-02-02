@@ -223,9 +223,9 @@ void respawnIrcClass::delThisFavorite(int index)
 
 void respawnIrcClass::updateSettingInfoForList()
 {
-    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
+    for(containerForTopicsInfosClass* thisContainer : listOfContainerForTopicsInfos)
     {
-        listOfContainerForTopicsInfos.at(i)->updateSettingsForInfo();
+        thisContainer->updateSettingsForInfo();
     }
 }
 
@@ -551,9 +551,9 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
     {
         currentCookieList = newCookies;
         pseudoOfUser = newPseudoOfUser;
-        for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
+        for(containerForTopicsInfosClass* thisContainer : listOfContainerForTopicsInfos)
         {
-            listOfContainerForTopicsInfos.at(i)->setNewCookiesForInfo(currentCookieList, newPseudoOfUser);
+            thisContainer->setNewCookiesForInfo(currentCookieList, newPseudoOfUser);
         }
         setNewNumberOfConnectedAndPseudoUsed();
 
@@ -566,9 +566,9 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
         if(savePseudo == true)
         {
             settingToolClass::saveThisOption("pseudo", pseudoOfUser);
-            for(int i = 0; i < listOfPseudoForTopic.size(); ++i)
+            for(QString& thisPseudo : listOfPseudoForTopic)
             {
-                listOfPseudoForTopic[i].clear();
+                thisPseudo.clear();
             }
             settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
         }
@@ -591,17 +591,17 @@ void respawnIrcClass::setNewCookiesForPseudo()
 {
     QObject* senderObject = sender();
 
-    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
+    for(containerForTopicsInfosClass* thisContainer : listOfContainerForTopicsInfos)
     {
-        if(senderObject == &listOfContainerForTopicsInfos.at(i)->getShowTopicMessages())
+        if(senderObject == &thisContainer->getShowTopicMessages())
         {
-            QString pseudoUsed = listOfContainerForTopicsInfos.at(i)->getShowTopicMessages().getPseudoUsed();
+            QString pseudoUsed = thisContainer->getShowTopicMessages().getPseudoUsed();
 
-            for(int j = 0; j < listOfAccount.size(); ++j)
+            for(accountStruct& thisAccout : listOfAccount)
             {
-                if(listOfAccount.at(j).pseudo.toLower() == pseudoUsed.toLower())
+                if(thisAccout.pseudo.toLower() == pseudoUsed.toLower())
                 {
-                    listOfAccount[j].listOfCookie = listOfContainerForTopicsInfos.at(i)->getShowTopicMessages().getListOfCookies();
+                    thisAccout.listOfCookie = thisContainer->getShowTopicMessages().getListOfCookies();
                     saveListOfAccount();
                     break;
                 }

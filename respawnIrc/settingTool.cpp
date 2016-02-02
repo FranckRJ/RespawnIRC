@@ -211,21 +211,21 @@ void settingToolClass::saveListOfAccount(QList<accountStruct>& newListOfAccount)
     QList<QNetworkCookie> listOfConnectCookie;
     QList<QString> listOfPseudo;
 
-    for(int i = 0; i < newListOfAccount.size(); ++i)
+    for(const accountStruct& thisAccout : newListOfAccount)
     {
-        for(int j = 0; j < newListOfAccount.at(i).listOfCookie.size(); ++j)
+        for(const QNetworkCookie& thisCookie : thisAccout.listOfCookie)
         {
-            if(newListOfAccount.at(i).listOfCookie.at(j).name() == "dlrowolleh")
+            if(thisCookie.name() == "dlrowolleh")
             {
-                listOfHelloCookie.push_back(newListOfAccount.at(i).listOfCookie.at(j));
+                listOfHelloCookie.push_back(thisCookie);
             }
-            else if(newListOfAccount.at(i).listOfCookie.at(j).name() == "coniunctio")
+            else if(thisCookie.name() == "coniunctio")
             {
-                listOfConnectCookie.push_back(newListOfAccount.at(i).listOfCookie.at(j));
+                listOfConnectCookie.push_back(thisCookie);
             }
         }
 
-        listOfPseudo.push_back(newListOfAccount.at(i).pseudo);
+        listOfPseudo.push_back(thisAccout.pseudo);
     }
 
     setting->setValue("listOfHelloCookie", createQVariantListWithThisList(listOfHelloCookie));
@@ -250,12 +250,12 @@ void settingToolClass::saveListOfColorPseudo(QList<pseudoWithColorStruct>& newLi
     QList<QString> greenList;
     QList<QString> blueList;
 
-    for(int i = 0; i < newListOfColorPseudo.size(); ++i)
+    for(const pseudoWithColorStruct& thisColor : newListOfColorPseudo)
     {
-        pseudoList.push_back(newListOfColorPseudo.at(i).pseudo);
-        redList.push_back(QString::number(newListOfColorPseudo.at(i).red));
-        greenList.push_back(QString::number(newListOfColorPseudo.at(i).green));
-        blueList.push_back(QString::number(newListOfColorPseudo.at(i).blue));
+        pseudoList.push_back(thisColor.pseudo);
+        redList.push_back(QString::number(thisColor.red));
+        greenList.push_back(QString::number(thisColor.green));
+        blueList.push_back(QString::number(thisColor.blue));
     }
 
     setting->setValue("listOfPseudoForColor", createQVariantListWithThisList(pseudoList));
@@ -273,11 +273,11 @@ QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> 
 {
     QList<QVariant> newList;
 
-    for(int i = 0; i < list.size(); ++i)
+    for(const QString& thisString : list)
     {
-        if(list.at(i).isEmpty() == false || deleteEmptyString == false)
+        if(thisString.isEmpty() == false || deleteEmptyString == false)
         {
-            newList.push_back(list.at(i));
+            newList.push_back(thisString);
         }
     }
 
@@ -288,9 +288,9 @@ QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QNetworkC
 {
     QList<QVariant> newList;
 
-    for(int i = 0; i < list.size(); ++i)
+    for(const QNetworkCookie& thisCookie : list)
     {
-        newList.push_back(list.at(i).toRawForm());
+        newList.push_back(thisCookie.toRawForm());
     }
 
     return newList;
@@ -300,9 +300,9 @@ QList<QString> settingToolClass::createStringListWithThisQVariantList(QList<QVar
 {
     QList<QString> newList;
 
-    for(int i = 0; i < list.size(); ++i)
+    for(const QVariant& thisVariant : list)
     {
-        newList.push_back(list.at(i).toString());
+        newList.push_back(thisVariant.toString());
     }
 
     return newList;
@@ -312,9 +312,9 @@ QList<QNetworkCookie> settingToolClass::createCookieListWithThisQVariantList(QLi
 {
     QList<QNetworkCookie> newList;
 
-    for(int i = 0; i < list.size(); ++i)
+    for(const QVariant& thisVariant : list)
     {
-        newList.push_back(QNetworkCookie::parseCookies(list.at(i).toByteArray()).first());
+        newList.push_back(QNetworkCookie::parseCookies(thisVariant.toByteArray()).first());
     }
 
     return newList;
