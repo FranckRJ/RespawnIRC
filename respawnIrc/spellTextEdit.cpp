@@ -132,11 +132,11 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos)
 
 void spellTextEditClass::createActions()
 {
-    for(int i = 0; i < wordPropositionsActions.size(); ++i)
+    for(QAction*& thisAction : wordPropositionsActions)
     {
-        wordPropositionsActions[i] = new QAction(this);
-        wordPropositionsActions[i]->setVisible(false);
-        connect(wordPropositionsActions[i], &QAction::triggered, this, &spellTextEditClass::correctWord);
+        thisAction = new QAction(this);
+        thisAction->setVisible(false);
+        connect(thisAction, &QAction::triggered, this, &spellTextEditClass::correctWord);
     }
 }
 

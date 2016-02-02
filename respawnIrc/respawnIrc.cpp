@@ -223,7 +223,7 @@ void respawnIrcClass::delThisFavorite(int index)
 
 void respawnIrcClass::updateSettingInfoForList()
 {
-    for(containerForTopicsInfosClass* thisContainer : listOfContainerForTopicsInfos)
+    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
         thisContainer->updateSettingsForInfo();
     }
@@ -551,7 +551,7 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
     {
         currentCookieList = newCookies;
         pseudoOfUser = newPseudoOfUser;
-        for(containerForTopicsInfosClass* thisContainer : listOfContainerForTopicsInfos)
+        for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
         {
             thisContainer->setNewCookiesForInfo(currentCookieList, newPseudoOfUser);
         }
@@ -591,7 +591,7 @@ void respawnIrcClass::setNewCookiesForPseudo()
 {
     QObject* senderObject = sender();
 
-    for(containerForTopicsInfosClass* thisContainer : listOfContainerForTopicsInfos)
+    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
         if(senderObject == &thisContainer->getShowTopicMessages())
         {
