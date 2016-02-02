@@ -386,7 +386,7 @@ void getTopicMessagesClass::analyzeMessages()
     firstTimeGetMessages = false;
     retrievesMessage = false;
 
-    emit newMessagesAreAvailable(listOfNewMessages, listOfInput, "", topicLink, false);
+    emit newMessagesAreAvailable(listOfNewMessages, listOfInput, ajaxInfo, topicLink, false);
 
     if(newTopicLink.isEmpty() == false)
     {
