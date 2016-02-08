@@ -5,6 +5,8 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+
     QLabel* labForPseudo = new QLabel("Entrez le pseudo avec lequel vous voulez vous connecter :", this);
     QLabel* labForButton = new QLabel("Une fois connecté, cliquez ici :", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
