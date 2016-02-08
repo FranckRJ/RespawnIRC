@@ -35,7 +35,7 @@ captchaWindowClass::captchaWindowClass(QString captchaLink, QList<QNetworkCookie
 
 captchaWindowClass::~captchaWindowClass()
 {
-    if(reply != 0)
+    if(reply != nullptr)
     {
         reply->deleteLater();
     }
@@ -46,7 +46,7 @@ void captchaWindowClass::showCaptcha()
     QPixmap pixmap;
     QByteArray imageData = reply->readAll();
     reply->deleteLater();
-    reply = 0;
+    reply = nullptr;
     pixmap.loadFromData(imageData);
     labPixCaptcha.setPixmap(pixmap);
 }

@@ -17,7 +17,7 @@ private:
     QWidget* parent;
     QString versionName;
     QNetworkAccessManager* networkManager;
-    QNetworkReply* reply = 0;
+    QNetworkReply* reply = nullptr;
     bool alwaysShowMessage = false;
     bool alertForSameVersion = true; //vrai pour les snapshots, faux pour les releases
 };

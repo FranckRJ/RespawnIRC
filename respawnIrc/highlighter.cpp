@@ -10,7 +10,7 @@ highlighterClass::highlighterClass(QTextDocument* parent) : QSyntaxHighlighter(p
 
 highlighterClass::~highlighterClass()
 {
-    if(spellChecker != 0)
+    if(spellChecker != nullptr)
     {
         delete spellChecker;
     }
@@ -36,7 +36,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
     spellerError = false;
     spellDic = newSpellDic;
 
-    if(spellChecker != 0)
+    if(spellChecker != nullptr)
     {
         delete spellChecker;
     }
@@ -44,7 +44,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
     QFileInfo fileInfoForDic(QCoreApplication::applicationDirPath() + "/ressources/" + spellDic + ".dic");
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
-        spellChecker = 0;
+        spellChecker = nullptr;
         spellCheckActive = false;
         spellerError = true;
         codec = QTextCodec::codecForName("UTF-8");
@@ -64,7 +64,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
 
     rehighlight();
 
-    if(spellChecker == 0)
+    if(spellChecker == nullptr)
     {
         return false;
     }
@@ -82,7 +82,7 @@ void highlighterClass::styleChanged()
 
 void highlighterClass::addWordToDic(QString word)
 {
-    if(spellChecker != 0 && codec != 0)
+    if(spellChecker != nullptr && codec != nullptr)
     {
         QByteArray encodedString;
         encodedString = codec->fromUnicode(word);
@@ -131,7 +131,7 @@ void highlighterClass::spellCheck(const QString &text)
 
 bool highlighterClass::checkWord(QString word)
 {
-    if(spellChecker != 0 && codec != 0)
+    if(spellChecker != nullptr && codec != nullptr)
     {
         return spellChecker->spell(codec->fromUnicode(word).data());
     }

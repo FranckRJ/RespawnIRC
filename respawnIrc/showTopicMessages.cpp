@@ -107,7 +107,7 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
     pseudoOfUser = newPseudoOfUser;
     listOfInput.clear();
 
-    if(networkManager != 0)
+    if(networkManager != nullptr)
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
@@ -220,7 +220,7 @@ void showTopicMessagesClass::linkClicked(const QUrl &link)
 
 bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageEdit)
 {
-    if(networkManager == 0)
+    if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
         setNewCookies(currentCookieList, pseudoOfUser, false);
@@ -228,7 +228,7 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
 
     if(ajaxInfo.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
     {
-        if(replyForEditInfo == 0)
+        if(replyForEditInfo == nullptr)
         {
             QString urlToGet;
             QNetworkRequest requestForEditInfo;
@@ -257,7 +257,7 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
             {
                 analyzeEditInfo();
                 networkManager->deleteLater();
-                networkManager = 0;
+                networkManager = nullptr;
             }
 
             return true;
@@ -269,13 +269,13 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
 
 void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
 {
-    if(networkManager == 0)
+    if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
         setNewCookies(currentCookieList, pseudoOfUser, false);
     }
 
-    if(ajaxInfo.isEmpty() == false && replyForQuoteInfo == 0)
+    if(ajaxInfo.isEmpty() == false && replyForQuoteInfo == nullptr)
     {
         QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/forums/ajax_citation.php");
         QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo;
@@ -289,7 +289,7 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
         {
             analyzeQuoteInfo();
             networkManager->deleteLater();
-            networkManager = 0;
+            networkManager = nullptr;
         }
     }
     else
@@ -324,7 +324,7 @@ void showTopicMessagesClass::analyzeEditInfo()
 
     emit setEditInfo(oldIdOfLastMessageOfUser, message, dataToSend, oldUseMessageEdit);
 
-    replyForEditInfo = 0;
+    replyForEditInfo = nullptr;
 }
 
 void showTopicMessagesClass::analyzeQuoteInfo()
@@ -343,7 +343,7 @@ void showTopicMessagesClass::analyzeQuoteInfo()
     messageQuote = parsingToolClass::getMessageQuote(source);
 
     messageQuote = ">" + QUrl::fromPercentEncoding(lastMessageQuoted.toLatin1()) + "\n>" + messageQuote;
-    replyForQuoteInfo = 0;
+    replyForQuoteInfo = nullptr;
 
     emit quoteThisMessage(messageQuote);
 }
@@ -360,7 +360,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
         return;
     }
 
-    if(listOfNewMessages.size() == 0 && listIsReallyEmpty == true)
+    if(listOfNewMessages.isEmpty() == true && listIsReallyEmpty == true)
     {
         if(errorLastTime == true)
         {

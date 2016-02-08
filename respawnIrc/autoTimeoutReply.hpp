@@ -8,11 +8,11 @@ class autoTimeoutReplyClass : public QObject
     Q_OBJECT
 public:
     autoTimeoutReplyClass(QObject* parent = 0);
-    QNetworkReply* resetReply(QNetworkReply* newReply = 0);
+    QNetworkReply* resetReply(QNetworkReply* newReply = nullptr);
 public slots:
     void timeoutCurrentReply();
 private:
-    QNetworkReply* currentReply = 0;
+    QNetworkReply* currentReply = nullptr;
     QTimer* timerForTimeout;
 };
 

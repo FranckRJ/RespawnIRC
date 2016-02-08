@@ -62,8 +62,8 @@ private:
     QList<QNetworkCookie> currentCookieList;
     autoTimeoutReplyClass timeoutForEditInfo;
     autoTimeoutReplyClass timeoutForQuoteInfo;
-    QNetworkReply* replyForEditInfo = 0;
-    QNetworkReply* replyForQuoteInfo = 0;
+    QNetworkReply* replyForEditInfo = nullptr;
+    QNetworkReply* replyForQuoteInfo = nullptr;
     QNetworkAccessManager* networkManager;
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;

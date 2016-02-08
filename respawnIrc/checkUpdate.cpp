@@ -14,12 +14,12 @@ checkUpdateClass::checkUpdateClass(QWidget* newParent, QString currentVersionNam
 
 void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpdate)
 {
-    if(networkManager == 0)
+    if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
     }
 
-    if(reply == 0)
+    if(reply == nullptr)
     {
         reply = networkManager->get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repos/LEpigeon888/RespawnIRC/releases/latest"));
         alwaysShowMessage = showMessageWhenNoUpdate;
@@ -32,7 +32,7 @@ void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpd
         {
             analyzeLatestUpdatePage();
             networkManager->deleteLater();
-            networkManager = 0;
+            networkManager = nullptr;
         }
     }
 }
@@ -117,5 +117,5 @@ void checkUpdateClass::analyzeLatestUpdatePage()
         message.warning(parent, "Erreur", "Impossible de récupérer les informations de la dernière mise à jour.");
     }
 
-    reply = 0;
+    reply = nullptr;
 }

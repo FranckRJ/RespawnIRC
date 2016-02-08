@@ -46,7 +46,7 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
     }
     else
     {
-        if(replyForFirstPage != 0)
+        if(replyForFirstPage != nullptr)
         {
             if(replyForFirstPage->isRunning())
             {
@@ -54,7 +54,7 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
             }
         }
 
-        if(replyForSecondPage != 0)
+        if(replyForSecondPage != nullptr)
         {
             if(replyForSecondPage->isRunning())
             {
@@ -71,7 +71,7 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
     currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
 
-    if(networkManager != 0)
+    if(networkManager != nullptr)
     {
         if(retrievesMessage == false)
         {
@@ -122,7 +122,7 @@ void getTopicMessagesClass::getMessages()
     bool itsNewManager = false;
     bool errorWhenTryToGetMessages = false;
 
-    if(networkManager == 0)
+    if(networkManager == nullptr)
     {
         itsNewManager = true;
         networkManager = new QNetworkAccessManager(this);
@@ -130,7 +130,7 @@ void getTopicMessagesClass::getMessages()
 
     if(retrievesMessage == false)
     {
-        if(replyForFirstPage == 0)
+        if(replyForFirstPage == nullptr)
         {
             if(itsNewManager == true || needToSetCookies == true)
             {
@@ -174,7 +174,7 @@ void getTopicMessagesClass::getMessages()
             {
                 analyzeMessages();
                 networkManager->deleteLater();
-                networkManager = 0;
+                networkManager = nullptr;
             }
         }
         else
@@ -189,7 +189,7 @@ void getTopicMessagesClass::loadFirstPageFinish()
 {
     if(loadTwoLastPage == true && secondPageLoading == true)
     {
-        if(replyForSecondPage != 0)
+        if(replyForSecondPage != nullptr)
         {
             if(replyForSecondPage->isFinished() == true)
             {
@@ -205,7 +205,7 @@ void getTopicMessagesClass::loadFirstPageFinish()
 
 void getTopicMessagesClass::loadSecondPageFinish()
 {
-    if(replyForFirstPage != 0)
+    if(replyForFirstPage != nullptr)
     {
         if(replyForFirstPage->isFinished() == true)
         {
@@ -227,7 +227,7 @@ void getTopicMessagesClass::analyzeMessages()
     timeoutForFirstPage->resetReply();
     timeoutForSecondPage->resetReply();
 
-    if(replyForFirstPage != 0)
+    if(replyForFirstPage != nullptr)
     {
         if(replyForFirstPage->isReadable())
         {
@@ -263,19 +263,19 @@ void getTopicMessagesClass::analyzeMessages()
             }
         }
         replyForFirstPage->deleteLater();
-        replyForFirstPage = 0;
+        replyForFirstPage = nullptr;
     }
 
     if(loadTwoLastPage == true && secondPageLoading == true)
     {
-        if(replyForSecondPage != 0)
+        if(replyForSecondPage != nullptr)
         {
             if(replyForSecondPage->isReadable())
             {
                 sourceSecond = replyForSecondPage->readAll();
             }
             replyForSecondPage->deleteLater();
-            replyForSecondPage = 0;
+            replyForSecondPage = nullptr;
         }
     }
 
@@ -336,7 +336,7 @@ void getTopicMessagesClass::analyzeMessages()
 
         listOfEntireMessages.append(parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst));
 
-        if(listOfEntireMessages.size() == 0)
+        if(listOfEntireMessages.isEmpty() == true)
         {
             emit newMessagesAreAvailable(listOfEntireMessages, listOfInput, ajaxInfo, topicLink, true);
             retrievesMessage = false;

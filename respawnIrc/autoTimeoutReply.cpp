@@ -16,7 +16,7 @@ QNetworkReply* autoTimeoutReplyClass::resetReply(QNetworkReply* newReply)
 {
     currentReply = newReply;
 
-    if(currentReply != 0)
+    if(currentReply != nullptr)
     {
         timerForTimeout->start();
     }
@@ -30,7 +30,7 @@ QNetworkReply* autoTimeoutReplyClass::resetReply(QNetworkReply* newReply)
 
 void autoTimeoutReplyClass::timeoutCurrentReply()
 {
-    if(currentReply != 0)
+    if(currentReply != nullptr)
     {
         if(currentReply->isRunning() == true)
         {

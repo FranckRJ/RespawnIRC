@@ -28,7 +28,7 @@ spellTextEditClass::~spellTextEditClass()
 
             file.close();
         }
-        if(file.open(QIODevice::WriteOnly | QIODevice::Text) == true && codecUsed != 0)
+        if(file.open(QIODevice::WriteOnly | QIODevice::Text) == true && codecUsed != nullptr)
         {
             QTextStream writeStream(&file);
             QByteArray encodedString;
@@ -45,7 +45,7 @@ spellTextEditClass::~spellTextEditClass()
         }
     }
 
-    if(spellChecker != 0)
+    if(spellChecker != nullptr)
     {
         delete spellChecker;
     }
@@ -54,7 +54,7 @@ spellTextEditClass::~spellTextEditClass()
 QStringList spellTextEditClass::getWordPropositions(const QString word)
 {
     QStringList wordList;
-    if(spellChecker != 0 && codecUsed != 0)
+    if(spellChecker != nullptr && codecUsed != nullptr)
     {
         QByteArray encodedString;
         encodedString = codecUsed->fromUnicode(word);
@@ -83,7 +83,7 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
 {
     spellDic = newSpellDic;
 
-    if(spellChecker != 0)
+    if(spellChecker != nullptr)
     {
         delete spellChecker;
     }
@@ -91,7 +91,7 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
     QFileInfo fileInfoForDic(QCoreApplication::applicationDirPath() + "/ressources/" + spellDic + ".dic");
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
-        spellChecker = 0;
+        spellChecker = nullptr;
         codecUsed = QTextCodec::codecForName("UTF-8");
         return false;
     }
@@ -198,7 +198,7 @@ void spellTextEditClass::correctWord()
 
 void spellTextEditClass::addWordToUserDic()
 {
-    if(spellChecker != 0 && codecUsed != 0)
+    if(spellChecker != nullptr && codecUsed != nullptr)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
         QByteArray encodedString;
@@ -213,7 +213,7 @@ void spellTextEditClass::addWordToUserDic()
 
 void spellTextEditClass::ignoreWord()
 {
-    if(spellChecker != 0 && codecUsed != 0)
+    if(spellChecker != nullptr && codecUsed != nullptr)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
         QByteArray encodedString;

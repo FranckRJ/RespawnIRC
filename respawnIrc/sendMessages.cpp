@@ -94,12 +94,12 @@ void sendMessagesClass::quoteThisMessage(QString messageToQuote)
 
 void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString> >& listOfInput)
 {
-    if(networkManager == 0)
+    if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
     }
 
-    if(replyForSendMessage == 0 && pseudoUsed.isEmpty() == false && topicLink.isEmpty() == false)
+    if(replyForSendMessage == nullptr && pseudoUsed.isEmpty() == false && topicLink.isEmpty() == false)
     {
         QNetworkRequest request;
         QString data;
@@ -141,7 +141,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         {
             deleteReplyForSendMessage();
             networkManager->deleteLater();
-            networkManager = 0;
+            networkManager = nullptr;
         }
 
     }
@@ -167,9 +167,9 @@ void sendMessagesClass::deleteReplyForSendMessage()
         source = "lolmdr";
     }
     replyForSendMessage->deleteLater();
-    replyForSendMessage = 0;
+    replyForSendMessage = nullptr;
 
-    if(source.size() == 0 || (isInEdit == true && source.startsWith("{\"erreur\":[]") == true))
+    if(source.isEmpty() == true || (isInEdit == true && source.startsWith("{\"erreur\":[]") == true))
     {
         messageLine.clear();
     }

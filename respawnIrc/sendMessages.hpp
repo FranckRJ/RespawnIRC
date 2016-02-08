@@ -34,7 +34,7 @@ signals:
 private:
     multiTypeTextBoxClass messageLine;
     QPushButton sendButton;
-    QNetworkReply* replyForSendMessage = 0;
+    QNetworkReply* replyForSendMessage = nullptr;
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> cookieListForPostMsg;
     QString dataForEditLastMessage;

@@ -30,7 +30,7 @@ private:
     QListView listViewOfTopic;
     QStringListModel modelForListView;
     autoTimeoutReplyClass timeoutForReply;
-    QNetworkReply* reply = 0;
+    QNetworkReply* reply = nullptr;
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> currentCookieList;
     QList<QString> listOfLink;

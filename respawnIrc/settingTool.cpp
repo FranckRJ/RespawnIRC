@@ -1,6 +1,6 @@
 #include "settingTool.hpp"
 
-QSettings* settingToolClass::setting = 0;
+QSettings* settingToolClass::setting = nullptr;
 QMap<QString, bool> settingToolClass::listOfDefaultBoolOption;
 QMap<QString, int> settingToolClass::listOfDefaultIntOption;
 QMap<QString, QString> settingToolClass::listOfDefaultStringOption;

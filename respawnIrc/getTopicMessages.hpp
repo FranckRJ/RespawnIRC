@@ -32,8 +32,8 @@ private:
     QNetworkAccessManager* networkManager;
     autoTimeoutReplyClass* timeoutForFirstPage;
     autoTimeoutReplyClass* timeoutForSecondPage;
-    QNetworkReply* replyForFirstPage = 0;
-    QNetworkReply* replyForSecondPage = 0;
+    QNetworkReply* replyForFirstPage = nullptr;
+    QNetworkReply* replyForSecondPage = nullptr;
     QList<QNetworkCookie> currentCookieList;
     QMap<int, QString> listOfEdit;
     QTimer* timerForGetMessage;
