@@ -35,7 +35,8 @@ SOURCES += \
     containerForTopicsInfos.cpp \
     sendMessages.cpp \
     selectStickerWindow.cpp \
-    getTopicMessages.cpp
+    getTopicMessages.cpp \
+    preferencesWindow.cpp
 
 QT += \
     network \
@@ -84,7 +85,8 @@ HEADERS += \
     containerForTopicsInfos.hpp \
     sendMessages.hpp \
     selectStickerWindow.hpp \
-    getTopicMessages.hpp
+    getTopicMessages.hpp \
+    preferencesWindow.hpp
 
 RC_FILE = respawnIrc.rc
 

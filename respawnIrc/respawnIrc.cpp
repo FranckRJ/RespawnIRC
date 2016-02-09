@@ -5,6 +5,7 @@
 #include "selectTopicWindow.hpp"
 #include "selectThemeWindow.hpp"
 #include "selectStickerWindow.hpp"
+#include "preferencesWindow.hpp"
 #include "ignoreListWindow.hpp"
 #include "chooseNumberWindow.hpp"
 #include "captchaWindow.hpp"
@@ -267,6 +268,13 @@ void respawnIrcClass::showSelectTheme()
     mySelectThemeWindow->exec();
 }
 
+void respawnIrcClass::showPreferences()
+{
+    preferenceWindowClass* myPreferencesWindow = new preferenceWindowClass(this);
+    QObject::connect(myPreferencesWindow, &preferenceWindowClass::newValueForOption, this, &respawnIrcClass::setThisBoolOption);
+    myPreferencesWindow->exec();
+}
+
 void respawnIrcClass::showIgnoreListWindow()
 {
     ignoreListWindowClass* myIgnoreListWindow = new ignoreListWindowClass(&listOfIgnoredPseudo, this);
@@ -505,31 +513,45 @@ void respawnIrcClass::setStickersSize(int newSize)
     updateSettingInfoForList();
 }
 
-void respawnIrcClass::setThisBoolOption(bool newVal)
+void respawnIrcClass::setThisBoolOption(bool newVal, QString trueName)
 {
-    QObject* senderObject = sender();
+    QString objectName;
 
-    if(senderObject != 0)
+    if(trueName.isEmpty() == false)
     {
-        settingToolClass::saveThisOption(senderObject->objectName(), newVal);
+        objectName = trueName;
+    }
+    else
+    {
+        QObject* senderObject = sender();
 
-        if(senderObject->objectName() == "showTextDecorationButton")
+        if(senderObject != 0)
+        {
+            objectName = senderObject->objectName();
+        }
+    }
+
+    if(objectName.isEmpty() == false)
+    {
+        settingToolClass::saveThisOption(objectName, newVal);
+
+        if(objectName == "showTextDecorationButton")
         {
             setShowTextDecorationButton(newVal);
         }
-        else if(senderObject->objectName() == "setMultilineEdit")
+        else if(objectName == "setMultilineEdit")
         {
             sendMessages.setMultilineEdit(newVal);
         }
-        else if(senderObject->objectName() == "beepWhenWarn")
+        else if(objectName == "beepWhenWarn")
         {
             beepWhenWarn = newVal;
         }
-        else if(senderObject->objectName() == "warnUser")
+        else if(objectName == "warnUser")
         {
             warnUser = newVal;
         }
-        else if(senderObject->objectName() == "useSpellChecker")
+        else if(objectName == "useSpellChecker")
         {
             sendMessages.settingsChanged();
         }

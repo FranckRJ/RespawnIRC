@@ -34,6 +34,7 @@ public slots:
     void showSelectSticker();
     void showSelectTopic();
     void showSelectTheme();
+    void showPreferences();
     void showIgnoreListWindow();
     void showColorPseudoListWindow();
     void showUpdateTopicTimeWindow();
@@ -56,7 +57,7 @@ public slots:
     void setUpdateTopicTime(int newTime);
     void setNumberOfMessageShowedFirstTime(int newNumber);
     void setStickersSize(int newSize);
-    void setThisBoolOption(bool newVal);
+    void setThisBoolOption(bool newVal, QString trueName = "");
     void setShowTextDecorationButton(bool newVal);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
     void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);

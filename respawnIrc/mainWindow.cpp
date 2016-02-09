@@ -62,26 +62,14 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionShowNumberOfMessageShowedFirstTime = menuSetting->addAction("Nombre de message affiché au premier chargement");
     QAction* actionShowStickersSize = menuSetting->addAction("Taille des stickers");
     menuSetting->addSeparator();
-    settingToolClass::createActionForBoolOption("Ajouter un bouton pour citer un message", "showQuoteButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    settingToolClass::createActionForBoolOption("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    settingToolClass::createActionForBoolOption("Ajouter un bouton pour éditer un message", "showEditButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    settingToolClass::createActionForBoolOption("Afficher les stickers", "showStickers", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    settingToolClass::createActionForBoolOption("Colorer le pseudo des modo/admin", "colorModoAndAdminPseudo", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    settingToolClass::createActionForBoolOption("Colorer les PEMT", "colorPEMT", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    menuSetting->addSeparator();
-    settingToolClass::createActionForBoolOption("Afficher les boutons de décoration de texte", "showTextDecorationButton", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Afficher la liste des topics", "showListOfTopic", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    settingToolClass::createActionForBoolOption("Saisie du message en mode multiligne", "setMultilineEdit", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    settingToolClass::createActionForBoolOption("Vérifier l'orthographe", "useSpellChecker", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    settingToolClass::createActionForBoolOption("Charger les deux dernières pages", "loadTwoLastPage", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Récupérer le premier message du topic", "getFirstMessageOfTopic", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Ignorer les erreurs réseau", "ignoreNetworkError", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
-    settingToolClass::createActionForBoolOption("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Beeper lors de la réception d'un message", "beepWhenWarn", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Avertir visuellement lors de la réception d'un message", "warnUser", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForBoolOption("Avertir lors de l'édition d'un message", "warnWhenEdit", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     menuSetting->addSeparator();
-    settingToolClass::createActionForBoolOption("Sauvegarder la taille de la fenêtre", "saveWindowGeometry", menuSetting, this, SLOT(saveWindowGeometry(bool)));
+    QAction* actionShowPreferences = menuSetting->addAction("Préférences...");
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
     actionShowListOfColorPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
 
@@ -187,6 +175,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionShowUpdateTopicTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showUpdateTopicTimeWindow);
     QObject::connect(actionShowNumberOfMessageShowedFirstTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow);
     QObject::connect(actionShowStickersSize, &QAction::triggered, &respawnIrc, &respawnIrcClass::showStickersSizeWindow);
+    QObject::connect(actionShowPreferences, &QAction::triggered, &respawnIrc, &respawnIrcClass::showPreferences);
     QObject::connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
     QObject::connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
     QObject::connect(actionReloadTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTheme);
