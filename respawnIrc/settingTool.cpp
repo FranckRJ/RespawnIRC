@@ -30,6 +30,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["getFirstMessageOfTopic"] = false;
     listOfDefaultBoolOption["colorModoAndAdminPseudo"] = true;
     listOfDefaultBoolOption["colorPEMT"] = true;
+    listOfDefaultBoolOption["colorUserPseudoInMessages"] = true;
     listOfDefaultBoolOption["warnWhenEdit"] = true;
     listOfDefaultIntOption["updateTopicTime"] = 3500;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;

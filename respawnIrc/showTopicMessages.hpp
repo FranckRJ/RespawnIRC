@@ -54,6 +54,7 @@ signals:
     void newNameForTopic(QString newName);
     void newCookiesHaveToBeSet();
 private:
+    QRegularExpression expForColorPseudo;
     QTextBrowser messagesBox;
     QString baseModel;
     QThread threadForGetMessages;
@@ -90,6 +91,7 @@ private:
     bool errorLastTime = false;
     bool colorModoAndAdminPseudo;
     bool colorPEMT;
+    bool colorUserPseudoInMessages;
     bool getFirstMessageOfTopic;
     bool warnWhenEdit;
     int idOfLastMessageOfUser = 0;

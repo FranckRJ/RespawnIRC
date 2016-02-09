@@ -7,6 +7,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     getTopicMessages = new getTopicMessagesClass();
     getTopicMessages->moveToThread(&threadForGetMessages);
 
+    expForColorPseudo.setPatternOptions(QRegularExpression::CaseInsensitiveOption | QRegularExpression::OptimizeOnFirstUsageOption);
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(false);
     messagesBox.setOpenLinks(false);
@@ -105,6 +106,8 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
 
     currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
+    newPseudoOfUser.replace("[", "\\[").replace("]", "\\]");
+    expForColorPseudo.setPattern(newPseudoOfUser);
     listOfInput.clear();
 
     if(networkManager != nullptr)
@@ -159,6 +162,7 @@ void showTopicMessagesClass::updateSettingInfo()
     ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
     colorModoAndAdminPseudo = settingToolClass::getThisBoolOption("colorModoAndAdminPseudo");
     colorPEMT = settingToolClass::getThisBoolOption("colorPEMT");
+    colorUserPseudoInMessages = settingToolClass::getThisBoolOption("colorUserPseudoInMessages");
     numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime");
     getFirstMessageOfTopic = settingToolClass::getThisBoolOption("getFirstMessageOfTopic");
     warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
@@ -484,6 +488,12 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
         else if(showBlacklistButton == true)
         {
             newMessageToAppend.replace("<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel);
+        }
+
+        if(colorUserPseudoInMessages == true)
+        {
+            parsingToolClass::replaceWithCapNumber(currentMessage.message, expForColorPseudo, 0,
+                                                   "<span style=\"color: " + baseModelInfo.userPseudoColor + ";\">", "</span>");
         }
 
         newMessageToAppend.replace("<%DATE_COLOR%>", colorOfDate);
