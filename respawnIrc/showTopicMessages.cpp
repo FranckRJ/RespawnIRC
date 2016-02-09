@@ -107,7 +107,7 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
     currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
     newPseudoOfUser.replace("[", "\\[").replace("]", "\\]");
-    expForColorPseudo.setPattern(newPseudoOfUser);
+    expForColorPseudo.setPattern(newPseudoOfUser + "(?![^<]*</a>)");
     listOfInput.clear();
 
     if(networkManager != nullptr)
