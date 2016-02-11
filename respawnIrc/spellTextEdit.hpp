@@ -25,8 +25,8 @@ private slots:
 private:
     QVector<QAction*> wordPropositionsActions;
     QString spellDic;
-    Hunspell* spellChecker;
-    QTextCodec* codecUsed;
+    Hunspell* spellChecker = nullptr;
+    QTextCodec* codecUsed = nullptr;
     QStringList addedWords;
     QPoint lastPos;
 };

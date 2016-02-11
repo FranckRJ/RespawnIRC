@@ -37,9 +37,9 @@ colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStru
 
 bool colorPseudoListWindowClass::addPseudoToColorPseudoList(QString newPseudo, bool reallyAddPseudoToList)
 {
-    for(int i = 0; i < listOfColorPseudo->size(); ++i)
+    for(const pseudoWithColorStruct& thisColor : *listOfColorPseudo)
     {
-        if(listOfColorPseudo->at(i).pseudo == newPseudo.toLower())
+        if(thisColor.pseudo == newPseudo.toLower())
         {
             return false;
         }
@@ -61,9 +61,9 @@ void colorPseudoListWindowClass::updateList()
 {
     QList<QString> listOfPseudo;
 
-    for(int i = 0; i < listOfColorPseudo->size(); ++i)
+    for(const pseudoWithColorStruct& thisColor : *listOfColorPseudo)
     {
-        listOfPseudo.append(listOfColorPseudo->at(i).pseudo);
+        listOfPseudo.append(thisColor.pseudo);
     }
 
     modelForListView.setStringList(listOfPseudo);
@@ -105,8 +105,7 @@ void colorPseudoListWindowClass::addThisPseudo(QString newPseudo)
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
+        QMessageBox::warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
     }
 }
 
@@ -119,8 +118,7 @@ void colorPseudoListWindowClass::setCurrentPseudo(QString newPseudo)
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
+        QMessageBox::warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
     }
 }
 

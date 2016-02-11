@@ -1,35 +1,49 @@
 #include "autoTimeoutReply.hpp"
+#include "settingTool.hpp"
 
-autoTimeoutReplyClass::autoTimeoutReplyClass()
+autoTimeoutReplyClass::autoTimeoutReplyClass(QObject* parent) : QObject(parent)
 {
-    timerForTimeout.setTimerType(Qt::CoarseTimer);
-    timerForTimeout.setSingleShot(true);
-    timerForTimeout.setInterval(10000);
-    timerForTimeout.stop();
-    currentReply = 0;
+    timerForTimeout = new QTimer(this);
 
-    QObject::connect(&timerForTimeout, &QTimer::timeout, this, &autoTimeoutReplyClass::timeoutCurrentReply);
+    timerForTimeout->setTimerType(Qt::CoarseTimer);
+    timerForTimeout->setSingleShot(true);
+    updateTimeoutTime();
+    timerForTimeout->stop();
+
+    QObject::connect(timerForTimeout, &QTimer::timeout, this, &autoTimeoutReplyClass::timeoutCurrentReply);
 }
 
 QNetworkReply* autoTimeoutReplyClass::resetReply(QNetworkReply* newReply)
 {
     currentReply = newReply;
 
-    if(currentReply != 0)
+    if(currentReply != nullptr)
     {
-        timerForTimeout.start();
+        timerForTimeout->start();
     }
     else
     {
-        timerForTimeout.stop();
+        timerForTimeout->stop();
     }
 
     return currentReply;
 }
 
+void autoTimeoutReplyClass::updateTimeoutTime(int newTimeoutTimeInSeconds)
+{
+    if(newTimeoutTimeInSeconds == 0)
+    {
+        timerForTimeout->setInterval(settingToolClass::getThisIntOption("timeoutInSecond") * 1000);
+    }
+    else
+    {
+        timerForTimeout->setInterval(newTimeoutTimeInSeconds * 1000);
+    }
+}
+
 void autoTimeoutReplyClass::timeoutCurrentReply()
 {
-    if(currentReply != 0)
+    if(currentReply != nullptr)
     {
         if(currentReply->isRunning() == true)
         {

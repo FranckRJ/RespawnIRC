@@ -9,7 +9,6 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
     textEdit.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     textEdit.setMaximumHeight(65);
     textEdit.setAcceptRichText(false);
-    textEditSelected = true;
 
     if(settingToolClass::getThisBoolOption("useSpellChecker") == true)
     {
@@ -47,20 +46,6 @@ QString multiTypeTextBoxClass::text()
     else
     {
         return lineEdit.text();
-    }
-}
-
-void multiTypeTextBoxClass::insertText(QString newText)
-{
-    if(textEditSelected == true)
-    {
-        textEdit.insertPlainText(newText);
-        textEdit.verticalScrollBar()->updateGeometry();
-        textEdit.verticalScrollBar()->setValue(textEdit.verticalScrollBar()->maximum());
-    }
-    else
-    {
-        lineEdit.insert(newText);
     }
 }
 
@@ -135,6 +120,20 @@ void multiTypeTextBoxClass::settingsChanged()
     }
 
     highlighter->enableSpellChecking(settingToolClass::getThisBoolOption("useSpellChecker"));
+}
+
+void multiTypeTextBoxClass::insertText(QString newText)
+{
+    if(textEditSelected == true)
+    {
+        textEdit.insertPlainText(newText);
+        textEdit.verticalScrollBar()->updateGeometry();
+        textEdit.verticalScrollBar()->setValue(textEdit.verticalScrollBar()->maximum());
+    }
+    else
+    {
+        lineEdit.insert(newText);
+    }
 }
 
 void multiTypeTextBoxClass::setTextEditSelected(bool newVal)

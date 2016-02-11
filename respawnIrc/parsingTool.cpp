@@ -244,15 +244,15 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
 
     listOfEntireMessage = getListOfThisCapNumber(source, expForEntireMessage, 1, false);
 
-    for(int i = 0; i < listOfEntireMessage.size(); ++i)
+    for(const QString& thisMessage : listOfEntireMessage)
     {
         listOfMessages.push_back(messageStruct());
-        listOfMessages.back().idOfMessage = expForMessageID.match(listOfEntireMessage.at(i)).captured(1).toInt();
-        listOfMessages.back().pseudoInfo.pseudoName = expForPseudo.match(listOfEntireMessage.at(i)).captured(2);
-        listOfMessages.back().pseudoInfo.pseudoType = expForPseudo.match(listOfEntireMessage.at(i)).captured(1);
-        listOfMessages.back().date = expForDate.match(listOfEntireMessage.at(i)).captured(1);
-        listOfMessages.back().message = expForMessage.match(listOfEntireMessage.at(i)).captured(1);
-        listOfMessages.back().lastTimeEdit = expForEdit.match(listOfEntireMessage.at(i)).captured(1);
+        listOfMessages.back().idOfMessage = expForMessageID.match(thisMessage).captured(1).toInt();
+        listOfMessages.back().pseudoInfo.pseudoName = expForPseudo.match(thisMessage).captured(2);
+        listOfMessages.back().pseudoInfo.pseudoType = expForPseudo.match(thisMessage).captured(1);
+        listOfMessages.back().date = expForDate.match(thisMessage).captured(1);
+        listOfMessages.back().message = expForMessage.match(thisMessage).captured(1);
+        listOfMessages.back().lastTimeEdit = expForEdit.match(thisMessage).captured(1);
 
         if(lastIdOfMessage > listOfMessages.back().idOfMessage)
         {
@@ -276,9 +276,9 @@ QList<topicStruct> parsingToolClass::getListOfTopic(const QString &source)
 
     listOfTopicInfo = getListOfThisCapNumber(source, expForListOfTopic, 1, false);
 
-    for(int i = 0; i < listOfTopicInfo.size(); ++i)
+    for(const QString& thisTopic : listOfTopicInfo)
     {
-        QString topicInfo = listOfTopicInfo.at(i);
+        QString topicInfo = thisTopic;
         QString link = "http://www.jeuxvideo.com" + topicInfo.left(topicInfo.indexOf("\""));
         QString name = topicInfo.right(topicInfo.size() - topicInfo.indexOf("title=\"") - 7);
         name.replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");

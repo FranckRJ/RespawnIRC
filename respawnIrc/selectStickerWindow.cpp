@@ -1,0 +1,64 @@
+#include "selectStickerWindow.hpp"
+
+selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+{
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    stickerBrowser.setContextMenuPolicy(Qt::CustomContextMenu);
+    stickerBrowser.setReadOnly(true);
+    stickerBrowser.setOpenExternalLinks(false);
+    stickerBrowser.setOpenLinks(false);
+    stickerBrowser.setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
+    stickerBrowser.setMinimumWidth(380);
+    stickerBrowser.setMinimumHeight(380);
+
+    QHBoxLayout* mainLayout = new QHBoxLayout;
+    mainLayout->addWidget(&stickerBrowser);
+    mainLayout->setMargin(0);
+
+    setLayout(mainLayout);
+    setWindowTitle("Choisir un sticker");
+
+    loadListOfStickers();
+
+    QObject::connect(&stickerBrowser, &QListView::customContextMenuRequested, this, &selectStickerWindowClass::createContextMenu);
+    QObject::connect(&stickerBrowser, &QTextBrowser::anchorClicked, this, &selectStickerWindowClass::linkClicked);
+    QObject::connect(stickerBrowser.verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
+}
+
+void selectStickerWindowClass::loadListOfStickers()
+{
+    QDir themeDir(QCoreApplication::applicationDirPath() + "/ressources/stickers/");
+    QStringList listOfStickers;
+
+    if(themeDir.exists() == true)
+    {
+        listOfStickers = themeDir.entryList(QDir::Files);
+    }
+
+    for(const QString& thisSticker : listOfStickers)
+    {
+        stickerBrowser.insertHtml("<a href=\"sticker:" + thisSticker.left(thisSticker.size() - 4) +
+                                  "\"><img src=\"ressources/stickers/" + thisSticker + "\" /></a>");
+    }
+}
+
+void selectStickerWindowClass::linkClicked(const QUrl &link)
+{
+    QString linkInString = link.toDisplayString();
+
+    emit addThisSticker("[[sticker:p/" + linkInString.remove(0, linkInString.indexOf(':') + 1) + "]]");
+}
+
+void selectStickerWindowClass::createContextMenu(const QPoint &thisPoint)
+{
+    (void)thisPoint;
+    close();
+}
+
+void selectStickerWindowClass::scrollBarSizeChanged()
+{
+    stickerBrowser.verticalScrollBar()->setValue(stickerBrowser.verticalScrollBar()->maximum() / 2);
+
+    QObject::disconnect(stickerBrowser.verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
+}

@@ -2,9 +2,6 @@
 
 spellTextEditClass::spellTextEditClass(QWidget *parent) : QTextEdit(parent)
 {
-    spellChecker = 0;
-    codecUsed = 0;
-
     wordPropositionsActions.fill(new QAction(this), 5);
     createActions();
     setDic("");
@@ -31,16 +28,16 @@ spellTextEditClass::~spellTextEditClass()
 
             file.close();
         }
-        if(file.open(QIODevice::WriteOnly | QIODevice::Text) == true && codecUsed != 0)
+        if(file.open(QIODevice::WriteOnly | QIODevice::Text) == true && codecUsed != nullptr)
         {
             QTextStream writeStream(&file);
             QByteArray encodedString;
 
             writeStream << addedWords.count() << "\n";
 
-            for(int i = 0; i < addedWords.size(); ++i)
+            for(const QString& thisWord : addedWords)
             {
-                encodedString = codecUsed->fromUnicode(addedWords.at(i));
+                encodedString = codecUsed->fromUnicode(thisWord);
                 writeStream << encodedString.data() << "\n";
             }
 
@@ -48,7 +45,7 @@ spellTextEditClass::~spellTextEditClass()
         }
     }
 
-    if(spellChecker != 0)
+    if(spellChecker != nullptr)
     {
         delete spellChecker;
     }
@@ -57,7 +54,7 @@ spellTextEditClass::~spellTextEditClass()
 QStringList spellTextEditClass::getWordPropositions(const QString word)
 {
     QStringList wordList;
-    if(spellChecker != 0 && codecUsed != 0)
+    if(spellChecker != nullptr && codecUsed != nullptr)
     {
         QByteArray encodedString;
         encodedString = codecUsed->fromUnicode(word);
@@ -86,7 +83,7 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
 {
     spellDic = newSpellDic;
 
-    if(spellChecker != 0)
+    if(spellChecker != nullptr)
     {
         delete spellChecker;
     }
@@ -94,7 +91,7 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
     QFileInfo fileInfoForDic(QCoreApplication::applicationDirPath() + "/ressources/" + spellDic + ".dic");
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
-        spellChecker = 0;
+        spellChecker = nullptr;
         codecUsed = QTextCodec::codecForName("UTF-8");
         return false;
     }
@@ -135,19 +132,22 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos)
 
 void spellTextEditClass::createActions()
 {
-    for(int i = 0; i < wordPropositionsActions.size(); ++i)
+    for(QAction*& thisAction : wordPropositionsActions)
     {
-        wordPropositionsActions[i] = new QAction(this);
-        wordPropositionsActions[i]->setVisible(false);
-        connect(wordPropositionsActions[i], &QAction::triggered, this, &spellTextEditClass::correctWord);
+        thisAction = new QAction(this);
+        thisAction->setVisible(false);
+        connect(thisAction, &QAction::triggered, this, &spellTextEditClass::correctWord);
     }
 }
 
 void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 {
+    QFont thisFont;
     QMenu* menuRightClick = createStandardContextMenu();
     lastPos = event->pos();
     QStringList listOfWord = getWordPropositions(getWordUnderCursor(lastPos));
+
+    thisFont.setBold(true);
 
     if(listOfWord.isEmpty() == false)
     {
@@ -160,6 +160,7 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
         {
             wordPropositionsActions[i]->setText(listOfWord.at(i).trimmed());
             wordPropositionsActions[i]->setVisible(true);
+            wordPropositionsActions[i]->setFont(thisFont);
             menuRightClick->addAction(wordPropositionsActions[i]);
         }
 
@@ -172,6 +173,7 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 void spellTextEditClass::correctWord()
 {
     QAction* thisAction = qobject_cast<QAction*>(sender());
+
     if(thisAction != 0)
     {
         QString replacement = thisAction->text();
@@ -196,7 +198,7 @@ void spellTextEditClass::correctWord()
 
 void spellTextEditClass::addWordToUserDic()
 {
-    if(spellChecker != 0 && codecUsed != 0)
+    if(spellChecker != nullptr && codecUsed != nullptr)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
         QByteArray encodedString;
@@ -211,7 +213,7 @@ void spellTextEditClass::addWordToUserDic()
 
 void spellTextEditClass::ignoreWord()
 {
-    if(spellChecker != 0 && codecUsed != 0)
+    if(spellChecker != nullptr && codecUsed != nullptr)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
         QByteArray encodedString;

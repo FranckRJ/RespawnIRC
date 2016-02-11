@@ -15,6 +15,7 @@ public:
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies);
     void updateSettings();
+    void setLoadNeeded(bool newVal);
 public slots:
     void startGetListOfTopic();
     void analyzeReply();
@@ -29,7 +30,7 @@ private:
     QListView listViewOfTopic;
     QStringListModel modelForListView;
     autoTimeoutReplyClass timeoutForReply;
-    QNetworkReply* reply;
+    QNetworkReply* reply = nullptr;
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> currentCookieList;
     QList<QString> listOfLink;

@@ -14,13 +14,13 @@ public:
     multiTypeTextBoxClass(QWidget* parent = 0);
     void clear();
     QString text();
-    void insertText(QString newText);
     void moveCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);
     QString getSelectedText();
     void setFocus();
     void styleChanged();
     void settingsChanged();
 public slots:
+    void insertText(QString newText);
     void setTextEditSelected(bool newVal);
     void returnIsPressed();
     void addBold();
@@ -39,7 +39,7 @@ private:
     spellTextEditClass textEdit;
     highlighterClass* highlighter;
     QLineEdit lineEdit;
-    bool textEditSelected;
+    bool textEditSelected = true;
     bool dicAreLoaded;
 };
 

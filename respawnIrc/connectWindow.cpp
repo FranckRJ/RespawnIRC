@@ -5,6 +5,8 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+
     QLabel* labForPseudo = new QLabel("Entrez le pseudo avec lequel vous voulez vous connecter :", this);
     QLabel* labForButton = new QLabel("Une fois connecté, cliquez ici :", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
@@ -58,19 +60,19 @@ void connectWindowClass::newPageLoaded(QNetworkReply* reply)
         {
             QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(reply->header(QNetworkRequest::SetCookieHeader));
 
-            for(int i = 0; i < newCookieList.size(); ++i)
+            for(const QNetworkCookie& thisNewCookie : newCookieList)
             {
-                if(newCookieList.at(i).name() == "dlrowolleh" || newCookieList.at(i).name() == "coniunctio")
+                if(thisNewCookie.name() == "dlrowolleh" || thisNewCookie.name() == "coniunctio")
                 {
                     for(int j = 0; j < cookieList.size(); ++j)
                     {
-                        if(cookieList.at(j).name() == newCookieList.at(i).name())
+                        if(cookieList.at(j).name() == thisNewCookie.name())
                         {
                             cookieList.removeAt(j);
                             break;
                         }
                     }
-                    cookieList.append(newCookieList.at(i));
+                    cookieList.append(thisNewCookie);
                 }
             }
         }
@@ -87,15 +89,13 @@ void connectWindowClass::valideConnect()
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le pseudo n'est pas entré ou vous n'êtes pas connecté.");
+        QMessageBox::warning(this, "Erreur", "Le pseudo n'est pas entré ou vous n'êtes pas connecté.");
     }
 }
 
 void connectWindowClass::showHelpConnect()
 {
-    QMessageBox messageBox;
-    messageBox.information(this, "Aide", "Pour vous connecter, veuillez suivre ces étapes :\n"
+    QMessageBox::information(this, "Aide", "Pour vous connecter, veuillez suivre ces étapes :\n"
                            "- renseignez le pseudo que vous allez utiliser dans le champ présent en bas de la fenêtre.\n"
                            "- connectez-vous sur JVC avec ce même pseudo.\n"
                            "- après avoir cliqué sur le bouton \"VALIDER\" qui possède un fond vert sur la page de JVC, attendez que la page d'accueil ait fini de charger puis "

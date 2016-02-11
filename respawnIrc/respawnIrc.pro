@@ -31,7 +31,13 @@ SOURCES += \
     selectThemeWindow.cpp \
     spellTextEdit.cpp \
     highlighter.cpp \
-    autoTimeoutReply.cpp
+    autoTimeoutReply.cpp \
+    containerForTopicsInfos.cpp \
+    sendMessages.cpp \
+    selectStickerWindow.cpp \
+    getTopicMessages.cpp \
+    preferencesWindow.cpp \
+    shortcutTool.cpp
 
 QT += \
     network \
@@ -76,8 +82,16 @@ HEADERS += \
     selectThemeWindow.hpp \
     spellTextEdit.hpp \
     highlighter.hpp \
-    autoTimeoutReply.hpp
+    autoTimeoutReply.hpp \
+    containerForTopicsInfos.hpp \
+    sendMessages.hpp \
+    selectStickerWindow.hpp \
+    getTopicMessages.hpp \
+    preferencesWindow.hpp \
+    shortcutTool.hpp
 
 RC_FILE = respawnIrc.rc
 
 QMAKE_CXXFLAGS_RELEASE = -O2
+
+CONFIG += c++11

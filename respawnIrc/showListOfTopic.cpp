@@ -10,7 +10,6 @@ showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
     timerForGetList.setTimerType(Qt::CoarseTimer);
     timerForGetList.setInterval(5000);
     updateSettings();
-    reply = 0;
 
     networkManager = new QNetworkAccessManager(this);
 
@@ -27,7 +26,7 @@ showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
 
 void showListOfTopicClass::setForumLink(QString newForumLink)
 {
-    if(reply != 0)
+    if(reply != nullptr)
     {
         if(reply->isRunning())
         {
@@ -51,7 +50,7 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
 void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
 {
     currentCookieList = newCookies;
-    if(networkManager != 0)
+    if(networkManager != nullptr)
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
@@ -61,20 +60,32 @@ void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
 
 void showListOfTopicClass::updateSettings()
 {
-    //timeoutReply.setInterval(settingToolClass::getThisIntOption("timeoutInSecond") * 1000);
+    timeoutForReply.updateTimeoutTime();
+}
+
+void showListOfTopicClass::setLoadNeeded(bool newVal)
+{
+    if(newVal == false)
+    {
+        timerForGetList.stop();
+    }
+    else
+    {
+        timerForGetList.start();
+    }
 }
 
 void showListOfTopicClass::startGetListOfTopic()
 {
     bool itsNewManager = false;
 
-    if(networkManager == 0)
+    if(networkManager == nullptr)
     {
         itsNewManager = true;
         networkManager = new QNetworkAccessManager(this);
     }
 
-    if(reply == 0)
+    if(reply == nullptr)
     {
         if(itsNewManager == true)
         {
@@ -94,7 +105,7 @@ void showListOfTopicClass::startGetListOfTopic()
             {
                 analyzeReply();
                 networkManager->deleteLater();
-                networkManager = 0;
+                networkManager = nullptr;
             }
         }
     }
@@ -114,12 +125,12 @@ void showListOfTopicClass::analyzeReply()
     }
     reply->deleteLater();
 
-    if(source.size() == 0)
+    if(source.isEmpty() == true)
     {
         if(locationHeader.startsWith("/forums/") == true)
         {
             forumLink = "http://www.jeuxvideo.com" + locationHeader;
-            reply = 0;
+            reply = nullptr;
             startGetListOfTopic();
             return;
         }
@@ -133,16 +144,16 @@ void showListOfTopicClass::analyzeReply()
         listOfTopicName.append(parsingToolClass::getForumName(source));
         listOfLink.append("");
 
-        for(int i = 0; i < listOfTopic.size(); ++i)
+        for(const topicStruct& thisTopic : listOfTopic)
         {
-            listOfTopicName.append(listOfTopic.at(i).name);
-            listOfLink.append(listOfTopic.at(i).link);
+            listOfTopicName.append(thisTopic.name);
+            listOfLink.append(thisTopic.link);
         }
 
         modelForListView.setStringList(listOfTopicName);
     }
 
-    reply = 0;
+    reply = nullptr;
 }
 
 void showListOfTopicClass::clickedOnLink(QModelIndex index)
@@ -158,7 +169,7 @@ void showListOfTopicClass::createContextMenu(const QPoint &thisPoint)
     QModelIndex indexSelected = listViewOfTopic.indexAt(thisPoint);
     if(indexSelected.row() >= 1)
     {
-        QAction* actionSelected = 0;
+        QAction* actionSelected = nullptr;
         QMenu contextMenu;
         QAction* actionOpen = contextMenu.addAction("Ouvrir ce topic dans l'onglet actuel");
         QAction* actionOpenInNewTab = contextMenu.addAction("Ouvrir ce topic dans un nouvel onglet");

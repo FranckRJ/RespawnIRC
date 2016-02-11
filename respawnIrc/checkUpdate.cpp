@@ -8,20 +8,18 @@ checkUpdateClass::checkUpdateClass(QWidget* newParent, QString currentVersionNam
 {
     parent = newParent;
     versionName = currentVersionName;
-    alwaysShowMessage = false;
-    reply = 0;
 
     networkManager = new QNetworkAccessManager(this);
 }
 
 void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpdate)
 {
-    if(networkManager == 0)
+    if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
     }
 
-    if(reply == 0)
+    if(reply == nullptr)
     {
         reply = networkManager->get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repos/LEpigeon888/RespawnIRC/releases/latest"));
         alwaysShowMessage = showMessageWhenNoUpdate;
@@ -34,8 +32,51 @@ void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpd
         {
             analyzeLatestUpdatePage();
             networkManager->deleteLater();
-            networkManager = 0;
+            networkManager = nullptr;
         }
+    }
+}
+
+bool checkUpdateClass::itsANewerVersion(QString newVersionName)
+{
+    QStringList currentVersionNumbers = versionName.right(versionName.size() - 1).split(".", QString::SkipEmptyParts);
+    QStringList newVersionNumbers = newVersionName.right(newVersionName.size() - 1).split(".", QString::SkipEmptyParts);
+    bool versionAreEquals = true;
+
+    while(currentVersionNumbers.size() != newVersionNumbers.size())
+    {
+        if(currentVersionNumbers.size() < newVersionNumbers.size())
+        {
+            currentVersionNumbers.append("0");
+        }
+        else
+        {
+            newVersionNumbers.append("0");
+        }
+    }
+
+    for(int i = 0; i < currentVersionNumbers.size(); ++i)
+    {
+        if(newVersionNumbers.at(i).toInt() > currentVersionNumbers.at(i).toInt())
+        {
+            if(versionAreEquals)
+            {
+                return true;
+            }
+        }
+        else if(newVersionNumbers.at(i).toInt() != currentVersionNumbers.at(i).toInt())
+        {
+            versionAreEquals = false;
+        }
+    }
+
+    if(versionAreEquals)
+    {
+        return alertForSameVersion;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -54,11 +95,10 @@ void checkUpdateClass::analyzeLatestUpdatePage()
     {
         newVersionName = parsingToolClass::getVersionName(source);
 
-        if(newVersionName.isEmpty() == false && versionName != newVersionName)
+        if(newVersionName.isEmpty() == false && itsANewerVersion(newVersionName) == true)
         {
-            QMessageBox message;
             newVersionName.remove(0, 1);
-            message.information(parent, "Nouvelle version disponible !", "La version " + newVersionName + " est disponible à cette adresse :" +
+            QMessageBox::information(parent, "Nouvelle version disponible !", "La version " + newVersionName + " est disponible à cette adresse :" +
                             " <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/LEpigeon888/RespawnIRC/releases/latest\">https://github.com/LEpigeon888/RespawnIRC/releases/latest</a><br />" +
                                 "Lien de téléchargement direct : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/LEpigeon888/RespawnIRC/releases/download/v" + newVersionName + "/RespawnIRC-v" + newVersionName +
                                 ".zip\">https://github.com/LEpigeon888/RespawnIRC/releases/download/v" + newVersionName + "/RespawnIRC-v" + newVersionName + ".zip</a>" +
@@ -66,15 +106,13 @@ void checkUpdateClass::analyzeLatestUpdatePage()
         }
         else if(alwaysShowMessage == true)
         {
-            QMessageBox message;
-            message.information(parent, "Pas de nouvelle version disponible", "Il n'y a pas de nouvelle version disponible.");
+            QMessageBox::information(parent, "Pas de nouvelle version disponible", "Il n'y a pas de nouvelle version disponible.");
         }
     }
     else if(alwaysShowMessage == true)
     {
-        QMessageBox message;
-        message.warning(parent, "Erreur", "Impossible de récupérer les informations de la dernière mise à jour.");
+        QMessageBox::warning(parent, "Erreur", "Impossible de récupérer les informations de la dernière mise à jour.");
     }
 
-    reply = 0;
+    reply = nullptr;
 }
