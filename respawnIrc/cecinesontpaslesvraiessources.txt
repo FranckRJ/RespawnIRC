@@ -1,3 +1,0 @@
-Je suis un noob qui sait pas gérer un projet github, du coup
-le fichier respawnIrc.cpp n'est pas exactement le fichier
-qui a été utilisé pour compiler la 1.19.8.
