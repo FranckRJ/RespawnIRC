@@ -37,6 +37,7 @@ public slots:
     void showPreferences();
     void showIgnoreListWindow();
     void showColorPseudoListWindow();
+    void showTimeoutTimeWindow();
     void showUpdateTopicTimeWindow();
     void showNumberOfMessageShowedFirstTimeWindow();
     void showStickersSizeWindow();
@@ -54,6 +55,7 @@ public slots:
     void disconnectFromCurrentTab();
     void disconnectFromThisPseudo(QString thisPseudo);
     void addThisPeudoToBlacklist(QString pseudoToAdd);
+    void setTimeoutInSecond(int newTime);
     void setUpdateTopicTime(int newTime);
     void setNumberOfMessageShowedFirstTime(int newNumber);
     void setStickersSize(int newSize);

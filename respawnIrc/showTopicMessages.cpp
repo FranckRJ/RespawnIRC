@@ -166,11 +166,15 @@ void showTopicMessagesClass::updateSettingInfo()
     getFirstMessageOfTopic = settingToolClass::getThisBoolOption("getFirstMessageOfTopic");
     warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
 
+    timeoutForEditInfo.updateTimeoutTime();
+    timeoutForQuoteInfo.updateTimeoutTime();
+
     QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection,
                               Q_ARG(bool, settingToolClass::getThisBoolOption("loadTwoLastPage")),
                               Q_ARG(int, settingToolClass::getThisIntOption("updateTopicTime")),
                               Q_ARG(bool, settingToolClass::getThisBoolOption("showStickers")),
-                              Q_ARG(int, settingToolClass::getThisIntOption("stickersSize")));
+                              Q_ARG(int, settingToolClass::getThisIntOption("stickersSize")),
+                              Q_ARG(int, settingToolClass::getThisIntOption("timeoutInSecond")));
 }
 
 void showTopicMessagesClass::setNewTheme(QString newThemeName)

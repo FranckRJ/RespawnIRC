@@ -15,7 +15,7 @@ public:
 public slots:
     void setNewTopic(QString newTopicLink, bool getFirstMessage);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages);
-    void settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize);
+    void settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize, int timeoutTime);
     void startGetMessage();
     void getMessages();
     void loadFirstPageFinish();

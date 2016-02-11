@@ -91,13 +91,16 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
     }
 }
 
-void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize)
+void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize, int timeoutTime)
 {
     loadTwoLastPage = getTwoLastPages;
     showStickers = newShowStickers;
     stickersSize = newStickerSize;
 
     timerForGetMessage->setInterval(timerTime);
+
+    timeoutForFirstPage->updateTimeoutTime(timeoutTime);
+    timeoutForSecondPage->updateTimeoutTime(timeoutTime);
 }
 
 void getTopicMessagesClass::startGetMessage()

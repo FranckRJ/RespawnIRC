@@ -60,7 +60,7 @@ void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
 
 void showListOfTopicClass::updateSettings()
 {
-    //timeoutReply.setInterval(settingToolClass::getThisIntOption("timeoutInSecond") * 1000);
+    timeoutForReply.updateTimeoutTime();
 }
 
 void showListOfTopicClass::setLoadNeeded(bool newVal)

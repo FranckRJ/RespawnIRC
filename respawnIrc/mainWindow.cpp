@@ -58,8 +58,9 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionShowListOfIgnoredPseudo = menuSetting->addAction("Gérer les ignorés");
     QAction* actionShowListOfColorPseudo = menuSetting->addAction("Gérer la couleur des pseudos");
     menuSetting->addSeparator();
+    QAction* actionShowTimeoutTime = menuSetting->addAction("Temps en secondes avant le timeout des requêtes");
     QAction* actionShowUpdateTopicTime = menuSetting->addAction("Taux de rafraichissement des topics");
-    QAction* actionShowNumberOfMessageShowedFirstTime = menuSetting->addAction("Nombre de message affiché au premier chargement");
+    QAction* actionShowNumberOfMessageShowedFirstTime = menuSetting->addAction("Nombre de messages affichés au premier chargement");
     QAction* actionShowStickersSize = menuSetting->addAction("Taille des stickers");
     menuSetting->addSeparator();
     settingToolClass::createActionForBoolOption("Afficher la liste des topics", "showListOfTopic", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
@@ -172,6 +173,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QObject::connect(actionGoToForum, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentForum);
     QObject::connect(actionShowListOfIgnoredPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showIgnoreListWindow);
     QObject::connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
+    QObject::connect(actionShowTimeoutTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showTimeoutTimeWindow);
     QObject::connect(actionShowUpdateTopicTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showUpdateTopicTimeWindow);
     QObject::connect(actionShowNumberOfMessageShowedFirstTime, &QAction::triggered, &respawnIrc, &respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow);
     QObject::connect(actionShowStickersSize, &QAction::triggered, &respawnIrc, &respawnIrcClass::showStickersSizeWindow);

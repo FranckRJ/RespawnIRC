@@ -289,6 +289,13 @@ void respawnIrcClass::showColorPseudoListWindow()
     myColorPseudoListWindow->exec();
 }
 
+void respawnIrcClass::showTimeoutTimeWindow()
+{
+    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(1, 90, settingToolClass::getThisIntOption("timeoutInSecond"), this);
+    QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setTimeoutInSecond);
+    myChooseNumberWindow->exec();
+}
+
 void respawnIrcClass::showUpdateTopicTimeWindow()
 {
     chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(500, 10000, settingToolClass::getThisIntOption("updateTopicTime"), this);
@@ -487,6 +494,13 @@ void respawnIrcClass::addThisPeudoToBlacklist(QString pseudoToAdd)
         listOfIgnoredPseudo.append(pseudoToAdd);
         saveListOfIgnoredPseudo();
     }
+}
+
+void respawnIrcClass::setTimeoutInSecond(int newTime)
+{
+    settingToolClass::saveThisOption("timeoutInSecond", newTime);
+
+    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setUpdateTopicTime(int newTime)

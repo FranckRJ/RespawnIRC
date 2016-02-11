@@ -9,6 +9,7 @@ class autoTimeoutReplyClass : public QObject
 public:
     autoTimeoutReplyClass(QObject* parent = 0);
     QNetworkReply* resetReply(QNetworkReply* newReply = nullptr);
+    void updateTimeoutTime(int newTimeoutTimeInSeconds = 0);
 public slots:
     void timeoutCurrentReply();
 private:

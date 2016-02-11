@@ -1,4 +1,5 @@
 #include "autoTimeoutReply.hpp"
+#include "settingTool.hpp"
 
 autoTimeoutReplyClass::autoTimeoutReplyClass(QObject* parent) : QObject(parent)
 {
@@ -6,7 +7,7 @@ autoTimeoutReplyClass::autoTimeoutReplyClass(QObject* parent) : QObject(parent)
 
     timerForTimeout->setTimerType(Qt::CoarseTimer);
     timerForTimeout->setSingleShot(true);
-    timerForTimeout->setInterval(10000);
+    updateTimeoutTime();
     timerForTimeout->stop();
 
     QObject::connect(timerForTimeout, &QTimer::timeout, this, &autoTimeoutReplyClass::timeoutCurrentReply);
@@ -26,6 +27,18 @@ QNetworkReply* autoTimeoutReplyClass::resetReply(QNetworkReply* newReply)
     }
 
     return currentReply;
+}
+
+void autoTimeoutReplyClass::updateTimeoutTime(int newTimeoutTimeInSeconds)
+{
+    if(newTimeoutTimeInSeconds == 0)
+    {
+        timerForTimeout->setInterval(settingToolClass::getThisIntOption("timeoutInSecond") * 1000);
+    }
+    else
+    {
+        timerForTimeout->setInterval(newTimeoutTimeInSeconds * 1000);
+    }
 }
 
 void autoTimeoutReplyClass::timeoutCurrentReply()
