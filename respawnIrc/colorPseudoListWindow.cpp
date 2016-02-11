@@ -105,8 +105,7 @@ void colorPseudoListWindowClass::addThisPseudo(QString newPseudo)
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
+        QMessageBox::warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
     }
 }
 
@@ -119,8 +118,7 @@ void colorPseudoListWindowClass::setCurrentPseudo(QString newPseudo)
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
+        QMessageBox::warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
     }
 }
 

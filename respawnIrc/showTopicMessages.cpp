@@ -126,7 +126,6 @@ void showTopicMessagesClass::setTopicToErrorMode()
 {
     if(errorMode == false)
     {
-        QMessageBox messageBox;
         errorMode = true;
         if(firstTimeGetMessages == true)
         {
@@ -136,7 +135,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
             firstMessageOfTopic.isFirstMessage = false;
             setMessageStatus("Erreur, topic invalide.");
             setNumberOfConnectedAndMP("", "", true);
-            messageBox.warning(this, "Erreur", "Le topic n'existe pas.");
+            QMessageBox::warning(this, "Erreur", "Le topic n'existe pas.");
             QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, topicLink), Q_ARG(bool, getFirstMessageOfTopic));
         }
         else
@@ -144,7 +143,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
             setMessageStatus("Erreur, impossible de récupérer les messages.");
             if(ignoreNetworkError == false)
             {
-                messageBox.warning(this, "Erreur sur " + topicName, "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.");
+                QMessageBox::warning(this, "Erreur sur " + topicName, "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.");
             }
         }
     }
@@ -298,8 +297,7 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Erreur, impossible de citer ce message, réessayez.");
+        QMessageBox::warning(this, "Erreur", "Erreur, impossible de citer ce message, réessayez.");
     }
 }
 
@@ -537,12 +535,12 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             {
                 if(ignoreNetworkError == false)
                 {
-                    QMessageBox messageBox;
-                    messageBox.warning(this, "Erreur sur " + topicName + " avec " + pseudoOfUser,
-                                       "Le compte semble invalide, veuillez vous déconnecter de l'onglet puis vous y reconnecter (sans supprimer le compte de la liste des comptes).\n"
-                                       "Si le problème persiste, redémarrez RespawnIRC ou supprimez le pseudo de la liste des comptes et ajoutez-le à nouveau.");
+                    QString oldPseudo = pseudoOfUser;
                     pseudoOfUser.clear();
                     setNumberOfConnectedAndMP(numberOfConnected, "");
+                    QMessageBox::warning(this, "Erreur sur " + topicName + " avec " + oldPseudo,
+                                       "Le compte semble invalide, veuillez vous déconnecter de l'onglet puis vous y reconnecter (sans supprimer le compte de la liste des comptes).\n"
+                                       "Si le problème persiste, redémarrez RespawnIRC ou supprimez le pseudo de la liste des comptes et ajoutez-le à nouveau.");
                 }
             }
             else

@@ -55,8 +55,7 @@ void captchaWindowClass::sendCaptchaCode()
 {
     if(captchaCodeLine.text().isEmpty() == true)
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le captcha n'est pas valide !");
+        QMessageBox::warning(this, "Erreur", "Le captcha n'est pas valide !");
     }
     else
     {

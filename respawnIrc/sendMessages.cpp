@@ -1,5 +1,6 @@
 #include "sendMessages.hpp"
 #include "parsingTool.hpp"
+#include "shortcutTool.hpp"
 
 sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 {
@@ -29,7 +30,7 @@ QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QStrin
         data += thisInput.first + "=" + thisInput.second + "&";
     }
 
-    data += "message_topic=" + QUrl::toPercentEncoding(messageLine.text());
+    data += "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text()));
 
     data += "&form_alias_rang=1";
 
@@ -127,7 +128,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         }
         else
         {
-            data = "message_topic=" + QUrl::toPercentEncoding(messageLine.text());
+            data = "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text()));
             data += "&" + dataForEditLastMessage;
         }
 
@@ -176,15 +177,13 @@ void sendMessagesClass::deleteReplyForSendMessage()
     else if(source.contains("<div class=\"alert-row\"> Le captcha est invalide. </div>") == true ||
             (isInEdit == true && source.startsWith("{\"erreur\":[\"Le captcha est incorrect.\"]") == true))
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Depuis la mise à jour de JVC les captchas ne sont plus supportés, "
+        QMessageBox::warning(this, "Erreur", "Depuis la mise à jour de JVC les captchas ne sont plus supportés, "
                                            "veuillez attendre quelques secondes avant d'envoyer votre message.");
         dontEraseEditMessage = true;
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", parsingToolClass::getErrorMessage(source));
+        QMessageBox::warning(this, "Erreur", parsingToolClass::getErrorMessage(source));
         dontEraseEditMessage = true;
     }
 
@@ -221,8 +220,7 @@ void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messa
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Impossible d'éditer ce message.");
+        QMessageBox::warning(this, "Erreur", "Impossible d'éditer ce message.");
         sendButton.setText("Envoyer");
     }
 

@@ -3,6 +3,7 @@
 #include "mainWindow.hpp"
 #include "settingTool.hpp"
 #include "parsingTool.hpp"
+#include "shortcutTool.hpp"
 #include "styleTool.hpp"
 
 int main(int argc, char *argv[])
@@ -13,6 +14,7 @@ int main(int argc, char *argv[])
     QCoreApplication::addLibraryPath("./");
     settingToolClass::setSettings(&setting);
     settingToolClass::initializeDefaultListsOption();
+    shortcutToolClass::loadShortcuts();
     styleToolClass::getModelInfo("");
 
     qRegisterMetaType<messageStruct>("messageStruct");

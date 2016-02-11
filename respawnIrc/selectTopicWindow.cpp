@@ -55,7 +55,6 @@ void selectTopicWindowClass::selectThisTopic()
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le lien du topic n'est pas valide !");
+        QMessageBox::warning(this, "Erreur", "Le lien du topic n'est pas valide !");
     }
 }

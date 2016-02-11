@@ -51,7 +51,6 @@ void addPseudoWindowClass::setPseudo()
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le pseudo n'est pas valide !");
+        QMessageBox::warning(this, "Erreur", "Le pseudo n'est pas valide !");
     }
 }

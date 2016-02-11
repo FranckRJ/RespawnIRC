@@ -89,15 +89,13 @@ void connectWindowClass::valideConnect()
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le pseudo n'est pas entré ou vous n'êtes pas connecté.");
+        QMessageBox::warning(this, "Erreur", "Le pseudo n'est pas entré ou vous n'êtes pas connecté.");
     }
 }
 
 void connectWindowClass::showHelpConnect()
 {
-    QMessageBox messageBox;
-    messageBox.information(this, "Aide", "Pour vous connecter, veuillez suivre ces étapes :\n"
+    QMessageBox::information(this, "Aide", "Pour vous connecter, veuillez suivre ces étapes :\n"
                            "- renseignez le pseudo que vous allez utiliser dans le champ présent en bas de la fenêtre.\n"
                            "- connectez-vous sur JVC avec ce même pseudo.\n"
                            "- après avoir cliqué sur le bouton \"VALIDER\" qui possède un fond vert sur la page de JVC, attendez que la page d'accueil ait fini de charger puis "

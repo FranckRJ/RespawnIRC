@@ -88,8 +88,7 @@ void accountListWindowClass::addAccount(QList<QNetworkCookie> newCookies, QStrin
     }
     else
     {
-        QMessageBox messageBox;
-        messageBox.warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
+        QMessageBox::warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
     }
 }
 

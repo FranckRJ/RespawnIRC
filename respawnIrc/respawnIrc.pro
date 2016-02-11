@@ -36,7 +36,8 @@ SOURCES += \
     sendMessages.cpp \
     selectStickerWindow.cpp \
     getTopicMessages.cpp \
-    preferencesWindow.cpp
+    preferencesWindow.cpp \
+    shortcutTool.cpp
 
 QT += \
     network \
@@ -86,7 +87,8 @@ HEADERS += \
     sendMessages.hpp \
     selectStickerWindow.hpp \
     getTopicMessages.hpp \
-    preferencesWindow.hpp
+    preferencesWindow.hpp \
+    shortcutTool.hpp
 
 RC_FILE = respawnIrc.rc
 
