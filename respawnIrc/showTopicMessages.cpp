@@ -106,8 +106,12 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
 
     currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
+    expForColorPseudo.setPattern("");
     newPseudoOfUser.replace("[", "\\[").replace("]", "\\]");
-    expForColorPseudo.setPattern(newPseudoOfUser + "(?![^<]*</a>)");
+    if(newPseudoOfUser.isEmpty() == false)
+    {
+        expForColorPseudo.setPattern(newPseudoOfUser + "(?![^<]*</a>)");
+    }
     listOfInput.clear();
 
     if(networkManager != nullptr)
@@ -492,7 +496,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             newMessageToAppend.replace("<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel);
         }
 
-        if(colorUserPseudoInMessages == true)
+        if(colorUserPseudoInMessages == true && pseudoOfUser.isEmpty() == false)
         {
             parsingToolClass::replaceWithCapNumber(currentMessage.message, expForColorPseudo, 0,
                                                    "<span style=\"color: " + baseModelInfo.userPseudoColor + ";\">", "</span>");

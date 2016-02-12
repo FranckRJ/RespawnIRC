@@ -19,7 +19,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["showTextDecorationButton"] = true;
     listOfDefaultBoolOption["showListOfTopic"] = true;
     listOfDefaultBoolOption["setMultilineEdit"] = true;
-    listOfDefaultBoolOption["loadTwoLastPage"] = false;
+    listOfDefaultBoolOption["loadTwoLastPage"] = true;
     listOfDefaultBoolOption["ignoreNetworkError"] = false;
     listOfDefaultBoolOption["searchForUpdateAtLaunch"] = true;
     listOfDefaultBoolOption["saveWindowGeometry"] = true;
