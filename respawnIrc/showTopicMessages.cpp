@@ -56,7 +56,7 @@ const QList<QPair<QString, QString> >& showTopicMessagesClass::getListOfInput()
 
 QString showTopicMessagesClass::getTopicLink()
 {
-    return topicLink;
+    return topicLinkLastPage;
 }
 
 QString showTopicMessagesClass::getTopicName()
@@ -133,6 +133,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
         errorMode = true;
         if(firstTimeGetMessages == true)
         {
+            topicLinkLastPage.clear();
             topicLink.clear();
             topicName.clear();
             messagesBox.clear();
@@ -193,6 +194,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     topicName.clear();
     lastDate.clear();
     firstMessageOfTopic.isFirstMessage = false;
+    topicLinkLastPage = newTopic;
     topicLink = parsingToolClass::getFirstPageOfTopic(newTopic);
     firstTimeGetMessages = true;
     errorMode = false;
@@ -369,6 +371,8 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
     {
         return;
     }
+
+    topicLinkLastPage = fromThisTopic;
 
     if(listOfNewMessages.isEmpty() == true && listIsReallyEmpty == true)
     {

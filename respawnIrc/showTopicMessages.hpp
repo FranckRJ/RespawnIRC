@@ -72,6 +72,7 @@ private:
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;
     QString topicLink;
+    QString topicLinkLastPage;
     QString topicName;
     QString pseudoOfUser;
     QString ajaxInfo;
