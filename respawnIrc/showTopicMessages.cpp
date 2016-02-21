@@ -423,6 +423,12 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
         QString newMessageToAppend = baseModel;
         colorOfPseudo = getColorOfThisPseudo(currentMessage.pseudoInfo.pseudoName.toLower());
 
+        if(listOfIgnoredPseudo->indexOf(currentMessage.pseudoInfo.pseudoName.toLower()) != -1)
+        {
+            appendHrAtEndOfFirstMessage = false;
+            continue;
+        }
+
         if(colorOfPseudo.isEmpty() == true)
         {
             if(pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower())
