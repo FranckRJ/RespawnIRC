@@ -7,14 +7,21 @@
 #include "accountListWindow.hpp"
 #include "colorPseudoListWindow.hpp"
 
+struct intSettingStruct
+{
+    int minValue;
+    int maxValue;
+    int value;
+};
+
 class settingToolClass
 {
 public:
     static void setSettings(QSettings* newSetting);
     static void initializeDefaultListsOption();
-    static QAction* createActionForBoolOption(QString actionName, QString optionName, QMenu* menuForAction, QObject* pointer, const char* method);
+    static QAction* createActionForOption(QString actionName, QString optionName, QMenu* menuForAction, QObject* pointer, const char* method, bool checkable = true);
     static bool getThisBoolOption(QString optionName);
-    static int getThisIntOption(QString optionName);
+    static intSettingStruct getThisIntOption(QString optionName);
     static QString getThisStringOption(QString optionName);
     static QByteArray getThisByteOption(QString optionName);
     static QList<accountStruct> getListOfAccount();
@@ -35,7 +42,7 @@ public:
 private:
     static QSettings* setting;
     static QMap<QString, bool> listOfDefaultBoolOption;
-    static QMap<QString, int> listOfDefaultIntOption;
+    static QMap<QString, intSettingStruct> listOfDefaultIntOption;
     static QMap<QString, QString> listOfDefaultStringOption;
     static QMap<QString, QByteArray> listOfDefaultByteOption;
 };

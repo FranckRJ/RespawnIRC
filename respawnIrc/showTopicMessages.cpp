@@ -167,7 +167,7 @@ void showTopicMessagesClass::updateSettingInfo()
     colorModoAndAdminPseudo = settingToolClass::getThisBoolOption("colorModoAndAdminPseudo");
     colorPEMT = settingToolClass::getThisBoolOption("colorPEMT");
     colorUserPseudoInMessages = settingToolClass::getThisBoolOption("colorUserPseudoInMessages");
-    numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime");
+    numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime").value;
     getFirstMessageOfTopic = settingToolClass::getThisBoolOption("getFirstMessageOfTopic");
     warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
 
@@ -176,10 +176,10 @@ void showTopicMessagesClass::updateSettingInfo()
 
     QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection,
                               Q_ARG(bool, settingToolClass::getThisBoolOption("loadTwoLastPage")),
-                              Q_ARG(int, settingToolClass::getThisIntOption("updateTopicTime")),
+                              Q_ARG(int, settingToolClass::getThisIntOption("updateTopicTime").value),
                               Q_ARG(bool, settingToolClass::getThisBoolOption("showStickers")),
-                              Q_ARG(int, settingToolClass::getThisIntOption("stickersSize")),
-                              Q_ARG(int, settingToolClass::getThisIntOption("timeoutInSecond")));
+                              Q_ARG(int, settingToolClass::getThisIntOption("stickersSize").value),
+                              Q_ARG(int, settingToolClass::getThisIntOption("timeoutInSecond").value));
 }
 
 void showTopicMessagesClass::setNewTheme(QString newThemeName)

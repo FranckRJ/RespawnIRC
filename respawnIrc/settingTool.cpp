@@ -2,7 +2,7 @@
 
 QSettings* settingToolClass::setting = nullptr;
 QMap<QString, bool> settingToolClass::listOfDefaultBoolOption;
-QMap<QString, int> settingToolClass::listOfDefaultIntOption;
+QMap<QString, intSettingStruct> settingToolClass::listOfDefaultIntOption;
 QMap<QString, QString> settingToolClass::listOfDefaultStringOption;
 QMap<QString, QByteArray> settingToolClass::listOfDefaultByteOption;
 
@@ -32,10 +32,18 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["colorPEMT"] = true;
     listOfDefaultBoolOption["colorUserPseudoInMessages"] = true;
     listOfDefaultBoolOption["warnWhenEdit"] = true;
-    listOfDefaultIntOption["updateTopicTime"] = 3500;
-    listOfDefaultIntOption["numberOfMessageShowedFirstTime"] = 10;
-    listOfDefaultIntOption["stickersSize"] = 70;
-    listOfDefaultIntOption["timeoutInSecond"] = 10;
+    listOfDefaultIntOption["updateTopicTime"].value = 3500;
+    listOfDefaultIntOption["updateTopicTime"].minValue = 500;
+    listOfDefaultIntOption["updateTopicTime"].maxValue = 10000;
+    listOfDefaultIntOption["numberOfMessageShowedFirstTime"].value = 10;
+    listOfDefaultIntOption["numberOfMessageShowedFirstTime"].minValue = 1;
+    listOfDefaultIntOption["numberOfMessageShowedFirstTime"].maxValue = 40;
+    listOfDefaultIntOption["stickersSize"].value = 70;
+    listOfDefaultIntOption["stickersSize"].minValue = 0;
+    listOfDefaultIntOption["stickersSize"].maxValue = 1000;
+    listOfDefaultIntOption["timeoutInSecond"].value = 10;
+    listOfDefaultIntOption["timeoutInSecond"].minValue = 1;
+    listOfDefaultIntOption["timeoutInSecond"].maxValue = 90;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 
@@ -49,14 +57,26 @@ void settingToolClass::initializeDefaultListsOption()
 }
 
 
-QAction* settingToolClass::createActionForBoolOption(QString actionName, QString optionName, QMenu* menuForAction, QObject* pointer, const char* method)
+QAction* settingToolClass::createActionForOption(QString actionName, QString optionName, QMenu* menuForAction, QObject* pointer, const char* method, bool checkable)
 {
     QAction* newAction = menuForAction->addAction(actionName);
-    newAction->setCheckable(true);
-    newAction->setChecked(getThisBoolOption(optionName));
+
+    if(checkable == true)
+    {
+        newAction->setCheckable(true);
+        newAction->setChecked(getThisBoolOption(optionName));
+    }
+
     newAction->setObjectName(optionName);
 
-    QObject::connect(newAction, SIGNAL(toggled(bool)), pointer, method);
+    if(checkable == true)
+    {
+        QObject::connect(newAction, SIGNAL(toggled(bool)), pointer, method);
+    }
+    else
+    {
+        QObject::connect(newAction, SIGNAL(triggered(bool)), pointer, method);
+    }
 
     return newAction;
 }
@@ -76,18 +96,24 @@ bool settingToolClass::getThisBoolOption(QString optionName)
     }
 }
 
-int settingToolClass::getThisIntOption(QString optionName)
+intSettingStruct settingToolClass::getThisIntOption(QString optionName)
 {
-    QMap<QString, int>::iterator iteForList = listOfDefaultIntOption.find(optionName);
+    QMap<QString, intSettingStruct>::iterator iteForList = listOfDefaultIntOption.find(optionName);
+    intSettingStruct tmpIntSetting;
 
     if(iteForList != listOfDefaultIntOption.end())
     {
-        return setting->value(optionName, iteForList.value()).toInt();
+        tmpIntSetting = iteForList.value();
+        tmpIntSetting.value = setting->value(optionName, iteForList.value().value).toInt();
+        return tmpIntSetting;
     }
     else
     {
         qDebug() << "Erreur : cette option entiere \"" + optionName + "\" n existe pas.";
-        return setting->value(optionName, 0).toInt();
+        tmpIntSetting.minValue = 0;
+        tmpIntSetting.maxValue = 0;
+        tmpIntSetting.value = setting->value(optionName, 0).toInt();
+        return tmpIntSetting;
     }
 }
 

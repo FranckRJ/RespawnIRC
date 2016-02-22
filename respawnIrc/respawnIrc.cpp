@@ -289,32 +289,23 @@ void respawnIrcClass::showColorPseudoListWindow()
     myColorPseudoListWindow->exec();
 }
 
-void respawnIrcClass::showTimeoutTimeWindow()
+void respawnIrcClass::showSelectIntWindow()
 {
-    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(1, 90, settingToolClass::getThisIntOption("timeoutInSecond"), this);
-    QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setTimeoutInSecond);
-    myChooseNumberWindow->exec();
-}
+    QObject* senderObject = sender();
+    QString objectName;
 
-void respawnIrcClass::showUpdateTopicTimeWindow()
-{
-    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(500, 10000, settingToolClass::getThisIntOption("updateTopicTime"), this);
-    QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setUpdateTopicTime);
-    myChooseNumberWindow->exec();
-}
+    if(senderObject != 0)
+    {
+        objectName = senderObject->objectName();
+    }
 
-void respawnIrcClass::showNumberOfMessageShowedFirstTimeWindow()
-{
-    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(1, 40, settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime"), this);
-    QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setNumberOfMessageShowedFirstTime);
-    myChooseNumberWindow->exec();
-}
-
-void respawnIrcClass::showStickersSizeWindow()
-{
-    chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(0, 1000, settingToolClass::getThisIntOption("stickersSize"), this);
-    QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setStickersSize);
-    myChooseNumberWindow->exec();
+    if(objectName.isEmpty() == false)
+    {
+        intSettingStruct tmpIntSetting = settingToolClass::getThisIntOption(objectName);
+        chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(tmpIntSetting.minValue, tmpIntSetting.maxValue, tmpIntSetting.value, objectName, this);
+        QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setThisIntOption);
+        myChooseNumberWindow->exec();
+    }
 }
 
 void respawnIrcClass::showAbout()
@@ -496,34 +487,6 @@ void respawnIrcClass::addThisPeudoToBlacklist(QString pseudoToAdd)
     }
 }
 
-void respawnIrcClass::setTimeoutInSecond(int newTime)
-{
-    settingToolClass::saveThisOption("timeoutInSecond", newTime);
-
-    updateSettingInfoForList();
-}
-
-void respawnIrcClass::setUpdateTopicTime(int newTime)
-{
-    settingToolClass::saveThisOption("updateTopicTime", newTime);
-
-    updateSettingInfoForList();
-}
-
-void respawnIrcClass::setNumberOfMessageShowedFirstTime(int newNumber)
-{
-    settingToolClass::saveThisOption("numberOfMessageShowedFirstTime", newNumber);
-
-    updateSettingInfoForList();
-}
-
-void respawnIrcClass::setStickersSize(int newSize)
-{
-    settingToolClass::saveThisOption("stickersSize", newSize);
-
-    updateSettingInfoForList();
-}
-
 void respawnIrcClass::setThisBoolOption(bool newVal, QString trueName)
 {
     QString objectName;
@@ -571,6 +534,13 @@ void respawnIrcClass::setThisBoolOption(bool newVal, QString trueName)
             updateSettingInfoForList();
         }
     }
+}
+
+void respawnIrcClass::setThisIntOption(int newVal, QString optionName)
+{
+    settingToolClass::saveThisOption(optionName, newVal);
+
+    updateSettingInfoForList();
 }
 
 void respawnIrcClass::setShowTextDecorationButton(bool newVal)
