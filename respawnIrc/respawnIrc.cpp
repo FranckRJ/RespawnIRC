@@ -540,7 +540,14 @@ void respawnIrcClass::setThisIntOption(int newVal, QString optionName)
 {
     settingToolClass::saveThisOption(optionName, newVal);
 
-    updateSettingInfoForList();
+    if(optionName == "textBoxSize")
+    {
+        sendMessages.settingsChanged();
+    }
+    else
+    {
+        updateSettingInfoForList();
+    }
 }
 
 void respawnIrcClass::setShowTextDecorationButton(bool newVal)

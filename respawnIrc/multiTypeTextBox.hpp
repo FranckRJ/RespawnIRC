@@ -40,7 +40,7 @@ private:
     highlighterClass* highlighter;
     QLineEdit lineEdit;
     bool textEditSelected = true;
-    bool dicAreLoaded;
+    bool dicAreLoaded = false;
 };
 
 #endif

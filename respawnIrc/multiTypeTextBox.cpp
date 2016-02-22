@@ -7,20 +7,9 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
 
     textEdit.setTabChangesFocus(true);
     textEdit.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    textEdit.setFixedHeight(65);
     textEdit.setAcceptRichText(false);
 
-    if(settingToolClass::getThisBoolOption("useSpellChecker") == true)
-    {
-        textEdit.setDic("fr");
-        highlighter->setDic("fr");
-        highlighter->enableSpellChecking(true);
-        dicAreLoaded = true;
-    }
-    else
-    {
-        dicAreLoaded = false;
-    }
+    settingsChanged();
 
     layout.addWidget(&textEdit);
     layout.setMargin(0);
@@ -120,6 +109,7 @@ void multiTypeTextBoxClass::settingsChanged()
     }
 
     highlighter->enableSpellChecking(settingToolClass::getThisBoolOption("useSpellChecker"));
+    textEdit.setFixedHeight(settingToolClass::getThisIntOption("textBoxSize").value);
 }
 
 void multiTypeTextBoxClass::insertText(QString newText)

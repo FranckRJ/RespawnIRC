@@ -44,6 +44,9 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["timeoutInSecond"].value = 10;
     listOfDefaultIntOption["timeoutInSecond"].minValue = 1;
     listOfDefaultIntOption["timeoutInSecond"].maxValue = 90;
+    listOfDefaultIntOption["textBoxSize"].value = 65;
+    listOfDefaultIntOption["textBoxSize"].minValue = 10;
+    listOfDefaultIntOption["textBoxSize"].maxValue = 500;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 
