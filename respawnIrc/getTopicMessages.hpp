@@ -15,7 +15,7 @@ public:
 public slots:
     void setNewTopic(QString newTopicLink, bool getFirstMessage);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages);
-    void settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize, int timeoutTime);
+    void settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize, int timeoutTime, int newMaxNbOfQuotes);
     void startGetMessage();
     void getMessages();
     void loadFirstPageFinish();
@@ -50,6 +50,7 @@ private:
     bool showStickers = true;
     int idOfLastMessage = 0;
     int stickersSize = 70;
+    int maxNbOfQuotes = 4;
 };
 
 #endif

@@ -47,6 +47,9 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["textBoxSize"].value = 65;
     listOfDefaultIntOption["textBoxSize"].minValue = 10;
     listOfDefaultIntOption["textBoxSize"].maxValue = 500;
+    listOfDefaultIntOption["maxNbOfQuotes"].value = 4;
+    listOfDefaultIntOption["maxNbOfQuotes"].minValue = 0;
+    listOfDefaultIntOption["maxNbOfQuotes"].maxValue = 15;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

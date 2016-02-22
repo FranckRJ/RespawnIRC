@@ -53,10 +53,11 @@ public:
     static QString getForumOfTopic(const QString& source);
     static QString getForumName(const QString& source);
     static QString jvfLinkToJvcLink(const QString& source);
-    static QString parsingMessages(QString thisMessage, bool showStickers, int stickersSize);
+    static QString parsingMessages(QString thisMessage, bool showStickers, int stickersSize, int nbMaxQuote);
     static QString parsingAjaxMessages(QString thisMessage);
     static QNetworkRequest buildRequestWithThisUrl(QString url);
     static QList<QString> getListOfThisCapNumber(const QString &source, QRegularExpression& exp, int capNumber, bool globalMatch = true);
+    static void removeAllOverlyQuote(QString& source, int maxNumberQuote);
     static void replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "",
                                      bool replaceReturnByBr = false, bool makeLinkIfPossible = false, bool replacePByBr = false);
@@ -101,6 +102,7 @@ private:
     static QRegularExpression expForCodeBlock;
     static QRegularExpression expForAllJVCare;
     static QRegularExpression expForUnicodeInText;
+    static QRegularExpression expForHtmlTag;
 };
 
 #endif

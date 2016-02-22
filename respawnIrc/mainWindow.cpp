@@ -63,6 +63,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     settingToolClass::createActionForOption("Nombre de messages affichés au premier chargement", "numberOfMessageShowedFirstTime", menuSetting, &respawnIrc, SLOT(showSelectIntWindow()), false);
     settingToolClass::createActionForOption("Taille des stickers", "stickersSize", menuSetting, &respawnIrc, SLOT(showSelectIntWindow()), false);
     settingToolClass::createActionForOption("Taille de la zone de saisie", "textBoxSize", menuSetting, &respawnIrc, SLOT(showSelectIntWindow()), false);
+    settingToolClass::createActionForOption("Nombre maximal de quotes imbriquées", "maxNbOfQuotes", menuSetting, &respawnIrc, SLOT(showSelectIntWindow()), false);
     menuSetting->addSeparator();
     settingToolClass::createActionForOption("Afficher la liste des topics", "showListOfTopic", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
     settingToolClass::createActionForOption("Récupérer le premier message du topic", "getFirstMessageOfTopic", menuSetting, &respawnIrc, SLOT(setThisBoolOption(bool)));
