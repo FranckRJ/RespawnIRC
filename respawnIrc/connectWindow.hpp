@@ -13,6 +13,8 @@ public:
     connectWindowClass(QWidget* parent, bool showRemeberBox = true);
 public slots:
     void newPageLoaded(QNetworkReply* reply);
+    void showAddCookiesWindow();
+    void addCookiesManually(QString newHelloCookie, QString newConnectCookie);
     void valideConnect();
     void showHelpConnect();
 signals:

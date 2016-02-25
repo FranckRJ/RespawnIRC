@@ -37,7 +37,8 @@ SOURCES += \
     selectStickerWindow.cpp \
     getTopicMessages.cpp \
     preferencesWindow.cpp \
-    shortcutTool.cpp
+    shortcutTool.cpp \
+    addCookiesWindow.cpp
 
 QT += \
     network \
@@ -88,7 +89,8 @@ HEADERS += \
     selectStickerWindow.hpp \
     getTopicMessages.hpp \
     preferencesWindow.hpp \
-    shortcutTool.hpp
+    shortcutTool.hpp \
+    addCookiesWindow.hpp
 
 RC_FILE = respawnIrc.rc
 

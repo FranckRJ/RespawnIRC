@@ -14,7 +14,7 @@
 #include "styleTool.hpp"
 
 QRegularExpression respawnIrcClass::expForSmileyToCode("<img src=\"ressources/smileys/(.*?)\\..*?\" />", QRegularExpression::OptimizeOnFirstUsageOption);
-const QString respawnIrcClass::currentVersionName("v2.0.2");
+const QString respawnIrcClass::currentVersionName("v2.1");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
