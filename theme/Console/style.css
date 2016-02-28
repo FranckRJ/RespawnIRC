@@ -3,7 +3,7 @@ QMainWindow, QDialog
 	background: black;
 }
 
-QLabel
+QLabel, QCheckBox, QGroupBox
 {
 	color: white;
 	font-family: consolas;
