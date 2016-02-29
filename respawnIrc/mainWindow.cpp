@@ -300,6 +300,10 @@ void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
         {
             respawnIrc.selectThisTab(9);
         }
+        else if(keyPressed == "Enter" || keyPressed == "Return")
+        {
+            respawnIrc.messageHaveToBePosted();
+        }
     }
 }
 
