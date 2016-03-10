@@ -4,6 +4,7 @@
 #include "settingTool.hpp"
 #include "parsingTool.hpp"
 #include "shortcutTool.hpp"
+#include "stickerToSmileyTool.hpp"
 #include "styleTool.hpp"
 
 int main(int argc, char *argv[])
@@ -15,6 +16,7 @@ int main(int argc, char *argv[])
     settingToolClass::setSettings(&setting);
     settingToolClass::initializeDefaultListsOption();
     shortcutToolClass::loadShortcuts();
+    stickerToSmileyToolClass::loadTransformInfo();
     styleToolClass::getModelInfo("");
 
     qRegisterMetaType<messageStruct>("messageStruct");

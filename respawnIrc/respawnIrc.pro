@@ -38,7 +38,8 @@ SOURCES += \
     getTopicMessages.cpp \
     preferencesWindow.cpp \
     shortcutTool.cpp \
-    addCookiesWindow.cpp
+    addCookiesWindow.cpp \
+    stickerToSmileyTool.cpp
 
 QT += \
     network \
@@ -90,7 +91,8 @@ HEADERS += \
     getTopicMessages.hpp \
     preferencesWindow.hpp \
     shortcutTool.hpp \
-    addCookiesWindow.hpp
+    addCookiesWindow.hpp \
+    stickerToSmileyTool.hpp
 
 RC_FILE = respawnIrc.rc
 

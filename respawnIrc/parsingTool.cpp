@@ -1,5 +1,6 @@
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
+#include "stickerToSmileyTool.hpp"
 
 QRegularExpression parsingToolClass::expForNormalLink("https://[^\\(\\)\\]\\[ ]*", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForAjaxTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_liste_messages\" id=\"ajax_timestamp_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -348,6 +349,11 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
     replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", true);
 
     thisMessage.replace("\n", "");
+
+    if(true) //stickerToSmiley
+    {
+        stickerToSmileyToolClass::transformMessage(thisMessage);
+    }
 
     if(showStickers == false)
     {

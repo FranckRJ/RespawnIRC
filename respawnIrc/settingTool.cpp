@@ -25,6 +25,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["saveWindowGeometry"] = true;
     listOfDefaultBoolOption["beepWhenWarn"] = true;
     listOfDefaultBoolOption["showStickers"] = true;
+    listOfDefaultBoolOption["stickersToSmiley"] = false;
     listOfDefaultBoolOption["useSpellChecker"] = true;
     listOfDefaultBoolOption["warnUser"] = true;
     listOfDefaultBoolOption["getFirstMessageOfTopic"] = false;
