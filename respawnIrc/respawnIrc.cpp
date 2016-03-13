@@ -294,7 +294,7 @@ void respawnIrcClass::showSelectIntWindow()
     QObject* senderObject = sender();
     QString objectName;
 
-    if(senderObject != 0)
+    if(senderObject != nullptr)
     {
         objectName = senderObject->objectName();
     }
@@ -499,7 +499,7 @@ void respawnIrcClass::setThisBoolOption(bool newVal, QString trueName)
     {
         QObject* senderObject = sender();
 
-        if(senderObject != 0)
+        if(senderObject != nullptr)
         {
             objectName = senderObject->objectName();
         }
@@ -712,7 +712,7 @@ void respawnIrcClass::warnUserForNewMessages()
         QApplication::alert(this);
     }
 
-    if(QApplication::focusWidget() == 0 && beepWhenWarn == true)
+    if(QApplication::focusWidget() == nullptr && beepWhenWarn == true)
     {
         QSound::play(QCoreApplication::applicationDirPath() + "/ressources/beep.wav");
     }
@@ -872,8 +872,8 @@ void respawnIrcClass::clipboardChanged()
         dataInHtml.replace("<img src=\"ressources/smileys/69.gif\" />", ":bravo:");
         dataInHtml.replace("<img src=\"ressources/smileys/70.gif\" />", ":banzai:");
         dataInHtml.replace("<img src=\"ressources/smileys/71.gif\" />", ":bave:");
-        parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":");
-        //fin
+        dataInHtml.replace("<img src=\"ressources/smileys/nyu.gif\" />", ":cute:");
+        parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":"); // fin
         doc.setHtml(dataInHtml);
         newData->setHtml(dataInHtml);
         newData->setText(doc.toPlainText());

@@ -174,7 +174,7 @@ void spellTextEditClass::correctWord()
 {
     QAction* thisAction = qobject_cast<QAction*>(sender());
 
-    if(thisAction != 0)
+    if(thisAction != nullptr)
     {
         QString replacement = thisAction->text();
         QTextCursor cursor = cursorForPosition(lastPos);

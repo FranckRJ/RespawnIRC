@@ -55,7 +55,7 @@ void preferenceWindowClass::valueOfCheckboxChanged(bool newVal)
 {
     QObject* senderObject = sender();
 
-    if(senderObject != 0)
+    if(senderObject != nullptr)
     {
         emit newValueForOption(newVal, senderObject->objectName());
     }
