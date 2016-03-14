@@ -343,14 +343,14 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
     }
 }
 
-QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers, int stickersSize, int nbMaxQuote)
+QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers, bool stickerToSmiley, int stickersSize, int nbMaxQuote)
 {
     replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", true);
     replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", true);
 
     thisMessage.replace("\n", "");
 
-    if(true) //stickerToSmiley
+    if(stickerToSmiley == true)
     {
         stickerToSmileyToolClass::transformMessage(thisMessage);
     }

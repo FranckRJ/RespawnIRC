@@ -91,10 +91,12 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
     }
 }
 
-void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize, int timeoutTime, int newMaxNbOfQuotes)
+void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize,
+                                            int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley)
 {
     loadTwoLastPage = getTwoLastPages;
     showStickers = newShowStickers;
+    stickerToSmiley = newStickersToSmiley;
     stickersSize = newStickerSize;
     maxNbOfQuotes = newMaxNbOfQuotes;
 
@@ -323,7 +325,7 @@ void getTopicMessagesClass::analyzeMessages()
 
                 tmpMsg.isFirstMessage = true;
                 tmpMsg.isAnEdit = false;
-                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, showStickers, stickersSize, maxNbOfQuotes);
+                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes);
 
                 listOfNewMessages.push_front(tmpMsg);
             }
@@ -369,7 +371,7 @@ void getTopicMessagesClass::analyzeMessages()
                     idOfLastMessage = currentMessage.idOfMessage;
                 }
 
-                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, showStickers, stickersSize, maxNbOfQuotes);
+                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes);
                 listOfNewMessages.push_back(currentMessage);
 
                 listOfEdit[currentMessage.idOfMessage] = currentMessage.lastTimeEdit;
