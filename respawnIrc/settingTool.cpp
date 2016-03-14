@@ -51,6 +51,9 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["maxNbOfQuotes"].value = 4;
     listOfDefaultIntOption["maxNbOfQuotes"].minValue = 0;
     listOfDefaultIntOption["maxNbOfQuotes"].maxValue = 15;
+    listOfDefaultIntOption["nbOfMessagesSend"].value = 0;
+    listOfDefaultIntOption["nbOfMessagesSend"].minValue = 0;
+    listOfDefaultIntOption["nbOfMessagesSend"].maxValue = 0;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

@@ -11,6 +11,7 @@ class sendMessagesClass : public QWidget
     Q_OBJECT
 public:
     sendMessagesClass(QWidget* parent = 0);
+    ~sendMessagesClass();
     QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
     void clearMessageLine();
     void settingsChanged();
@@ -41,6 +42,7 @@ private:
     bool isInEdit = false;
     bool inSending = false;
     int idOfLastMessageEdit = 0;
+    int nbOfMessagesSend = 0;
 };
 
 #endif

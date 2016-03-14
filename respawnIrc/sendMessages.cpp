@@ -1,6 +1,7 @@
 #include "sendMessages.hpp"
 #include "parsingTool.hpp"
 #include "shortcutTool.hpp"
+#include "settingTool.hpp"
 
 sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 {
@@ -19,6 +20,12 @@ sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 
     QObject::connect(&sendButton, &QPushButton::pressed, this, &sendMessagesClass::needToPostMessage);
     QObject::connect(&messageLine, &multiTypeTextBoxClass::returnPressed, &sendButton, &QPushButton::click);
+}
+
+sendMessagesClass::~sendMessagesClass()
+{
+    settingToolClass::saveThisOption("nbOfMessagesSend",
+                                     settingToolClass::getThisIntOption("nbOfMessagesSend").value + nbOfMessagesSend);
 }
 
 QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput)
@@ -173,6 +180,11 @@ void sendMessagesClass::deleteReplyForSendMessage()
     if(source.isEmpty() == true || (isInEdit == true && source.startsWith("{\"erreur\":[]") == true))
     {
         messageLine.clear();
+
+        if(isInEdit == false)
+        {
+            ++nbOfMessagesSend;
+        }
     }
     else if(source.contains("<div class=\"alert-row\"> Le captcha est invalide. </div>") == true ||
             (isInEdit == true && source.startsWith("{\"erreur\":[\"Le captcha est incorrect.\"]") == true))
