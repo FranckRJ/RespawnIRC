@@ -148,7 +148,9 @@ void showTopicMessagesClass::setTopicToErrorMode()
             setMessageStatus("Erreur, impossible de récupérer les messages.");
             if(ignoreNetworkError == false)
             {
-                QMessageBox::warning(this, "Erreur sur " + topicName, "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.");
+                QMessageBox::warning(this, "Erreur sur " + topicName, "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.\n\n"
+                                     "Si le message d'erreur persiste alors que de votre côté vous ne constatez aucun problème, vous pouvez désactiver les erreurs réseau en cochant l'option \"Ignorer les"
+                                     " erreurs réseau\" dans le menu \"Configuration\".");
             }
         }
     }
@@ -560,7 +562,9 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
                     setNumberOfConnectedAndMP(numberOfConnected, "");
                     QMessageBox::warning(this, "Erreur sur " + topicName + " avec " + oldPseudo,
                                        "Le compte semble invalide, veuillez vous déconnecter de l'onglet puis vous y reconnecter (sans supprimer le compte de la liste des comptes).\n"
-                                       "Si le problème persiste, redémarrez RespawnIRC ou supprimez le pseudo de la liste des comptes et ajoutez-le à nouveau.");
+                                       "Si le problème persiste, redémarrez RespawnIRC ou supprimez le pseudo de la liste des comptes et ajoutez-le à nouveau.\n\n"
+                                       "Si le message d'erreur persiste alors que de votre côté vous ne constatez aucun problème, vous pouvez désactiver les erreurs réseau en"
+                                       " cochant l'option \"Ignorer les erreurs réseau\" dans le menu \"Configuration\".");
                 }
             }
             else
