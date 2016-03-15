@@ -315,7 +315,8 @@ void respawnIrcClass::showAbout()
     QMessageBox::information(this, "A propos de RespawnIRC", "<b>RespawnIRC version " + versionName + ".</b><br /><br />" +
                            "Ce logiciel à été developpé à l'aide de Qt 5 ainsi que de Hunspell <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://hunspell.sourceforge.net/\">http://hunspell.sourceforge.net/</a>.<br />" +
                            "Lien du dépôt github : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/LEpigeon888/RespawnIRC\">https://github.com/LEpigeon888/RespawnIRC</a><br />" +
-                           "Lien du site : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://lepigeon888.github.io/RespawnIRC/\">http://lepigeon888.github.io/RespawnIRC/</a>");
+                           "Lien du site : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://lepigeon888.github.io/RespawnIRC/\">http://lepigeon888.github.io/RespawnIRC/</a><br /><br />"
+                           "Nombre de messages que vous avez postés depuis la version 2.2 : <b>" + QString::number(settingToolClass::getThisIntOption("nbOfMessagesSend").value) + "</b>");
 }
 
 void respawnIrcClass::addNewTab()
@@ -800,8 +801,7 @@ void respawnIrcClass::clipboardChanged()
     {
         QTextDocument doc;
         QMimeData* newData = new QMimeData();
-        //a changer, si possible
-        dataInHtml.replace("<img src=\"ressources/smileys/1.gif\" />", ":)");
+        dataInHtml.replace("<img src=\"ressources/smileys/1.gif\" />", ":)"); //a changer, si possible
         dataInHtml.replace("<img src=\"ressources/smileys/2.gif\" />", ":question:");
         dataInHtml.replace("<img src=\"ressources/smileys/3.gif\" />", ":g)");
         dataInHtml.replace("<img src=\"ressources/smileys/4.gif\" />", ":d)");
@@ -872,8 +872,8 @@ void respawnIrcClass::clipboardChanged()
         dataInHtml.replace("<img src=\"ressources/smileys/69.gif\" />", ":bravo:");
         dataInHtml.replace("<img src=\"ressources/smileys/70.gif\" />", ":banzai:");
         dataInHtml.replace("<img src=\"ressources/smileys/71.gif\" />", ":bave:");
-        dataInHtml.replace("<img src=\"ressources/smileys/nyu.gif\" />", ":cute:");
-        parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":"); // fin
+        dataInHtml.replace("<img src=\"ressources/smileys/nyu.gif\" />", ":cute:"); // fin "à changer"
+        parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":");
         doc.setHtml(dataInHtml);
         newData->setHtml(dataInHtml);
         newData->setText(doc.toPlainText());
