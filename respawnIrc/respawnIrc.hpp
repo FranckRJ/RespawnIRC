@@ -42,6 +42,7 @@ public slots:
     void addNewTab();
     void addNewTabWithTopic(QString newTopicLink);
     void removeTab(int index);
+    void tabHasMoved(int indexFrom, int indexTo);
     void checkForUpdate();
     void updateTopic();
     void reloadTopic();
@@ -83,7 +84,7 @@ private:
     sendMessagesClass sendMessages;
     QTabWidget tabList;
     QVector<QString> vectorOfFavoriteLink;
-    QList<QNetworkCookie> currentCookieList; //?
+    QList<QNetworkCookie> currentCookieList;
     QList<containerForTopicsInfosClass*> listOfContainerForTopicsInfos;
     QList<QString> listOfTopicLink;
     QList<QString> listOfIgnoredPseudo;

@@ -14,11 +14,12 @@
 #include "styleTool.hpp"
 
 QRegularExpression respawnIrcClass::expForSmileyToCode("<img src=\"ressources/smileys/(.*?)\\..*?\" />", QRegularExpression::OptimizeOnFirstUsageOption);
-const QString respawnIrcClass::currentVersionName("v2.1");
+const QString respawnIrcClass::currentVersionName("v2.2");
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
     tabList.setTabsClosable(true);
+    tabList.setMovable(true);
     alertImage.load(QCoreApplication::applicationDirPath() + "/ressources/alert.png");
 
     addButtonToButtonLayout();
@@ -40,6 +41,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     QObject::connect(&sendMessages, &sendMessagesClass::needToGetMessages, this, &respawnIrcClass::updateTopic);
     QObject::connect(&tabList, &QTabWidget::currentChanged, this, &respawnIrcClass::currentTabChanged);
     QObject::connect(&tabList, &QTabWidget::tabCloseRequested, this, &respawnIrcClass::removeTab);
+    QObject::connect(tabList.tabBar(), &QTabBar::tabMoved, this, &respawnIrcClass::tabHasMoved);
 
     loadSettings();
 }
@@ -388,6 +390,16 @@ void respawnIrcClass::removeTab(int index)
         delete listOfContainerForTopicsInfos.takeAt(index);
         currentTabChanged(-1);
     }
+}
+
+void respawnIrcClass::tabHasMoved(int indexFrom, int indexTo)
+{
+    listOfTopicLink.move(indexFrom, indexTo);
+    settingToolClass::saveListOfTopicLink(listOfTopicLink);
+    listOfPseudoForTopic.move(indexFrom, indexTo);
+    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+    listOfContainerForTopicsInfos.move(indexFrom, indexTo);
+    currentTabChanged(-1);
 }
 
 void respawnIrcClass::checkForUpdate()
@@ -801,7 +813,8 @@ void respawnIrcClass::clipboardChanged()
     {
         QTextDocument doc;
         QMimeData* newData = new QMimeData();
-        dataInHtml.replace("<img src=\"ressources/smileys/1.gif\" />", ":)"); //a changer, si possible
+        //a changer, si possible
+        dataInHtml.replace("<img src=\"ressources/smileys/1.gif\" />", ":)");
         dataInHtml.replace("<img src=\"ressources/smileys/2.gif\" />", ":question:");
         dataInHtml.replace("<img src=\"ressources/smileys/3.gif\" />", ":g)");
         dataInHtml.replace("<img src=\"ressources/smileys/4.gif\" />", ":d)");
@@ -872,7 +885,8 @@ void respawnIrcClass::clipboardChanged()
         dataInHtml.replace("<img src=\"ressources/smileys/69.gif\" />", ":bravo:");
         dataInHtml.replace("<img src=\"ressources/smileys/70.gif\" />", ":banzai:");
         dataInHtml.replace("<img src=\"ressources/smileys/71.gif\" />", ":bave:");
-        dataInHtml.replace("<img src=\"ressources/smileys/nyu.gif\" />", ":cute:"); // fin "à changer"
+        dataInHtml.replace("<img src=\"ressources/smileys/nyu.gif\" />", ":cute:");
+        // fin "à changer"
         parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":");
         doc.setHtml(dataInHtml);
         newData->setHtml(dataInHtml);
