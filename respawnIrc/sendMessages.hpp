@@ -19,6 +19,7 @@ public:
     multiTypeTextBoxClass* getMessageLine();
     bool getIsSending();
     bool getIsInEdit();
+    int getNbOfMessagesSend();
     void setIsInEdit(bool newVal);
     void setEnableSendButton(bool newVal);
     void setTextSendButton(QString newText);

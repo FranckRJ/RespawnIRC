@@ -74,6 +74,11 @@ bool sendMessagesClass::getIsInEdit()
     return isInEdit;
 }
 
+int sendMessagesClass::getNbOfMessagesSend()
+{
+    return nbOfMessagesSend;
+}
+
 void sendMessagesClass::setIsInEdit(bool newVal)
 {
     isInEdit = newVal;
