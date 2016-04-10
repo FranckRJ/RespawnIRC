@@ -6,13 +6,15 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+
     QLabel* labForPseudo = new QLabel("Entrez le pseudo avec lequel vous voulez vous connecter :", this);
     QLabel* labForButton = new QLabel("Une fois connecté, cliquez ici :", this);
     QPushButton* buttonAddCookies = new QPushButton("Ajouter des cookies", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
     QPushButton* buttonHelp = new QPushButton("Aide pour se connecter", this);
 
-    webView = new QWebEngineView(this);
+    webView = new QWebView(this);
     rememberBox.setChecked(false);
     buttonValidate->setDefault(true);
 
@@ -44,29 +46,41 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 
     setLayout(mainLayout);
 
-    webView->page()->profile()->cookieStore()->deleteAllCookies();
-    webView->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
-    webView->load(QUrl("http://www.jeuxvideo.com/login"));
+    QNetworkAccessManager* tmpManagerForReply;
 
-    QObject::connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);
+    webView->load(QUrl("http://www.jeuxvideo.com/login"));
+    tmpManagerForReply = webView->page()->networkAccessManager();
+
+    QObject::connect(tmpManagerForReply, &QNetworkAccessManager::finished, this, &connectWindowClass::newPageLoaded);
     QObject::connect(buttonAddCookies, &QPushButton::pressed, this, &connectWindowClass::showAddCookiesWindow);
     QObject::connect(buttonValidate, &QPushButton::pressed, this, &connectWindowClass::valideConnect);
     QObject::connect(buttonHelp, &QPushButton::pressed, this, &connectWindowClass::showHelpConnect);
 }
 
-void connectWindowClass::checkThisCookie(QNetworkCookie cookie)
+void connectWindowClass::newPageLoaded(QNetworkReply* reply)
 {
-    if(cookie.name() == "dlrowolleh" || cookie.name() == "coniunctio")
+    if(reply->isReadable() == true)
     {
-        for(int j = 0; j < cookieList.size(); ++j)
+        if(reply->url().toDisplayString().startsWith("http://www.jeuxvideo.com"))
         {
-            if(cookieList.at(j).name() == cookie.name())
+            QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(reply->header(QNetworkRequest::SetCookieHeader));
+
+            for(const QNetworkCookie& thisNewCookie : newCookieList)
             {
-                cookieList.removeAt(j);
-                break;
+                if(thisNewCookie.name() == "dlrowolleh" || thisNewCookie.name() == "coniunctio")
+                {
+                    for(int j = 0; j < cookieList.size(); ++j)
+                    {
+                        if(cookieList.at(j).name() == thisNewCookie.name())
+                        {
+                            cookieList.removeAt(j);
+                            break;
+                        }
+                    }
+                    cookieList.append(thisNewCookie);
+                }
             }
         }
-        cookieList.append(cookie);
     }
 }
 

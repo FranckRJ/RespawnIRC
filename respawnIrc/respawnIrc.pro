@@ -45,7 +45,7 @@ QT += \
     network \
     widgets \
     multimedia \
-    webkitwidgets
+    webenginewidgets
 
 HEADERS += \
     hunspell/affentry.hxx \
@@ -96,6 +96,7 @@ HEADERS += \
 
 RC_FILE = respawnIrc.rc
 
-QMAKE_CXXFLAGS_RELEASE = -O2
+QMAKE_CXXFLAGS_RELEASE += -O2
+QMAKE_LFLAGS += /NODEFAULTLIB:LIBCMT.lib
 
 CONFIG += c++11

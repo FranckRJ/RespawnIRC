@@ -4,7 +4,7 @@
 #include <QtWidgets>
 #include <QtCore>
 #include <QtNetwork>
-#include <QtWebEngineWidgets>
+#include <QWebView>
 
 class connectWindowClass : public QDialog
 {
@@ -12,7 +12,7 @@ class connectWindowClass : public QDialog
 public:
     connectWindowClass(QWidget* parent, bool showRemeberBox = true);
 public slots:
-    void checkThisCookie(QNetworkCookie cookie);
+    void newPageLoaded(QNetworkReply* reply);
     void showAddCookiesWindow();
     void addCookiesManually(QString newHelloCookie, QString newConnectCookie);
     void valideConnect();
@@ -21,7 +21,7 @@ signals:
     void newCookiesAvailable(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
 private:
     QList<QNetworkCookie> cookieList;
-    QWebEngineView* webView;
+    QWebView* webView;
     QLineEdit pseudoLine;
     QCheckBox rememberBox;
 };
