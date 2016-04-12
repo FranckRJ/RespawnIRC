@@ -264,7 +264,7 @@ void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
         {
             respawnIrc.selectThisTab(0);
         }
-        else if(keyPressed == "\u00C9")
+        else if(keyPressed == "\u00C9" || keyPressed == "É")
         {
             respawnIrc.selectThisTab(1);
         }
@@ -284,7 +284,7 @@ void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
         {
             respawnIrc.selectThisTab(5);
         }
-        else if(keyPressed == "\u00C8")
+        else if(keyPressed == "\u00C8" || keyPressed == "È")
         {
             respawnIrc.selectThisTab(6);
         }
@@ -292,7 +292,7 @@ void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
         {
             respawnIrc.selectThisTab(7);
         }
-        else if(keyPressed == "\u00C7")
+        else if(keyPressed == "\u00C7" || keyPressed == "Ç")
         {
             respawnIrc.selectThisTab(8);
         }
