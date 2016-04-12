@@ -9,10 +9,11 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::addLibraryPath("./");
+
     QApplication app(argc, argv);
     QSettings setting(QCoreApplication::applicationDirPath() + "/config.ini", QSettings::IniFormat);
 
-    QCoreApplication::addLibraryPath("./");
     settingToolClass::setSettings(&setting);
     settingToolClass::initializeDefaultListsOption();
     shortcutToolClass::loadShortcuts();

@@ -4,7 +4,7 @@ colorInfoForMessageAndOtherStruct styleToolClass::colorInfoForMessageAndOther;
 
 QString styleToolClass::getStyle(QString themeName)
 {
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/theme/" + themeName + "/style.css");
+    QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/style.css");
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -18,7 +18,7 @@ QString styleToolClass::getStyle(QString themeName)
 
 QString styleToolClass::getModel(QString themeName)
 {
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/theme/" + themeName + "/model.txt");
+    QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/model.txt");
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -38,7 +38,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     QStringList listOfInfos;
     QVector<QString> listOfLine;
     modelInfoStruct modelInfo;
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/theme/" + themeName + "/modelInfo.cfg");
+    QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/modelInfo.cfg");
 
     listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"quote:<%ID_MESSAGE%>:[<%DATE_MESSAGE%>] <<%PSEUDO_PSEUDO%>>\">[C]</a> ");
     listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"blacklist:<%PSEUDO_LOWER%>\">[B]</a> ");

@@ -4,7 +4,7 @@ QMap<QString, QString> shortcutToolClass::listOfShortcut;
 
 void shortcutToolClass::loadShortcuts()
 {
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/ressources/shortcut.txt");
+    QFile thisFile(QCoreApplication::applicationDirPath() + "/resources/shortcut.txt");
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);

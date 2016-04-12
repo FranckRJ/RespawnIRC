@@ -28,7 +28,7 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
 
 void selectStickerWindowClass::loadListOfStickers()
 {
-    QDir themeDir(QCoreApplication::applicationDirPath() + "/ressources/stickers/");
+    QDir themeDir(QCoreApplication::applicationDirPath() + "/resources/stickers/");
     QStringList listOfStickers;
 
     if(themeDir.exists() == true)
@@ -39,7 +39,7 @@ void selectStickerWindowClass::loadListOfStickers()
     for(const QString& thisSticker : listOfStickers)
     {
         stickerBrowser.insertHtml("<a href=\"sticker:" + thisSticker.left(thisSticker.size() - 4) +
-                                  "\"><img src=\"ressources/stickers/" + thisSticker + "\" /></a>");
+                                  "\"><img src=\"resources/stickers/" + thisSticker + "\" /></a>");
     }
 }
 

@@ -4,7 +4,7 @@ QMap<QString, QString> stickerToSmileyToolClass::listOfTransform;
 
 void stickerToSmileyToolClass::loadTransformInfo()
 {
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/ressources/stickerToSmiley.txt");
+    QFile thisFile(QCoreApplication::applicationDirPath() + "/resources/stickerToSmiley.txt");
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -28,7 +28,7 @@ void stickerToSmileyToolClass::transformMessage(QString& thisMessage)
     while(itTransform != listOfTransform.constEnd())
     {
         thisMessage.replace("<img class=\"img-stickers\" src=\"http://jv.stkr.fr/p/" +
-                            itTransform.key() + "\"/>", "<img src=\"ressources/smileys/" + itTransform.value() + "\"/>");
+                            itTransform.key() + "\"/>", "<img src=\"resources/smileys/" + itTransform.value() + "\"/>");
         ++itTransform;
     }
 }

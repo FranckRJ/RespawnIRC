@@ -361,10 +361,10 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
     }
     else
     {
-        replaceWithCapNumber(thisMessage, expForStickers, 2, "<img width=" + QString::number(stickersSize) + " height=" + QString::number(stickersSize) + " src=\"ressources/stickers/", ".png\" />");
+        replaceWithCapNumber(thisMessage, expForStickers, 2, "<img width=" + QString::number(stickersSize) + " height=" + QString::number(stickersSize) + " src=\"resources/stickers/", ".png\" />");
     }
 
-    replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"ressources/smileys/", "\" />");
+    replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"resources/smileys/", "\" />");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForJvcLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
