@@ -5,6 +5,7 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="RespawnIRC : ">
+    <meta http-equiv="refresh" content="5; url=http://pijon.fr/RespawnIRC/" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
@@ -26,68 +27,8 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>
-<a id="présentation" class="anchor" href="#pr%C3%A9sentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Présentation</h3>
-
-<p>RespawnIRC est un logiciel offrant une interface de client IRC pour les topics de jeuxvideo.com.<br>
-Pour plus d'informations, veuillez consulter le message de présentation sur JVC : <a href="http://www.jeuxvideo.com/respawnirc/forums/message/731107420">http://www.jeuxvideo.com/respawnirc/forums/message/731107420</a></p>
-
-<h3>
-<a id="prochainement" class="anchor" href="#prochainement" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prochainement...</h3>
-
-<p>RespawnIRC devrait normalement bientôt passer à Qt 5.6, ce qui devrait corriger le problème du captcha qui ne s'affiche pas lors de la connexion chez certaines personnes.<br>
-La possibilité de pouvoir supprimer ses messages devrait aussi être ajouté dans une prochaine version.</p>
-
-<h3>
-<a id="téléchargement" class="anchor" href="#t%C3%A9l%C3%A9chargement" aria-hidden="true"><span class="octicon octicon-link"></span></a>Téléchargement</h3>
-
-<p>Lien vers la dernière version pour Windows : <a href="https://github.com/LEpigeon888/RespawnIRC/releases/latest">https://github.com/LEpigeon888/RespawnIRC/releases/latest</a><br>
-(vous devez télécharger le .zip)<br>
-Lien vers la dernière version pour Mac (2.1) : <a href="http://www.mediafire.com/download/38b4be9uqsn2ok6/RespawnIRC-v2.1-mac.zip">http://www.mediafire.com/download/38b4be9uqsn2ok6/RespawnIRC-v2.1-mac.zip</a><br>
-Lien vers la dernière version pour Linux (2.1, i386 Qt 5.3.2) : <a href="http://www.mediafire.com/download/b3xoj3ahbtonbj8/RespawnIRC-v2.1-linux-i386.zip">http://www.mediafire.com/download/b3xoj3ahbtonbj8/RespawnIRC-v2.1-linux-i386.zip</a><br>
-Les dépendances de la version Linux sont : libqt5multimedia5 libqt5webkit5 libqt5network5 libqt5widgets5 libqt5core5a libqt5gui5</p>
-
-<h3>
-<a id="informations" class="anchor" href="#informations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Informations</h3>
-
-<p>Topic sur JVC : <a href="http://www.jeuxvideo.com/forums/42-1000021-40573812-1-0-1-0-respawnirc-un-jvirc-like.htm">http://www.jeuxvideo.com/forums/42-1000021-40573812-1-0-1-0-respawnirc-un-jvirc-like.htm</a><br>
-Wiki : <a href="https://github.com/LEpigeon888/RespawnIRC/wiki">https://github.com/LEpigeon888/RespawnIRC/wiki</a></p>
-
-<h3>
-<a id="faq" class="anchor" href="#faq" aria-hidden="true"><span class="octicon octicon-link"></span></a>FAQ</h3>
-
-<p><span class="pl-mb"><span class="pl-mi">Pourquoi je perds toutes mes options à chaque màj/à quoi sert le fichier config.ini ?</span></span></p>
-
-<p>Le fichier config.ini est le fichier qui contient toutes vos options, ainsi que les pseudos ignorés, les couleurs personnalisées ou autres, vous ne devez pas le supprimer ni le changer de place, il doit toujours être dans le même répertoire que le .exe.</p>
-
-<p><span class="pl-mb"><span class="pl-mi">Pourquoi faut-il sélectionner le texte se trouvant dans les balises spoils et pas juste passer sa souris dessus comme sur les forums de steam par exemple ?</span></span></p>
-
-<p>Actuellement avec le widget (composant d'interface graphique) qu'utilise RespawnIRC il est impossible de faire une telle chose, en le remplaçant par un widget plus "puissant" ça serait possible, mais ça consommerait aussi plus, que ce soit en terme de mémoire ou de processeur.</p>
-
-<p><span class="pl-mb"><span class="pl-mi">Est-ce que les captchas reviendront pour poster/éditer un message ou ça sera désactivé à tout jamais ?</span></span></p>
-
-<p>Aucune idée pour l'instant, mais il n'est pas prévu qu'ils reviennent.</p>
-
-<p><span class="pl-mb"><span class="pl-mi">Est-ce qu'un outil pour mettre à jour automatiquement RespawnIRC est prévu ?</span></span></p>
-
-<p>Non, pas pour l'instant.</p>
-
-<p><span class="pl-mb"><span class="pl-mi">Les stickers sont trop gros/sont moches après que leur taille ai été réduite, que faire ?</span></span></p>
-
-<p>Pour réduire la taille de stickers via le logiciel il faut aller dans le menu configuration > taille des stickers, mais ils peuvent être assez moches après ça, donc je conseil aussi de changer en plus de ça la taille des images d'origine qui se trouvent dans le dossier "ressources/stickers/".</p>
-
-<p><span class="pl-mb"><span class="pl-mi">Les smileys ne sont pas animés, est-ce normal ?</span></span></p>
-
-<p>Oui c'est normal, leur animation est prévue mais n'est pas prioritaire.</p>
-
-<p><span class="pl-mb"><span class="pl-mi">Y aura-t-il un jour les avatars/miniatures noelshack ?</span></span></p>
-
-<p>Les avatars ne seront jamais présents dans le thème de base, mais leur ajout via un thème personnalisé est envisageable, même si non prévu pour l'instant.<br>
-Les miniatures noelshack ne sont non plus pas prévues pour l'instant.</p>
-
-<p><span class="pl-mb"><span class="pl-mi">Comment créer un thème, y a-t-il un outil pour simplifier leurs créations ?</span></span></p>
-
-<p>Pour créer un thème il suffit de lire la page consacrée à la création de thème sur le wiki (<a href="https://github.com/LEpigeon888/RespawnIRC/wiki/Cr%C3%A9er-un-th%C3%A8me">https://github.com/LEpigeon888/RespawnIRC/wiki/Créer-un-thème</a>). Par contre aucun outil n'existe pour simplifier leurs créations.</p>
+        <center><h1>Changement de site web.</h1>
+        <p>Si vous n'êtes pas redirigez automatiquement au bout de 5 secondes, cliquez sur ce lien : <a href="http://pijon.fr/RespawnIRC/">http://pijon.fr/RespawnIRC/</a></p></center>
       </section>
     </div>
 
