@@ -18,6 +18,7 @@ signals:
 protected:
     void createActions();
     void contextMenuEvent(QContextMenuEvent* event);
+    bool checkWord(QString word);
 private slots:
     void correctWord();
     void addWordToUserDic();

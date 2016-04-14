@@ -375,7 +375,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
 
     removeAllOverlyQuote(thisMessage, nbMaxQuote);
 
-    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-bottom: 5px;margin-top: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";\"><tr><td>");
+    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-bottom: 5px;margin-top: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";background: rgba(100, 100, 100, 0.25);\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
 
     thisMessage.replace(QRegularExpression("</p> *<p>"), "<br /><br />");

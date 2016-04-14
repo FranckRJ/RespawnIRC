@@ -143,31 +143,48 @@ void spellTextEditClass::createActions()
 void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 {
     QFont thisFont;
-    QMenu* menuRightClick = createStandardContextMenu();
     lastPos = event->pos();
-    QStringList listOfWord = getWordPropositions(getWordUnderCursor(lastPos));
+    QString wordUnderCursor = getWordUnderCursor(lastPos);
+    QMenu* menuRightClick = createStandardContextMenu();
+    QStringList listOfWord = getWordPropositions(wordUnderCursor);
 
     thisFont.setBold(true);
 
-    if(listOfWord.isEmpty() == false)
+    if(wordUnderCursor.isEmpty() == false && checkWord(wordUnderCursor) == false)
     {
         menuRightClick->addSeparator();
         menuRightClick->addAction("Add...", this, SLOT(addWordToUserDic()));
         menuRightClick->addAction("Ignore...", this, SLOT(ignoreWord()));
-        menuRightClick->addSeparator();
 
-        for(int i = 0; i < qMin(wordPropositionsActions.size(), listOfWord.size()); ++i)
+        if(listOfWord.isEmpty() == false)
         {
-            wordPropositionsActions[i]->setText(listOfWord.at(i).trimmed());
-            wordPropositionsActions[i]->setVisible(true);
-            wordPropositionsActions[i]->setFont(thisFont);
-            menuRightClick->addAction(wordPropositionsActions[i]);
-        }
+            menuRightClick->addSeparator();
 
+            for(int i = 0; i < qMin(wordPropositionsActions.size(), listOfWord.size()); ++i)
+            {
+                wordPropositionsActions[i]->setText(listOfWord.at(i).trimmed());
+                wordPropositionsActions[i]->setVisible(true);
+                wordPropositionsActions[i]->setFont(thisFont);
+                menuRightClick->addAction(wordPropositionsActions[i]);
+            }
+
+        }
     }
 
     menuRightClick->exec(event->globalPos());
     delete menuRightClick;
+}
+
+bool spellTextEditClass::checkWord(QString word)
+{
+    if(spellChecker != nullptr && codecUsed != nullptr)
+    {
+        return spellChecker->spell(codecUsed->fromUnicode(word).data());
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void spellTextEditClass::correctWord()
