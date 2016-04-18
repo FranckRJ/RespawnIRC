@@ -359,7 +359,7 @@ void showTopicMessagesClass::analyzeQuoteInfo()
 
     messageQuote = parsingToolClass::getMessageQuote(source);
 
-    messageQuote = ">" + QUrl::fromPercentEncoding(lastMessageQuoted.toLatin1()) + "\n>" + messageQuote;
+    messageQuote = ">" + QUrl::fromPercentEncoding(lastMessageQuoted.toUtf8()) + "\n>" + messageQuote;
     replyForQuoteInfo = nullptr;
 
     emit quoteThisMessage(messageQuote);
