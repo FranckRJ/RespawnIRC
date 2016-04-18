@@ -17,6 +17,7 @@ struct messageStruct
     bool isFirstMessage = false;
     pseudoInfoStruct pseudoInfo;
     QString date;
+    QString wholeDate;
     QString message;
     QString lastTimeEdit;
     bool operator<(const messageStruct& otherStruct) const

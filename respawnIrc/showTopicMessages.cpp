@@ -474,7 +474,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
         }
         else
         {
-            if(colorPEMT == true && lastDate == currentMessage.date)
+            if(colorPEMT == true && lastDate == currentMessage.wholeDate)
             {
                 colorOfDate = baseModelInfo.pemtDateColor;
             }
@@ -485,7 +485,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
 
             if(currentMessage.isFirstMessage == false)
             {
-                lastDate = currentMessage.date;
+                lastDate = currentMessage.wholeDate;
             }
 
             if(pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower())
@@ -521,6 +521,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
         newMessageToAppend.replace("<%PSEUDO_LOWER%>", currentMessage.pseudoInfo.pseudoName.toLower());
         newMessageToAppend.replace("<%ID_MESSAGE%>", QString::number(currentMessage.idOfMessage));
         newMessageToAppend.replace("<%DATE_MESSAGE%>", currentMessage.date);
+        newMessageToAppend.replace("<%DATE_STRING%>", currentMessage.wholeDate);
         newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
         newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", currentMessage.pseudoInfo.pseudoName);
         newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", currentMessage.message);

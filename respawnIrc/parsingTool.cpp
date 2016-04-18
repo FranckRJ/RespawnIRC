@@ -24,8 +24,7 @@ QRegularExpression parsingToolClass::expForEntireMessage("(<div class=\"bloc-mes
 QRegularExpression parsingToolClass::expForListOfTopic("<a class=\"lien-jv topic-title\" href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessageID("<div class=\"bloc-message-forum \" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-([^\"]*)\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
-//QRegularExpression parsingToolClass::expForDate("<div class=\"bloc-date-msg\">[^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">[^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
-QRegularExpression parsingToolClass::expForDate("<div class=\"bloc-date-msg\">([^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">)?[^a-zA-Z0-9]*[^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForDate("<div class=\"bloc-date-msg\">([^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*))", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">(.*?)</div>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -253,7 +252,8 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
         listOfMessages.back().idOfMessage = expForMessageID.match(thisMessage).captured(1).toInt();
         listOfMessages.back().pseudoInfo.pseudoName = expForPseudo.match(thisMessage).captured(2);
         listOfMessages.back().pseudoInfo.pseudoType = expForPseudo.match(thisMessage).captured(1);
-        listOfMessages.back().date = expForDate.match(thisMessage).captured(2);
+        listOfMessages.back().date = expForDate.match(thisMessage).captured(3);
+        listOfMessages.back().wholeDate = expForDate.match(thisMessage).captured(2);
         listOfMessages.back().message = expForMessage.match(thisMessage).captured(1);
         listOfMessages.back().lastTimeEdit = expForEdit.match(thisMessage).captured(1);
 
