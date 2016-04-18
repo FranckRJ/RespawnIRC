@@ -75,6 +75,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionShowPreferences = menuSetting->addAction("Préférences...");
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
     actionShowListOfColorPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
+    actionShowPreferences->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
 
     QMenu* menuFavorites = menuBar->addMenu("&Favoris");
     QMenu* menuUseFavorite = menuFavorites->addMenu("Accéder aux favoris");

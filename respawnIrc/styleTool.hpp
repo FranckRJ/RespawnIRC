@@ -23,6 +23,8 @@ struct colorInfoForMessageAndOtherStruct
     QString spoilColor;
     QString tableBorderColor;
     QString underlineColor;
+    QString tableBackgroundColor;
+    QString tableTextColor;
 };
 
 class styleToolClass

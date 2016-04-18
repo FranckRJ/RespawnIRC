@@ -183,7 +183,8 @@ void showTopicMessagesClass::updateSettingInfo()
                               Q_ARG(int, settingToolClass::getThisIntOption("stickersSize").value),
                               Q_ARG(int, settingToolClass::getThisIntOption("timeoutInSecond").value),
                               Q_ARG(int, settingToolClass::getThisIntOption("maxNbOfQuotes").value),
-                              Q_ARG(bool, settingToolClass::getThisBoolOption("stickersToSmiley")));
+                              Q_ARG(bool, settingToolClass::getThisBoolOption("stickersToSmiley")),
+                              Q_ARG(bool, settingToolClass::getThisBoolOption("betterQuote")));
 }
 
 void showTopicMessagesClass::setNewTheme(QString newThemeName)

@@ -16,6 +16,7 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     vboxMessageContents->addWidget(makeNewCheckBox("Colorer le pseudo des modo/admin", "colorModoAndAdminPseudo"));
     vboxMessageContents->addWidget(makeNewCheckBox("Colorer les PEMT", "colorPEMT"));
     vboxMessageContents->addWidget(makeNewCheckBox("Colorer votre pseudo dans les messages", "colorUserPseudoInMessages"));
+    vboxMessageContents->addWidget(makeNewCheckBox("Améliorer les citations", "betterQuote"));
     vboxMessageContents->addStretch(1);
     groupBoxMessageContents->setLayout(vboxMessageContents);
 
