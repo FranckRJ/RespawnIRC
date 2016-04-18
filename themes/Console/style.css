@@ -6,34 +6,34 @@ QMainWindow, QDialog
 QLabel, QCheckBox, QGroupBox
 {
 	color: white;
-	font-family: consolas;
+	font-family: "Dejavu Sans Mono";
 }
 
 QMenuBar
 {
 	background: black;
-	font-family: consolas;
+	font-family: "Dejavu Sans Mono";
 }
 
 QMenuBar::item
 {
 	background: black;
 	color: white;
-	font-family: consolas;
+	font-family: "Dejavu Sans Mono";
 }
 
 QMenuBar::item:selected
 {
 	background: #333333;
 	color: white;
-	font-family: consolas;
+	font-family: "Dejavu Sans Mono";
 }
 
 QMenu
 {
 	background: black;
 	color: white;
-	font-family: consolas;
+	font-family: "Dejavu Sans Mono";
 	border: 1px solid white;
 }
 
@@ -50,10 +50,10 @@ QMenu::item:disabled
 
 QMenu::separator
 {
-    height: 1px;
-    background: white;
-    margin-left: 5px;
-    margin-right: 5px;
+	height: 1px;
+	background: white;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 QTextEdit, QLineEdit
@@ -61,19 +61,19 @@ QTextEdit, QLineEdit
 	background: black;
 	color: white;
 	border: 1px solid white;
-	font-family: consolas;
+	font-family: "Dejavu Sans Mono";
 }
 
 QLineEdit:disabled
 {
-    background: #333333;
+	background: #333333;
 }
 
 QTextBrowser
 {
 	background: black;
 	color: white;
-	font-family: consolas;
+	font-family: "Dejavu Sans Mono";
 	border: 0px;
 }
 
@@ -81,7 +81,7 @@ QListView
 {
 	background: black;
 	color: white;
-	font-family: consolas;
+	font-family: "Dejavu Sans Mono";
 	border: 0px;
 }
 
@@ -104,23 +104,24 @@ QListView::item:selected
 
 QTabWidget::pane
 {
-    border: 2px solid white;
+	border: 2px solid black;
 }
 
 QSplitter:handle
 {
-    background: white;
+	border-left: 1px solid white;
 }
 
 QTabBar::tab
 {
-    border: 2px solid white;
+	border: 1px solid white;
 	color: white;
-	/*font-family: consolas;*/
 	border-bottom: 0px;
-    padding-bottom: 5px;
-    padding-left: 4px;
-    padding-top: 2px;
+	border-left: 0px;
+	border-right: 0px;
+	padding-bottom: 5px;
+	padding-left: 4px;
+	padding-top: 2px;
 }
 
 QTabBar::tab:!selected
@@ -131,5 +132,134 @@ QTabBar::tab:!selected
 
 QTabBar::tab:selected, QTabBar::tab:hover
 {
-	background: #333333;
+	background: #191919;
+}
+
+QTabBar::close-button
+{
+	image: url(themes/Console/close.png);
+	subcontrol-position: right;
+	margin-left: 2px;
+}
+
+QPushButton
+{
+	background: black;
+	color: white;
+	border: 1px solid white;
+	font-family: "Dejavu Sans Mono";
+	padding-right: 3px;
+	padding-left: 3px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+QPushButton#sendButton
+{
+	background: black;
+	color: white;
+	border: 1px solid white;
+	padding: 5px;
+	font-family: "Dejavu Sans Mono";
+	height: 53px;
+}
+
+QPushButton#quoteButton
+{
+	min-width: 20px;
+}
+
+QPushButton#spoilButton
+{
+	min-width: 40px;
+}
+
+QScrollBar:vertical
+{
+	border: 1px solid white;
+	background: #EEEEEE;
+	width: 16px;
+	margin: 22px 0 22px 0;
+}
+QScrollBar::handle:vertical
+{
+	background: black;
+	min-height: 20px;
+}
+
+QScrollBar::add-line:vertical
+{
+	border: 1px solid white;
+	background: black;
+	height: 20px;
+	subcontrol-position: bottom;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical
+{
+	border: 1px solid white;
+	background: black;
+	height: 20px;
+	subcontrol-position: top;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+{
+	width: 2px;
+	height: 2px;
+	background: white;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+	background: none;
+}
+
+QScrollBar:horizontal
+{
+	border: 1px solid white;
+	background: #EEEEEE;
+	height: 16px;
+	margin: 0px 20px 0 20px;
+}
+
+QScrollBar::handle:horizontal
+{
+	border: 2px solid white;
+	background: black;
+	border-top: 0px;
+	border-bottom: 0px;
+	min-width: 20px;
+}
+
+QScrollBar::add-line:horizontal
+{
+	border: 1px solid white;
+	background: black;
+	width: 20px;
+	subcontrol-position: right;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal
+{
+	border: 1px solid white;
+	background: black;
+	width: 20px;
+	subcontrol-position: left;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::left-arrow:horizontal, QScrollBar::right-arrow:horizontal
+{
+	width: 2px;
+	height: 2px;
+	background: white;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
+{
+	background: none;
 }
