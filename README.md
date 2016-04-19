@@ -2,11 +2,12 @@
 
 JVIrc-like pour respawn.
 
-Pour plus d'infos, le site : http://lepigeon888.github.io/RespawnIRC/
+Pour plus d'infos, le site : http://pijon.fr/RespawnIRC/
 
 ## Compilation
 
-Il est fortement recommandé d'utiliser les sources de la dernière release (https://github.com/LEpigeon888/RespawnIRC/releases/latest dans la partie download en bas) plutôt que les sources de la branche master pour compiler RespawnIRC.
+Il est fortement recommandé d'utiliser les sources de la dernière release (https://github.com/LEpigeon888/RespawnIRC/releases/latest dans la partie download en bas) plutôt que les sources de la branche master pour compiler RespawnIRC.  
+Pour compiler avec les anciennes versions de Qt 5, référez-vous au wiki : https://github.com/LEpigeon888/RespawnIRC/wiki/Compiler-avec-les-anciennes-versions-de-Qt-5
 
 ### Windows
 
