@@ -35,10 +35,12 @@ public slots:
     void linkClicked(const QUrl& link);
     bool getEditInfo(int idOfMessageToEdit = 0, bool useMessageEdit = true);
     void getQuoteInfo(QString idOfMessageQuoted);
+    void deleteMessage(QString idOfMessageDeleted);
     void analyzeEditInfo();
     void analyzeQuoteInfo();
+    void analyzeDeleteInfo();
     void analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
-                         QString newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
+                         ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
     void setMessageStatus(QString newStatus);
     void setNumberOfConnectedAndMP(QString newNumberConnected, QString newNumberMP, bool forceSet = false);
     void setTopicName(QString newTopicName);
@@ -63,8 +65,10 @@ private:
     QList<QNetworkCookie> currentCookieList;
     autoTimeoutReplyClass timeoutForEditInfo;
     autoTimeoutReplyClass timeoutForQuoteInfo;
+    autoTimeoutReplyClass timeoutForDeleteInfo;
     QNetworkReply* replyForEditInfo = nullptr;
     QNetworkReply* replyForQuoteInfo = nullptr;
+    QNetworkReply* replyForDeleteInfo = nullptr;
     QNetworkAccessManager* networkManager;
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;
@@ -75,8 +79,8 @@ private:
     QString topicLinkLastPage;
     QString topicName;
     QString pseudoOfUser;
-    QString ajaxInfo;
-    QString oldAjaxInfo;
+    ajaxInfoStruct ajaxInfo;
+    ajaxInfoStruct oldAjaxInfo;
     QString lastMessageQuoted;
     QString lastDate;
     QString numberOfConnected;
@@ -84,6 +88,7 @@ private:
     bool showQuoteButton;
     bool showBlacklistButton;
     bool showEditButton;
+    bool showDeleteButton;
     bool ignoreNetworkError;
     bool firstTimeGetMessages = true;
     bool errorMode = false;

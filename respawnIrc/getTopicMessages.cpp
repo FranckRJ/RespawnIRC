@@ -224,7 +224,7 @@ void getTopicMessagesClass::loadSecondPageFinish()
 void getTopicMessagesClass::analyzeMessages()
 {
     QString newTopicLink;
-    QString ajaxInfo;
+    ajaxInfoStruct ajaxInfo;
     QString sourceFirst;
     QString sourceSecond;
     QString numberOfConnected;

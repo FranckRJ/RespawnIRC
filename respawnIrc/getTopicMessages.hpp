@@ -24,7 +24,7 @@ public slots:
     void analyzeMessages();
 signals:
     void newMessagesAreAvailable(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
-                                 QString newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
+                                 ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
     void newNameForTopic(QString newName);
     void newCookiesHaveToBeSet(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser);
     void newMessageStatus(QString newStatus);

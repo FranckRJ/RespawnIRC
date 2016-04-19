@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     stickerToSmileyToolClass::loadTransformInfo();
     styleToolClass::getModelInfo("");
 
+    qRegisterMetaType<ajaxInfoStruct>("ajaxInfoStruct");
     qRegisterMetaType<messageStruct>("messageStruct");
     qRegisterMetaType<QList<messageStruct> >("QList<messageStruct>");
     qRegisterMetaType<QPair<QString,QString> > ("QPair<QString,QString>");

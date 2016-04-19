@@ -11,6 +11,7 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     vboxMessageContents->addWidget(makeNewCheckBox("Ajouter un bouton pour citer un message", "showQuoteButton"));
     vboxMessageContents->addWidget(makeNewCheckBox("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton"));
     vboxMessageContents->addWidget(makeNewCheckBox("Ajouter un bouton pour éditer un message", "showEditButton"));
+    vboxMessageContents->addWidget(makeNewCheckBox("Ajouter un bouton pour supprimer un message", "showDeleteButton"));
     vboxMessageContents->addWidget(makeNewCheckBox("Afficher les stickers", "showStickers"));
     vboxMessageContents->addWidget(makeNewCheckBox("Remplacer les stickers par des smileys", "stickersToSmiley"));
     vboxMessageContents->addWidget(makeNewCheckBox("Colorer le pseudo des modo/admin", "colorModoAndAdminPseudo"));

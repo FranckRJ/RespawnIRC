@@ -16,6 +16,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["showQuoteButton"] = true;
     listOfDefaultBoolOption["showBlacklistButton"] = true;
     listOfDefaultBoolOption["showEditButton"] = true;
+    listOfDefaultBoolOption["showDeleteButton"] = false;
     listOfDefaultBoolOption["showTextDecorationButton"] = true;
     listOfDefaultBoolOption["showListOfTopic"] = true;
     listOfDefaultBoolOption["setMultilineEdit"] = true;

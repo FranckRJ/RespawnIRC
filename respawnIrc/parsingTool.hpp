@@ -32,10 +32,16 @@ struct topicStruct
     QString link;
 };
 
+struct ajaxInfoStruct
+{
+    QString list;
+    QString mod;
+};
+
 class parsingToolClass
 {
 public:
-    static QString getAjaxInfo(const QString& source);
+    static ajaxInfoStruct getAjaxInfo(const QString& source);
     static QString getMessageEdit(QString& source);
     static QString getMessageQuote(QString& source);
     static QString getVersionName(const QString& source);
@@ -66,6 +72,8 @@ private:
     static QRegularExpression expForNormalLink;
     static QRegularExpression expForAjaxTimestamp;
     static QRegularExpression expForAjaxHash;
+    static QRegularExpression expForAjaxModTimestamp;
+    static QRegularExpression expForAjaxModHash;
     static QRegularExpression expForMessageEdit;
     static QRegularExpression expForMessageQuote;
     static QRegularExpression expForVersionName;

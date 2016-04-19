@@ -165,6 +165,7 @@ void showTopicMessagesClass::updateSettingInfo()
     showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
     showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
     showEditButton = settingToolClass::getThisBoolOption("showEditButton");
+    showDeleteButton = settingToolClass::getThisBoolOption("showDeleteButton");
     ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
     colorModoAndAdminPseudo = settingToolClass::getThisBoolOption("colorModoAndAdminPseudo");
     colorPEMT = settingToolClass::getThisBoolOption("colorPEMT");
@@ -175,6 +176,7 @@ void showTopicMessagesClass::updateSettingInfo()
 
     timeoutForEditInfo.updateTimeoutTime();
     timeoutForQuoteInfo.updateTimeoutTime();
+    timeoutForDeleteInfo.updateTimeoutTime();
 
     QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection,
                               Q_ARG(bool, settingToolClass::getThisBoolOption("loadTwoLastPage")),
@@ -230,6 +232,11 @@ void showTopicMessagesClass::linkClicked(const QUrl &link)
     {
         emit editThisMessage(linkInString.remove(0, linkInString.indexOf(':') + 1).toInt(), true);
     }
+    else if(linkInString.startsWith("delete"))
+    {
+        linkInString.remove(0, linkInString.indexOf(':') + 1);
+        deleteMessage(linkInString);
+    }
     else
     {
         QDesktopServices::openUrl(link);
@@ -244,7 +251,7 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
         setNewCookies(currentCookieList, pseudoOfUser, false);
     }
 
-    if(ajaxInfo.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
+    if(ajaxInfo.list.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
     {
         if(replyForEditInfo == nullptr)
         {
@@ -260,10 +267,10 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
                 oldIdOfLastMessageOfUser = idOfMessageToEdit;
             }
 
-            urlToGet = "http://www.jeuxvideo.com/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfLastMessageOfUser) + "&" + ajaxInfo + "&action=get";
+            urlToGet = "http://www.jeuxvideo.com/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfLastMessageOfUser) + "&" + ajaxInfo.list + "&action=get";
             requestForEditInfo = parsingToolClass::buildRequestWithThisUrl(urlToGet);
             oldAjaxInfo = ajaxInfo;
-            ajaxInfo.clear();
+            ajaxInfo.list.clear();
             oldUseMessageEdit = useMessageEdit;
             replyForEditInfo = timeoutForEditInfo.resetReply(networkManager->get(requestForEditInfo));
 
@@ -293,10 +300,10 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
         setNewCookies(currentCookieList, pseudoOfUser, false);
     }
 
-    if(ajaxInfo.isEmpty() == false && replyForQuoteInfo == nullptr)
+    if(ajaxInfo.list.isEmpty() == false && replyForQuoteInfo == nullptr)
     {
         QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/forums/ajax_citation.php");
-        QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo;
+        QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo.list;
         replyForQuoteInfo = timeoutForQuoteInfo.resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
 
         if(replyForQuoteInfo->isOpen() == true)
@@ -316,10 +323,40 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
     }
 }
 
+void showTopicMessagesClass::deleteMessage(QString idOfMessageDeleted)
+{
+    if(networkManager == nullptr)
+    {
+        networkManager = new QNetworkAccessManager(this);
+        setNewCookies(currentCookieList, pseudoOfUser, false);
+    }
+
+    if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)
+    {
+        QNetworkRequest requestForDeleteInfo = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
+        replyForDeleteInfo = timeoutForDeleteInfo.resetReply(networkManager->get(requestForDeleteInfo));
+
+        if(replyForDeleteInfo->isOpen() == true)
+        {
+            QObject::connect(replyForDeleteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeDeleteInfo);
+        }
+        else
+        {
+            analyzeDeleteInfo();
+            networkManager->deleteLater();
+            networkManager = nullptr;
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this, "Erreur", "Erreur, impossible de supprimer ce message, réessayez.");
+    }
+}
+
 void showTopicMessagesClass::analyzeEditInfo()
 {
     QString message;
-    QString dataToSend = oldAjaxInfo + "&action=post";
+    QString dataToSend = oldAjaxInfo.list + "&action=post";
     QList<QPair<QString, QString> > listOfEditInput;
     QString source;
 
@@ -365,8 +402,30 @@ void showTopicMessagesClass::analyzeQuoteInfo()
     emit quoteThisMessage(messageQuote);
 }
 
+void showTopicMessagesClass::analyzeDeleteInfo()
+{
+    QString source;
+
+    timeoutForDeleteInfo.resetReply();
+
+    if(replyForDeleteInfo->isReadable())
+    {
+        source = replyForDeleteInfo->readAll();
+    }
+    replyForDeleteInfo->deleteLater();
+
+    replyForDeleteInfo = nullptr;
+
+    if(source.startsWith("{\"erreur\":[]}") == false)
+    {
+        source.remove(0, source.indexOf("[") + 2);
+        source.remove(source.lastIndexOf("]") - 1, 3);
+        QMessageBox::warning(this, "Erreur", source);
+    }
+}
+
 void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
-                                             QString newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty)
+                                             ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty)
 {
     QString colorOfPseudo;
     QString colorOfDate;
@@ -504,6 +563,10 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             if(showEditButton == true)
             {
                 newMessageToAppend.replace("<%BUTTON_EDIT%>", baseModelInfo.editModel);
+            }
+            if(showDeleteButton == true)
+            {
+                newMessageToAppend.replace("<%BUTTON_DELETE%>", baseModelInfo.deleteModel);
             }
         }
         else if(showBlacklistButton == true)

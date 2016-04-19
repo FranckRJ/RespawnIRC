@@ -5,6 +5,8 @@
 QRegularExpression parsingToolClass::expForNormalLink("https://[^\\(\\)\\]\\[ ]*", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForAjaxTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_liste_messages\" id=\"ajax_timestamp_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForAjaxHash("<input type=\"hidden\" name=\"ajax_hash_liste_messages\" id=\"ajax_hash_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForAjaxModTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_moderation_forum\" id=\"ajax_timestamp_moderation_forum\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForAjaxModHash("<input type=\"hidden\" name=\"ajax_hash_moderation_forum\" id=\"ajax_hash_moderation_forum\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessageEdit("<textarea tabindex=\"3\" class=\"area-editor\" name=\"text_commentaire\" id=\"text_commentaire\" placeholder=\"[^\"]*\">([^<]*)</textarea>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessageQuote("\"txt\":\"(.*)\"}", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForVersionName("\"tag_name\"[^\"]*:[^\"]*\"([^\"]*)\"", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -44,19 +46,26 @@ QRegularExpression parsingToolClass::expForAllJVCare("<span class=\"JvCare [^\"]
 QRegularExpression parsingToolClass::expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForHtmlTag("<.+?>", QRegularExpression::OptimizeOnFirstUsageOption);
 
-QString parsingToolClass::getAjaxInfo(const QString& source)
+ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
 {
+    ajaxInfoStruct newAjaxInfo;
+
     QString ajaxTimestamp = expForAjaxTimestamp.match(source).captured(1);
     QString ajaxHash = expForAjaxHash.match(source).captured(1);
+    QString ajaxModTimestamp = expForAjaxModTimestamp.match(source).captured(1);
+    QString ajaxModHash = expForAjaxModHash.match(source).captured(1);
 
     if(ajaxTimestamp.isEmpty() == false && ajaxHash.isEmpty() == false)
     {
-        return ("ajax_timestamp=" + ajaxTimestamp + "&ajax_hash=" + ajaxHash);
+        newAjaxInfo.list = "ajax_timestamp=" + ajaxTimestamp + "&ajax_hash=" + ajaxHash;
     }
-    else
+
+    if(ajaxModTimestamp.isEmpty() == false && ajaxModHash.isEmpty() == false)
     {
-        return "";
+        newAjaxInfo.mod = "ajax_timestamp=" + ajaxModTimestamp + "&ajax_hash=" + ajaxModHash;
     }
+
+    return newAjaxInfo;
 }
 
 QString parsingToolClass::getMessageEdit(QString& source)
