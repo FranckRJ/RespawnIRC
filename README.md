@@ -7,7 +7,7 @@ Pour plus d'infos, le site : http://pijon.fr/RespawnIRC/
 ## Compilation
 
 Il est fortement recommandé d'utiliser les sources de la dernière release (https://github.com/LEpigeon888/RespawnIRC/releases/latest dans la partie download en bas) plutôt que les sources de la branche master pour compiler RespawnIRC.  
-Pour compiler avec une ancienne version de Qt 5, référez-vous au wiki : https://github.com/LEpigeon888/RespawnIRC/wiki/Compiler-avec-les-anciennes-versions-de-Qt-5
+Pour connaître les modifications à apporter au programme selon votre compilateur/version de Qt, référez-vous au wiki : https://github.com/LEpigeon888/RespawnIRC/wiki/Compiler-avec-les-anciennes-versions-de-Qt-5
 
 ### Windows
 
