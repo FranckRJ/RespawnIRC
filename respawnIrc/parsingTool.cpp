@@ -373,6 +373,10 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
     thisMessage.replace("\n", "");
 
     replaceWithCapNumber(thisMessage, expForStickers, 0, "<p>", "</p>");
+    while(replaceWithCapNumber(thisMessage, QRegularExpression("(" + expForStickers.pattern() + ")\\s*</p>\\s*<p>\\s*(" + expForStickers.pattern() + ")"), 1, "", "", 4) == true)
+    {
+        //c'normal que c'est vide
+    }
 
     if(stickerToSmiley == true)
     {
@@ -519,16 +523,18 @@ void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
     }
 }
 
-void parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter, bool replaceReturnByBr, bool makeLinkIfPossible, bool replacePByBr)
+bool parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter, bool replaceReturnByBr, bool makeLinkIfPossible, bool replacePByBr)
 {
     QRegularExpressionMatchIterator matchIterator = exp.globalMatch(source);
     int lenghtChanged = 0;
+    bool hasMatch = false;
     QString newString;
 
     while(matchIterator.hasNext())
     {
         QRegularExpressionMatch match = matchIterator.next();
         newString = stringBefore;
+        hasMatch = true;
         if(replacePByBr == true)
         {
             newString += match.captured(capNumber).replace("</p>", "<br /><br />");
@@ -567,4 +573,6 @@ void parsingToolClass::replaceWithCapNumber(QString& source, QRegularExpression&
         lenghtChanged -= match.capturedLength(0);
         lenghtChanged += newString.size();
     }
+
+    return hasMatch;
 }

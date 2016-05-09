@@ -65,7 +65,7 @@ public:
     static QNetworkRequest buildRequestWithThisUrl(QString url);
     static QList<QString> getListOfThisCapNumber(const QString &source, QRegularExpression& exp, int capNumber, bool globalMatch = true);
     static void removeAllOverlyQuote(QString& source, int maxNumberQuote);
-    static void replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore = "",
+    static bool replaceWithCapNumber(QString& source, QRegularExpression& exp, int capNumber, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "",
                                      bool replaceReturnByBr = false, bool makeLinkIfPossible = false, bool replacePByBr = false);
 private:
