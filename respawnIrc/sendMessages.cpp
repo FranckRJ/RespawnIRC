@@ -9,6 +9,7 @@ sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
     sendButton.setAutoDefault(true);
     sendButton.setObjectName("sendButton");
 
+    changeColorOnEdit = settingToolClass::getThisBoolOption("changeColorOnEdit");
     networkManager = new QNetworkAccessManager(this);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
@@ -52,11 +53,21 @@ void sendMessagesClass::clearMessageLine()
 void sendMessagesClass::settingsChanged()
 {
     messageLine.settingsChanged();
+    changeColorOnEdit = settingToolClass::getThisBoolOption("changeColorOnEdit");
+
+    if(changeColorOnEdit == true)
+    {
+        messageLine.setEditMode(isInEdit);
+    }
 }
 
 void sendMessagesClass::styleChanged()
 {
     messageLine.styleChanged();
+    if(changeColorOnEdit == true)
+    {
+        messageLine.setEditMode(isInEdit);
+    }
 }
 
 multiTypeTextBoxClass* sendMessagesClass::getMessageLine()
@@ -90,6 +101,11 @@ void sendMessagesClass::setIsInEdit(bool newVal)
     else
     {
         sendButton.setText("Envoyer");
+    }
+
+    if(changeColorOnEdit == true)
+    {
+        messageLine.setEditMode(newVal);
     }
 }
 

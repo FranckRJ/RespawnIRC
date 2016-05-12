@@ -17,6 +17,7 @@ public:
     void moveCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);
     QString getSelectedText();
     void setFocus();
+    void setEditMode(bool newVal);
     void styleChanged();
     void settingsChanged();
 public slots:

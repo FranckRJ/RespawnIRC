@@ -41,6 +41,7 @@ private:
     QString dataForEditLastMessage;
     bool isInEdit = false;
     bool inSending = false;
+    bool changeColorOnEdit = false;
     int idOfLastMessageEdit = 0;
     int nbOfMessagesSend = 0;
 };

@@ -551,6 +551,10 @@ void respawnIrcClass::setThisBoolOption(bool newVal, QString trueName)
         {
             sendMessages.settingsChanged();
         }
+        else if(objectName == "changeColorOnEdit")
+        {
+            sendMessages.settingsChanged();
+        }
         else
         {
             updateSettingInfoForList();

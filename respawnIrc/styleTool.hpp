@@ -26,6 +26,8 @@ struct colorInfoForMessageAndOtherStruct
     QString underlineColor;
     QString tableBackgroundColor;
     QString tableTextColor;
+    QString baseMessageColor;
+    QString editMessageColor;
 };
 
 class styleToolClass

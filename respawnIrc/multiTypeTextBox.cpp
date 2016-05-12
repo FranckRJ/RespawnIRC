@@ -1,5 +1,6 @@
 #include "multiTypeTextBox.hpp"
 #include "settingTool.hpp"
+#include "styleTool.hpp"
 
 multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
 {
@@ -92,6 +93,23 @@ void multiTypeTextBoxClass::setFocus()
     {
         lineEdit.setFocus();
     }
+}
+
+void multiTypeTextBoxClass::setEditMode(bool newVal)
+{
+    QString oldMessage = textEdit.toPlainText();
+    textEdit.clear();
+
+    if(newVal == true)
+    {
+        textEdit.setTextColor(QColor(styleToolClass::getColorInfo().editMessageColor));
+    }
+    else
+    {
+        textEdit.setTextColor(QColor(styleToolClass::getColorInfo().baseMessageColor));
+    }
+
+    textEdit.setPlainText(oldMessage);
 }
 
 void multiTypeTextBoxClass::styleChanged()
