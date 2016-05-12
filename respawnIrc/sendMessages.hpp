@@ -22,7 +22,6 @@ public:
     int getNbOfMessagesSend();
     void setIsInEdit(bool newVal);
     void setEnableSendButton(bool newVal);
-    void setTextSendButton(QString newText);
 public slots:
     void quoteThisMessage(QString messageToQuote);
     void postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString> >& listOfInput);

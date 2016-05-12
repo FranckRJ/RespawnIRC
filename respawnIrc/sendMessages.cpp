@@ -82,16 +82,20 @@ int sendMessagesClass::getNbOfMessagesSend()
 void sendMessagesClass::setIsInEdit(bool newVal)
 {
     isInEdit = newVal;
+
+    if(isInEdit == true)
+    {
+        sendButton.setText("Editer");
+    }
+    else
+    {
+        sendButton.setText("Envoyer");
+    }
 }
 
 void sendMessagesClass::setEnableSendButton(bool newVal)
 {
     sendButton.setEnabled(newVal);
-}
-
-void sendMessagesClass::setTextSendButton(QString newText)
-{
-    sendButton.setText(newText);
 }
 
 void sendMessagesClass::quoteThisMessage(QString messageToQuote)
@@ -112,7 +116,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         networkManager = new QNetworkAccessManager(this);
     }
 
-    if(replyForSendMessage == nullptr && pseudoUsed.isEmpty() == false && topicLink.isEmpty() == false)
+    if(replyForSendMessage == nullptr && pseudoUsed.isEmpty() == false && topicLink.isEmpty() == false && sendButton.isEnabled() == true)
     {
         QNetworkRequest request;
         QString data;
@@ -209,8 +213,7 @@ void sendMessagesClass::deleteReplyForSendMessage()
 
     if(isInEdit == true)
     {
-        sendButton.setText("Envoyer");
-        isInEdit = false;
+        setIsInEdit(false);
 
         if(dontEraseEditMessage == true)
         {
@@ -232,13 +235,13 @@ void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messa
             messageLine.insertText(messageEdit);
         }
         dataForEditLastMessage = "id_message=" + QString::number(idOfMessageEdit) + "&" + infoToSend;
-        isInEdit = true;
+        setIsInEdit(true);
         idOfLastMessageEdit = idOfMessageEdit;
     }
     else
     {
         QMessageBox::warning(this, "Erreur", "Impossible d'éditer ce message.");
-        sendButton.setText("Envoyer");
+        setIsInEdit(false);
     }
 
     sendButton.setEnabled(true);

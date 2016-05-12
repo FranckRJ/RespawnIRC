@@ -755,14 +755,14 @@ void respawnIrcClass::currentTabChanged(int newIndex)
 {
     if(sendMessages.getIsSending() == false)
     {
-        sendMessages.setTextSendButton("Envoyer");
         sendMessages.setEnableSendButton(true);
 
         if(sendMessages.getIsInEdit() == true)
         {
             sendMessages.clearMessageLine();
-            sendMessages.setIsInEdit(false);
         }
+
+        sendMessages.setIsInEdit(false);
     }
 
     if(newIndex == -1)
@@ -793,19 +793,18 @@ void respawnIrcClass::setEditMessage(int idOfMessageToEdit, bool useMessageEdit)
     {
         if(sendMessages.getIsInEdit() == false)
         {
+            sendMessages.setIsInEdit(true);
             sendMessages.setEnableSendButton(false);
-            sendMessages.setTextSendButton("Editer");
             if(getCurrentWidget()->getShowTopicMessages().getEditInfo(idOfMessageToEdit, useMessageEdit) == false)
             {
                 QMessageBox::warning(this, "Erreur", "Impossible d'éditer ce message.");
-                sendMessages.setTextSendButton("Envoyer");
+                sendMessages.setIsInEdit(false);
                 sendMessages.setEnableSendButton(true);
             }
         }
         else
         {
             sendMessages.setIsInEdit(false);
-            sendMessages.setTextSendButton("Envoyer");
             sendMessages.setEnableSendButton(true);
             sendMessages.clearMessageLine();
         }
