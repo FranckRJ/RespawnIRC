@@ -97,19 +97,14 @@ void multiTypeTextBoxClass::setFocus()
 
 void multiTypeTextBoxClass::setEditMode(bool newVal)
 {
-    QString oldMessage = textEdit.toPlainText();
-    textEdit.clear();
-
     if(newVal == true)
     {
-        textEdit.setTextColor(QColor(styleToolClass::getColorInfo().editMessageColor));
+        textEdit.setStyleSheet("color: " + styleToolClass::getColorInfo().editMessageColor + ";");
     }
     else
     {
-        textEdit.setTextColor(QColor(styleToolClass::getColorInfo().baseMessageColor));
+        textEdit.setStyleSheet("");
     }
-
-    textEdit.setPlainText(oldMessage);
 }
 
 void multiTypeTextBoxClass::styleChanged()

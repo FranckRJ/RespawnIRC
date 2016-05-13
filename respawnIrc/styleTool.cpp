@@ -62,7 +62,6 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
 
     listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"delete:<%ID_MESSAGE%>\">[S]</a> ");
 
-    listOfInfos.push_back("black"); //base message color
     listOfInfos.push_back("green"); //edit message color
 
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
@@ -74,7 +73,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
         }
     }
 
-    while(listOfLine.size() < 19)
+    while(listOfLine.size() < 18)
     {
         listOfLine.push_back(listOfInfos.at(listOfLine.size()));
     }
@@ -101,8 +100,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
 
     modelInfo.deleteModel = listOfLine.at(16);
 
-    colorInfoForMessageAndOther.baseMessageColor = listOfLine.at(17);
-    colorInfoForMessageAndOther.editMessageColor = listOfLine.at(18);
+    colorInfoForMessageAndOther.editMessageColor = listOfLine.at(17);
 
     return modelInfo;
 }

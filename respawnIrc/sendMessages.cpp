@@ -59,6 +59,10 @@ void sendMessagesClass::settingsChanged()
     {
         messageLine.setEditMode(isInEdit);
     }
+    else
+    {
+        messageLine.setEditMode(false);
+    }
 }
 
 void sendMessagesClass::styleChanged()
