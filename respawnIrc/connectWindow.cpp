@@ -8,11 +8,11 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 
     QLabel* labForPseudo = new QLabel("Entrez le pseudo avec lequel vous voulez vous connecter :", this);
     QLabel* labForButton = new QLabel("Une fois connecté, cliquez ici :", this);
+    buttonShowWebView = new QPushButton("Afficher la page de connexion", this);
     QPushButton* buttonAddCookies = new QPushButton("Ajouter des cookies", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
     QPushButton* buttonHelp = new QPushButton("Aide pour se connecter", this);
 
-    webView = new QWebEngineView(this);
     rememberBox.setChecked(false);
     buttonValidate->setDefault(true);
 
@@ -23,8 +23,8 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     bottomLayout->addWidget(labForButton, 1, Qt::AlignRight);
     bottomLayout->addWidget(buttonValidate);
 
-    QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(webView);
+    mainLayout = new QVBoxLayout(this);
+    mainLayout->addWidget(buttonShowWebView);
     mainLayout->addLayout(bottomLayout);
 
     if(showRemeberBox == true)
@@ -44,14 +44,29 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 
     setLayout(mainLayout);
 
-    webView->page()->profile()->cookieStore()->deleteAllCookies();
-    webView->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
-    webView->load(QUrl("http://www.jeuxvideo.com/login"));
-
-    QObject::connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);
+    QObject::connect(buttonShowWebView, &QPushButton::pressed, this, &connectWindowClass::addWebView);
     QObject::connect(buttonAddCookies, &QPushButton::pressed, this, &connectWindowClass::showAddCookiesWindow);
     QObject::connect(buttonValidate, &QPushButton::pressed, this, &connectWindowClass::valideConnect);
     QObject::connect(buttonHelp, &QPushButton::pressed, this, &connectWindowClass::showHelpConnect);
+}
+
+void connectWindowClass::addWebView()
+{
+    if(webView == nullptr)
+    {
+        webView = new QWebEngineView(this);
+
+        webView->page()->profile()->cookieStore()->deleteAllCookies();
+        webView->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+        webView->load(QUrl("http://www.jeuxvideo.com/login"));
+
+        mainLayout->removeWidget(buttonShowWebView);
+        buttonShowWebView->setEnabled(false);
+        buttonShowWebView->setVisible(false);
+        mainLayout->insertWidget(0, webView);
+
+        QObject::connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);
+    }
 }
 
 void connectWindowClass::checkThisCookie(QNetworkCookie cookie)
@@ -68,6 +83,8 @@ void connectWindowClass::checkThisCookie(QNetworkCookie cookie)
         }
         cookieList.append(cookie);
     }
+
+    QWidget::adjustSize();
 }
 
 void connectWindowClass::showAddCookiesWindow()
@@ -101,11 +118,13 @@ void connectWindowClass::valideConnect()
 void connectWindowClass::showHelpConnect()
 {
     QMessageBox::information(this, "Aide", "Pour vous connecter, veuillez suivre ces étapes :\n"
+                           "- cliquez sur le bouton \"Afficher la page de connexion\", si le logiciel crash vous devrez ajouter les cookies manuellement (voir dernière ligne de cette aide).\n"
                            "- renseignez le pseudo que vous allez utiliser dans le champ présent en bas de la fenêtre.\n"
                            "- connectez-vous sur JVC avec ce même pseudo.\n"
                            "- après avoir cliqué sur le bouton \"VALIDER\" qui possède un fond vert sur la page de JVC, attendez que la page d'accueil ait fini de charger puis "
                            "cliquez sur le bouton \"Valider\" en bas à droite de la fenêtre.\n\n"
                            "Informations importantes : \n"
+                           "- si après avoir cliqué sur \"Afficher la page de connexion\" vous ne voyez pas la page de connexion, agrandissez la fenêtre.\n"
                            "- il est possible que juste après vous être connecté vous ne puissiez pas utiliser votre pseudo, "
                            "dans ce cas relancez RespawnIRC.\n"
                            "- si vous ne voyez pas le captcha (ou si vous ne pouvez pas le remplir) cliquez sur le bouton \"Ajouter des cookies\" "
