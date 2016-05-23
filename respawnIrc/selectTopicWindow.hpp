@@ -9,7 +9,7 @@ class selectTopicWindowClass : public QDialog
     Q_OBJECT
 public:
     selectTopicWindowClass(QString currentTopic, QWidget* parent);
-    bool linkIsValid(QString link);
+    QString transformLinkIfNeeded(QString link);
 public slots:
     void selectThisTopic();
 signals:

@@ -29,27 +29,43 @@ selectTopicWindowClass::selectTopicWindowClass(QString currentTopic, QWidget* pa
     QObject::connect(buttonCancel, &QPushButton::pressed, this, &selectTopicWindowClass::close);
 }
 
-bool selectTopicWindowClass::linkIsValid(QString link)
+QString selectTopicWindowClass::transformLinkIfNeeded(QString link)
 {
-    if(link.startsWith("http://www.jeuxvideo.com/") == false && link.startsWith("http://jvforum.fr/") == false)
+    if(link.startsWith("https://") == true)
     {
-        return false;
+        link.remove(link.indexOf("s"), 1);
     }
 
-    return true;
+    if(link.startsWith("http://m.jeuxvideo.com/") == true)
+    {
+        link.replace("http://m.jeuxvideo.com/", "http://www.jeuxvideo.com/");
+    }
+    else if(link.startsWith("http://jeuxvideo.com/") == true)
+    {
+        link.replace("http://jeuxvideo.com/", "http://www.jeuxvideo.com/");
+    }
+
+    if(link.startsWith("http://www.jeuxvideo.com/") == false && link.startsWith("http://jvforum.fr/") == false)
+    {
+        return "";
+    }
+
+    return link;
 }
 
 void selectTopicWindowClass::selectThisTopic()
 {
-    if(linkIsValid(topicLine.text()) == true)
+    QString newLink = transformLinkIfNeeded(topicLine.text());
+
+    if(newLink.isEmpty() == false)
     {
-        if(topicLine.text().startsWith("http://jvforum.fr/") == true)
+        if(newLink.startsWith("http://jvforum.fr/") == true)
         {
-            emit newTopicSelected(parsingToolClass::jvfLinkToJvcLink(topicLine.text()));
+            emit newTopicSelected(parsingToolClass::jvfLinkToJvcLink(newLink));
         }
         else
         {
-            emit newTopicSelected(topicLine.text());
+            emit newTopicSelected(newLink);
         }
         close();
     }
