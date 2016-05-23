@@ -678,9 +678,9 @@ void showTopicMessagesClass::setNumberOfConnectedAndMP(QString newNumberConnecte
 
 void showTopicMessagesClass::setTopicName(QString newTopicName)
 {
-    if(newTopicName.size() >= 48)
+    if(newTopicName.size() >= (topicNameMaxSize + 3))
     {
-        topicName = newTopicName.left(45) + "...";
+        topicName = newTopicName.left(topicNameMaxSize) + "...";
     }
     else
     {

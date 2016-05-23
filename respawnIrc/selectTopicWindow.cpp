@@ -36,6 +36,11 @@ QString selectTopicWindowClass::transformLinkIfNeeded(QString link)
         link.remove(link.indexOf("s"), 1);
     }
 
+    if(link.startsWith("http://") == false)
+    {
+        link.insert(0, "http://");
+    }
+
     if(link.startsWith("http://m.jeuxvideo.com/") == true)
     {
         link.replace("http://m.jeuxvideo.com/", "http://www.jeuxvideo.com/");

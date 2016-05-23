@@ -103,6 +103,7 @@ private:
     int idOfLastMessageOfUser = 0;
     int oldIdOfLastMessageOfUser = 0;
     int numberOfMessageShowedFirstTime;
+    int topicNameMaxSize = 45;
 };
 
 #endif
