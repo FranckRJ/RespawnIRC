@@ -34,7 +34,9 @@ private:
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> currentCookieList;
     QList<QString> listOfLink;
-    bool showNumberOfMessages = true;
+    bool showNumberOfMessages;
+    bool cutLongTopicName;
+    int topicNameMaxSize = 35;
 };
 
 #endif // SHOWLISTOFTOPIC_HPP

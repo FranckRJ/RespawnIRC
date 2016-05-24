@@ -60,7 +60,8 @@ void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
 
 void showListOfTopicClass::updateSettings()
 {
-    showNumberOfMessages = settingToolClass::getThisBoolOption("showNumberOfMessagesInTopic");
+    showNumberOfMessages = settingToolClass::getThisBoolOption("showNumberOfMessagesInTopicList");
+    cutLongTopicName = settingToolClass::getThisBoolOption("cutLongTopicNameInTopicList");
     timeoutForReply.updateTimeoutTime();
 }
 
@@ -148,6 +149,14 @@ void showListOfTopicClass::analyzeReply()
         for(const topicStruct& thisTopic : listOfTopic)
         {
             listOfTopicName.append(thisTopic.name);
+
+            if(cutLongTopicName == true)
+            {
+                if(listOfTopicName.back().size() >= (topicNameMaxSize + 3))
+                {
+                    listOfTopicName.back() = listOfTopicName.back().left(topicNameMaxSize) + "...";
+                }
+            }
 
             if(showNumberOfMessages == true)
             {
