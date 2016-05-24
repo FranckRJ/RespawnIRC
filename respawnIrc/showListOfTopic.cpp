@@ -60,6 +60,7 @@ void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
 
 void showListOfTopicClass::updateSettings()
 {
+    showNumberOfMessages = settingToolClass::getThisBoolOption("showNumberOfMessagesInTopic");
     timeoutForReply.updateTimeoutTime();
 }
 
@@ -147,6 +148,12 @@ void showListOfTopicClass::analyzeReply()
         for(const topicStruct& thisTopic : listOfTopic)
         {
             listOfTopicName.append(thisTopic.name);
+
+            if(showNumberOfMessages == true)
+            {
+                listOfTopicName.back().append(" (" + thisTopic.numberOfMessage + ")");
+            }
+
             listOfLink.append(thisTopic.link);
         }
 

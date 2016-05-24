@@ -36,6 +36,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["warnWhenEdit"] = true;
     listOfDefaultBoolOption["betterQuote"] = true;
     listOfDefaultBoolOption["changeColorOnEdit"] = false;
+    listOfDefaultBoolOption["showNumberOfMessagesInTopic"] = true;
     listOfDefaultIntOption["updateTopicTime"].value = 3500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 500;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 10000;

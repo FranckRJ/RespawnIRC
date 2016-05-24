@@ -34,6 +34,7 @@ private:
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> currentCookieList;
     QList<QString> listOfLink;
+    bool showNumberOfMessages = true;
 };
 
 #endif // SHOWLISTOFTOPIC_HPP

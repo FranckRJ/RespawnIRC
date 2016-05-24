@@ -30,6 +30,7 @@ struct topicStruct
 {
     QString name;
     QString link;
+    QString numberOfMessage;
 };
 
 struct ajaxInfoStruct
@@ -90,7 +91,9 @@ private:
     static QRegularExpression expForNumberOfConnected;
     static QRegularExpression expForMpJvc;
     static QRegularExpression expForEntireMessage;
-    static QRegularExpression expForListOfTopic;
+    static QRegularExpression expForEntireTopic;
+    static QRegularExpression expForTopicNameAndLink;
+    static QRegularExpression expForTopicNumberMessage;
     static QRegularExpression expForMessageID;
     static QRegularExpression expForPseudo;
     static QRegularExpression expForDate;

@@ -23,7 +23,9 @@ QRegularExpression parsingToolClass::expForNameOfTopic("<span id=\"bloc-title-fo
 QRegularExpression parsingToolClass::expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMpJvc("<span[^c]*class=\"account-number-mp.*?\".*?data-val=\"([^\"]*)\".*?data-count=\"[^\"]*\".*?>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForEntireMessage("(<div class=\"bloc-message-forum \".*?)(<div class=\"bloc-message-forum \"|<div class=\"bloc-pagi-default\">)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-QRegularExpression parsingToolClass::expForListOfTopic("<a class=\"lien-jv topic-title\" href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForEntireTopic("<li class=\"\" data-id=\"[^\"]*\">[^<]*<span class=\"topic-subject\">.*?<span class=\"topic-select\">", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForTopicNameAndLink("<a class=\"lien-jv topic-title\" href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
+QRegularExpression parsingToolClass::expForTopicNumberMessage("<span class=\"topic-count\">[^0-9]*([0-9]*)", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessageID("<div class=\"bloc-message-forum \" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-([^\"]*)\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForDate("<div class=\"bloc-date-msg\">([^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*))", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -289,19 +291,20 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
 QList<topicStruct> parsingToolClass::getListOfTopic(const QString &source)
 {
     QList<topicStruct> listOfTopic;
-    QList<QString> listOfTopicInfo;
+    QList<QString> listOfEntireTopic;
 
-    listOfTopicInfo = getListOfThisCapNumber(source, expForListOfTopic, 1, false);
+    listOfEntireTopic = getListOfThisCapNumber(source, expForEntireTopic, 0, false);
 
-    for(const QString& thisTopic : listOfTopicInfo)
+    for(const QString& thisTopic : listOfEntireTopic)
     {
-        QString topicInfo = thisTopic;
+        QString topicInfo = expForTopicNameAndLink.match(thisTopic).captured(1);
         QString link = "http://www.jeuxvideo.com" + topicInfo.left(topicInfo.indexOf("\""));
         QString name = topicInfo.right(topicInfo.size() - topicInfo.indexOf("title=\"") - 7);
         name.replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");
         listOfTopic.append(topicStruct());
         listOfTopic.back().name = name;
         listOfTopic.back().link = link;
+        listOfTopic.back().numberOfMessage = expForTopicNumberMessage.match(thisTopic).captured(1);
     }
 
     return listOfTopic;
