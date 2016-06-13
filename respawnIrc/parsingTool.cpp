@@ -23,7 +23,7 @@ QRegularExpression parsingToolClass::expForNameOfTopic("<span id=\"bloc-title-fo
 QRegularExpression parsingToolClass::expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMpJvc("<span[^c]*class=\"account-number-mp[^\"]*\".*?data-val=\"([^\"]*)\"", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForEntireMessage("(<div class=\"bloc-message-forum \".*?)(<div class=\"bloc-message-forum \"|<div class=\"bloc-pagi-default\">)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-QRegularExpression parsingToolClass::expForEntireTopic("<li class=\"\" data-id=\"[^\"]*\">[^<]*<span class=\"topic-subject\">.*?<span class=\"topic-select\">", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+QRegularExpression parsingToolClass::expForEntireTopic("<li class=\"\" data-id=\"[^\"]*\">[^<]*<span class=\"topic-subject\">.*?</li>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 QRegularExpression parsingToolClass::expForTopicNameAndLink("<a class=\"lien-jv topic-title\" href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForTopicNumberMessage("<span class=\"topic-count\">[^0-9]*([0-9]*)", QRegularExpression::OptimizeOnFirstUsageOption);
 QRegularExpression parsingToolClass::expForMessageID("<div class=\"bloc-message-forum \" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
