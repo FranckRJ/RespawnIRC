@@ -21,6 +21,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     tabList.setTabsClosable(true);
     tabList.setMovable(true);
     alertImage.load(QCoreApplication::applicationDirPath() + "/resources/alert.png");
+    stickerDownlaodTool.updateListOfStickers();
 
     addButtonToButtonLayout();
 
@@ -373,6 +374,7 @@ void respawnIrcClass::addNewTab()
     QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::quoteThisMessage, &sendMessages, &sendMessagesClass::quoteThisMessage);
     QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
     QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
+    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::downloadTheseStickersIfNeeded, this, &respawnIrcClass::downloadStickersIfNeeded);
     QObject::connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
     QObject::connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
     QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
@@ -813,6 +815,11 @@ void respawnIrcClass::setEditMessage(int idOfMessageToEdit, bool useMessageEdit)
             sendMessages.clearMessageLine();
         }
     }
+}
+
+void respawnIrcClass::downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck)
+{
+    stickerDownlaodTool.checkAndStartDownloadMissingStickers(listOfStickersNeedToBeCheck);
 }
 
 void respawnIrcClass::clipboardChanged()

@@ -92,7 +92,7 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
 }
 
 void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize,
-                                            int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote)
+                                            int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote, bool newDownloadMissingStickers)
 {
     loadTwoLastPage = getTwoLastPages;
     showStickers = newShowStickers;
@@ -100,6 +100,7 @@ void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime,
     stickersSize = newStickerSize;
     maxNbOfQuotes = newMaxNbOfQuotes;
     betterQuote = newBetterQuote;
+    downloadMissingStickers = newDownloadMissingStickers;
 
     timerForGetMessage->setInterval(timerTime);
 
@@ -230,6 +231,7 @@ void getTopicMessagesClass::analyzeMessages()
     QString numberOfConnected;
     QList<messageStruct> listOfNewMessages;
     QList<QPair<QString, QString> > listOfInput;
+    QStringList listOfStickersUsed;
 
     timeoutForFirstPage->resetReply();
     timeoutForSecondPage->resetReply();
@@ -326,7 +328,8 @@ void getTopicMessagesClass::analyzeMessages()
 
                 tmpMsg.isFirstMessage = true;
                 tmpMsg.isAnEdit = false;
-                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote);
+                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote,
+                                                                   (downloadMissingStickers == true ? &listOfStickersUsed : nullptr));
 
                 listOfNewMessages.push_front(tmpMsg);
             }
@@ -372,7 +375,8 @@ void getTopicMessagesClass::analyzeMessages()
                     idOfLastMessage = currentMessage.idOfMessage;
                 }
 
-                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote);
+                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote,
+                                                                           (downloadMissingStickers == true ? &listOfStickersUsed : nullptr));
                 listOfNewMessages.push_back(currentMessage);
 
                 listOfEdit[currentMessage.idOfMessage] = currentMessage.lastTimeEdit;
@@ -394,6 +398,7 @@ void getTopicMessagesClass::analyzeMessages()
     retrievesMessage = false;
 
     emit newMessagesAreAvailable(listOfNewMessages, listOfInput, ajaxInfo, topicLink, false);
+    emit theseStickersAreUsed(listOfStickersUsed);
 
     if(newTopicLink.isEmpty() == false)
     {

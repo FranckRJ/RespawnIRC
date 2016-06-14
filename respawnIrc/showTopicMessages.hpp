@@ -55,6 +55,7 @@ signals:
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
     void newCookiesHaveToBeSet();
+    void downloadTheseStickersIfNeeded(QStringList listOfStickersToCheck);
 private:
     QRegularExpression expForColorPseudo;
     QTextBrowser messagesBox;

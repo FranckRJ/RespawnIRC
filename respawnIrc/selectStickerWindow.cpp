@@ -28,12 +28,12 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
 
 void selectStickerWindowClass::loadListOfStickers()
 {
-    QDir themeDir(QCoreApplication::applicationDirPath() + "/resources/stickers/");
+    QDir stickerDir(QCoreApplication::applicationDirPath() + "/resources/stickers/");
     QStringList listOfStickers;
 
-    if(themeDir.exists() == true)
+    if(stickerDir.exists() == true)
     {
-        listOfStickers = themeDir.entryList(QDir::Files);
+        listOfStickers = stickerDir.entryList(QDir::Files);
     }
 
     for(const QString& thisSticker : listOfStickers)

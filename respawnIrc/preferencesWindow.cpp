@@ -33,6 +33,7 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     vboxOther->addWidget(makeNewCheckBox("Changer la couleur du message lors de l'édition", "changeColorOnEdit"));
     vboxOther->addWidget(makeNewCheckBox("Afficher le nombre de réponses dans la liste des topics", "showNumberOfMessagesInTopicList"));
     vboxOther->addWidget(makeNewCheckBox("Couper les longs noms de topics dans la liste des topics", "cutLongTopicNameInTopicList"));
+    vboxOther->addWidget(makeNewCheckBox("Télécharger automatiquement les stickers manquants", "downloadMissingStickers"));
     vboxOther->addStretch(1);
     groupBoxOther->setLayout(vboxOther);
 

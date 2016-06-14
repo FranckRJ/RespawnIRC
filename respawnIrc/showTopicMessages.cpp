@@ -34,6 +34,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     QObject::connect(getTopicMessages, &getTopicMessagesClass::newNumberOfConnectedAndMP, this, &showTopicMessagesClass::setNumberOfConnectedAndMP);
     QObject::connect(getTopicMessages, &getTopicMessagesClass::newNameForTopic, this, &showTopicMessagesClass::setTopicName);
     QObject::connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicMessagesClass::setCookiesFromRequest);
+    QObject::connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicMessagesClass::downloadTheseStickersIfNeeded);
 
     threadForGetMessages.start();
 }
@@ -186,7 +187,8 @@ void showTopicMessagesClass::updateSettingInfo()
                               Q_ARG(int, settingToolClass::getThisIntOption("timeoutInSecond").value),
                               Q_ARG(int, settingToolClass::getThisIntOption("maxNbOfQuotes").value),
                               Q_ARG(bool, settingToolClass::getThisBoolOption("stickersToSmiley")),
-                              Q_ARG(bool, settingToolClass::getThisBoolOption("betterQuote")));
+                              Q_ARG(bool, settingToolClass::getThisBoolOption("betterQuote")),
+                              Q_ARG(bool, settingToolClass::getThisBoolOption("downloadMissingStickers")));
 }
 
 void showTopicMessagesClass::setNewTheme(QString newThemeName)

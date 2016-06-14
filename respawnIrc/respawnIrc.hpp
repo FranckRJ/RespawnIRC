@@ -11,6 +11,7 @@
 #include "accountListWindow.hpp"
 #include "multiTypeTextBox.hpp"
 #include "checkUpdate.hpp"
+#include "stickerDownloadTool.hpp"
 
 class respawnIrcClass : public QWidget
 {
@@ -73,6 +74,7 @@ public slots:
     void messageHaveToBePosted();
     void editLastMessage();
     void setEditMessage(int idOfMessageToEdit = 0, bool useMessageEdit = true);
+    void downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck);
     void clipboardChanged();
 signals:
     void themeChanged(QString newThemeName);
@@ -96,6 +98,7 @@ private:
     QString pseudoOfUser;
     QPixmap alertImage;
     checkUpdateClass checkUpdate;
+    stickerDownloadToolClass stickerDownlaodTool;
     QString currentThemeName;
     bool beepWhenWarn;
     bool warnUser;
