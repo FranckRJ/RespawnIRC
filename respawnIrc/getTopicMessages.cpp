@@ -31,14 +31,7 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
         return;
     }
 
-    if(needToGetFirstMessage == true)
-    {
-        topicLink = parsingToolClass::getFirstPageOfTopic(newTopicLink);
-    }
-    else
-    {
-        topicLink = newTopicLink;
-    }
+    topicLink = parsingToolClass::getFirstPageOfTopic(newTopicLink);
 
     if(retrievesMessage == false)
     {
