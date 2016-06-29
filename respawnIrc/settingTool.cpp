@@ -175,6 +175,8 @@ QList<accountStruct> settingToolClass::getListOfAccount()
         for(int i = 0; i < listOfPseudo.size(); ++i)
         {
             listOfAccount.push_back(accountStruct());
+            listOfHelloCookie[i].setExpirationDate(QDateTime::currentDateTime().addYears(8));
+            listOfConnectCookie[i].setExpirationDate(QDateTime::currentDateTime().addYears(8));
             listOfAccount.back().listOfCookie.append(listOfHelloCookie.at(i));
             listOfAccount.back().listOfCookie.append(listOfConnectCookie.at(i));
             listOfAccount.back().pseudo = listOfPseudo.at(i);

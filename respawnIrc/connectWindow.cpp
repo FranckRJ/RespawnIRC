@@ -81,6 +81,7 @@ void connectWindowClass::checkThisCookie(QNetworkCookie cookie)
                 break;
             }
         }
+        cookie.setExpirationDate(QDateTime::currentDateTime().addYears(8));
         cookieList.append(cookie);
     }
 

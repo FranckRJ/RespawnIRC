@@ -625,8 +625,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
                 if(ignoreNetworkError == false)
                 {
                     QString oldPseudo = pseudoOfUser;
-                    pseudoOfUser.clear();
-                    setNumberOfConnectedAndMP(numberOfConnected, "");
+                    setNewCookies(QList<QNetworkCookie>(), "");
                     QMessageBox::warning(this, "Erreur sur " + topicName + " avec " + oldPseudo,
                                        "Le compte semble invalide, veuillez vous déconnecter de l'onglet puis vous y reconnecter (sans supprimer le compte de la liste des comptes).\n"
                                        "Si le problème persiste, redémarrez RespawnIRC ou supprimez le pseudo de la liste des comptes et ajoutez-le à nouveau.\n\n"
