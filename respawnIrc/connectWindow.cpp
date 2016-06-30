@@ -119,15 +119,16 @@ void connectWindowClass::valideConnect()
 void connectWindowClass::showHelpConnect()
 {
     QMessageBox::information(this, "Aide", "Pour vous connecter, veuillez suivre ces étapes :\n"
-                           "- cliquez sur le bouton \"Afficher la page de connexion\", si le logiciel crash vous devrez ajouter les cookies manuellement (voir dernière ligne de cette aide).\n"
-                           "- renseignez le pseudo que vous allez utiliser dans le champ présent en bas de la fenêtre.\n"
-                           "- connectez-vous sur JVC avec ce même pseudo.\n"
-                           "- après avoir cliqué sur le bouton \"VALIDER\" qui possède un fond vert sur la page de JVC, attendez que la page d'accueil ait fini de charger puis "
-                           "cliquez sur le bouton \"Valider\" en bas à droite de la fenêtre.\n\n"
+                           "1 - cliquez sur le bouton \"Afficher la page de connexion\", si le logiciel crash vous devrez ajouter les cookies manuellement (voir dernière ligne de cette aide).\n"
+                           "2 - connectez-vous sur JVC avec votre pseudo.\n"
+                           "3 - cliquez sur le bouton \"VALIDER\" qui possède un fond vert sur la page de JVC, attendez que la page d'accueil ait fini de charger puis "
+                           "passez à l'étape suivante.\n"
+                           "4 - renseignez votre pseudo dans le champ présent en bas de la fenêtre.\n"
+                           "5 - cliquez sur le bouton \"Valider\" en bas à droite de la fenêtre.\n\n"
                            "Informations importantes : \n"
                            "- si après avoir cliqué sur \"Afficher la page de connexion\" vous ne voyez pas la page de connexion, agrandissez la fenêtre.\n"
                            "- il est possible que juste après vous être connecté vous ne puissiez pas utiliser votre pseudo, "
                            "dans ce cas relancez RespawnIRC.\n"
                            "- si vous ne voyez pas le captcha (ou si vous ne pouvez pas le remplir) cliquez sur le bouton \"Ajouter des cookies\" "
-                           "afin d'ajouter manuellement les cookies.");
+                           "afin d'ajouter manuellement les cookies, après cela, passez directement à l'étape 4.");
 }
