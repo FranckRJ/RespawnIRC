@@ -219,67 +219,42 @@ void getTopicMessagesClass::analyzeMessages()
 {
     QString newTopicLink;
     ajaxInfoStruct ajaxInfo;
-    QString sourceFirst;
-    QString sourceSecond;
-    QString numberOfConnected;
     QList<messageStruct> listOfNewMessages;
     QList<QPair<QString, QString> > listOfInput;
     QStringList listOfStickersUsed;
+    QVector<QString> listOfPageSource;
+    QVector<QNetworkReply*> listOfPageReply;
+    int firstValidePageNumber = -1;
 
     timeoutForFirstPage->resetReply();
     timeoutForSecondPage->resetReply();
 
-    if(replyForFirstPage != nullptr)
-    {
-        if(replyForFirstPage->isReadable())
-        {
-            sourceFirst = replyForFirstPage->readAll();
-            if(needToSetCookies == false)
-            {
-                bool cookiesChanged = false;
-                QList<QNetworkCookie> newCookieList = qvariant_cast<QList<QNetworkCookie> >(replyForFirstPage->header(QNetworkRequest::SetCookieHeader));
-
-                for(const QNetworkCookie& thisNewCookie : newCookieList)
-                {
-                    if(thisNewCookie.name() == "dlrowolleh" || thisNewCookie.name() == "coniunctio")
-                    {
-                        for(int j = 0; j < currentCookieList.size(); ++j)
-                        {
-                            if(currentCookieList.at(j).name() == thisNewCookie.name())
-                            {
-                                if(currentCookieList.at(j).expirationDate() <= QDateTime::currentDateTime().addDays(7))
-                                {
-                                    currentCookieList.replace(j, thisNewCookie);
-                                    cookiesChanged = true;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if(cookiesChanged == true)
-                {
-                    emit newCookiesHaveToBeSet(currentCookieList, pseudoOfUser);
-                }
-            }
-        }
-        replyForFirstPage->deleteLater();
-        replyForFirstPage = nullptr;
-    }
-
+    listOfPageReply.append(replyForFirstPage);
     if(loadTwoLastPage == true && secondPageLoading == true)
     {
-        if(replyForSecondPage != nullptr)
+        listOfPageReply.append(replyForSecondPage);
+    }
+
+    listOfPageSource.resize(listOfPageReply.size());
+
+    for(int i = 0; i < listOfPageReply.size(); ++i)
+    {
+        if(listOfPageReply[i] != nullptr)
         {
-            if(replyForSecondPage->isReadable())
+            if(listOfPageReply[i]->isReadable() == true)
             {
-                sourceSecond = replyForSecondPage->readAll();
+                listOfPageSource[i] = listOfPageReply[i]->readAll();
+
+                if(firstValidePageNumber == -1 && listOfPageSource[i].isEmpty() == false)
+                {
+                    firstValidePageNumber = i;
+                }
             }
-            replyForSecondPage->deleteLater();
-            replyForSecondPage = nullptr;
+            listOfPageReply[i]->deleteLater();
         }
     }
+    replyForFirstPage = nullptr;
+    replyForSecondPage = nullptr;
 
     emit newMessageStatus("Récupération des messages terminée !");
 
@@ -290,21 +265,33 @@ void getTopicMessagesClass::analyzeMessages()
         return;
     }
 
+    if(firstValidePageNumber == -1)
+    {
+        emit newMessagesAreAvailable(QList<messageStruct>(), listOfInput, ajaxInfo, topicLink, true);
+        retrievesMessage = false;
+        return;
+    }
+
     if(currentCookieList.isEmpty() == false)
     {
-        numberOfConnected = parsingToolClass::getNumberOfConnected(sourceFirst);
-        emit newNumberOfConnectedAndMP(numberOfConnected, parsingToolClass::getNumberOfMp(sourceFirst), false);
+        emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(listOfPageSource[firstValidePageNumber]),
+                                       parsingToolClass::getNumberOfMp(listOfPageSource[firstValidePageNumber]), false);
     }
     else
     {
-        emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(sourceFirst), "", false);
+        emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(listOfPageSource[firstValidePageNumber]), "", false);
     }
 
-    newTopicLink = parsingToolClass::getLastPageOfTopic(sourceFirst);
+    newTopicLink = parsingToolClass::getLastPageOfTopic(listOfPageSource[firstValidePageNumber]);
+
+    if(newTopicLink.isEmpty() == true && topicLink != listOfPageReply[firstValidePageNumber]->request().url().toDisplayString())
+    {
+        newTopicLink = listOfPageReply[firstValidePageNumber]->request().url().toDisplayString();
+    }
 
     if(firstTimeGetMessages == true)
     {
-        QString topicName = parsingToolClass::getNameOfTopic(sourceFirst);
+        QString topicName = parsingToolClass::getNameOfTopic(listOfPageSource[firstValidePageNumber]);
 
         if(topicName.isEmpty() == false)
         {
@@ -313,7 +300,7 @@ void getTopicMessagesClass::analyzeMessages()
 
         if(needToGetFirstMessage == true)
         {
-            QList<messageStruct> tmpList = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst);
+            QList<messageStruct> tmpList = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(listOfPageSource[0]);
 
             if(tmpList.isEmpty() == false)
             {
@@ -332,16 +319,15 @@ void getTopicMessagesClass::analyzeMessages()
     if(firstTimeGetMessages == false || newTopicLink.isEmpty() == true)
     {
         QList<messageStruct> listOfEntireMessages;
-        if(sourceSecond.isEmpty() == false)
-        {
-            listOfEntireMessages = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceSecond);
-        }
 
-        listOfEntireMessages.append(parsingToolClass::getListOfEntireMessagesWithoutMessagePars(sourceFirst));
+        for(int i = listOfPageSource.size() - 1; i >= 0; --i)
+        {
+            listOfEntireMessages.append(parsingToolClass::getListOfEntireMessagesWithoutMessagePars(listOfPageSource[i]));
+        }
 
         if(listOfEntireMessages.isEmpty() == true)
         {
-            emit newMessagesAreAvailable(listOfEntireMessages, listOfInput, ajaxInfo, topicLink, true);
+            emit newMessagesAreAvailable(QList<messageStruct>(), listOfInput, ajaxInfo, topicLink, true);
             retrievesMessage = false;
             return;
         }
@@ -384,8 +370,8 @@ void getTopicMessagesClass::analyzeMessages()
 
     if(currentCookieList.isEmpty() == false && needToSetCookies == false)
     {
-        ajaxInfo = parsingToolClass::getAjaxInfo(sourceFirst);
-        parsingToolClass::getListOfHiddenInputFromThisForm(sourceFirst, "form-post-topic", listOfInput);
+        ajaxInfo = parsingToolClass::getAjaxInfo(listOfPageSource[firstValidePageNumber]);
+        parsingToolClass::getListOfHiddenInputFromThisForm(listOfPageSource[firstValidePageNumber], "form-post-topic", listOfInput);
     }
     firstTimeGetMessages = false;
     retrievesMessage = false;
