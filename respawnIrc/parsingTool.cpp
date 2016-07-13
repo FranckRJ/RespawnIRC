@@ -405,8 +405,8 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
-    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>");
-    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", false, false, true);
+    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>", -1, "", false, false, false, 1);
+    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", false, false, true, 1);
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", false, true);
 
     removeAllOverlyQuote(thisMessage, nbMaxQuote);
@@ -531,16 +531,16 @@ void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
     }
 }
 
-bool parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber, QString stringAfterAfter, bool replaceReturnByBr, bool makeLinkIfPossible, bool replacePByBr)
+bool parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber,
+                                            QString stringAfterAfter, bool replaceReturnByBr, bool makeLinkIfPossible, bool replacePByBr, int additionnalOffset)
 {
-    QRegularExpressionMatchIterator matchIterator = exp.globalMatch(source);
-    int lenghtChanged = 0;
+    QRegularExpressionMatch match = exp.match(source);
+    int offsetMatch = 0;
     bool hasMatch = false;
     QString newString;
 
-    while(matchIterator.hasNext())
+    while(match.hasMatch())
     {
-        QRegularExpressionMatch match = matchIterator.next();
         newString = stringBefore;
         hasMatch = true;
         if(replacePByBr == true)
@@ -577,9 +577,9 @@ bool parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpre
             newString = "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"" + newString + "\">" + newString + "</a>";
         }
 
-        source.replace(match.capturedStart(0) + lenghtChanged, match.capturedLength(0), newString);
-        lenghtChanged -= match.capturedLength(0);
-        lenghtChanged += newString.size();
+        source.replace(match.capturedStart(0), match.capturedLength(0), newString);
+        offsetMatch = match.capturedStart(0) + (additionnalOffset == -1 ? newString.size() : additionnalOffset);
+        match = exp.match(source, offsetMatch);
     }
 
     return hasMatch;

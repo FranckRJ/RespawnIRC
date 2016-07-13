@@ -68,7 +68,7 @@ public:
     static void removeAllOverlyQuote(QString& source, int maxNumberQuote);
     static bool replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "",
-                                     bool replaceReturnByBr = false, bool makeLinkIfPossible = false, bool replacePByBr = false);
+                                     bool replaceReturnByBr = false, bool makeLinkIfPossible = false, bool replacePByBr = false, int additionnalOffset = -1);
 private:
     static const QRegularExpression expForNormalLink;
     static const QRegularExpression expForAjaxTimestamp;
