@@ -112,7 +112,7 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
     newPseudoOfUser.replace("[", "\\[").replace("]", "\\]");
     if(newPseudoOfUser.isEmpty() == false)
     {
-        expForColorPseudo.setPattern(newPseudoOfUser + "(?![^<]*</a>)");
+        expForColorPseudo.setPattern(newPseudoOfUser + "(?![^<>]*(>|</a>))");
     }
     listOfInput.clear();
 
