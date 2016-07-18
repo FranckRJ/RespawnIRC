@@ -12,6 +12,7 @@
 #include "multiTypeTextBox.hpp"
 #include "checkUpdate.hpp"
 #include "stickerDownloadTool.hpp"
+#include "tmpImageDownloadTool.hpp"
 
 class respawnIrcClass : public QWidget
 {
@@ -75,6 +76,7 @@ public slots:
     void editLastMessage();
     void setEditMessage(int idOfMessageToEdit = 0, bool useMessageEdit = true);
     void downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck);
+    void downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck);
     void clipboardChanged();
 signals:
     void themeChanged(QString newThemeName);
@@ -99,6 +101,7 @@ private:
     QPixmap alertImage;
     checkUpdateClass checkUpdate;
     stickerDownloadToolClass stickerDownlaodTool;
+    tmpImageDownloadToolClass tmpImageDownloadTool;
     QString currentThemeName;
     bool beepWhenWarn;
     bool warnUser;

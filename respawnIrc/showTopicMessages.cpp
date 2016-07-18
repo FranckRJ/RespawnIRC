@@ -35,6 +35,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     QObject::connect(getTopicMessages, &getTopicMessagesClass::newNameForTopic, this, &showTopicMessagesClass::setTopicName);
     QObject::connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicMessagesClass::setCookiesFromRequest);
     QObject::connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicMessagesClass::downloadTheseStickersIfNeeded);
+    QObject::connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicMessagesClass::downloadTheseNoelshackImagesIfNeeded);
 
     threadForGetMessages.start();
 }
@@ -188,7 +189,15 @@ void showTopicMessagesClass::updateSettingInfo()
                               Q_ARG(int, settingToolClass::getThisIntOption("maxNbOfQuotes").value),
                               Q_ARG(bool, settingToolClass::getThisBoolOption("stickersToSmiley")),
                               Q_ARG(bool, settingToolClass::getThisBoolOption("betterQuote")),
-                              Q_ARG(bool, settingToolClass::getThisBoolOption("downloadMissingStickers")));
+                              Q_ARG(bool, settingToolClass::getThisBoolOption("downloadMissingStickers")),
+                              Q_ARG(bool, settingToolClass::getThisBoolOption("downloadNoelshackImages")));
+}
+
+void showTopicMessagesClass::addSearchPath(QString newSearchPath)
+{
+    QStringList currentSearchPaths = messagesBox.searchPaths();
+    currentSearchPaths.append(newSearchPath);
+    messagesBox.setSearchPaths(currentSearchPaths);
 }
 
 void showTopicMessagesClass::setNewTheme(QString newThemeName)

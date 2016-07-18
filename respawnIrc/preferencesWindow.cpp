@@ -34,6 +34,7 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     vboxOther->addWidget(makeNewCheckBox("Afficher le nombre de réponses dans la liste des topics", "showNumberOfMessagesInTopicList"));
     vboxOther->addWidget(makeNewCheckBox("Couper les longs noms de topics dans la liste des topics", "cutLongTopicNameInTopicList"));
     vboxOther->addWidget(makeNewCheckBox("Télécharger automatiquement les stickers manquants", "downloadMissingStickers"));
+    vboxOther->addWidget(makeNewCheckBox("Afficher les miniatures noelshack", "downloadNoelshackImages"));
     vboxOther->addStretch(1);
     groupBoxOther->setLayout(vboxOther);
 

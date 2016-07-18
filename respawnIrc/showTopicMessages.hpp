@@ -29,6 +29,7 @@ public:
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages = true);
     void setTopicToErrorMode();
     void updateSettingInfo();
+    void addSearchPath(QString newSearchPath);
 public slots:
     void setNewTheme(QString newThemeName);
     void setNewTopic(QString newTopic);
@@ -56,6 +57,7 @@ signals:
     void newNameForTopic(QString newName);
     void newCookiesHaveToBeSet();
     void downloadTheseStickersIfNeeded(QStringList listOfStickersToCheck);
+    void downloadTheseNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesToCheck);
 private:
     QRegularExpression expForColorPseudo;
     QTextBrowser messagesBox;

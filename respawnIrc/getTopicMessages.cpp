@@ -85,7 +85,8 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
 }
 
 void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize,
-                                            int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote, bool newDownloadMissingStickers)
+                                            int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote,
+                                            bool newDownloadMissingStickers, bool newDownloadNoelshackImages)
 {
     loadTwoLastPage = getTwoLastPages;
     showStickers = newShowStickers;
@@ -94,6 +95,7 @@ void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime,
     maxNbOfQuotes = newMaxNbOfQuotes;
     betterQuote = newBetterQuote;
     downloadMissingStickers = newDownloadMissingStickers;
+    downloadNoelshackImages = newDownloadNoelshackImages;
 
     timerForGetMessage->setInterval(timerTime);
 
@@ -222,6 +224,7 @@ void getTopicMessagesClass::analyzeMessages()
     QList<messageStruct> listOfNewMessages;
     QList<QPair<QString, QString> > listOfInput;
     QStringList listOfStickersUsed;
+    QStringList listOfNoelshackImagesUsed;
     QVector<QString> listOfPageSource;
     QVector<QNetworkReply*> listOfPageReply;
     int firstValidePageNumber = -1;
@@ -309,7 +312,7 @@ void getTopicMessagesClass::analyzeMessages()
                 tmpMsg.isFirstMessage = true;
                 tmpMsg.isAnEdit = false;
                 tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote,
-                                                                   (downloadMissingStickers == true ? &listOfStickersUsed : nullptr));
+                                                                   (downloadMissingStickers == true ? &listOfStickersUsed : nullptr), (downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
 
                 listOfNewMessages.push_front(tmpMsg);
             }
@@ -355,7 +358,7 @@ void getTopicMessagesClass::analyzeMessages()
                 }
 
                 currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote,
-                                                                           (downloadMissingStickers == true ? &listOfStickersUsed : nullptr));
+                                                                           (downloadMissingStickers == true ? &listOfStickersUsed : nullptr), (downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
                 listOfNewMessages.push_back(currentMessage);
 
                 listOfEdit[currentMessage.idOfMessage] = currentMessage.lastTimeEdit;
@@ -378,6 +381,7 @@ void getTopicMessagesClass::analyzeMessages()
 
     emit newMessagesAreAvailable(listOfNewMessages, listOfInput, ajaxInfo, topicLink, false);
     emit theseStickersAreUsed(listOfStickersUsed);
+    emit theseNoelshackImagesAreUsed(listOfNoelshackImagesUsed);
 
     if(newTopicLink.isEmpty() == false)
     {

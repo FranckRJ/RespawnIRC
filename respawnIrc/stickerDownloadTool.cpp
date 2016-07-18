@@ -97,6 +97,7 @@ void stickerDownloadToolClass::analyzeLatestStickerDownloaded()
         newSticker.open(QIODevice::WriteOnly);
         newSticker.write(reply->readAll());
         newSticker.close();
+        listOfStickers.append(listOfStickersNeedDownload.front());
     }
     reply->deleteLater();
 

@@ -16,7 +16,8 @@ public slots:
     void setNewTopic(QString newTopicLink, bool getFirstMessage);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages);
     void settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize,
-                         int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote, bool newDownloadMissingStickers);
+                         int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote,
+                         bool newDownloadMissingStickers, bool newDownloadNoelshackImages);
     void startGetMessage();
     void getMessages();
     void loadFirstPageFinish();
@@ -30,6 +31,7 @@ signals:
     void newMessageStatus(QString newStatus);
     void newNumberOfConnectedAndMP(QString newNumberConnected, QString newNumberMP, bool forceSet);
     void theseStickersAreUsed(QStringList listOfStickersUsed);
+    void theseNoelshackImagesAreUsed(QStringList listOfNoelshackImagesUsed);
 private:
     QNetworkAccessManager* networkManager;
     autoTimeoutReplyClass* timeoutForFirstPage;
@@ -53,6 +55,7 @@ private:
     bool stickerToSmiley = false;
     bool betterQuote = true;
     bool downloadMissingStickers = true;
+    bool downloadNoelshackImages = false;
     int idOfLastMessage = 0;
     int stickersSize = 70;
     int maxNbOfQuotes = 4;
