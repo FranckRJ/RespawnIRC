@@ -69,27 +69,6 @@ void tmpImageDownloadToolClass::startDownloadMissingImages()
     }
 }
 
-void tmpImageDownloadToolClass::analyzeLatestImageDownloaded()
-{
-    if(reply->isReadable() == true && tmpDir.isValid() == true)
-    {
-        QFile newImage;
-        QDir newDir;
-        newDir.mkpath(tmpDir.path() + "/img/" + removeLastLevelOfFilePath(convertUrlToFilePath(listOfImagesUrlNeedDownload.front())));
-        newImage.setFileName(tmpDir.path() + "/img/" + convertUrlToFilePath(listOfImagesUrlNeedDownload.front()));
-        newImage.open(QIODevice::WriteOnly);
-        newImage.write(reply->readAll());
-        newImage.close();
-        listOfImages.append(convertUrlToFilePath(listOfImagesUrlNeedDownload.front()));
-    }
-    reply->deleteLater();
-
-    listOfImagesUrlNeedDownload.pop_front();
-    reply = nullptr;
-
-    startDownloadMissingImages();
-}
-
 QString tmpImageDownloadToolClass::convertUrlToFilePath(QString thisUrl)
 {
     if(thisUrl.startsWith("http://") == true || thisUrl.startsWith("https://") == true)
@@ -108,4 +87,31 @@ QString tmpImageDownloadToolClass::removeLastLevelOfFilePath(QString thisPath)
 QString tmpImageDownloadToolClass::getPathOfTmpDir()
 {
     return tmpDir.path();
+}
+
+int tmpImageDownloadToolClass::getNumberOfDownloadRemaining()
+{
+    return listOfImagesUrlNeedDownload.size();
+}
+
+void tmpImageDownloadToolClass::analyzeLatestImageDownloaded()
+{
+    if(reply->isReadable() == true && tmpDir.isValid() == true)
+    {
+        QFile newImage;
+        QDir newDir;
+        newDir.mkpath(tmpDir.path() + "/img/" + removeLastLevelOfFilePath(convertUrlToFilePath(listOfImagesUrlNeedDownload.front())));
+        newImage.setFileName(tmpDir.path() + "/img/" + convertUrlToFilePath(listOfImagesUrlNeedDownload.front()));
+        newImage.open(QIODevice::WriteOnly);
+        newImage.write(reply->readAll());
+        newImage.close();
+        listOfImages.append(convertUrlToFilePath(listOfImagesUrlNeedDownload.front()));
+    }
+    reply->deleteLater();
+
+    listOfImagesUrlNeedDownload.pop_front();
+    reply = nullptr;
+
+    emit oneDownloadFinished();
+    startDownloadMissingImages();
 }

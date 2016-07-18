@@ -61,6 +61,9 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["nbOfMessagesSend"].value = 0;
     listOfDefaultIntOption["nbOfMessagesSend"].minValue = 0;
     listOfDefaultIntOption["nbOfMessagesSend"].maxValue = 0;
+    listOfDefaultIntOption["typeOfImageRefresh"].value = 1;
+    listOfDefaultIntOption["typeOfImageRefresh"].minValue = 0;
+    listOfDefaultIntOption["typeOfImageRefresh"].maxValue = 2;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

@@ -30,6 +30,7 @@ public:
     void setTopicToErrorMode();
     void updateSettingInfo();
     void addSearchPath(QString newSearchPath);
+    void relayoutDocumentHack();
 public slots:
     void setNewTheme(QString newThemeName);
     void setNewTopic(QString newTopic);

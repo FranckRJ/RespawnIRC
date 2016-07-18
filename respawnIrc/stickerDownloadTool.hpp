@@ -13,8 +13,11 @@ public:
     bool checkIfStickerExist(QString stickerName);
     void checkAndStartDownloadMissingStickers(QStringList listOfStickersToCheck);
     void startDownloadMissingStickers();
+    int getNumberOfDownloadRemaining();
 public slots:
     void analyzeLatestStickerDownloaded();
+signals:
+    void oneDownloadFinished();
 private:
     QNetworkAccessManager* networkManager;
     QNetworkReply* reply = nullptr;

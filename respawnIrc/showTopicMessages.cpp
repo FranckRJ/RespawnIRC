@@ -200,6 +200,11 @@ void showTopicMessagesClass::addSearchPath(QString newSearchPath)
     messagesBox.setSearchPaths(currentSearchPaths);
 }
 
+void showTopicMessagesClass::relayoutDocumentHack()
+{
+    messagesBox.setLineWrapColumnOrWidth(messagesBox.lineWrapColumnOrWidth());
+}
+
 void showTopicMessagesClass::setNewTheme(QString newThemeName)
 {
     baseModel = styleToolClass::getModel(newThemeName);

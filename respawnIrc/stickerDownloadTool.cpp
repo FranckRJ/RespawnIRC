@@ -88,6 +88,11 @@ void stickerDownloadToolClass::startDownloadMissingStickers()
     }
 }
 
+int stickerDownloadToolClass::getNumberOfDownloadRemaining()
+{
+    return listOfStickersNeedDownload.size();
+}
+
 void stickerDownloadToolClass::analyzeLatestStickerDownloaded()
 {
     if(reply->isReadable() == true)
@@ -104,5 +109,6 @@ void stickerDownloadToolClass::analyzeLatestStickerDownloaded()
     listOfStickersNeedDownload.pop_front();
     reply = nullptr;
 
+    emit oneDownloadFinished();
     startDownloadMissingStickers();
 }

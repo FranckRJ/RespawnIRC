@@ -15,8 +15,11 @@ public:
     QString convertUrlToFilePath(QString thisUrl);
     QString removeLastLevelOfFilePath(QString thisPath);
     QString getPathOfTmpDir();
+    int getNumberOfDownloadRemaining();
 public slots:
     void analyzeLatestImageDownloaded();
+signals:
+    void oneDownloadFinished();
 private:
     QNetworkAccessManager* networkManager;
     QNetworkReply* reply = nullptr;

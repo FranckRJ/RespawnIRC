@@ -21,7 +21,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     tabList.setTabsClosable(true);
     tabList.setMovable(true);
     alertImage.load(QCoreApplication::applicationDirPath() + "/resources/alert.png");
-    stickerDownlaodTool.updateListOfStickers();
+    stickerDownloadTool.updateListOfStickers();
 
     addButtonToButtonLayout();
 
@@ -43,6 +43,8 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     QObject::connect(&tabList, &QTabWidget::currentChanged, this, &respawnIrcClass::currentTabChanged);
     QObject::connect(&tabList, &QTabWidget::tabCloseRequested, this, &respawnIrcClass::removeTab);
     QObject::connect(tabList.tabBar(), &QTabBar::tabMoved, this, &respawnIrcClass::tabHasMoved);
+    QObject::connect(&stickerDownloadTool, &stickerDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
+    QObject::connect(&tmpImageDownloadTool, &tmpImageDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
 
     loadSettings();
 }
@@ -51,6 +53,7 @@ void respawnIrcClass::loadSettings()
 {
     beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
     warnUser = settingToolClass::getThisBoolOption("warnUser");
+    typeOfImageRefresh = settingToolClass::getThisIntOption("typeOfImageRefresh").value;
 
     for(int i = 0; i < 10; ++i)
     {
@@ -575,6 +578,10 @@ void respawnIrcClass::setThisIntOption(int newVal, QString optionName)
     {
         sendMessages.settingsChanged();
     }
+    else if(optionName == "typeOfImageRefresh")
+    {
+        typeOfImageRefresh = newVal;
+    }
     else
     {
         updateSettingInfoForList();
@@ -822,12 +829,27 @@ void respawnIrcClass::setEditMessage(int idOfMessageToEdit, bool useMessageEdit)
 
 void respawnIrcClass::downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck)
 {
-    stickerDownlaodTool.checkAndStartDownloadMissingStickers(listOfStickersNeedToBeCheck);
+    stickerDownloadTool.checkAndStartDownloadMissingStickers(listOfStickersNeedToBeCheck);
 }
 
 void respawnIrcClass::downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck)
 {
     tmpImageDownloadTool.checkAndStartDownloadMissingImages(listOfNoelshackImagesNeedToBeCheck);
+}
+
+void respawnIrcClass::updateImagesIfNeeded()
+{
+    if(typeOfImageRefresh == 2)
+    {
+        getCurrentWidget()->getShowTopicMessages().relayoutDocumentHack();
+    }
+    else if(typeOfImageRefresh == 1)
+    {
+        if(stickerDownloadTool.getNumberOfDownloadRemaining() == 0 && tmpImageDownloadTool.getNumberOfDownloadRemaining() == 0)
+        {
+            getCurrentWidget()->getShowTopicMessages().relayoutDocumentHack();
+        }
+    }
 }
 
 void respawnIrcClass::clipboardChanged()

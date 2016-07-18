@@ -77,6 +77,7 @@ public slots:
     void setEditMessage(int idOfMessageToEdit = 0, bool useMessageEdit = true);
     void downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck);
     void downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck);
+    void updateImagesIfNeeded();
     void clipboardChanged();
 signals:
     void themeChanged(QString newThemeName);
@@ -100,11 +101,12 @@ private:
     QString pseudoOfUser;
     QPixmap alertImage;
     checkUpdateClass checkUpdate;
-    stickerDownloadToolClass stickerDownlaodTool;
+    stickerDownloadToolClass stickerDownloadTool;
     tmpImageDownloadToolClass tmpImageDownloadTool;
     QString currentThemeName;
     bool beepWhenWarn;
     bool warnUser;
+    int typeOfImageRefresh;
 };
 
 #endif
