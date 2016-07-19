@@ -43,24 +43,24 @@ private:
     QTimer* timerForGetMessage;
     QString topicLink;
     QString pseudoOfUser;
-    bool needToGetFirstMessage = false;
+    bool needToGetFirstMessage;
     bool linkHasChanged = false;
     bool firstTimeGetMessages = true;
     bool needToGetMessages = false;
     bool retrievesMessage = false;
     bool needToSetCookies = false;
-    bool loadTwoLastPage = false;
+    bool loadTwoLastPage;
     bool secondPageLoading = false;
-    bool showStickers = true;
-    bool stickerToSmiley = false;
-    bool betterQuote = true;
-    bool downloadMissingStickers = true;
-    bool downloadNoelshackImages = false;
+    bool showStickers;
+    bool stickerToSmiley;
+    bool betterQuote;
+    bool downloadMissingStickers;
+    bool downloadNoelshackImages;
     int idOfLastMessage = 0;
-    int stickersSize = 70;
-    int maxNbOfQuotes = 4;
-    int noelshackImageWidth = 68;
-    int noelshackImageHeight = 51;
+    int stickersSize;
+    int maxNbOfQuotes;
+    int noelshackImageWidth;
+    int noelshackImageHeight;
 };
 
 #endif

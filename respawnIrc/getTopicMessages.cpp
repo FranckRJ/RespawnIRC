@@ -11,6 +11,7 @@ getTopicMessagesClass::getTopicMessagesClass(QObject* parent) : QObject(parent)
 
     timerForGetMessage->setTimerType(Qt::CoarseTimer);
     timerForGetMessage->setInterval(5000);
+    timerForGetMessage->stop();
 
     QObject::connect(timerForGetMessage, &QTimer::timeout, this, &getTopicMessagesClass::getMessages);
 }
