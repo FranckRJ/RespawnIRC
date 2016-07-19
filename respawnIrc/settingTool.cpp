@@ -64,6 +64,12 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["typeOfImageRefresh"].value = 1;
     listOfDefaultIntOption["typeOfImageRefresh"].minValue = 0;
     listOfDefaultIntOption["typeOfImageRefresh"].maxValue = 2;
+    listOfDefaultIntOption["noelshackImageWidth"].value = 68;
+    listOfDefaultIntOption["noelshackImageWidth"].minValue = 0;
+    listOfDefaultIntOption["noelshackImageWidth"].maxValue = 1000;
+    listOfDefaultIntOption["noelshackImageHeight"].value = 51;
+    listOfDefaultIntOption["noelshackImageHeight"].minValue = 0;
+    listOfDefaultIntOption["noelshackImageHeight"].maxValue = 1000;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

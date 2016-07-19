@@ -103,6 +103,12 @@ void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime,
     timeoutForSecondPage->updateTimeoutTime(timeoutTime);
 }
 
+void getTopicMessagesClass::otherSettingsChanged(int newNoelshackImageWidth, int newNoelshackImageHeight)
+{
+    noelshackImageWidth = newNoelshackImageWidth;
+    noelshackImageHeight = newNoelshackImageHeight;
+}
+
 void getTopicMessagesClass::startGetMessage()
 {
     needToGetMessages = false;
@@ -312,7 +318,8 @@ void getTopicMessagesClass::analyzeMessages()
                 tmpMsg.isFirstMessage = true;
                 tmpMsg.isAnEdit = false;
                 tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote,
-                                                                   (downloadMissingStickers == true ? &listOfStickersUsed : nullptr), (downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
+                                                                   (downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
+                                                                   (downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr), noelshackImageWidth, noelshackImageHeight);
 
                 listOfNewMessages.push_front(tmpMsg);
             }
@@ -358,7 +365,8 @@ void getTopicMessagesClass::analyzeMessages()
                 }
 
                 currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote,
-                                                                           (downloadMissingStickers == true ? &listOfStickersUsed : nullptr), (downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
+                                                                           (downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
+                                                                           (downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr), noelshackImageWidth, noelshackImageHeight);
                 listOfNewMessages.push_back(currentMessage);
 
                 listOfEdit[currentMessage.idOfMessage] = currentMessage.lastTimeEdit;

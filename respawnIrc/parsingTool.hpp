@@ -62,7 +62,8 @@ public:
     static QString getForumName(const QString& source);
     static QString jvfLinkToJvcLink(const QString& source);
     static QString parsingMessages(QString thisMessage, bool showStickers, bool stickerToSmiley, int stickersSize,
-                                   int nbMaxQuote, bool betterQuote, QStringList* listOfStickersUsed = nullptr, QStringList* listOfNoelshackImageUsed = nullptr);
+                                   int nbMaxQuote, bool betterQuote, QStringList* listOfStickersUsed = nullptr, QStringList* listOfNoelshackImageUsed = nullptr,
+                                   int noelshackImageWidth = 68, int noelshackImageHeight = 51);
     static QString parsingAjaxMessages(QString thisMessage);
     static QNetworkRequest buildRequestWithThisUrl(QString url);
     static QList<QString> getListOfThisCapNumber(const QString &source, const QRegularExpression& exp, int capNumber, bool globalMatch = true);

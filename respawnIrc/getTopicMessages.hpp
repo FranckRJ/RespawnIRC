@@ -16,8 +16,8 @@ public slots:
     void setNewTopic(QString newTopicLink, bool getFirstMessage);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages);
     void settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize,
-                         int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote,
-                         bool newDownloadMissingStickers, bool newDownloadNoelshackImages);
+                         int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote, bool newDownloadMissingStickers, bool newDownloadNoelshackImages);
+    void otherSettingsChanged(int newNoelshackImageWidth, int newNoelshackImageHeight);
     void startGetMessage();
     void getMessages();
     void loadFirstPageFinish();
@@ -59,6 +59,8 @@ private:
     int idOfLastMessage = 0;
     int stickersSize = 70;
     int maxNbOfQuotes = 4;
+    int noelshackImageWidth = 68;
+    int noelshackImageHeight = 51;
 };
 
 #endif

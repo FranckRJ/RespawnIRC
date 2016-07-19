@@ -362,7 +362,7 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
 }
 
 QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers, bool stickerToSmiley, int stickersSize, int nbMaxQuote,
-                                          bool betterQuote, QStringList* listOfStickersUsed, QStringList* listOfNoelshackImageUsed)
+                                          bool betterQuote, QStringList* listOfStickersUsed, QStringList* listOfNoelshackImageUsed, int noelshackImageWidth, int noelshackImageHeight)
 {
     QString extraTableStyle;
 
@@ -418,7 +418,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
             }
         }
 
-        replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a href=\"", "\"><img width=68 height=51 src=\"img/", 2, "\" /></a>");
+        replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a href=\"", "\"><img width=" + QString::number(noelshackImageWidth) + " height=" + QString::number(noelshackImageHeight) + " src=\"img/", 2, "\" /></a>");
     }
     else
     {

@@ -191,6 +191,10 @@ void showTopicMessagesClass::updateSettingInfo()
                               Q_ARG(bool, settingToolClass::getThisBoolOption("betterQuote")),
                               Q_ARG(bool, settingToolClass::getThisBoolOption("downloadMissingStickers")),
                               Q_ARG(bool, settingToolClass::getThisBoolOption("downloadNoelshackImages")));
+
+    QMetaObject::invokeMethod(getTopicMessages, "otherSettingsChanged", Qt::QueuedConnection,
+                              Q_ARG(int, settingToolClass::getThisIntOption("noelshackImageWidth").value),
+                              Q_ARG(int, settingToolClass::getThisIntOption("noelshackImageHeight").value));
 }
 
 void showTopicMessagesClass::addSearchPath(QString newSearchPath)
