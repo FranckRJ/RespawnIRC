@@ -8,7 +8,6 @@
 #include "preferencesWindow.hpp"
 #include "ignoreListWindow.hpp"
 #include "chooseNumberWindow.hpp"
-#include "captchaWindow.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 #include "styleTool.hpp"

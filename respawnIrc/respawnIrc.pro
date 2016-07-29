@@ -16,7 +16,6 @@ SOURCES += \
     connectWindow.cpp \
     parsingTool.cpp \
     selectTopicWindow.cpp \
-    captchaWindow.cpp \
     showTopicMessages.cpp \
     ignoreListWindow.cpp \
     addPseudoWindow.cpp \
@@ -70,7 +69,6 @@ HEADERS += \
     connectWindow.hpp \
     parsingTool.hpp \
     selectTopicWindow.hpp \
-    captchaWindow.hpp \
     showTopicMessages.hpp \
     ignoreListWindow.hpp \
     addPseudoWindow.hpp \
