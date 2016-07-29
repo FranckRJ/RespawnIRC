@@ -1,6 +1,6 @@
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
-#include "stickerToSmileyTool.hpp"
+#include "shortcutTool.hpp"
 
 const QRegularExpression parsingToolClass::expForNormalLink("https://[^\\(\\)\\]\\[ ]*", QRegularExpression::OptimizeOnFirstUsageOption);
 const QRegularExpression parsingToolClass::expForAjaxTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_liste_messages\" id=\"ajax_timestamp_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -384,7 +384,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
 
     if(stickerToSmiley == true)
     {
-        stickerToSmileyToolClass::transformMessage(thisMessage);
+        shortcutToolClass::transformMessage(thisMessage, "stickerToSmiley");
     }
 
     if(showStickers == false)

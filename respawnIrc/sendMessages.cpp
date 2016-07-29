@@ -38,7 +38,7 @@ QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QStrin
         data += thisInput.first + "=" + thisInput.second + "&";
     }
 
-    data += "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text()));
+    data += "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text(), "shortcut"));
 
     data += "&form_alias_rang=1";
 
@@ -164,7 +164,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         }
         else
         {
-            data = "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text()));
+            data = "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text(), "shortcut"));
             data += "&" + dataForEditLastMessage;
         }
 

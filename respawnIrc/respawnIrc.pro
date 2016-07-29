@@ -39,7 +39,6 @@ SOURCES += \
     preferencesWindow.cpp \
     shortcutTool.cpp \
     addCookiesWindow.cpp \
-    stickerToSmileyTool.cpp \
     stickerDownloadTool.cpp \
     tmpImageDownloadTool.cpp
 
@@ -94,7 +93,6 @@ HEADERS += \
     preferencesWindow.hpp \
     shortcutTool.hpp \
     addCookiesWindow.hpp \
-    stickerToSmileyTool.hpp \
     stickerDownloadTool.hpp \
     tmpImageDownloadTool.hpp
 

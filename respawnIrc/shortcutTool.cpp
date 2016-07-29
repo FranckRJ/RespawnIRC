@@ -1,10 +1,13 @@
 #include "shortcutTool.hpp"
 
-QMap<QString, QString> shortcutToolClass::listOfShortcut;
+QMap<QString, QMap<QString, QString> > shortcutToolClass::listOfShortcutRules;
 
-void shortcutToolClass::loadShortcuts()
+void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew)
 {
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/resources/shortcut.txt");
+    QFile thisFile(QCoreApplication::applicationDirPath() + "/resources/" + ruleName + ".txt");
+
+    QMap<QString, QMap<QString, QString> >::iterator rulesIte = listOfShortcutRules.insert(ruleName, QMap<QString, QString>());
+
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -16,19 +19,24 @@ void shortcutToolClass::loadShortcuts()
 
             if(index > 0 && index < (thisLine.size() - 1))
             {
-                listOfShortcut[thisLine.left(index)] = thisLine.right(thisLine.size() - index - 1);
+                rulesIte.value().insert(beforeBase + thisLine.left(index) + afterBase, beforeNew + thisLine.right(thisLine.size() - index - 1) + afterNew);
             }
         }
     }
 }
 
-QString shortcutToolClass::transformMessage(QString thisMessage)
+QString& shortcutToolClass::transformMessage(QString& thisMessage, QString ruleName)
 {
-    QMap<QString, QString>::const_iterator itShortcut = listOfShortcut.constBegin();
-    while(itShortcut != listOfShortcut.constEnd())
+    QMap<QString, QMap<QString, QString> >::iterator rulesIte = listOfShortcutRules.find(ruleName);
+
+    if(rulesIte != listOfShortcutRules.end())
     {
-        thisMessage.replace(itShortcut.key(), itShortcut.value());
-        ++itShortcut;
+        QMap<QString, QString>::const_iterator itShortcut = rulesIte.value().constBegin();
+        while(itShortcut != rulesIte.value().constEnd())
+        {
+            thisMessage.replace(itShortcut.key(), itShortcut.value());
+            ++itShortcut;
+        }
     }
 
     return thisMessage;

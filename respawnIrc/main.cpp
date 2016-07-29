@@ -4,7 +4,6 @@
 #include "settingTool.hpp"
 #include "parsingTool.hpp"
 #include "shortcutTool.hpp"
-#include "stickerToSmileyTool.hpp"
 #include "styleTool.hpp"
 
 int main(int argc, char *argv[])
@@ -16,8 +15,8 @@ int main(int argc, char *argv[])
 
     settingToolClass::setSettings(&setting);
     settingToolClass::initializeDefaultListsOption();
-    shortcutToolClass::loadShortcuts();
-    stickerToSmileyToolClass::loadTransformInfo();
+    shortcutToolClass::loadShortcutRule("shortcut");
+    shortcutToolClass::loadShortcutRule("stickerToSmiley", "<img class=\"img-stickers\" src=\"http://jv.stkr.fr/p/", "\"/>", "<img src=\"resources/smileys/", "\"/>");
     styleToolClass::getModelInfo("");
 
     qRegisterMetaType<ajaxInfoStruct>("ajaxInfoStruct");

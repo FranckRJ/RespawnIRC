@@ -6,10 +6,10 @@
 class shortcutToolClass
 {
 public:
-    static void loadShortcuts();
-    static QString transformMessage(QString thisMessage);
+    static void loadShortcutRule(QString ruleName, QString beforeBase = "", QString afterBase = "", QString beforeNew = "", QString afterNew = "");
+    static QString& transformMessage(QString& thisMessage, QString ruleName);
 private:
-    static QMap<QString, QString> listOfShortcut;
+    static QMap<QString, QMap<QString, QString> > listOfShortcutRules;
 };
 
 #endif
