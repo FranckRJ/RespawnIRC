@@ -349,17 +349,20 @@ void respawnIrcClass::addNewTab()
 
     if(listOfPseudoForTopic.at(listOfContainerForTopicsInfos.size() - 1).isEmpty() == false)
     {
-        for(int j = 0; j < listOfAccount.size(); ++j)
+        if(listOfPseudoForTopic.at(listOfContainerForTopicsInfos.size() - 1) != ".")
         {
-            if(listOfAccount.at(j).pseudo.toLower() == listOfPseudoForTopic.at(listOfContainerForTopicsInfos.size() - 1).toLower())
+            for(int j = 0; j < listOfAccount.size(); ++j)
             {
-                listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo);
-                break;
-            }
-            else if(j == listOfAccount.size() - 1)
-            {
-                listOfPseudoForTopic[listOfContainerForTopicsInfos.size() - 1].clear();
-                settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+                if(listOfAccount.at(j).pseudo.toLower() == listOfPseudoForTopic.at(listOfContainerForTopicsInfos.size() - 1).toLower())
+                {
+                    listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo);
+                    break;
+                }
+                else if(j == listOfAccount.size() - 1)
+                {
+                    listOfPseudoForTopic[listOfContainerForTopicsInfos.size() - 1].clear();
+                    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+                }
             }
         }
     }
