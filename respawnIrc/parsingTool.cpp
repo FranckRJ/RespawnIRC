@@ -2,7 +2,7 @@
 #include "styleTool.hpp"
 #include "shortcutTool.hpp"
 
-const QRegularExpression parsingToolClass::expForNormalLink("https://[^\\(\\)\\]\\[ ]*", QRegularExpression::OptimizeOnFirstUsageOption);
+const QRegularExpression parsingToolClass::expForNormalLink("http(s)?://[^\\(\\)\\]\\[ \\\\<>]*", QRegularExpression::OptimizeOnFirstUsageOption);
 const QRegularExpression parsingToolClass::expForAjaxTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_liste_messages\" id=\"ajax_timestamp_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
 const QRegularExpression parsingToolClass::expForAjaxHash("<input type=\"hidden\" name=\"ajax_hash_liste_messages\" id=\"ajax_hash_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
 const QRegularExpression parsingToolClass::expForAjaxModTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_moderation_forum\" id=\"ajax_timestamp_moderation_forum\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -94,7 +94,7 @@ QString parsingToolClass::getVersionName(const QString &source)
 
 QString parsingToolClass::getVersionChangelog(const QString &source)
 {
-    QString changelog = expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--").replace("   --", "---");
+    QString changelog = expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--").replace("   --", "---").replace("\\\\", "\\");
     replaceWithCapNumber(changelog, expForNormalLink, 0, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 0, "</a>");
     return changelog;
 }
