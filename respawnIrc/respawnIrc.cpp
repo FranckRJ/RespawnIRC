@@ -46,6 +46,13 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     QObject::connect(&tmpImageDownloadTool, &tmpImageDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
 
     loadSettings();
+
+    showTopicMessagesClass::startThread();
+}
+
+respawnIrcClass::~respawnIrcClass()
+{
+    showTopicMessagesClass::stopThread();
 }
 
 void respawnIrcClass::loadSettings()

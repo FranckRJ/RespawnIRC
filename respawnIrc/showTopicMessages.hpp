@@ -17,6 +17,8 @@ class showTopicMessagesClass : public QWidget
 public:
     showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct> *newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
     ~showTopicMessagesClass();
+    static void startThread();
+    static void stopThread();
     void startGetMessage();
     const QList<QPair<QString, QString> >& getListOfInput();
     QString getTopicLink();
@@ -60,10 +62,10 @@ signals:
     void downloadTheseStickersIfNeeded(QStringList listOfStickersToCheck);
     void downloadTheseNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesToCheck);
 private:
+    static QThread threadForGetMessages;
     QRegularExpression expForColorPseudo;
     QTextBrowser messagesBox;
     QString baseModel;
-    QThread threadForGetMessages;
     getTopicMessagesClass* getTopicMessages;
     modelInfoStruct baseModelInfo;
     QList<QNetworkCookie> currentCookieList;

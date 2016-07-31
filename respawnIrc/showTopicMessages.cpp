@@ -1,6 +1,8 @@
 #include "showTopicMessages.hpp"
 #include "settingTool.hpp"
 
+QThread showTopicMessagesClass::threadForGetMessages;
+
 showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
     networkManager = new QNetworkAccessManager(this);
@@ -28,7 +30,6 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 
     QObject::connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
 
-    QObject::connect(&threadForGetMessages, &QThread::finished, getTopicMessages, &QObject::deleteLater);
     QObject::connect(getTopicMessages, &getTopicMessagesClass::newMessagesAreAvailable, this, &showTopicMessagesClass::analyzeMessages);
     QObject::connect(getTopicMessages, &getTopicMessagesClass::newMessageStatus, this, &showTopicMessagesClass::setMessageStatus);
     QObject::connect(getTopicMessages, &getTopicMessagesClass::newNumberOfConnectedAndMP, this, &showTopicMessagesClass::setNumberOfConnectedAndMP);
@@ -36,11 +37,19 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     QObject::connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicMessagesClass::setCookiesFromRequest);
     QObject::connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicMessagesClass::downloadTheseStickersIfNeeded);
     QObject::connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicMessagesClass::downloadTheseNoelshackImagesIfNeeded);
-
-    threadForGetMessages.start();
 }
 
 showTopicMessagesClass::~showTopicMessagesClass()
+{
+    QMetaObject::invokeMethod(getTopicMessages, "deleteLater", Qt::QueuedConnection);
+}
+
+void showTopicMessagesClass::startThread()
+{
+    threadForGetMessages.start();
+}
+
+void showTopicMessagesClass::stopThread()
 {
     threadForGetMessages.quit();
     threadForGetMessages.wait();
