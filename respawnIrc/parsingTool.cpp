@@ -40,6 +40,7 @@ const QRegularExpression parsingToolClass::expForLongLink("<span class=\"JvCare 
 const QRegularExpression parsingToolClass::expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
 const QRegularExpression parsingToolClass::expForJvcLink("<a href=\"([^\"]*)\"( title=\"[^\"]*\")?>.*?</a>", QRegularExpression::OptimizeOnFirstUsageOption);
 const QRegularExpression parsingToolClass::expForNoelshack("<a href=\"([^\"]*)\" data-def=\"NOELSHACK\" target=\"_blank\"><img class=\"img-shack\" .*? src=\"//([^\"]*)\" [^>]*></a>", QRegularExpression::OptimizeOnFirstUsageOption);
+const QRegularExpression parsingToolClass::expForYoutubeVideo("<div class=\"player-contenu\"><div class=\"[^\"]*\"><iframe .*? src=\"http(s)?://www.youtube.com/embed/([^\"]*)\"[^>]*></iframe></div></div>", QRegularExpression::OptimizeOnFirstUsageOption);
 const QRegularExpression parsingToolClass::expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 const QRegularExpression parsingToolClass::expForSpoilBlock("<span class=\"bloc-spoil-jv\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
 const QRegularExpression parsingToolClass::expForCodeLine("<code class=\"code-jv\">([^<]*)</code>", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -402,6 +403,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
     }
 
     replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"resources/smileys/", "\" />");
+    replaceWithCapNumber(thisMessage, expForYoutubeVideo, 2, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://youtu.be/", "\">http://youtu.be/", 2, "</a>");
     replaceWithCapNumber(thisMessage, expForJvcLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");

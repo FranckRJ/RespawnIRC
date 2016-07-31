@@ -110,6 +110,7 @@ private:
     static const QRegularExpression expForShortLink;
     static const QRegularExpression expForJvcLink;
     static const QRegularExpression expForNoelshack;
+    static const QRegularExpression expForYoutubeVideo;
     static const QRegularExpression expForSpoilLine;
     static const QRegularExpression expForSpoilBlock;
     static const QRegularExpression expForCodeLine;
