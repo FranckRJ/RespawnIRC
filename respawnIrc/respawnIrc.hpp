@@ -40,7 +40,6 @@ public slots:
     void showPreferences();
     void showIgnoreListWindow();
     void showColorPseudoListWindow();
-    void showSelectIntWindow();
     void showAbout();
     void addNewTab();
     void addNewTabWithTopic(QString newTopicLink);

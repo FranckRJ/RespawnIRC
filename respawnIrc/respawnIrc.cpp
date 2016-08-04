@@ -7,7 +7,6 @@
 #include "selectStickerWindow.hpp"
 #include "preferencesWindow.hpp"
 #include "ignoreListWindow.hpp"
-#include "chooseNumberWindow.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 #include "styleTool.hpp"
@@ -292,7 +291,8 @@ void respawnIrcClass::showSelectTheme()
 void respawnIrcClass::showPreferences()
 {
     preferenceWindowClass* myPreferencesWindow = new preferenceWindowClass(this);
-    QObject::connect(myPreferencesWindow, &preferenceWindowClass::newValueForOption, this, &respawnIrcClass::setThisBoolOption);
+    QObject::connect(myPreferencesWindow, &preferenceWindowClass::newValueForBoolOption, this, &respawnIrcClass::setThisBoolOption);
+    QObject::connect(myPreferencesWindow, &preferenceWindowClass::newValueForIntOption, this, &respawnIrcClass::setThisIntOption);
     myPreferencesWindow->exec();
 }
 
@@ -308,25 +308,6 @@ void respawnIrcClass::showColorPseudoListWindow()
     colorPseudoListWindowClass* myColorPseudoListWindow = new colorPseudoListWindowClass(&listOfColorPseudo, this);
     QObject::connect(myColorPseudoListWindow, &colorPseudoListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfColorPseudo);
     myColorPseudoListWindow->exec();
-}
-
-void respawnIrcClass::showSelectIntWindow()
-{
-    QObject* senderObject = sender();
-    QString objectName;
-
-    if(senderObject != nullptr)
-    {
-        objectName = senderObject->objectName();
-    }
-
-    if(objectName.isEmpty() == false)
-    {
-        intSettingStruct tmpIntSetting = settingToolClass::getThisIntOption(objectName);
-        chooseNumberWindowClass* myChooseNumberWindow = new chooseNumberWindowClass(tmpIntSetting.minValue, tmpIntSetting.maxValue, tmpIntSetting.value, objectName, this);
-        QObject::connect(myChooseNumberWindow, &chooseNumberWindowClass::newNumberSet, this, &respawnIrcClass::setThisIntOption);
-        myChooseNumberWindow->exec();
-    }
 }
 
 void respawnIrcClass::showAbout()

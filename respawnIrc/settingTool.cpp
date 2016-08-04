@@ -82,31 +82,6 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultByteOption["windowGeometry"] = "";
 }
 
-
-QAction* settingToolClass::createActionForOption(QString actionName, QString optionName, QMenu* menuForAction, QObject* pointer, const char* method, bool checkable)
-{
-    QAction* newAction = menuForAction->addAction(actionName);
-
-    if(checkable == true)
-    {
-        newAction->setCheckable(true);
-        newAction->setChecked(getThisBoolOption(optionName));
-    }
-
-    newAction->setObjectName(optionName);
-
-    if(checkable == true)
-    {
-        QObject::connect(newAction, SIGNAL(toggled(bool)), pointer, method);
-    }
-    else
-    {
-        QObject::connect(newAction, SIGNAL(triggered(bool)), pointer, method);
-    }
-
-    return newAction;
-}
-
 bool settingToolClass::getThisBoolOption(QString optionName)
 {
     QMap<QString, bool>::iterator iteForList = listOfDefaultBoolOption.find(optionName);

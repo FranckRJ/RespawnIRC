@@ -9,10 +9,13 @@ class preferenceWindowClass : public QDialog
 public:
     preferenceWindowClass(QWidget* parent);
     QCheckBox* makeNewCheckBox(QString messageInfo, QString boxNameValue);
+    QHBoxLayout* makeNewSpinBox(QString messageInfo, QString boxNameValue);
 public slots:
     void valueOfCheckboxChanged(bool newVal);
+    void valueOfSpinboxChanged(int newVal);
 signals:
-    void newValueForOption(bool newVal, QString thisOption);
+    void newValueForBoolOption(bool newVal, QString thisOption);
+    void newValueForIntOption(int newVal, QString thisOption);
 };
 
 #endif

@@ -38,9 +38,35 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     vboxOther->addStretch(1);
     groupBoxOther->setLayout(vboxOther);
 
-    QHBoxLayout* mainLayout = new QHBoxLayout(this);
-    mainLayout->addWidget(groupBoxMessageContents);
-    mainLayout->addWidget(groupBoxOther);
+    QGroupBox* groupBoxOtherBool = new QGroupBox("Autre booléen", this);
+
+    QVBoxLayout* vboxOtherBool = new QVBoxLayout(this);
+    vboxOtherBool->addWidget(makeNewCheckBox("Afficher la liste des topics", "showListOfTopic"));
+    vboxOtherBool->addWidget(makeNewCheckBox("Récupérer le premier message du topic", "getFirstMessageOfTopic"));
+    vboxOtherBool->addWidget(makeNewCheckBox("Ignorer les erreurs réseau", "ignoreNetworkError"));
+    vboxOtherBool->addWidget(makeNewCheckBox("Beeper lors de la réception d'un message", "beepWhenWarn"));
+    vboxOtherBool->addWidget(makeNewCheckBox("Avertir visuellement lors de la réception d'un message", "warnUser"));
+    vboxOtherBool->addWidget(makeNewCheckBox("Avertir lors de l'édition d'un message", "warnWhenEdit"));
+    vboxOtherBool->addStretch(1);
+    groupBoxOtherBool->setLayout(vboxOtherBool);
+
+    QGroupBox* groupBoxOtherInt = new QGroupBox("Autre entier", this);
+
+    QVBoxLayout* vboxOtherInt = new QVBoxLayout(this);
+    vboxOtherInt->addLayout(makeNewSpinBox("Temps en secondes avant le timeout des requêtes", "timeoutInSecond"));
+    vboxOtherInt->addLayout(makeNewSpinBox("Taux de rafraichissement des topics", "updateTopicTime"));
+    vboxOtherInt->addLayout(makeNewSpinBox("Nombre de messages affichés au premier chargement", "numberOfMessageShowedFirstTime"));
+    vboxOtherInt->addLayout(makeNewSpinBox("Taille des stickers", "stickersSize"));
+    vboxOtherInt->addLayout(makeNewSpinBox("Taille de la zone de saisie", "textBoxSize"));
+    vboxOtherInt->addLayout(makeNewSpinBox("Nombre maximal de quotes imbriquées", "maxNbOfQuotes"));
+    vboxOtherInt->addStretch(1);
+    groupBoxOtherInt->setLayout(vboxOtherInt);
+
+    QGridLayout* mainLayout = new QGridLayout(this);
+    mainLayout->addWidget(groupBoxMessageContents, 0, 0);
+    mainLayout->addWidget(groupBoxOther, 0, 1);
+    mainLayout->addWidget(groupBoxOtherBool, 1, 0);
+    mainLayout->addWidget(groupBoxOtherInt, 1, 1);
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     setLayout(mainLayout);
@@ -58,12 +84,42 @@ QCheckBox* preferenceWindowClass::makeNewCheckBox(QString messageInfo, QString b
     return tmp;
 }
 
+QHBoxLayout* preferenceWindowClass::makeNewSpinBox(QString messageInfo, QString boxNameValue)
+{
+    QHBoxLayout* hboxForSpinBox = new QHBoxLayout();
+    QSpinBox* newSpinBox = new QSpinBox(this);
+    intSettingStruct infoForIntSetting = settingToolClass::getThisIntOption(boxNameValue);
+    QLabel* newInfoForSpinBox = new QLabel(messageInfo +  " (entre " + QString::number(infoForIntSetting.minValue) + " et " + QString::number(infoForIntSetting.maxValue) + ") :", this);
+
+    newSpinBox->setObjectName(boxNameValue);
+    newSpinBox->setMinimum(infoForIntSetting.minValue);
+    newSpinBox->setMaximum(infoForIntSetting.maxValue);
+    newSpinBox->setValue(infoForIntSetting.value);
+
+    hboxForSpinBox->addWidget(newInfoForSpinBox);
+    hboxForSpinBox->addWidget(newSpinBox);
+
+    QObject::connect(newSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &preferenceWindowClass::valueOfSpinboxChanged);
+
+    return hboxForSpinBox;
+}
+
 void preferenceWindowClass::valueOfCheckboxChanged(bool newVal)
 {
     QObject* senderObject = sender();
 
     if(senderObject != nullptr)
     {
-        emit newValueForOption(newVal, senderObject->objectName());
+        emit newValueForBoolOption(newVal, senderObject->objectName());
+    }
+}
+
+void preferenceWindowClass::valueOfSpinboxChanged(int newVal)
+{
+    QObject* senderObject = sender();
+
+    if(senderObject != nullptr)
+    {
+        emit newValueForIntOption(newVal, senderObject->objectName());
     }
 }

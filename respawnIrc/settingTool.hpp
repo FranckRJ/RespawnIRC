@@ -19,7 +19,6 @@ class settingToolClass
 public:
     static void setSettings(QSettings* newSetting);
     static void initializeDefaultListsOption();
-    static QAction* createActionForOption(QString actionName, QString optionName, QMenu* menuForAction, QObject* pointer, const char* method, bool checkable = true);
     static bool getThisBoolOption(QString optionName);
     static intSettingStruct getThisIntOption(QString optionName);
     static QString getThisStringOption(QString optionName);

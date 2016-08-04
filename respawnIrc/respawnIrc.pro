@@ -21,7 +21,6 @@ SOURCES += \
     addPseudoWindow.cpp \
     settingTool.cpp \
     multiTypeTextBox.cpp \
-    chooseNumberWindow.cpp \
     checkUpdate.cpp \
     accountListWindow.cpp \
     colorPseudoListWindow.cpp \
@@ -74,7 +73,6 @@ HEADERS += \
     addPseudoWindow.hpp \
     settingTool.hpp \
     multiTypeTextBox.hpp \
-    chooseNumberWindow.hpp \
     checkUpdate.hpp \
     colorPseudoListWindow.hpp \
     accountListWindow.hpp \
