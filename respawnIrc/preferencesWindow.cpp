@@ -5,72 +5,173 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QGroupBox* groupBoxMessageContents = new QGroupBox("Contenu des messages", this);
+    QTabWidget* mainWidget = new QTabWidget(this);
 
-    QVBoxLayout* vboxMessageContents = new QVBoxLayout(this);
-    vboxMessageContents->addWidget(makeNewCheckBox("Ajouter un bouton pour citer un message", "showQuoteButton"));
-    vboxMessageContents->addWidget(makeNewCheckBox("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton"));
-    vboxMessageContents->addWidget(makeNewCheckBox("Ajouter un bouton pour éditer un message", "showEditButton"));
-    vboxMessageContents->addWidget(makeNewCheckBox("Ajouter un bouton pour supprimer un message", "showDeleteButton"));
-    vboxMessageContents->addWidget(makeNewCheckBox("Afficher les stickers", "showStickers"));
-    vboxMessageContents->addWidget(makeNewCheckBox("Remplacer les stickers par des smileys", "stickersToSmiley"));
-    vboxMessageContents->addWidget(makeNewCheckBox("Colorer le pseudo des modo/admin", "colorModoAndAdminPseudo"));
-    vboxMessageContents->addWidget(makeNewCheckBox("Colorer les PEMT", "colorPEMT"));
-    vboxMessageContents->addWidget(makeNewCheckBox("Colorer votre pseudo dans les messages", "colorUserPseudoInMessages"));
-    vboxMessageContents->addWidget(makeNewCheckBox("Améliorer les citations", "betterQuote"));
-    vboxMessageContents->addStretch(1);
-    groupBoxMessageContents->setLayout(vboxMessageContents);
+    QHBoxLayout* realMainLayout = new QHBoxLayout(this);
+    realMainLayout->addWidget(mainWidget);
+    realMainLayout->setMargin(5);
+    realMainLayout->setSizeConstraint(QLayout::SetFixedSize);
+
+    mainWidget->addTab(createWidgetForMainTab(), "Général");
+    mainWidget->addTab(createWidgetForMessageAndTopicStyleTab(), "Style des messages / topics");
+    mainWidget->addTab(createWidgetForImageTab(), "Image");
+
+    setLayout(realMainLayout);
+    setWindowTitle("Préférences");
+}
+
+QWidget* preferenceWindowClass::createWidgetForMainTab()
+{
+    QWidget* mainTabWidget = new QWidget(this);
+
+    QGroupBox* groupBoxAlert = new QGroupBox("Alerte", this);
+
+    QVBoxLayout* vboxAlert = new QVBoxLayout();
+    vboxAlert->addWidget(makeNewCheckBox("Beeper lors de la réception d'un message", "beepWhenWarn"));
+    vboxAlert->addWidget(makeNewCheckBox("Avertir visuellement lors de la réception d'un message", "warnUser"));
+    vboxAlert->addWidget(makeNewCheckBox("Avertir lors de l'édition d'un message", "warnWhenEdit"));
+    vboxAlert->addStretch(1);
+    groupBoxAlert->setLayout(vboxAlert);
 
     QGroupBox* groupBoxOther = new QGroupBox("Autre", this);
 
-    QVBoxLayout* vboxOther = new QVBoxLayout(this);
-    vboxOther->addWidget(makeNewCheckBox("Afficher les boutons de décoration de texte", "showTextDecorationButton"));
-    vboxOther->addWidget(makeNewCheckBox("Saisie du message en mode multiligne", "setMultilineEdit"));
+    QVBoxLayout* vboxOther = new QVBoxLayout();
     vboxOther->addWidget(makeNewCheckBox("Vérifier l'orthographe", "useSpellChecker"));
-    vboxOther->addWidget(makeNewCheckBox("Charger les deux dernières pages", "loadTwoLastPage"));
-    vboxOther->addWidget(makeNewCheckBox("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch"));
-    vboxOther->addWidget(makeNewCheckBox("Sauvegarder la taille de la fenêtre", "saveWindowGeometry"));
     vboxOther->addWidget(makeNewCheckBox("Changer la couleur du message lors de l'édition", "changeColorOnEdit"));
-    vboxOther->addWidget(makeNewCheckBox("Afficher le nombre de réponses dans la liste des topics", "showNumberOfMessagesInTopicList"));
-    vboxOther->addWidget(makeNewCheckBox("Couper les longs noms de topics dans la liste des topics", "cutLongTopicNameInTopicList"));
-    vboxOther->addWidget(makeNewCheckBox("Télécharger automatiquement les stickers manquants", "downloadMissingStickers"));
-    vboxOther->addWidget(makeNewCheckBox("Afficher les miniatures noelshack", "downloadNoelshackImages"));
+    vboxOther->addWidget(makeNewCheckBox("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch"));
     vboxOther->addStretch(1);
     groupBoxOther->setLayout(vboxOther);
 
-    QGroupBox* groupBoxOtherBool = new QGroupBox("Autre booléen", this);
+    QGroupBox* groupBoxWindowLayout = new QGroupBox("Agencement de la fenêtre", this);
 
-    QVBoxLayout* vboxOtherBool = new QVBoxLayout(this);
-    vboxOtherBool->addWidget(makeNewCheckBox("Afficher la liste des topics", "showListOfTopic"));
-    vboxOtherBool->addWidget(makeNewCheckBox("Récupérer le premier message du topic", "getFirstMessageOfTopic"));
-    vboxOtherBool->addWidget(makeNewCheckBox("Ignorer les erreurs réseau", "ignoreNetworkError"));
-    vboxOtherBool->addWidget(makeNewCheckBox("Beeper lors de la réception d'un message", "beepWhenWarn"));
-    vboxOtherBool->addWidget(makeNewCheckBox("Avertir visuellement lors de la réception d'un message", "warnUser"));
-    vboxOtherBool->addWidget(makeNewCheckBox("Avertir lors de l'édition d'un message", "warnWhenEdit"));
-    vboxOtherBool->addStretch(1);
-    groupBoxOtherBool->setLayout(vboxOtherBool);
+    QVBoxLayout* vboxWindowLayout = new QVBoxLayout();
+    vboxWindowLayout->addWidget(makeNewCheckBox("Sauvegarder la taille de la fenêtre", "saveWindowGeometry"));
+    vboxWindowLayout->addWidget(makeNewCheckBox("Afficher les boutons de décoration de texte", "showTextDecorationButton"));
+    vboxWindowLayout->addWidget(makeNewCheckBox("Afficher la liste des topics", "showListOfTopic"));
+    vboxWindowLayout->addWidget(makeNewCheckBox("Saisie du message en mode multiligne", "setMultilineEdit"));
+    vboxWindowLayout->addLayout(makeNewSpinBox("Taille de la zone de saisie", "textBoxSize"));
+    vboxWindowLayout->addStretch(1);
+    groupBoxWindowLayout->setLayout(vboxWindowLayout);
 
-    QGroupBox* groupBoxOtherInt = new QGroupBox("Autre entier", this);
+    QGroupBox* groupBoxAdvanced = new QGroupBox("Avancé", this);
 
-    QVBoxLayout* vboxOtherInt = new QVBoxLayout(this);
-    vboxOtherInt->addLayout(makeNewSpinBox("Temps en secondes avant le timeout des requêtes", "timeoutInSecond"));
-    vboxOtherInt->addLayout(makeNewSpinBox("Taux de rafraichissement des topics", "updateTopicTime"));
-    vboxOtherInt->addLayout(makeNewSpinBox("Nombre de messages affichés au premier chargement", "numberOfMessageShowedFirstTime"));
-    vboxOtherInt->addLayout(makeNewSpinBox("Taille des stickers", "stickersSize"));
-    vboxOtherInt->addLayout(makeNewSpinBox("Taille de la zone de saisie", "textBoxSize"));
-    vboxOtherInt->addLayout(makeNewSpinBox("Nombre maximal de quotes imbriquées", "maxNbOfQuotes"));
-    vboxOtherInt->addStretch(1);
-    groupBoxOtherInt->setLayout(vboxOtherInt);
+    QVBoxLayout* vboxAdvanced = new QVBoxLayout();
+    vboxAdvanced->addWidget(makeNewCheckBox("Charger les deux dernières pages", "loadTwoLastPage"));
+    vboxAdvanced->addWidget(makeNewCheckBox("Ignorer les erreurs réseau", "ignoreNetworkError"));
+    vboxAdvanced->addLayout(makeNewSpinBox("Temps en secondes avant le timeout des requêtes", "timeoutInSecond"));
+    vboxAdvanced->addLayout(makeNewSpinBox("Taux de rafraichissement des topics", "updateTopicTime"));
+    vboxAdvanced->addLayout(makeNewSpinBox("Nombre maximal de quotes imbriquées", "maxNbOfQuotes"));
+    vboxAdvanced->addStretch(1);
+    groupBoxAdvanced->setLayout(vboxAdvanced);
 
-    QGridLayout* mainLayout = new QGridLayout(this);
-    mainLayout->addWidget(groupBoxMessageContents, 0, 0);
+    QGridLayout* mainLayout = new QGridLayout();
+    mainLayout->addWidget(groupBoxAlert, 0, 0);
     mainLayout->addWidget(groupBoxOther, 0, 1);
-    mainLayout->addWidget(groupBoxOtherBool, 1, 0);
-    mainLayout->addWidget(groupBoxOtherInt, 1, 1);
-    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    mainLayout->addWidget(groupBoxWindowLayout, 1, 0);
+    mainLayout->addWidget(groupBoxAdvanced, 1, 1);
+    mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
-    setLayout(mainLayout);
-    setWindowTitle("Préférences");
+    QVBoxLayout* realMainLayout = new QVBoxLayout();
+    realMainLayout->addLayout(mainLayout);
+    realMainLayout->addStretch(1);
+
+    mainTabWidget->setLayout(realMainLayout);
+
+    return mainTabWidget;
+}
+
+QWidget* preferenceWindowClass::createWidgetForImageTab()
+{
+    QWidget* mainTabWidget = new QWidget(this);
+
+    QGroupBox* groupBoxGeneral = new QGroupBox("Général", this);
+
+    QVBoxLayout* vboxGeneral = new QVBoxLayout();
+    vboxGeneral->addWidget(makeNewCheckBox("Type de rafraichissement des images (imaginez une liste déroulante)", "existepas"));
+    vboxGeneral->addStretch(1);
+    groupBoxGeneral->setLayout(vboxGeneral);
+
+    QGroupBox* groupBoxStickers = new QGroupBox("Stickers", this);
+
+    QVBoxLayout* vboxStickers = new QVBoxLayout();
+    vboxStickers->addWidget(makeNewCheckBox("Afficher les stickers", "showStickers"));
+    vboxStickers->addWidget(makeNewCheckBox("Télécharger automatiquement les stickers manquants", "downloadMissingStickers"));
+    vboxStickers->addWidget(makeNewCheckBox("Remplacer les stickers par des smileys", "stickersToSmiley"));
+    vboxStickers->addLayout(makeNewSpinBox("Taille des stickers", "stickersSize"));
+    vboxStickers->addStretch(1);
+    groupBoxStickers->setLayout(vboxStickers);
+
+    QGroupBox* groupBoxOtherNoelshack = new QGroupBox("Noelshack", this);
+
+    QVBoxLayout* vboxNoelshack = new QVBoxLayout();
+    vboxNoelshack->addWidget(makeNewCheckBox("Afficher les miniatures noelshack", "downloadNoelshackImages"));
+    vboxNoelshack->addLayout(makeNewSpinBox("Largeur des miniatures noelshack", "noelshackImageWidth"));
+    vboxNoelshack->addLayout(makeNewSpinBox("Hauteur des miniatures noelshack", "noelshackImageHeight"));
+    vboxNoelshack->addStretch(1);
+    groupBoxOtherNoelshack->setLayout(vboxNoelshack);
+
+    QGridLayout* mainLayout = new QGridLayout();
+    mainLayout->addWidget(groupBoxGeneral, 0, 0, 1, 2);
+    mainLayout->addWidget(groupBoxStickers, 1, 0);
+    mainLayout->addWidget(groupBoxOtherNoelshack, 1, 1);
+    mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
+
+    QVBoxLayout* realMainLayout = new QVBoxLayout();
+    realMainLayout->addLayout(mainLayout);
+    realMainLayout->addStretch(1);
+
+    mainTabWidget->setLayout(realMainLayout);
+
+    return mainTabWidget;
+}
+
+QWidget* preferenceWindowClass::createWidgetForMessageAndTopicStyleTab()
+{
+    QWidget* mainTabWidget = new QWidget(this);
+
+    QGroupBox* groupBoxTopicStyle = new QGroupBox("Style des topics", this);
+
+    QVBoxLayout* vboxTopicStyle = new QVBoxLayout();
+    vboxTopicStyle->addWidget(makeNewCheckBox("Afficher le nombre de réponses dans la liste des topics", "showNumberOfMessagesInTopicList"));
+    vboxTopicStyle->addWidget(makeNewCheckBox("Couper les longs noms de topics dans la liste des topics", "cutLongTopicNameInTopicList"));
+    vboxTopicStyle->addStretch(1);
+    groupBoxTopicStyle->setLayout(vboxTopicStyle);
+
+    QGroupBox* groupBoxMessageButtons = new QGroupBox("Bouton des messages", this);
+
+    QVBoxLayout* vboxMessageButtons = new QVBoxLayout();
+    vboxMessageButtons->addWidget(makeNewCheckBox("Ajouter un bouton pour citer un message", "showQuoteButton"));
+    vboxMessageButtons->addWidget(makeNewCheckBox("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton"));
+    vboxMessageButtons->addWidget(makeNewCheckBox("Ajouter un bouton pour éditer un message", "showEditButton"));
+    vboxMessageButtons->addWidget(makeNewCheckBox("Ajouter un bouton pour supprimer un message", "showDeleteButton"));
+    vboxMessageButtons->addStretch(1);
+    groupBoxMessageButtons->setLayout(vboxMessageButtons);
+
+    QGroupBox* groupBoxMessageStyle = new QGroupBox("Style des messages", this);
+
+    QVBoxLayout* vboxMessageStyle = new QVBoxLayout();
+    vboxMessageStyle->addWidget(makeNewCheckBox("Colorer le pseudo des modo/admin", "colorModoAndAdminPseudo"));
+    vboxMessageStyle->addWidget(makeNewCheckBox("Colorer les PEMT", "colorPEMT"));
+    vboxMessageStyle->addWidget(makeNewCheckBox("Colorer votre pseudo dans les messages", "colorUserPseudoInMessages"));
+    vboxMessageStyle->addWidget(makeNewCheckBox("Améliorer les citations", "betterQuote"));
+    vboxMessageStyle->addWidget(makeNewCheckBox("Récupérer le premier message du topic", "getFirstMessageOfTopic"));
+    vboxMessageStyle->addLayout(makeNewSpinBox("Nombre de messages affichés au premier chargement", "numberOfMessageShowedFirstTime"));
+    vboxMessageStyle->addStretch(1);
+    groupBoxMessageStyle->setLayout(vboxMessageStyle);
+
+    QGridLayout* mainLayout = new QGridLayout();
+    mainLayout->addWidget(groupBoxTopicStyle, 0, 0, 1, 2);
+    mainLayout->addWidget(groupBoxMessageButtons, 1, 0);
+    mainLayout->addWidget(groupBoxMessageStyle, 1, 1);
+    mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
+
+    QVBoxLayout* realMainLayout = new QVBoxLayout();
+    realMainLayout->addLayout(mainLayout);
+    realMainLayout->addStretch(1);
+
+    mainTabWidget->setLayout(realMainLayout);
+
+    return mainTabWidget;
 }
 
 QCheckBox* preferenceWindowClass::makeNewCheckBox(QString messageInfo, QString boxNameValue)

@@ -8,6 +8,9 @@ class preferenceWindowClass : public QDialog
     Q_OBJECT
 public:
     preferenceWindowClass(QWidget* parent);
+    QWidget* createWidgetForMainTab();
+    QWidget* createWidgetForImageTab();
+    QWidget* createWidgetForMessageAndTopicStyleTab();
     QCheckBox* makeNewCheckBox(QString messageInfo, QString boxNameValue);
     QHBoxLayout* makeNewSpinBox(QString messageInfo, QString boxNameValue);
 public slots:

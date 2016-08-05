@@ -160,8 +160,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
             if(ignoreNetworkError == false)
             {
                 QMessageBox::warning(this, "Erreur sur " + topicName, "Le programme n'a pas réussi à récupérer les messages cette fois ci, mais il continuera à essayer tant que l'onglet est ouvert.\n\n"
-                                     "Si le message d'erreur persiste alors que de votre côté vous ne constatez aucun problème, vous pouvez désactiver les erreurs réseau en cochant l'option \"Ignorer les"
-                                     " erreurs réseau\" dans le menu \"Configuration\".");
+                                     "Vous pouvez désactiver ce message en cochant l'option \"Ignorer les erreurs réseau\" dans le menu Configuration > Préférences > Général > Avancé.");
             }
         }
     }
