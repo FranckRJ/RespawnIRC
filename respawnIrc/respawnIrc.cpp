@@ -291,8 +291,7 @@ void respawnIrcClass::showSelectTheme()
 void respawnIrcClass::showPreferences()
 {
     preferenceWindowClass* myPreferencesWindow = new preferenceWindowClass(this);
-    QObject::connect(myPreferencesWindow, &preferenceWindowClass::newValueForBoolOption, this, &respawnIrcClass::setThisBoolOption);
-    QObject::connect(myPreferencesWindow, &preferenceWindowClass::newValueForIntOption, this, &respawnIrcClass::setThisIntOption);
+    QObject::connect(myPreferencesWindow, &preferenceWindowClass::newSettingsAvailable, this, &respawnIrcClass::setTheseOptions);
     myPreferencesWindow->exec();
 }
 
@@ -507,72 +506,76 @@ void respawnIrcClass::addThisPeudoToBlacklist(QString pseudoToAdd)
     }
 }
 
-void respawnIrcClass::setThisBoolOption(bool newVal, QString trueName)
+void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<QString, int> newIntOptions)
 {
-    QString objectName;
+    QMap<QString, bool>::iterator boolIte;
+    QMap<QString, int>::iterator intIte;
+    bool sendMessageAlreadyUpdated = false;
 
-    if(trueName.isEmpty() == false)
+    for(boolIte = newBoolOptions.begin(); boolIte != newBoolOptions.end(); ++boolIte)
     {
-        objectName = trueName;
+        settingToolClass::saveThisOption(boolIte.key(), boolIte.value());
     }
-    else
+    for(intIte = newIntOptions.begin(); intIte != newIntOptions.end(); ++intIte)
     {
-        QObject* senderObject = sender();
-
-        if(senderObject != nullptr)
-        {
-            objectName = senderObject->objectName();
-        }
+        settingToolClass::saveThisOption(intIte.key(), intIte.value());
     }
 
-    if(objectName.isEmpty() == false)
+    if((boolIte = newBoolOptions.find("showTextDecorationButton")) != newBoolOptions.end())
     {
-        settingToolClass::saveThisOption(objectName, newVal);
-
-        if(objectName == "showTextDecorationButton")
-        {
-            setShowTextDecorationButton(newVal);
-        }
-        else if(objectName == "setMultilineEdit")
-        {
-            sendMessages.setMultilineEdit(newVal);
-        }
-        else if(objectName == "beepWhenWarn")
-        {
-            beepWhenWarn = newVal;
-        }
-        else if(objectName == "warnUser")
-        {
-            warnUser = newVal;
-        }
-        else if(objectName == "useSpellChecker")
+        setShowTextDecorationButton(boolIte.value());
+        newBoolOptions.erase(boolIte);
+    }
+    if((boolIte = newBoolOptions.find("setMultilineEdit")) != newBoolOptions.end())
+    {
+        sendMessages.setMultilineEdit(boolIte.value());
+        newBoolOptions.erase(boolIte);
+    }
+    if((boolIte = newBoolOptions.find("beepWhenWarn")) != newBoolOptions.end())
+    {
+        beepWhenWarn = boolIte.value();
+        newBoolOptions.erase(boolIte);
+    }
+    if((boolIte = newBoolOptions.find("warnUser")) != newBoolOptions.end())
+    {
+        warnUser = boolIte.value();
+        newBoolOptions.erase(boolIte);
+    }
+    if((boolIte = newBoolOptions.find("useSpellChecker")) != newBoolOptions.end())
+    {
+        if(sendMessageAlreadyUpdated == false)
         {
             sendMessages.settingsChanged();
+            sendMessageAlreadyUpdated = true;
         }
-        else if(objectName == "changeColorOnEdit")
+        newBoolOptions.erase(boolIte);
+    }
+    if((boolIte = newBoolOptions.find("changeColorOnEdit")) != newBoolOptions.end())
+    {
+        if(sendMessageAlreadyUpdated == false)
         {
             sendMessages.settingsChanged();
+            sendMessageAlreadyUpdated = true;
         }
-        else
+        newBoolOptions.erase(boolIte);
+    }
+
+    if((intIte = newIntOptions.find("textBoxSize")) != newIntOptions.end())
+    {
+        if(sendMessageAlreadyUpdated == false)
         {
-            updateSettingInfoForList();
+            sendMessages.settingsChanged();
+            sendMessageAlreadyUpdated = true;
         }
+        newIntOptions.erase(intIte);
     }
-}
-
-void respawnIrcClass::setThisIntOption(int newVal, QString optionName)
-{
-    settingToolClass::saveThisOption(optionName, newVal);
-
-    if(optionName == "textBoxSize")
+    if((intIte = newIntOptions.find("typeOfImageRefresh")) != newIntOptions.end())
     {
-        sendMessages.settingsChanged();
+        typeOfImageRefresh = intIte.value();
+        newIntOptions.erase(intIte);
     }
-    else if(optionName == "typeOfImageRefresh")
-    {
-        typeOfImageRefresh = newVal;
-    }
-    else
+
+    if(newBoolOptions.isEmpty() == false || newIntOptions.isEmpty() == false)
     {
         updateSettingInfoForList();
     }

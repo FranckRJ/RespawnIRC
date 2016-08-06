@@ -2,6 +2,7 @@
 #define PREFERENCEWINDOW_HPP
 
 #include <QtWidgets>
+#include <QMap>
 
 class preferenceWindowClass : public QDialog
 {
@@ -17,9 +18,14 @@ public:
 public slots:
     void valueOfCheckboxChanged(bool newVal);
     void valueOfIntBoxChanged(int newVal);
+    void applySettingsAndClose();
+    void applySettings();
 signals:
-    void newValueForBoolOption(bool newVal, QString thisOption);
-    void newValueForIntOption(int newVal, QString thisOption);
+    void setApplyButtonEnable(bool newVal);
+    void newSettingsAvailable(QMap<QString, bool> newBoolOptions, QMap<QString, int> newIntOptions);
+private:
+    QMap<QString, bool> listOfBoolOptionChanged;
+    QMap<QString, int> listOfIntOptionChanged;
 };
 
 #endif

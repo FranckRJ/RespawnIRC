@@ -7,8 +7,20 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
 
     QTabWidget* mainWidget = new QTabWidget(this);
 
-    QHBoxLayout* realMainLayout = new QHBoxLayout(this);
+    QPushButton* buttonOK = new QPushButton("OK", this);
+    QPushButton* buttonCancel = new QPushButton("Annuler", this);
+    QPushButton* buttonApply = new QPushButton("Appliquer", this);
+    buttonApply->setEnabled(false);
+
+    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    buttonLayout->addStretch(1);
+    buttonLayout->addWidget(buttonOK);
+    buttonLayout->addWidget(buttonCancel);
+    buttonLayout->addWidget(buttonApply);
+
+    QVBoxLayout* realMainLayout = new QVBoxLayout(this);
     realMainLayout->addWidget(mainWidget);
+    realMainLayout->addLayout(buttonLayout);
     realMainLayout->setMargin(5);
     realMainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
@@ -18,6 +30,11 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
 
     setLayout(realMainLayout);
     setWindowTitle("Préférences");
+
+    QObject::connect(this, &preferenceWindowClass::setApplyButtonEnable, buttonApply, &QPushButton::setEnabled);
+    QObject::connect(buttonOK, &QPushButton::pressed, this, &preferenceWindowClass::applySettingsAndClose);
+    QObject::connect(buttonCancel, &QPushButton::pressed, this, &preferenceWindowClass::close);
+    QObject::connect(buttonApply, &QPushButton::pressed, this, &preferenceWindowClass::applySettings);
 }
 
 QWidget* preferenceWindowClass::createWidgetForMainTab()
@@ -229,7 +246,8 @@ void preferenceWindowClass::valueOfCheckboxChanged(bool newVal)
 
     if(senderObject != nullptr)
     {
-        emit newValueForBoolOption(newVal, senderObject->objectName());
+        emit setApplyButtonEnable(true);
+        listOfBoolOptionChanged[senderObject->objectName()] = newVal;
     }
 }
 
@@ -239,6 +257,21 @@ void preferenceWindowClass::valueOfIntBoxChanged(int newVal)
 
     if(senderObject != nullptr)
     {
-        emit newValueForIntOption(newVal, senderObject->objectName());
+        emit setApplyButtonEnable(true);
+        listOfIntOptionChanged[senderObject->objectName()] = newVal;
     }
+}
+
+void preferenceWindowClass::applySettingsAndClose()
+{
+    applySettings();
+    close();
+}
+
+void preferenceWindowClass::applySettings()
+{
+    emit newSettingsAvailable(listOfBoolOptionChanged, listOfIntOptionChanged);
+    listOfBoolOptionChanged.clear();
+    listOfIntOptionChanged.clear();
+    emit setApplyButtonEnable(false);
 }
