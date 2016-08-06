@@ -13,9 +13,10 @@ public:
     QWidget* createWidgetForMessageAndTopicStyleTab();
     QCheckBox* makeNewCheckBox(QString messageInfo, QString boxNameValue);
     QHBoxLayout* makeNewSpinBox(QString messageInfo, QString boxNameValue);
+    QHBoxLayout* makeNewComboBox(QString messageInfo, QString boxNameValue, QStringList listOfChoices);
 public slots:
     void valueOfCheckboxChanged(bool newVal);
-    void valueOfSpinboxChanged(int newVal);
+    void valueOfIntBoxChanged(int newVal);
 signals:
     void newValueForBoolOption(bool newVal, QString thisOption);
     void newValueForIntOption(int newVal, QString thisOption);

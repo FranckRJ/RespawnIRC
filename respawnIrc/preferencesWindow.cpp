@@ -33,14 +33,14 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     vboxAlert->addStretch(1);
     groupBoxAlert->setLayout(vboxAlert);
 
-    QGroupBox* groupBoxOther = new QGroupBox("Autre", this);
+    QGroupBox* groupBoxMiscellaneous = new QGroupBox("Divers", this);
 
-    QVBoxLayout* vboxOther = new QVBoxLayout();
-    vboxOther->addWidget(makeNewCheckBox("Vérifier l'orthographe", "useSpellChecker"));
-    vboxOther->addWidget(makeNewCheckBox("Changer la couleur du message lors de l'édition", "changeColorOnEdit"));
-    vboxOther->addWidget(makeNewCheckBox("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch"));
-    vboxOther->addStretch(1);
-    groupBoxOther->setLayout(vboxOther);
+    QVBoxLayout* vboxMiscellaneous = new QVBoxLayout();
+    vboxMiscellaneous->addWidget(makeNewCheckBox("Vérifier l'orthographe", "useSpellChecker"));
+    vboxMiscellaneous->addWidget(makeNewCheckBox("Changer la couleur du message lors de l'édition", "changeColorOnEdit"));
+    vboxMiscellaneous->addWidget(makeNewCheckBox("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch"));
+    vboxMiscellaneous->addStretch(1);
+    groupBoxMiscellaneous->setLayout(vboxMiscellaneous);
 
     QGroupBox* groupBoxWindowLayout = new QGroupBox("Agencement de la fenêtre", this);
 
@@ -66,7 +66,7 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
 
     QGridLayout* mainLayout = new QGridLayout();
     mainLayout->addWidget(groupBoxAlert, 0, 0);
-    mainLayout->addWidget(groupBoxOther, 0, 1);
+    mainLayout->addWidget(groupBoxMiscellaneous, 0, 1);
     mainLayout->addWidget(groupBoxWindowLayout, 1, 0);
     mainLayout->addWidget(groupBoxAdvanced, 1, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
@@ -87,7 +87,7 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     QGroupBox* groupBoxGeneral = new QGroupBox("Général", this);
 
     QVBoxLayout* vboxGeneral = new QVBoxLayout();
-    vboxGeneral->addWidget(makeNewCheckBox("Type de rafraichissement des images (imaginez une liste déroulante)", "existepas"));
+    vboxGeneral->addLayout(makeNewComboBox("Type de rafraichissement des images :", "typeOfImageRefresh", {"Manuel (lors d'une action de l'utilisateur)", "Optimisé (toutes en même temps)", "Rapide (une par une)"}));
     vboxGeneral->addStretch(1);
     groupBoxGeneral->setLayout(vboxGeneral);
 
@@ -198,11 +198,29 @@ QHBoxLayout* preferenceWindowClass::makeNewSpinBox(QString messageInfo, QString 
     newSpinBox->setValue(infoForIntSetting.value);
 
     hboxForSpinBox->addWidget(newInfoForSpinBox);
-    hboxForSpinBox->addWidget(newSpinBox);
+    hboxForSpinBox->addWidget(newSpinBox, 1);
 
-    QObject::connect(newSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &preferenceWindowClass::valueOfSpinboxChanged);
+    QObject::connect(newSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
 
     return hboxForSpinBox;
+}
+
+QHBoxLayout* preferenceWindowClass::makeNewComboBox(QString messageInfo, QString boxNameValue, QStringList listOfChoices)
+{
+    QHBoxLayout* hboxForComboBox = new QHBoxLayout();
+    QComboBox* newComboBox = new QComboBox(this);
+    QLabel* newInfoForComboBox = new QLabel(messageInfo, this);
+
+    newComboBox->setObjectName(boxNameValue);
+    newComboBox->addItems(listOfChoices);
+    newComboBox->setCurrentIndex(settingToolClass::getThisIntOption(boxNameValue).value);
+
+    hboxForComboBox->addWidget(newInfoForComboBox);
+    hboxForComboBox->addWidget(newComboBox, 1);
+
+    QObject::connect(newComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
+
+    return hboxForComboBox;
 }
 
 void preferenceWindowClass::valueOfCheckboxChanged(bool newVal)
@@ -215,7 +233,7 @@ void preferenceWindowClass::valueOfCheckboxChanged(bool newVal)
     }
 }
 
-void preferenceWindowClass::valueOfSpinboxChanged(int newVal)
+void preferenceWindowClass::valueOfIntBoxChanged(int newVal)
 {
     QObject* senderObject = sender();
 
