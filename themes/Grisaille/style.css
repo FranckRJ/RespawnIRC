@@ -3,7 +3,7 @@ QMainWindow, QDialog
 	background: dimgrey;
 }
 
-QLabel
+QLabel, QGroupBox, QCheckBox
 {
 	color: lightgrey;
 }
@@ -103,6 +103,7 @@ QTabBar::tab
 	border-bottom: 0px;
     padding-bottom: 5px;
     padding-left: 4px;
+    padding-right: 4px;
     padding-top: 2px;
 }
 
