@@ -385,7 +385,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
 
     if(stickerToSmiley == true)
     {
-        shortcutToolClass::transformMessage(thisMessage, "stickerToSmiley");
+        shortcutToolClass::transformMessage(&thisMessage, "stickerToSmiley");
     }
 
     if(showStickers == false)

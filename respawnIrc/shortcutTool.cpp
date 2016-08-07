@@ -29,7 +29,15 @@ void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, Q
     }
 }
 
-QString& shortcutToolClass::transformMessage(QString& thisMessage, QString ruleName)
+void shortcutToolClass::transformMessage(QString* thisMessage, QString ruleName)
+{
+    if(thisMessage != nullptr)
+    {
+        *thisMessage = transformMessage(*thisMessage, ruleName);
+    }
+}
+
+QString shortcutToolClass::transformMessage(QString thisMessage, QString ruleName)
 {
     QMap<QString, QMap<QString, QString> >::iterator rulesIte = listOfShortcutRules.find(ruleName);
 
