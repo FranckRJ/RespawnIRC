@@ -1,3 +1,7 @@
+#include <QPushButton>
+#include <QGridLayout>
+#include <QMessageBox>
+
 #include "ignoreListWindow.hpp"
 #include "addPseudoWindow.hpp"
 

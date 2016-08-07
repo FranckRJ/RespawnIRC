@@ -1,15 +1,17 @@
 #ifndef SHOWTOPICMESSAGES_HPP
 #define SHOWTOPICMESSAGES_HPP
 
-#include <QtWidgets>
-#include <QtCore>
-#include <QtNetwork>
+#include <QTextBrowser>
+#include <QThread>
 
 #include "colorPseudoListWindow.hpp"
 #include "getTopicMessages.hpp"
 #include "autoTimeoutReply.hpp"
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
+
+class QNetworkReply;
+class QNetworkAccessManager;
 
 class showTopicMessagesClass : public QWidget
 {

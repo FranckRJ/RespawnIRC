@@ -1,3 +1,10 @@
+#include <QWebEngineProfile>
+#include <QWebEngineCookieStore>
+#include <QLabel>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QHBoxLayout>
+
 #include "connectWindow.hpp"
 #include "addCookiesWindow.hpp"
 #include "parsingTool.hpp"

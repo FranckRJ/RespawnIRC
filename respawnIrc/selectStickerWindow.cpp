@@ -1,3 +1,9 @@
+#include <QHBoxLayout>
+#include <QStringList>
+#include <QCoreApplication>
+#include <QDir>
+#include <QScrollBar>
+
 #include "selectStickerWindow.hpp"
 
 selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
@@ -21,7 +27,7 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
 
     loadListOfStickers();
 
-    QObject::connect(&stickerBrowser, &QListView::customContextMenuRequested, this, &selectStickerWindowClass::createContextMenu);
+    QObject::connect(&stickerBrowser, &QTextBrowser::customContextMenuRequested, this, &selectStickerWindowClass::createContextMenu);
     QObject::connect(&stickerBrowser, &QTextBrowser::anchorClicked, this, &selectStickerWindowClass::linkClicked);
     QObject::connect(stickerBrowser.verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
 }

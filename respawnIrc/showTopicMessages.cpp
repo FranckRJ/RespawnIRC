@@ -1,3 +1,12 @@
+#include <QNetworkAccessManager>
+#include <QCoreApplication>
+#include <QVBoxLayout>
+#include <QNetworkCookieJar>
+#include <QMessageBox>
+#include <QDesktopServices>
+#include <QNetworkReply>
+#include <QScrollBar>
+
 #include "showTopicMessages.hpp"
 #include "settingTool.hpp"
 

@@ -1,3 +1,7 @@
+#include <QFileInfo>
+#include <QCoreApplication>
+#include <QTextCodec>
+
 #include "highlighter.hpp"
 #include "styleTool.hpp"
 

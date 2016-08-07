@@ -1,3 +1,12 @@
+#include <QAction>
+#include <QFile>
+#include <QTextStream>
+#include <QCoreApplication>
+#include <QTextCodec>
+#include <QFileInfo>
+#include <QTextBlock>
+#include <QMenu>
+
 #include "spellTextEdit.hpp"
 
 spellTextEditClass::spellTextEditClass(QWidget *parent) : QTextEdit(parent)

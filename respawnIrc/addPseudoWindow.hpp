@@ -1,8 +1,8 @@
 #ifndef ADDPSEUDOWINDOW_HPP
 #define ADDPSEUDOWINDOW_HPP
 
-#include <QtWidgets>
-#include <QtCore>
+#include <QDialog>
+#include <QLineEdit>
 
 class addPseudoWindowClass : public QDialog
 {

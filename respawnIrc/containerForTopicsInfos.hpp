@@ -1,8 +1,6 @@
 #ifndef CONTAINERFORTOPICSINFOS_HPP
 #define CONTAINERFORTOPICSINFOS_HPP
 
-#include <QtWidgets>
-
 #include "showTopicMessages.hpp"
 #include "showListOfTopic.hpp"
 

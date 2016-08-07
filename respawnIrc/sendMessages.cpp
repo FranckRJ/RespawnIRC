@@ -1,3 +1,8 @@
+#include <QNetworkAccessManager>
+#include <QNetworkCookieJar>
+#include <QNetworkReply>
+#include <QMessageBox>
+
 #include "sendMessages.hpp"
 #include "parsingTool.hpp"
 #include "shortcutTool.hpp"

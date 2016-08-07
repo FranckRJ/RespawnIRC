@@ -1,3 +1,9 @@
+#include <QNetworkAccessManager>
+#include <QDir>
+#include <QCoreApplication>
+#include <QFileInfo>
+#include <QNetworkReply>
+
 #include "stickerDownloadTool.hpp"
 #include "parsingTool.hpp"
 

@@ -1,8 +1,8 @@
 #ifndef MULTITYPETEXTBOX_HPP
 #define MULTITYPETEXTBOX_HPP
 
-#include <QtWidgets>
-#include <QtCore>
+#include <QVBoxLayout>
+#include <QLineEdit>
 
 #include "spellTextEdit.hpp"
 #include "highlighter.hpp"

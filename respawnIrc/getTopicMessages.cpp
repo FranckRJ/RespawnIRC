@@ -1,3 +1,8 @@
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkCookieJar>
+#include <QTimer>
+
 #include "getTopicMessages.hpp"
 
 getTopicMessagesClass::getTopicMessagesClass(QObject* parent) : QObject(parent)

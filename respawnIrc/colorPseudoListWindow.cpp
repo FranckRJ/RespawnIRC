@@ -1,3 +1,8 @@
+#include <QPushButton>
+#include <QGridLayout>
+#include <QMessageBox>
+#include <QColorDialog>
+
 #include "colorPseudoListWindow.hpp"
 #include "addPseudoWindow.hpp"
 

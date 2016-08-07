@@ -1,3 +1,10 @@
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkCookieJar>
+#include <QVBoxLayout>
+#include <QMenu>
+#include <QDesktopServices>
+
 #include "showListOfTopic.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"

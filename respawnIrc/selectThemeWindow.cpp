@@ -1,3 +1,9 @@
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QGridLayout>
+#include <QDir>
+#include <QCoreApplication>
+
 #include "selectThemeWindow.hpp"
 
 selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)

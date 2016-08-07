@@ -1,3 +1,9 @@
+#include <QFile>
+#include <QStringList>
+#include <QCoreApplication>
+#include <QTextStream>
+#include <QVector>
+
 #include "styleTool.hpp"
 
 colorInfoForMessageAndOtherStruct styleToolClass::colorInfoForMessageAndOther;

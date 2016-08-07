@@ -1,8 +1,9 @@
 #ifndef COLORPSEUDOLISTWINDOW_HPP
 #define COLORPSEUDOLISTWINDOW_HPP
 
-#include <QtWidgets>
-#include <QtCore>
+#include <QDialog>
+#include <QListView>
+#include <QStringListModel>
 
 struct pseudoWithColorStruct
 {

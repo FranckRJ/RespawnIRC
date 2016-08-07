@@ -1,8 +1,8 @@
 #ifndef SELECTTOPICWINDOW_HPP
 #define SELECTTOPICWINDOW_HPP
 
-#include <QtWidgets>
-#include <QtCore>
+#include <QDialog>
+#include <QLineEdit>
 
 class selectTopicWindowClass : public QDialog
 {

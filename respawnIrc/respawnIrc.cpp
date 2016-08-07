@@ -1,4 +1,10 @@
 #include <QSound>
+#include <QCoreApplication>
+#include <QMessageBox>
+#include <QDesktopServices>
+#include <QApplication>
+#include <QClipboard>
+#include <QMimeData>
 
 #include "respawnIrc.hpp"
 #include "connectWindow.hpp"

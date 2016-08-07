@@ -1,8 +1,9 @@
 #ifndef IGNORELISTWINDOW_HPP
 #define IGNORELISTWINDOW_HPP
 
-#include <QtWidgets>
-#include <QtCore>
+#include <QDialog>
+#include <QListView>
+#include <QStringListModel>
 
 class ignoreListWindowClass : public QDialog
 {

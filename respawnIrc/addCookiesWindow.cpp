@@ -1,3 +1,10 @@
+#include <QLabel>
+#include <QPushButton>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QMessageBox>
+
 #include "addCookiesWindow.hpp"
 #include "styleTool.hpp"
 

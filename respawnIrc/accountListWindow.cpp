@@ -1,3 +1,8 @@
+#include <QLabel>
+#include <QGridLayout>
+#include <QMessageBox>
+#include <QPushButton>
+
 #include "accountListWindow.hpp"
 #include "connectWindow.hpp"
 

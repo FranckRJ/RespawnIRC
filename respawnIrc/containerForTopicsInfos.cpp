@@ -1,3 +1,6 @@
+#include <QSplitter>
+#include <QHBoxLayout>
+
 #include "containerForTopicsInfos.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"

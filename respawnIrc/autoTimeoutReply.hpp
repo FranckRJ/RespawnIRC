@@ -1,7 +1,10 @@
 #ifndef AUTOTIMEOUTREPLY_HPP
 #define AUTOTIMEOUTREPLY_HPP
 
-#include <QtNetwork>
+#include <QObject>
+
+class QNetworkReply;
+class QTimer;
 
 class autoTimeoutReplyClass : public QObject
 {

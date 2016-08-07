@@ -1,3 +1,11 @@
+#include <QMenuBar>
+#include <QMenu>
+#include <QAction>
+#include <QDesktopWidget>
+#include <QApplication>
+#include <QClipboard>
+#include <QDesktopServices>
+
 #include "mainWindow.hpp"
 #include "settingTool.hpp"
 #include "styleTool.hpp"

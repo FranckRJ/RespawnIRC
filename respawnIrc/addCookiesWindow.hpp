@@ -1,8 +1,8 @@
 #ifndef ADDCOOKIESWINDOW_HPP
 #define ADDCOOKIESWINDOW_HPP
 
-#include <QtWidgets>
-#include <QtCore>
+#include <QDialog>
+#include <QLineEdit>
 
 class addCookiesWindowClass : public QDialog
 {

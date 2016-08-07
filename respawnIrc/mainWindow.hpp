@@ -1,8 +1,7 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include <QtWidgets>
-#include <QtCore>
+#include <QMainWindow>
 
 #include "respawnIrc.hpp"
 

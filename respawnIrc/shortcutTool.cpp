@@ -1,3 +1,7 @@
+#include <QFile>
+#include <QTextStream>
+#include <QCoreApplication>
+
 #include "shortcutTool.hpp"
 
 QMap<QString, QMap<QString, QString> > shortcutToolClass::listOfShortcutRules;

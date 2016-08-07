@@ -1,9 +1,7 @@
 #ifndef RESPAWNIRC_HPP
 #define RESPAWNIRC_HPP
 
-#include <QtWidgets>
-#include <QtCore>
-#include <QtNetwork>
+#include <QLabel>
 
 #include "containerForTopicsInfos.hpp"
 #include "sendMessages.hpp"

@@ -1,3 +1,9 @@
+#include <QLabel>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QGridLayout>
+#include <QMessageBox>
+
 #include "addPseudoWindow.hpp"
 
 addPseudoWindowClass::addPseudoWindowClass(QWidget *parent, QString currentPseudo) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)

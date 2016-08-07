@@ -1,3 +1,6 @@
+#include <QDebug>
+#include <QDateTime>
+
 #include "settingTool.hpp"
 
 QSettings* settingToolClass::setting = nullptr;

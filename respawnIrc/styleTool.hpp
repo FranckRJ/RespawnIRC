@@ -1,7 +1,7 @@
 #ifndef STYLETOOL_HPP
 #define STYLETOOL_HPP
 
-#include <QtCore>
+#include <QString>
 
 struct modelInfoStruct
 {

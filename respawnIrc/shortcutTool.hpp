@@ -1,7 +1,7 @@
 #ifndef SHORTCUTTOOL_HPP
 #define SHORTCUTTOOL_HPP
 
-#include <QtCore>
+#include <QMap>
 
 class shortcutToolClass
 {

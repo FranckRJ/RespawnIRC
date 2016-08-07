@@ -1,8 +1,10 @@
 #ifndef STICKERDOWNLOADTOOL_HPP
 #define STICKERDOWNLOADTOOL_HPP
 
-#include <QtCore>
-#include <QtNetwork>
+#include <QObject>
+
+class QNetworkAccessManager;
+class QNetworkReply;
 
 class stickerDownloadToolClass : public QObject
 {

@@ -1,8 +1,12 @@
 #ifndef SPELLTEXTEDIT_HPP
 #define SPELLTEXTEDIT_HPP
 
-#include <QtWidgets>
+#include <QTextEdit>
 #include "hunspell/hunspell.hxx"
+
+class QContextMenuEvent;
+class QAction;
+class QTextCodec;
 
 class spellTextEditClass : public QTextEdit
 {

@@ -1,10 +1,13 @@
 #ifndef CONNECTWINDOW_HPP
 #define CONNECTWINDOW_HPP
 
-#include <QtWidgets>
-#include <QtCore>
-#include <QtNetwork>
-#include <QtWebEngineWidgets>
+#include <QDialog>
+#include <QNetworkCookie>
+#include <QWebEngineView>
+#include <QLineEdit>
+#include <QCheckBox>
+
+class QVBoxLayout;
 
 class connectWindowClass : public QDialog
 {

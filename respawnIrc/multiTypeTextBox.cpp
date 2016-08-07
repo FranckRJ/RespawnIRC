@@ -1,3 +1,5 @@
+#include <QScrollBar>
+
 #include "multiTypeTextBox.hpp"
 #include "settingTool.hpp"
 #include "styleTool.hpp"

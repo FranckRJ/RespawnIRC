@@ -1,9 +1,11 @@
 #ifndef ACCOUNTLISTWINDOW_HPP
 #define ACCOUNTLISTWINDOW_HPP
 
-#include <QtWidgets>
-#include <QtCore>
-#include <QtNetwork>
+#include <QDialog>
+#include <QNetworkCookie>
+#include <QListView>
+#include <QStringListModel>
+#include <QCheckBox>
 
 struct accountStruct
 {

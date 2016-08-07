@@ -1,8 +1,7 @@
 #ifndef SETTINGTOOL_HPP
 #define SETTINGTOOL_HPP
 
-#include <QtCore>
-#include <QtNetwork>
+#include <QSettings>
 
 #include "accountListWindow.hpp"
 #include "colorPseudoListWindow.hpp"

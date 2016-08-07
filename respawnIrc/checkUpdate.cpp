@@ -1,4 +1,7 @@
-#include <QtWidgets>
+#include <QWidget>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QMessageBox>
 
 #include "checkUpdate.hpp"
 #include "parsingTool.hpp"

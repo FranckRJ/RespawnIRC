@@ -1,8 +1,8 @@
 #ifndef PARSINGTOOL_HPP
 #define PARSINGTOOL_HPP
 
-#include <QtCore>
-#include <QtNetwork>
+#include <QNetworkRequest>
+#include <QRegularExpression>
 
 struct pseudoInfoStruct
 {

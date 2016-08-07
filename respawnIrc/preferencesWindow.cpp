@@ -1,3 +1,12 @@
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QGroupBox>
+#include <QSpinBox>
+#include <QLabel>
+#include <QComboBox>
+#include <QCheckBox>
+
 #include "preferencesWindow.hpp"
 #include "settingTool.hpp"
 

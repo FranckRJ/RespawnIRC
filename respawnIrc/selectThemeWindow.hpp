@@ -1,8 +1,10 @@
 #ifndef SELECTTHEMEWINDOW_HPP
 #define SELECTTHEMEWINDOW_HPP
 
-#include <QtWidgets>
-#include <QtCore>
+#include <QDialog>
+#include <QListView>
+#include <QStringListModel>
+#include <QLabel>
 
 class selectThemeWindowClass : public QDialog
 {

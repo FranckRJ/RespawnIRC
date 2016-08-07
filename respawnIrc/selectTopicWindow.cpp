@@ -1,3 +1,9 @@
+#include <QLabel>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QGridLayout>
+#include <QMessageBox>
+
 #include "selectTopicWindow.hpp"
 #include "parsingTool.hpp"
 

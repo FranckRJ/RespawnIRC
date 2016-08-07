@@ -1,11 +1,15 @@
 #ifndef SHOWLISTOFTOPIC_HPP
 #define SHOWLISTOFTOPIC_HPP
 
-#include <QtWidgets>
-#include <QtCore>
-#include <QtNetwork>
+#include <QTimer>
+#include <QListView>
+#include <QStringListModel>
+#include <QNetworkCookie>
 
 #include "autoTimeoutReply.hpp"
+
+class QNetworkReply;
+class QNetworkAccessManager;
 
 class showListOfTopicClass : public QWidget
 {

@@ -1,3 +1,6 @@
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+
 #include "tmpImageDownloadTool.hpp"
 #include "parsingTool.hpp"
 

@@ -1,3 +1,6 @@
+#include <QNetworkReply>
+#include <QTimer>
+
 #include "autoTimeoutReply.hpp"
 #include "settingTool.hpp"
 
