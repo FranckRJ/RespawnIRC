@@ -13,7 +13,7 @@ autoTimeoutReplyClass::autoTimeoutReplyClass(QObject* parent) : QObject(parent)
     updateTimeoutTime();
     timerForTimeout->stop();
 
-    QObject::connect(timerForTimeout, &QTimer::timeout, this, &autoTimeoutReplyClass::timeoutCurrentReply);
+    connect(timerForTimeout, &QTimer::timeout, this, &autoTimeoutReplyClass::timeoutCurrentReply);
 }
 
 QNetworkReply* autoTimeoutReplyClass::resetReply(QNetworkReply* newReply)

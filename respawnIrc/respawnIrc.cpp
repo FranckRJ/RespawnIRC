@@ -41,14 +41,14 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 
     setLayout(mainLayout);
 
-    QObject::connect(&sendMessages, &sendMessagesClass::needToPostMessage, this, &respawnIrcClass::messageHaveToBePosted);
-    QObject::connect(&sendMessages, &sendMessagesClass::needToSetEditMessage, this, &respawnIrcClass::setEditMessage);
-    QObject::connect(&sendMessages, &sendMessagesClass::needToGetMessages, this, &respawnIrcClass::updateTopic);
-    QObject::connect(&tabList, &QTabWidget::currentChanged, this, &respawnIrcClass::currentTabChanged);
-    QObject::connect(&tabList, &QTabWidget::tabCloseRequested, this, &respawnIrcClass::removeTab);
-    QObject::connect(tabList.tabBar(), &QTabBar::tabMoved, this, &respawnIrcClass::tabHasMoved);
-    QObject::connect(&stickerDownloadTool, &stickerDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
-    QObject::connect(&tmpImageDownloadTool, &tmpImageDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
+    connect(&sendMessages, &sendMessagesClass::needToPostMessage, this, &respawnIrcClass::messageHaveToBePosted);
+    connect(&sendMessages, &sendMessagesClass::needToSetEditMessage, this, &respawnIrcClass::setEditMessage);
+    connect(&sendMessages, &sendMessagesClass::needToGetMessages, this, &respawnIrcClass::updateTopic);
+    connect(&tabList, &QTabWidget::currentChanged, this, &respawnIrcClass::currentTabChanged);
+    connect(&tabList, &QTabWidget::tabCloseRequested, this, &respawnIrcClass::removeTab);
+    connect(tabList.tabBar(), &QTabBar::tabMoved, this, &respawnIrcClass::tabHasMoved);
+    connect(&stickerDownloadTool, &stickerDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
+    connect(&tmpImageDownloadTool, &tmpImageDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
 
     loadSettings();
 
@@ -187,15 +187,15 @@ void respawnIrcClass::addButtonToButtonLayout()
     buttonLayout->addWidget(buttonCode);
     buttonLayout->addWidget(buttonSpoil);
 
-    QObject::connect(buttonBold, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addBold);
-    QObject::connect(buttonItalic, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addItalic);
-    QObject::connect(buttonUnderline, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
-    QObject::connect(buttonStrike, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addStrike);
-    QObject::connect(buttonUList, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addUList);
-    QObject::connect(buttonOList, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addOListe);
-    QObject::connect(buttonQuote, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addQuote);
-    QObject::connect(buttonCode, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addCode);
-    QObject::connect(buttonSpoil, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addSpoil);
+    connect(buttonBold, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addBold);
+    connect(buttonItalic, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addItalic);
+    connect(buttonUnderline, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
+    connect(buttonStrike, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addStrike);
+    connect(buttonUList, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addUList);
+    connect(buttonOList, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addOListe);
+    connect(buttonQuote, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addQuote);
+    connect(buttonCode, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addCode);
+    connect(buttonSpoil, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addSpoil);
 }
 
 void respawnIrcClass::selectThisTab(int number)
@@ -259,59 +259,59 @@ void respawnIrcClass::updateSettingInfoForList()
 void respawnIrcClass::showConnect()
 {
     connectWindowClass* myConnectWindow = new connectWindowClass(this);
-    QObject::connect(myConnectWindow, &connectWindowClass::newCookiesAvailable, this, &respawnIrcClass::setNewCookies);
+    connect(myConnectWindow, &connectWindowClass::newCookiesAvailable, this, &respawnIrcClass::setNewCookies);
     myConnectWindow->exec();
 }
 
 void respawnIrcClass::showAccountListWindow()
 {
     accountListWindowClass* myAccountListWindow = new accountListWindowClass(&listOfAccount, this);
-    QObject::connect(myAccountListWindow, &accountListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfAccount);
-    QObject::connect(myAccountListWindow, &accountListWindowClass::useThisAccount, this, &respawnIrcClass::setNewCookies);
-    QObject::connect(myAccountListWindow, &accountListWindowClass::useThisAccountForOneTopic, this, &respawnIrcClass::setNewCookiesForCurrentTopic);
-    QObject::connect(myAccountListWindow, &accountListWindowClass::eraseThisPseudo, this, &respawnIrcClass::disconnectFromThisPseudo);
+    connect(myAccountListWindow, &accountListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfAccount);
+    connect(myAccountListWindow, &accountListWindowClass::useThisAccount, this, &respawnIrcClass::setNewCookies);
+    connect(myAccountListWindow, &accountListWindowClass::useThisAccountForOneTopic, this, &respawnIrcClass::setNewCookiesForCurrentTopic);
+    connect(myAccountListWindow, &accountListWindowClass::eraseThisPseudo, this, &respawnIrcClass::disconnectFromThisPseudo);
     myAccountListWindow->exec();
 }
 
 void respawnIrcClass::showSelectTopic()
 {
     selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(getCurrentWidget()->getShowTopicMessages().getTopicLink(), this);
-    QObject::connect(mySelectTopicWindow, &selectTopicWindowClass::newTopicSelected, this, &respawnIrcClass::setNewTopic);
+    connect(mySelectTopicWindow, &selectTopicWindowClass::newTopicSelected, this, &respawnIrcClass::setNewTopic);
     mySelectTopicWindow->exec();
 }
 
 void respawnIrcClass::showSelectSticker()
 {
     selectStickerWindowClass* mySelectStickerWindow = new selectStickerWindowClass(this);
-    QObject::connect(mySelectStickerWindow, &selectStickerWindowClass::addThisSticker, sendMessages.getMessageLine(), &multiTypeTextBoxClass::insertText);
+    connect(mySelectStickerWindow, &selectStickerWindowClass::addThisSticker, sendMessages.getMessageLine(), &multiTypeTextBoxClass::insertText);
     mySelectStickerWindow->exec();
 }
 
 void respawnIrcClass::showSelectTheme()
 {
     selectThemeWindowClass* mySelectThemeWindow = new selectThemeWindowClass(currentThemeName, this);
-    QObject::connect(mySelectThemeWindow, &selectThemeWindowClass::newThemeSelected, this, &respawnIrcClass::setNewTheme);
+    connect(mySelectThemeWindow, &selectThemeWindowClass::newThemeSelected, this, &respawnIrcClass::setNewTheme);
     mySelectThemeWindow->exec();
 }
 
 void respawnIrcClass::showPreferences()
 {
     preferenceWindowClass* myPreferencesWindow = new preferenceWindowClass(this);
-    QObject::connect(myPreferencesWindow, &preferenceWindowClass::newSettingsAvailable, this, &respawnIrcClass::setTheseOptions);
+    connect(myPreferencesWindow, &preferenceWindowClass::newSettingsAvailable, this, &respawnIrcClass::setTheseOptions);
     myPreferencesWindow->exec();
 }
 
 void respawnIrcClass::showIgnoreListWindow()
 {
     ignoreListWindowClass* myIgnoreListWindow = new ignoreListWindowClass(&listOfIgnoredPseudo, this);
-    QObject::connect(myIgnoreListWindow, &ignoreListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfIgnoredPseudo);
+    connect(myIgnoreListWindow, &ignoreListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfIgnoredPseudo);
     myIgnoreListWindow->exec();
 }
 
 void respawnIrcClass::showColorPseudoListWindow()
 {
     colorPseudoListWindowClass* myColorPseudoListWindow = new colorPseudoListWindowClass(&listOfColorPseudo, this);
-    QObject::connect(myColorPseudoListWindow, &colorPseudoListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfColorPseudo);
+    connect(myColorPseudoListWindow, &colorPseudoListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfColorPseudo);
     myColorPseudoListWindow->exec();
 }
 
@@ -366,19 +366,19 @@ void respawnIrcClass::addNewTab()
 
     listOfContainerForTopicsInfos.back()->getShowTopicMessages().addSearchPath(tmpImageDownloadTool.getPathOfTmpDir());
 
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::setEditInfo, &sendMessages, &sendMessagesClass::setInfoForEditMessage);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::quoteThisMessage, &sendMessages, &sendMessagesClass::quoteThisMessage);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::downloadTheseStickersIfNeeded, this, &respawnIrcClass::downloadStickersIfNeeded);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::downloadTheseNoelshackImagesIfNeeded, this, &respawnIrcClass::downloadNoelshackImagesIfNeeded);
-    QObject::connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
-    QObject::connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
-    QObject::connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::setEditInfo, &sendMessages, &sendMessagesClass::setInfoForEditMessage);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::quoteThisMessage, &sendMessages, &sendMessagesClass::quoteThisMessage);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::downloadTheseStickersIfNeeded, this, &respawnIrcClass::downloadStickersIfNeeded);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::downloadTheseNoelshackImagesIfNeeded, this, &respawnIrcClass::downloadNoelshackImagesIfNeeded);
+    connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
+    connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
     tabList.addTab(listOfContainerForTopicsInfos.back(), "Onglet " + QString::number(listOfContainerForTopicsInfos.size()));
     tabList.setCurrentIndex(listOfContainerForTopicsInfos.size() - 1);
 }

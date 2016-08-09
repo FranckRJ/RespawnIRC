@@ -34,11 +34,11 @@ colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStru
     updateList();
     viewListOfColorPseudo.setModel(&modelForListView);
 
-    QObject::connect(buttonAddPseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::addPseudo);
-    QObject::connect(buttonEditPseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::editCurrentPseudo);
-    QObject::connect(buttonRemovePseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::removeCurrentPseudo);
-    QObject::connect(buttonValidate, &QPushButton::pressed, this, &colorPseudoListWindowClass::chooseColor);
-    QObject::connect(buttonOk, &QPushButton::pressed, this, &colorPseudoListWindowClass::close);
+    connect(buttonAddPseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::addPseudo);
+    connect(buttonEditPseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::editCurrentPseudo);
+    connect(buttonRemovePseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::removeCurrentPseudo);
+    connect(buttonValidate, &QPushButton::pressed, this, &colorPseudoListWindowClass::chooseColor);
+    connect(buttonOk, &QPushButton::pressed, this, &colorPseudoListWindowClass::close);
 }
 
 bool colorPseudoListWindowClass::addPseudoToColorPseudoList(QString newPseudo, bool reallyAddPseudoToList)
@@ -79,7 +79,7 @@ void colorPseudoListWindowClass::updateList()
 void colorPseudoListWindowClass::addPseudo()
 {
     addPseudoWindowClass* myAddPseudoWindow = new addPseudoWindowClass(this);
-    QObject::connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &colorPseudoListWindowClass::addThisPseudo);
+    connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &colorPseudoListWindowClass::addThisPseudo);
     myAddPseudoWindow->exec();
 }
 
@@ -88,7 +88,7 @@ void colorPseudoListWindowClass::editCurrentPseudo()
     if(viewListOfColorPseudo.currentIndex().row() != -1)
     {
         addPseudoWindowClass* myAddPseudoWindow = new addPseudoWindowClass(this, listOfColorPseudo->at(viewListOfColorPseudo.currentIndex().row()).pseudo);
-        QObject::connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &colorPseudoListWindowClass::setCurrentPseudo);
+        connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &colorPseudoListWindowClass::setCurrentPseudo);
         myAddPseudoWindow->exec();
     }
 

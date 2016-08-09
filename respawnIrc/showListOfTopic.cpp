@@ -26,9 +26,9 @@ showListOfTopicClass::showListOfTopicClass(QWidget* parent) : QWidget(parent)
 
     setLayout(layout);
 
-    QObject::connect(&listViewOfTopic, &QListView::customContextMenuRequested, this, &showListOfTopicClass::createContextMenu);
-    QObject::connect(&listViewOfTopic, &QListView::doubleClicked, this, &showListOfTopicClass::clickedOnLink);
-    QObject::connect(&timerForGetList, &QTimer::timeout, this, &showListOfTopicClass::startGetListOfTopic);
+    connect(&listViewOfTopic, &QListView::customContextMenuRequested, this, &showListOfTopicClass::createContextMenu);
+    connect(&listViewOfTopic, &QListView::doubleClicked, this, &showListOfTopicClass::clickedOnLink);
+    connect(&timerForGetList, &QTimer::timeout, this, &showListOfTopicClass::startGetListOfTopic);
 }
 
 void showListOfTopicClass::setForumLink(QString newForumLink)
@@ -108,7 +108,7 @@ void showListOfTopicClass::startGetListOfTopic()
 
             if(reply->isOpen() == true)
             {
-                QObject::connect(reply, &QNetworkReply::finished, this, &showListOfTopicClass::analyzeReply);
+                connect(reply, &QNetworkReply::finished, this, &showListOfTopicClass::analyzeReply);
             }
             else
             {

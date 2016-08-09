@@ -18,7 +18,7 @@ getTopicMessagesClass::getTopicMessagesClass(QObject* parent) : QObject(parent)
     timerForGetMessage->setInterval(5000);
     timerForGetMessage->stop();
 
-    QObject::connect(timerForGetMessage, &QTimer::timeout, this, &getTopicMessagesClass::getMessages);
+    connect(timerForGetMessage, &QTimer::timeout, this, &getTopicMessagesClass::getMessages);
 }
 
 void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessage)
@@ -163,7 +163,7 @@ void getTopicMessagesClass::getMessages()
             replyForFirstPage = timeoutForFirstPage->resetReply(networkManager->get(requestForFirstPage));
             if(replyForFirstPage->isOpen() == true)
             {
-                QObject::connect(replyForFirstPage, &QNetworkReply::finished, this, &getTopicMessagesClass::loadFirstPageFinish);
+                connect(replyForFirstPage, &QNetworkReply::finished, this, &getTopicMessagesClass::loadFirstPageFinish);
             }
             else
             {
@@ -177,7 +177,7 @@ void getTopicMessagesClass::getMessages()
                 replyForSecondPage = timeoutForSecondPage->resetReply(networkManager->get(requestForSecondPage));
                 if(replyForSecondPage->isOpen() == true)
                 {
-                    QObject::connect(replyForSecondPage, &QNetworkReply::finished, this, &getTopicMessagesClass::loadSecondPageFinish);
+                    connect(replyForSecondPage, &QNetworkReply::finished, this, &getTopicMessagesClass::loadSecondPageFinish);
                 }
                 else
                 {

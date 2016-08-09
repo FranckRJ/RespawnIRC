@@ -27,9 +27,9 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
 
     loadListOfStickers();
 
-    QObject::connect(&stickerBrowser, &QTextBrowser::customContextMenuRequested, this, &selectStickerWindowClass::createContextMenu);
-    QObject::connect(&stickerBrowser, &QTextBrowser::anchorClicked, this, &selectStickerWindowClass::linkClicked);
-    QObject::connect(stickerBrowser.verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
+    connect(&stickerBrowser, &QTextBrowser::customContextMenuRequested, this, &selectStickerWindowClass::createContextMenu);
+    connect(&stickerBrowser, &QTextBrowser::anchorClicked, this, &selectStickerWindowClass::linkClicked);
+    connect(stickerBrowser.verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
 }
 
 void selectStickerWindowClass::loadListOfStickers()
@@ -66,5 +66,5 @@ void selectStickerWindowClass::scrollBarSizeChanged()
 {
     stickerBrowser.verticalScrollBar()->setValue(stickerBrowser.verticalScrollBar()->maximum() / 2);
 
-    QObject::disconnect(stickerBrowser.verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
+    disconnect(stickerBrowser.verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
 }

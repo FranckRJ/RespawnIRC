@@ -37,15 +37,15 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 
     setLayout(layout);
 
-    QObject::connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
+    connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
 
-    QObject::connect(getTopicMessages, &getTopicMessagesClass::newMessagesAreAvailable, this, &showTopicMessagesClass::analyzeMessages);
-    QObject::connect(getTopicMessages, &getTopicMessagesClass::newMessageStatus, this, &showTopicMessagesClass::setMessageStatus);
-    QObject::connect(getTopicMessages, &getTopicMessagesClass::newNumberOfConnectedAndMP, this, &showTopicMessagesClass::setNumberOfConnectedAndMP);
-    QObject::connect(getTopicMessages, &getTopicMessagesClass::newNameForTopic, this, &showTopicMessagesClass::setTopicName);
-    QObject::connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicMessagesClass::setCookiesFromRequest);
-    QObject::connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicMessagesClass::downloadTheseStickersIfNeeded);
-    QObject::connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicMessagesClass::downloadTheseNoelshackImagesIfNeeded);
+    connect(getTopicMessages, &getTopicMessagesClass::newMessagesAreAvailable, this, &showTopicMessagesClass::analyzeMessages);
+    connect(getTopicMessages, &getTopicMessagesClass::newMessageStatus, this, &showTopicMessagesClass::setMessageStatus);
+    connect(getTopicMessages, &getTopicMessagesClass::newNumberOfConnectedAndMP, this, &showTopicMessagesClass::setNumberOfConnectedAndMP);
+    connect(getTopicMessages, &getTopicMessagesClass::newNameForTopic, this, &showTopicMessagesClass::setTopicName);
+    connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicMessagesClass::setCookiesFromRequest);
+    connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicMessagesClass::downloadTheseStickersIfNeeded);
+    connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicMessagesClass::downloadTheseNoelshackImagesIfNeeded);
 }
 
 showTopicMessagesClass::~showTopicMessagesClass()
@@ -313,7 +313,7 @@ bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageE
 
             if(replyForEditInfo->isOpen() == true)
             {
-                QObject::connect(replyForEditInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeEditInfo);
+                connect(replyForEditInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeEditInfo);
             }
             else
             {
@@ -345,7 +345,7 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
 
         if(replyForQuoteInfo->isOpen() == true)
         {
-            QObject::connect(replyForQuoteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeQuoteInfo);
+            connect(replyForQuoteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeQuoteInfo);
         }
         else
         {
@@ -375,7 +375,7 @@ void showTopicMessagesClass::deleteMessage(QString idOfMessageDeleted)
 
         if(replyForDeleteInfo->isOpen() == true)
         {
-            QObject::connect(replyForDeleteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeDeleteInfo);
+            connect(replyForDeleteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeDeleteInfo);
         }
         else
         {

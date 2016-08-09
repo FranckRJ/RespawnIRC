@@ -82,7 +82,7 @@ void stickerDownloadToolClass::startDownloadMissingStickers()
 
             if(reply->isOpen() == true)
             {
-                QObject::connect(reply, &QNetworkReply::finished, this, &stickerDownloadToolClass::analyzeLatestStickerDownloaded);
+                connect(reply, &QNetworkReply::finished, this, &stickerDownloadToolClass::analyzeLatestStickerDownloaded);
             }
             else
             {

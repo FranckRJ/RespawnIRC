@@ -60,7 +60,7 @@ void tmpImageDownloadToolClass::startDownloadMissingImages()
 
             if(reply->isOpen() == true)
             {
-                QObject::connect(reply, &QNetworkReply::finished, this, &tmpImageDownloadToolClass::analyzeLatestImageDownloaded);
+                connect(reply, &QNetworkReply::finished, this, &tmpImageDownloadToolClass::analyzeLatestImageDownloaded);
             }
             else
             {

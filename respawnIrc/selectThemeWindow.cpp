@@ -39,8 +39,8 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
     setWindowTitle("Choisir un thème");
     listViewOfTheme.setModel(&modelForListViewOfTheme);
 
-    QObject::connect(buttonSelect, &QPushButton::pressed, this, &selectThemeWindowClass::selectThisTheme);
-    QObject::connect(buttonCancel, &QPushButton::pressed, this, &selectThemeWindowClass::close);
+    connect(buttonSelect, &QPushButton::pressed, this, &selectThemeWindowClass::selectThisTheme);
+    connect(buttonCancel, &QPushButton::pressed, this, &selectThemeWindowClass::close);
 
     loadListOfThemes();
 }

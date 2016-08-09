@@ -114,9 +114,9 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
             vectorOfDelFavorite.back()->setFont(thisFont);
         }
 
-        QObject::connect(vectorOfUseFavorite.back(), &QAction::triggered, this, &mainWindowClass::useFavoriteClicked);
-        QObject::connect(vectorOfAddFavorite.back(), &QAction::triggered, this, &mainWindowClass::addFavoriteClicked);
-        QObject::connect(vectorOfDelFavorite.back(), &QAction::triggered, this, &mainWindowClass::delFavoriteClicked);
+        connect(vectorOfUseFavorite.back(), &QAction::triggered, this, &mainWindowClass::useFavoriteClicked);
+        connect(vectorOfAddFavorite.back(), &QAction::triggered, this, &mainWindowClass::addFavoriteClicked);
+        connect(vectorOfDelFavorite.back(), &QAction::triggered, this, &mainWindowClass::delFavoriteClicked);
     }
 
     QMenu* menuTheme = menuBar->addMenu("&Thèmes");
@@ -144,40 +144,40 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     }
     respawnIrc.setFocus();
 
-    QObject::connect(actionConnect, &QAction::triggered, &respawnIrc, &respawnIrcClass::showConnect);
-    QObject::connect(actionShowAccountList, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAccountListWindow);
-    QObject::connect(actionDisconnectFromCurrentTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromCurrentTab);
-    QObject::connect(actionDisconnectFromAllTabs, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromAllTabs);
-    QObject::connect(actionTabAddTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::addNewTab);
-    QObject::connect(actionGoToMp, &QAction::triggered, this, &mainWindowClass::goToMp);
-    QObject::connect(actionCheckUpdate, &QAction::triggered, &respawnIrc, &respawnIrcClass::checkForUpdate);
-    QObject::connect(actionSelectTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTopic);
-    QObject::connect(actionUpdateTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::updateTopic);
-    QObject::connect(actionReloadTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTopic);
-    QObject::connect(actionReloadAllTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadAllTopic);
-    QObject::connect(actionSelectSticker, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectSticker);
-    QObject::connect(actionAddBold, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addBold);
-    QObject::connect(actionAddItalic, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addItalic);
-    QObject::connect(actionAddUnderline, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
-    QObject::connect(actionAddStrike, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addStrike);
-    QObject::connect(actionAddUList, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addUList);
-    QObject::connect(actionAddOList, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addOListe);
-    QObject::connect(actionAddQuote, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addQuote);
-    QObject::connect(actionAddCode, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addCode);
-    QObject::connect(actionAddSpoil, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addSpoil);
-    QObject::connect(actionEditLastMessage, &QAction::triggered, &respawnIrc, &respawnIrcClass::editLastMessage);
-    QObject::connect(actionGoToTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentTopic);
-    QObject::connect(actionGoToForum, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentForum);
-    QObject::connect(actionShowListOfIgnoredPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showIgnoreListWindow);
-    QObject::connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
-    QObject::connect(actionShowPreferences, &QAction::triggered, &respawnIrc, &respawnIrcClass::showPreferences);
-    QObject::connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
-    QObject::connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
-    QObject::connect(actionReloadTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTheme);
-    QObject::connect(actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
-    QObject::connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
-    QObject::connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
-    QObject::connect(&respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
+    connect(actionConnect, &QAction::triggered, &respawnIrc, &respawnIrcClass::showConnect);
+    connect(actionShowAccountList, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAccountListWindow);
+    connect(actionDisconnectFromCurrentTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromCurrentTab);
+    connect(actionDisconnectFromAllTabs, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromAllTabs);
+    connect(actionTabAddTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::addNewTab);
+    connect(actionGoToMp, &QAction::triggered, this, &mainWindowClass::goToMp);
+    connect(actionCheckUpdate, &QAction::triggered, &respawnIrc, &respawnIrcClass::checkForUpdate);
+    connect(actionSelectTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTopic);
+    connect(actionUpdateTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::updateTopic);
+    connect(actionReloadTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTopic);
+    connect(actionReloadAllTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadAllTopic);
+    connect(actionSelectSticker, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectSticker);
+    connect(actionAddBold, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addBold);
+    connect(actionAddItalic, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addItalic);
+    connect(actionAddUnderline, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
+    connect(actionAddStrike, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addStrike);
+    connect(actionAddUList, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addUList);
+    connect(actionAddOList, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addOListe);
+    connect(actionAddQuote, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addQuote);
+    connect(actionAddCode, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addCode);
+    connect(actionAddSpoil, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addSpoil);
+    connect(actionEditLastMessage, &QAction::triggered, &respawnIrc, &respawnIrcClass::editLastMessage);
+    connect(actionGoToTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentTopic);
+    connect(actionGoToForum, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentForum);
+    connect(actionShowListOfIgnoredPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showIgnoreListWindow);
+    connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
+    connect(actionShowPreferences, &QAction::triggered, &respawnIrc, &respawnIrcClass::showPreferences);
+    connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
+    connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
+    connect(actionReloadTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTheme);
+    connect(actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
+    connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
+    connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
+    connect(&respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
 
     respawnIrc.setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
 }

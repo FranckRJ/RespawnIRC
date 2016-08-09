@@ -24,8 +24,8 @@ containerForTopicsInfosClass::containerForTopicsInfosClass(QList<QString>* newLi
         showListOfTopic.setVisible(false);
     }
 
-    QObject::connect(&showListOfTopic, &showListOfTopicClass::openThisTopic, this, &containerForTopicsInfosClass::topicNeedChanged);
-    QObject::connect(&showListOfTopic, &showListOfTopicClass::openThisTopicInNewTab, this, &containerForTopicsInfosClass::openThisTopicInNewTab);
+    connect(&showListOfTopic, &showListOfTopicClass::openThisTopic, this, &containerForTopicsInfosClass::topicNeedChanged);
+    connect(&showListOfTopic, &showListOfTopicClass::openThisTopicInNewTab, this, &containerForTopicsInfosClass::openThisTopicInNewTab);
 }
 
 showTopicMessagesClass& containerForTopicsInfosClass::getShowTopicMessages()

@@ -30,10 +30,10 @@ ignoreListWindowClass::ignoreListWindowClass(QList<QString>* newListOfIgnoredPse
     modelForListView.setStringList(*listOfIgnoredPseudo);
     viewListOfIgnoredPseudo.setModel(&modelForListView);
 
-    QObject::connect(buttonAddPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::addPseudo);
-    QObject::connect(buttonEditPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::editCurrentPseudo);
-    QObject::connect(buttonRemovePseudo, &QPushButton::pressed, this, &ignoreListWindowClass::removeCurrentPseudo);
-    QObject::connect(buttonOk, &QPushButton::pressed, this, &ignoreListWindowClass::close);
+    connect(buttonAddPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::addPseudo);
+    connect(buttonEditPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::editCurrentPseudo);
+    connect(buttonRemovePseudo, &QPushButton::pressed, this, &ignoreListWindowClass::removeCurrentPseudo);
+    connect(buttonOk, &QPushButton::pressed, this, &ignoreListWindowClass::close);
 }
 
 void ignoreListWindowClass::updateList()
@@ -45,7 +45,7 @@ void ignoreListWindowClass::updateList()
 void ignoreListWindowClass::addPseudo()
 {
     addPseudoWindowClass* myAddPseudoWindow = new addPseudoWindowClass(this);
-    QObject::connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &ignoreListWindowClass::addThisPseudo);
+    connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &ignoreListWindowClass::addThisPseudo);
     myAddPseudoWindow->exec();
 }
 
@@ -54,7 +54,7 @@ void ignoreListWindowClass::editCurrentPseudo()
     if(viewListOfIgnoredPseudo.currentIndex().row() != -1)
     {
         addPseudoWindowClass* myAddPseudoWindow = new addPseudoWindowClass(this, listOfIgnoredPseudo->at(viewListOfIgnoredPseudo.currentIndex().row()));
-        QObject::connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &ignoreListWindowClass::setCurrentPseudo);
+        connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &ignoreListWindowClass::setCurrentPseudo);
         myAddPseudoWindow->exec();
     }
 

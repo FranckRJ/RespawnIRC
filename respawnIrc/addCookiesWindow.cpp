@@ -40,8 +40,8 @@ addCookiesWindowClass::addCookiesWindowClass(QWidget* parent) : QDialog(parent, 
     setLayout(mainLayout);
     setWindowTitle("Ajouter des cookies");
 
-    QObject::connect(buttonValide, &QPushButton::pressed, this, &addCookiesWindowClass::valideCookies);
-    QObject::connect(buttonCancel, &QPushButton::pressed, this, &addCookiesWindowClass::close);
+    connect(buttonValide, &QPushButton::pressed, this, &addCookiesWindowClass::valideCookies);
+    connect(buttonCancel, &QPushButton::pressed, this, &addCookiesWindowClass::close);
 }
 
 void addCookiesWindowClass::valideCookies()

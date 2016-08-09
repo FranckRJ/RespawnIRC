@@ -55,10 +55,10 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 
     setLayout(mainLayout);
 
-    QObject::connect(buttonShowWebView, &QPushButton::pressed, this, &connectWindowClass::addWebView);
-    QObject::connect(buttonAddCookies, &QPushButton::pressed, this, &connectWindowClass::showAddCookiesWindow);
-    QObject::connect(buttonValidate, &QPushButton::pressed, this, &connectWindowClass::valideConnect);
-    QObject::connect(buttonHelp, &QPushButton::pressed, this, &connectWindowClass::showHelpConnect);
+    connect(buttonShowWebView, &QPushButton::pressed, this, &connectWindowClass::addWebView);
+    connect(buttonAddCookies, &QPushButton::pressed, this, &connectWindowClass::showAddCookiesWindow);
+    connect(buttonValidate, &QPushButton::pressed, this, &connectWindowClass::valideConnect);
+    connect(buttonHelp, &QPushButton::pressed, this, &connectWindowClass::showHelpConnect);
 }
 
 void connectWindowClass::addWebView()
@@ -76,7 +76,7 @@ void connectWindowClass::addWebView()
         buttonShowWebView->setVisible(false);
         mainLayout->insertWidget(0, webView);
 
-        QObject::connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);
+        connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);
     }
 }
 
@@ -96,13 +96,13 @@ void connectWindowClass::checkThisCookie(QNetworkCookie cookie)
         cookieList.append(cookie);
     }
 
-    QWidget::adjustSize();
+    adjustSize();
 }
 
 void connectWindowClass::showAddCookiesWindow()
 {
     addCookiesWindowClass* myAddCookiesWindow = new addCookiesWindowClass(this);
-    QObject::connect(myAddCookiesWindow, &addCookiesWindowClass::newCookiesAvailable, this, &connectWindowClass::addCookiesManually);
+    connect(myAddCookiesWindow, &addCookiesWindowClass::newCookiesAvailable, this, &connectWindowClass::addCookiesManually);
     myAddCookiesWindow->exec();
 }
 

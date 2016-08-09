@@ -40,10 +40,10 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     setLayout(realMainLayout);
     setWindowTitle("Préférences");
 
-    QObject::connect(this, &preferenceWindowClass::setApplyButtonEnable, buttonApply, &QPushButton::setEnabled);
-    QObject::connect(buttonOK, &QPushButton::pressed, this, &preferenceWindowClass::applySettingsAndClose);
-    QObject::connect(buttonCancel, &QPushButton::pressed, this, &preferenceWindowClass::close);
-    QObject::connect(buttonApply, &QPushButton::pressed, this, &preferenceWindowClass::applySettings);
+    connect(this, &preferenceWindowClass::setApplyButtonEnable, buttonApply, &QPushButton::setEnabled);
+    connect(buttonOK, &QPushButton::pressed, this, &preferenceWindowClass::applySettingsAndClose);
+    connect(buttonCancel, &QPushButton::pressed, this, &preferenceWindowClass::close);
+    connect(buttonApply, &QPushButton::pressed, this, &preferenceWindowClass::applySettings);
 }
 
 QWidget* preferenceWindowClass::createWidgetForMainTab()
@@ -206,7 +206,7 @@ QCheckBox* preferenceWindowClass::makeNewCheckBox(QString messageInfo, QString b
     tmp->setObjectName(boxNameValue);
     tmp->setChecked(settingToolClass::getThisBoolOption(boxNameValue));
 
-    QObject::connect(tmp, &QCheckBox::toggled, this, &preferenceWindowClass::valueOfCheckboxChanged);
+    connect(tmp, &QCheckBox::toggled, this, &preferenceWindowClass::valueOfCheckboxChanged);
 
     return tmp;
 }
@@ -226,7 +226,7 @@ QHBoxLayout* preferenceWindowClass::makeNewSpinBox(QString messageInfo, QString 
     hboxForSpinBox->addWidget(newInfoForSpinBox);
     hboxForSpinBox->addWidget(newSpinBox, 1);
 
-    QObject::connect(newSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
+    connect(newSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
 
     return hboxForSpinBox;
 }
@@ -244,7 +244,7 @@ QHBoxLayout* preferenceWindowClass::makeNewComboBox(QString messageInfo, QString
     hboxForComboBox->addWidget(newInfoForComboBox);
     hboxForComboBox->addWidget(newComboBox, 1);
 
-    QObject::connect(newComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
+    connect(newComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
 
     return hboxForComboBox;
 }

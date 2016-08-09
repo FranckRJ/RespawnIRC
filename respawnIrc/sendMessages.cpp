@@ -24,8 +24,8 @@ sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 
     setLayout(layout);
 
-    QObject::connect(&sendButton, &QPushButton::pressed, this, &sendMessagesClass::needToPostMessage);
-    QObject::connect(&messageLine, &multiTypeTextBoxClass::returnPressed, &sendButton, &QPushButton::click);
+    connect(&sendButton, &QPushButton::pressed, this, &sendMessagesClass::needToPostMessage);
+    connect(&messageLine, &multiTypeTextBoxClass::returnPressed, &sendButton, &QPushButton::click);
 }
 
 sendMessagesClass::~sendMessagesClass()
@@ -177,7 +177,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
 
         if(replyForSendMessage->isOpen() == true)
         {
-            QObject::connect(replyForSendMessage, &QNetworkReply::finished, this, &sendMessagesClass::deleteReplyForSendMessage);
+            connect(replyForSendMessage, &QNetworkReply::finished, this, &sendMessagesClass::deleteReplyForSendMessage);
         }
         else
         {
