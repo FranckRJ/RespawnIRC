@@ -2,52 +2,55 @@
 #include "styleTool.hpp"
 #include "shortcutTool.hpp"
 
-const QRegularExpression parsingToolClass::expForNormalLink("http(s)?://[^\\(\\)\\]\\[ \\\\<>]*", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForAjaxTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_liste_messages\" id=\"ajax_timestamp_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForAjaxHash("<input type=\"hidden\" name=\"ajax_hash_liste_messages\" id=\"ajax_hash_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForAjaxModTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_moderation_forum\" id=\"ajax_timestamp_moderation_forum\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForAjaxModHash("<input type=\"hidden\" name=\"ajax_hash_moderation_forum\" id=\"ajax_hash_moderation_forum\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForMessageEdit("<textarea tabindex=\"3\" class=\"area-editor\" name=\"text_commentaire\" id=\"text_commentaire\" placeholder=\"[^\"]*\">([^<]*)</textarea>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForMessageQuote("\"txt\":\"(.*)\"}", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-const QRegularExpression parsingToolClass::expForVersionName("\"tag_name\"[^\"]*:[^\"]*\"([^\"]*)\"", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForVersionChangelog("\"body\"[^\"]*:[^\"]*\"(.*)\"", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForFormTopic("(<form role=\"form\" class=\"form-post-topic[^\"]*\" method=\"post\" action=\"\".*?>.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-const QRegularExpression parsingToolClass::expForFormConnect("(<form role=\"form\" class=\"form-connect-jv\" method=\"post\" action=\"\".*?>.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-const QRegularExpression parsingToolClass::expForInput("<input ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForError("<div class=\"alert-row\">([^<]*)</div>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForCurrentPage("<span class=\"page-active\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForPageLink("<span><a href=\"([^\"]*)\" class=\"lien-jv\">([^<]*)</a></span>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForBeforeLastPage("(http://www.jeuxvideo.com/forums/[^-]*-[^-]*-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForMpJvc("<span[^c]*class=\"account-number-mp[^\"]*\".*?data-val=\"([^\"]*)\"", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-const QRegularExpression parsingToolClass::expForEntireMessage("(<div class=\"bloc-message-forum \".*?)(<span id=\"post_[^\"]*\" class=\"bloc-message-forum-anchor\">|<div class=\"bloc-pagi-default\">)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-const QRegularExpression parsingToolClass::expForEntireTopic("<li class=\"\" data-id=\"[^\"]*\">[^<]*<span class=\"topic-subject\">.*?</li>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-const QRegularExpression parsingToolClass::expForTopicNameAndLink("<a class=\"lien-jv topic-title\" href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForTopicNumberMessage("<span class=\"topic-count\">[^0-9]*([0-9]*)", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForMessageID("<div class=\"bloc-message-forum \" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-([^\"]*)\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForDate("<div class=\"bloc-date-msg\">([^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*))", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">((.*?)(?=<div class=\"info-edition-msg\">)|(.*?)(?=<div class=\"signature-msg)|(.*))", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-const QRegularExpression parsingToolClass::expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForForumName("<title>(.*?)- jeuxvideo.com</title>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForStickers("<img class=\"img-stickers\" src=\"(http://jv.stkr.fr/p/([^\"]*))\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForLongLink("<span class=\"JvCare [^\"]*\"[^i]*itle=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForJvcLink("<a href=\"([^\"]*)\"( title=\"[^\"]*\")?>.*?</a>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForNoelshack("<a href=\"([^\"]*)\" data-def=\"NOELSHACK\" target=\"_blank\"><img class=\"img-shack\" .*? src=\"//([^\"]*)\" [^>]*></a>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForYoutubeVideo("<div class=\"player-contenu\"><div class=\"[^\"]*\"><iframe .*? src=\"http(s)?://www.youtube.com/embed/([^\"]*)\"[^>]*></iframe></div></div>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-const QRegularExpression parsingToolClass::expForSpoilBlock("<span class=\"bloc-spoil-jv\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-const QRegularExpression parsingToolClass::expForCodeLine("<code class=\"code-jv\">([^<]*)</code>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForCodeBlock("<pre class=\"pre-jv\"><code class=\"code-jv\">([^<]*)</code></pre>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", QRegularExpression::OptimizeOnFirstUsageOption);
-const QRegularExpression parsingToolClass::expForHtmlTag("<.+?>", QRegularExpression::OptimizeOnFirstUsageOption);
+namespace
+{
+    const QRegularExpression expForNormalLink("http(s)?://[^\\(\\)\\]\\[ \\\\<>]*", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForAjaxTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_liste_messages\" id=\"ajax_timestamp_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForAjaxHash("<input type=\"hidden\" name=\"ajax_hash_liste_messages\" id=\"ajax_hash_liste_messages\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForAjaxModTimestamp("<input type=\"hidden\" name=\"ajax_timestamp_moderation_forum\" id=\"ajax_timestamp_moderation_forum\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForAjaxModHash("<input type=\"hidden\" name=\"ajax_hash_moderation_forum\" id=\"ajax_hash_moderation_forum\" value=\"([^\"]*)\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForMessageEdit("<textarea tabindex=\"3\" class=\"area-editor\" name=\"text_commentaire\" id=\"text_commentaire\" placeholder=\"[^\"]*\">([^<]*)</textarea>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForMessageQuote("\"txt\":\"(.*)\"}", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForVersionName("\"tag_name\"[^\"]*:[^\"]*\"([^\"]*)\"", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForVersionChangelog("\"body\"[^\"]*:[^\"]*\"(.*)\"", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForFormTopic("(<form role=\"form\" class=\"form-post-topic[^\"]*\" method=\"post\" action=\"\".*?>.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForFormConnect("(<form role=\"form\" class=\"form-connect-jv\" method=\"post\" action=\"\".*?>.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForInput("<input ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForError("<div class=\"alert-row\">([^<]*)</div>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForCurrentPage("<span class=\"page-active\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForPageLink("<span><a href=\"([^\"]*)\" class=\"lien-jv\">([^<]*)</a></span>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForBeforeLastPage("(http://www.jeuxvideo.com/forums/[^-]*-[^-]*-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForMpJvc("<span[^c]*class=\"account-number-mp[^\"]*\".*?data-val=\"([^\"]*)\"", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForEntireMessage("(<div class=\"bloc-message-forum \".*?)(<span id=\"post_[^\"]*\" class=\"bloc-message-forum-anchor\">|<div class=\"bloc-pagi-default\">)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForEntireTopic("<li class=\"\" data-id=\"[^\"]*\">[^<]*<span class=\"topic-subject\">.*?</li>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForTopicNameAndLink("<a class=\"lien-jv topic-title\" href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForTopicNumberMessage("<span class=\"topic-count\">[^0-9]*([0-9]*)", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForMessageID("<div class=\"bloc-message-forum \" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-([^\"]*)\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForDate("<div class=\"bloc-date-msg\">([^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*))", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">((.*?)(?=<div class=\"info-edition-msg\">)|(.*?)(?=<div class=\"signature-msg)|(.*))", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForForumName("<title>(.*?)- jeuxvideo.com</title>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForStickers("<img class=\"img-stickers\" src=\"(http://jv.stkr.fr/p/([^\"]*))\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForLongLink("<span class=\"JvCare [^\"]*\"[^i]*itle=\"([^\"]*)\">[^<]*<i></i><span>[^<]*</span>[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForShortLink("<span class=\"JvCare [^\"]*\" rel=\"nofollow\" target=\"_blank\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForJvcLink("<a href=\"([^\"]*)\"( title=\"[^\"]*\")?>.*?</a>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForNoelshack("<a href=\"([^\"]*)\" data-def=\"NOELSHACK\" target=\"_blank\"><img class=\"img-shack\" .*? src=\"//([^\"]*)\" [^>]*></a>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForYoutubeVideo("<div class=\"player-contenu\"><div class=\"[^\"]*\"><iframe .*? src=\"http(s)?://www.youtube.com/embed/([^\"]*)\"[^>]*></iframe></div></div>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForSpoilBlock("<span class=\"bloc-spoil-jv\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForCodeLine("<code class=\"code-jv\">([^<]*)</code>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForCodeBlock("<pre class=\"pre-jv\"><code class=\"code-jv\">([^<]*)</code></pre>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForHtmlTag("<.+?>", QRegularExpression::OptimizeOnFirstUsageOption);
+}
 
 ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
 {

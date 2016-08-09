@@ -13,36 +13,29 @@ struct intSettingStruct
     int value;
 };
 
-class settingToolClass
+namespace settingToolClass
 {
-public:
-    static void setSettings(QSettings* newSetting);
-    static void initializeDefaultListsOption();
-    static bool getThisBoolOption(QString optionName);
-    static intSettingStruct getThisIntOption(QString optionName);
-    static QString getThisStringOption(QString optionName);
-    static QByteArray getThisByteOption(QString optionName);
-    static QList<accountStruct> getListOfAccount();
-    static QList<QString> getListOfPseudoForTopic();
-    static QList<QString> getListOfIgnoredPseudo();
-    static QList<pseudoWithColorStruct> getListOfColorPseudo();
-    static QList<QString> getListOfTopicLink();
-    static void saveThisOption(QString optionName, QVariant value);
-    static void saveListOfAccount(QList<accountStruct>& newListOfAccount);
-    static void saveListOfPseudoForTopic(QList<QString>& newList);
-    static void saveListOfIgnoredPseudo(QList<QString>& newList);
-    static void saveListOfColorPseudo(QList<pseudoWithColorStruct>& newListOfColorPseudo);
-    static void saveListOfTopicLink(QList<QString>& newList);
-    static QList<QVariant> createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString = true);
-    static QList<QVariant> createQVariantListWithThisList(QList<QNetworkCookie> list);
-    static QList<QString> createStringListWithThisQVariantList(QList<QVariant> list);
-    static QList<QNetworkCookie> createCookieListWithThisQVariantList(QList<QVariant> list);
-private:
-    static QSettings* setting;
-    static QMap<QString, bool> listOfDefaultBoolOption;
-    static QMap<QString, intSettingStruct> listOfDefaultIntOption;
-    static QMap<QString, QString> listOfDefaultStringOption;
-    static QMap<QString, QByteArray> listOfDefaultByteOption;
-};
+    void setSettings(QSettings* newSetting);
+    void initializeDefaultListsOption();
+    bool getThisBoolOption(QString optionName);
+    intSettingStruct getThisIntOption(QString optionName);
+    QString getThisStringOption(QString optionName);
+    QByteArray getThisByteOption(QString optionName);
+    QList<accountStruct> getListOfAccount();
+    QList<QString> getListOfPseudoForTopic();
+    QList<QString> getListOfIgnoredPseudo();
+    QList<pseudoWithColorStruct> getListOfColorPseudo();
+    QList<QString> getListOfTopicLink();
+    void saveThisOption(QString optionName, QVariant value);
+    void saveListOfAccount(QList<accountStruct>& newListOfAccount);
+    void saveListOfPseudoForTopic(QList<QString>& newList);
+    void saveListOfIgnoredPseudo(QList<QString>& newList);
+    void saveListOfColorPseudo(QList<pseudoWithColorStruct>& newListOfColorPseudo);
+    void saveListOfTopicLink(QList<QString>& newList);
+    QList<QVariant> createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString = true);
+    QList<QVariant> createQVariantListWithThisList(QList<QNetworkCookie> list);
+    QList<QString> createStringListWithThisQVariantList(QList<QVariant> list);
+    QList<QNetworkCookie> createCookieListWithThisQVariantList(QList<QVariant> list);
+}
 
 #endif

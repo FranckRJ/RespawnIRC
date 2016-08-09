@@ -3,14 +3,11 @@
 
 #include <QMap>
 
-class shortcutToolClass
+namespace shortcutToolClass
 {
-public:
-    static void loadShortcutRule(QString ruleName, QString beforeBase = "", QString afterBase = "", QString beforeNew = "", QString afterNew = "");
-    static void transformMessage(QString* thisMessage, QString ruleName);
-    static QString transformMessage(QString thisMessage, QString ruleName);
-private:
-    static QMap<QString, QMap<QString, QString> > listOfShortcutRules;
-};
+    void loadShortcutRule(QString ruleName, QString beforeBase = "", QString afterBase = "", QString beforeNew = "", QString afterNew = "");
+    void transformMessage(QString* thisMessage, QString ruleName);
+    QString transformMessage(QString thisMessage, QString ruleName);
+}
 
 #endif

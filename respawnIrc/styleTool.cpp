@@ -6,7 +6,10 @@
 
 #include "styleTool.hpp"
 
-colorInfoForMessageAndOtherStruct styleToolClass::colorInfoForMessageAndOther;
+namespace
+{
+    colorInfoForMessageAndOtherStruct colorInfoForMessageAndOther;
+}
 
 QString styleToolClass::getStyle(QString themeName)
 {

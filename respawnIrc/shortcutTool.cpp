@@ -4,7 +4,10 @@
 
 #include "shortcutTool.hpp"
 
-QMap<QString, QMap<QString, QString> > shortcutToolClass::listOfShortcutRules;
+namespace
+{
+    QMap<QString, QMap<QString, QString> > listOfShortcutRules;
+}
 
 void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew)
 {

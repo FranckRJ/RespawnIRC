@@ -3,11 +3,14 @@
 
 #include "settingTool.hpp"
 
-QSettings* settingToolClass::setting = nullptr;
-QMap<QString, bool> settingToolClass::listOfDefaultBoolOption;
-QMap<QString, intSettingStruct> settingToolClass::listOfDefaultIntOption;
-QMap<QString, QString> settingToolClass::listOfDefaultStringOption;
-QMap<QString, QByteArray> settingToolClass::listOfDefaultByteOption;
+namespace
+{
+    QSettings* setting = nullptr;
+    QMap<QString, bool> listOfDefaultBoolOption;
+    QMap<QString, intSettingStruct> listOfDefaultIntOption;
+    QMap<QString, QString> listOfDefaultStringOption;
+    QMap<QString, QByteArray> listOfDefaultByteOption;
+}
 
 void settingToolClass::setSettings(QSettings* newSetting)
 {

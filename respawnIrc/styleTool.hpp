@@ -29,15 +29,12 @@ struct colorInfoForMessageAndOtherStruct
     QString editMessageColor;
 };
 
-class styleToolClass
+namespace styleToolClass
 {
-public:
-    static QString getStyle(QString themeName);
-    static QString getModel(QString themeName);
-    static modelInfoStruct getModelInfo(QString themeName);
-    static const colorInfoForMessageAndOtherStruct& getColorInfo();
-private:
-    static colorInfoForMessageAndOtherStruct colorInfoForMessageAndOther;
+    QString getStyle(QString themeName);
+    QString getModel(QString themeName);
+    modelInfoStruct getModelInfo(QString themeName);
+    const colorInfoForMessageAndOtherStruct& getColorInfo();
 };
 
 #endif // STYLETOOL_HPP
