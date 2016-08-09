@@ -1,3 +1,12 @@
+#include <QWebView>
+#include <QNetworkReply>
+#include <QNetworkAccessManager>
+#include <QLabel>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QMessageBox>
+
 #include "connectWindow.hpp"
 #include "addCookiesWindow.hpp"
 #include "parsingTool.hpp"
