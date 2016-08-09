@@ -3,9 +3,13 @@
 
 #include <QDialog>
 #include <QNetworkCookie>
+#include <QList>
+#include <QString>
 #include <QListView>
 #include <QStringListModel>
 #include <QCheckBox>
+
+class QWidget;
 
 struct accountStruct
 {

@@ -2,11 +2,12 @@
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QColorDialog>
+#include <QColor>
 
 #include "colorPseudoListWindow.hpp"
 #include "addPseudoWindow.hpp"
 
-colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStruct> *newListOfColorPseudo, QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 

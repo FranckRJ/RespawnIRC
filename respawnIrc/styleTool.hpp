@@ -35,6 +35,6 @@ namespace styleToolClass
     QString getModel(QString themeName);
     modelInfoStruct getModelInfo(QString themeName);
     const colorInfoForMessageAndOtherStruct& getColorInfo();
-};
+}
 
 #endif // STYLETOOL_HPP

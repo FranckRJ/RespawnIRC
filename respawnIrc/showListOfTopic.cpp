@@ -9,7 +9,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-showListOfTopicClass::showListOfTopicClass(QWidget *parent) : QWidget(parent)
+showListOfTopicClass::showListOfTopicClass(QWidget* parent) : QWidget(parent)
 {
     listViewOfTopic.setModel(&modelForListView);
     listViewOfTopic.setEditTriggers(QAbstractItemView::NoEditTriggers);

@@ -6,7 +6,7 @@
 #include "shortcutTool.hpp"
 #include "styleTool.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     QCoreApplication::addLibraryPath("./");
 

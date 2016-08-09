@@ -3,10 +3,11 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QMessageBox>
+#include <QString>
 
 #include "addPseudoWindow.hpp"
 
-addPseudoWindowClass::addPseudoWindowClass(QWidget *parent, QString currentPseudo) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+addPseudoWindowClass::addPseudoWindowClass(QWidget* parent, QString currentPseudo) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 

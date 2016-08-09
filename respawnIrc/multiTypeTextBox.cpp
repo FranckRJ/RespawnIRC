@@ -4,7 +4,7 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
-multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget *parent) : QWidget(parent)
+multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
 {
     highlighter = new highlighterClass(textEdit.document());
 

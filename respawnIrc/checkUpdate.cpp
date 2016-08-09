@@ -2,6 +2,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QMessageBox>
+#include <QStringList>
 
 #include "checkUpdate.hpp"
 #include "parsingTool.hpp"

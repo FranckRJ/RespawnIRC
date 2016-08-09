@@ -17,7 +17,7 @@ class showTopicMessagesClass : public QWidget
 {
     Q_OBJECT
 public:
-    showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct> *newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
     ~showTopicMessagesClass();
     static void startThread();
     static void stopThread();
@@ -80,7 +80,7 @@ private:
     QNetworkAccessManager* networkManager;
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;
-    QList<pseudoWithColorStruct> *listOfColorPseudo;
+    QList<pseudoWithColorStruct>* listOfColorPseudo;
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;
     QString topicLink;

@@ -4,6 +4,9 @@
 #include <QDialog>
 #include <QLineEdit>
 
+class QWidget;
+class QString;
+
 class addCookiesWindowClass : public QDialog
 {
     Q_OBJECT

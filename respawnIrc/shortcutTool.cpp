@@ -1,4 +1,6 @@
 #include <QFile>
+#include <QMap>
+#include <QString>
 #include <QTextStream>
 #include <QCoreApplication>
 

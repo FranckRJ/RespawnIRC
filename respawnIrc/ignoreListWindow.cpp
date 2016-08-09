@@ -5,7 +5,7 @@
 #include "ignoreListWindow.hpp"
 #include "addPseudoWindow.hpp"
 
-ignoreListWindowClass::ignoreListWindowClass(QList<QString> *newListOfIgnoredPseudo, QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+ignoreListWindowClass::ignoreListWindowClass(QList<QString>* newListOfIgnoredPseudo, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 

@@ -6,8 +6,13 @@
 #include <QWebEngineView>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QList>
 
+class QWebEngineView;
 class QVBoxLayout;
+class QString;
+class QWidget;
+class QPushButton;
 
 class connectWindowClass : public QDialog
 {

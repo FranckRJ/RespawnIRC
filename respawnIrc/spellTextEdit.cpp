@@ -9,7 +9,7 @@
 
 #include "spellTextEdit.hpp"
 
-spellTextEditClass::spellTextEditClass(QWidget *parent) : QTextEdit(parent)
+spellTextEditClass::spellTextEditClass(QWidget* parent) : QTextEdit(parent)
 {
     wordPropositionsActions.fill(new QAction(this), 5);
     createActions();
