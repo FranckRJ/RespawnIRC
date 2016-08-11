@@ -1,6 +1,3 @@
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QString>
 #include <QFile>
 #include <QDir>
 #include <QIODevice>

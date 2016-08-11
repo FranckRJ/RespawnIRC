@@ -1,6 +1,3 @@
-#include <QWidget>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QMessageBox>
 #include <QStringList>
 

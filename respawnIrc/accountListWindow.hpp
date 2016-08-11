@@ -1,8 +1,7 @@
 #ifndef ACCOUNTLISTWINDOW_HPP
 #define ACCOUNTLISTWINDOW_HPP
 
-class QWidget;
-
+#include <QWidget>
 #include <QDialog>
 #include <QNetworkCookie>
 #include <QList>

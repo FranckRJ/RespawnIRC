@@ -1,8 +1,7 @@
 #ifndef IGNORELISTWINDOW_HPP
 #define IGNORELISTWINDOW_HPP
 
-class QWidget;
-
+#include <QWidget>
 #include <QDialog>
 #include <QList>
 #include <QString>

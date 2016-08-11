@@ -1,18 +1,17 @@
 #ifndef CONNECTWINDOW_HPP
 #define CONNECTWINDOW_HPP
 
-class QWebEngineView;
-class QVBoxLayout;
-class QString;
-class QWidget;
-class QPushButton;
-
+#include <QWidget>
 #include <QDialog>
 #include <QNetworkCookie>
 #include <QWebEngineView>
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QList>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QWebEngineView>
+#include <QString>
 
 class connectWindowClass : public QDialog
 {

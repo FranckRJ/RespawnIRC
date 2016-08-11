@@ -1,5 +1,3 @@
-#include <QNetworkRequest>
-#include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionMatchIterator>
 #include <QUrl>

@@ -1,11 +1,6 @@
 #ifndef SHOWLISTOFTOPIC_HPP
 #define SHOWLISTOFTOPIC_HPP
 
-class QNetworkReply;
-class QNetworkAccessManager;
-class QPoint;
-class QModelIndex;
-
 #include <QWidget>
 #include <QTimer>
 #include <QString>
@@ -13,6 +8,10 @@ class QModelIndex;
 #include <QList>
 #include <QStringListModel>
 #include <QNetworkCookie>
+#include <QPoint>
+#include <QModelIndex>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 #include "autoTimeoutReply.hpp"
 

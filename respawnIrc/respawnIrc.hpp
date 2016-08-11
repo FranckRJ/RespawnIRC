@@ -1,10 +1,6 @@
 #ifndef RESPAWNIRC_HPP
 #define RESPAWNIRC_HPP
 
-class QStringList;
-class QFocusEvent;
-class QHBoxLayout;
-
 #include <QWidget>
 #include <QLabel>
 #include <QString>
@@ -14,6 +10,9 @@ class QHBoxLayout;
 #include <QNetworkCookie>
 #include <QVector>
 #include <QPixmap>
+#include <QStringList>
+#include <QFocusEvent>
+#include <QHBoxLayout>
 
 #include "containerForTopicsInfos.hpp"
 #include "sendMessages.hpp"

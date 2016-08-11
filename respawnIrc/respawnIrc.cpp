@@ -7,9 +7,6 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <QTextDocument>
-#include <QStringList>
-#include <QFocusEvent>
-#include <QHBoxLayout>
 #include <QGridLayout>
 #include <QPushButton>
 

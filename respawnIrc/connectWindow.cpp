@@ -4,10 +4,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QWebEngineView>
-#include <QString>
 
 #include "connectWindow.hpp"
 #include "addCookiesWindow.hpp"

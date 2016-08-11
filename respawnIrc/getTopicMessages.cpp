@@ -1,9 +1,5 @@
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QNetworkCookieJar>
 #include <QNetworkRequest>
-#include <QTimer>
-#include <QStringList>
 #include <QVector>
 
 #include "getTopicMessages.hpp"

@@ -1,12 +1,11 @@
 #ifndef CHECKUPDATE_HPP
 #define CHECKUPDATE_HPP
 
-class QNetworkAccessManager;
-class QNetworkReply;
-class QWidget;
-
+#include <QWidget>
 #include <QObject>
 #include <QString>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 class checkUpdateClass : public QObject
 {

@@ -1,11 +1,10 @@
 #ifndef ADDCOOKIESWINDOW_HPP
 #define ADDCOOKIESWINDOW_HPP
 
-class QWidget;
-class QString;
-
+#include <QWidget>
 #include <QDialog>
 #include <QLineEdit>
+#include <QString>
 
 class addCookiesWindowClass : public QDialog
 {

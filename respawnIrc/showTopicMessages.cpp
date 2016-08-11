@@ -1,14 +1,10 @@
-#include <QNetworkAccessManager>
 #include <QCoreApplication>
 #include <QVBoxLayout>
 #include <QNetworkCookieJar>
 #include <QMessageBox>
 #include <QDesktopServices>
-#include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QScrollBar>
-#include <QUrl>
-#include <QStringList>
 #include <QMetaObject>
 
 #include "showTopicMessages.hpp"

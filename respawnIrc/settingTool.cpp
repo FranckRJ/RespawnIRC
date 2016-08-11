@@ -1,15 +1,8 @@
 #include <QDebug>
 #include <QDateTime>
-#include <QSettings>
-#include <QString>
-#include <QByteArray>
-#include <QVariant>
-#include <QNetworkCookie>
 #include <QMap>
 
 #include "settingTool.hpp"
-#include "accountListWindow.hpp"
-#include "colorPseudoListWindow.hpp"
 
 namespace
 {

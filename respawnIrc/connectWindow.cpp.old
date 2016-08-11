@@ -1,5 +1,3 @@
-#include <QWebView>
-#include <QNetworkReply>
 #include <QNetworkAccessManager>
 #include <QLabel>
 #include <QPushButton>

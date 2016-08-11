@@ -1,14 +1,10 @@
 #include <QPushButton>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGroupBox>
 #include <QSpinBox>
 #include <QLabel>
 #include <QComboBox>
-#include <QCheckBox>
-#include <QStringList>
 #include <QTabWidget>
-#include <QWidget>
 #include <QObject>
 
 #include "preferencesWindow.hpp"

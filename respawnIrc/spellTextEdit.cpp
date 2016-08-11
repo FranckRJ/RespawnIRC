@@ -3,8 +3,6 @@
 #include <QTextStream>
 #include <QByteArray>
 #include <QCoreApplication>
-#include <QContextMenuEvent>
-#include <QTextCodec>
 #include <QTextCursor>
 #include <QFileInfo>
 #include <QTextBlock>

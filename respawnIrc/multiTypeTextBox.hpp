@@ -1,12 +1,11 @@
 #ifndef MULTITYPETEXTBOX_HPP
 #define MULTITYPETEXTBOX_HPP
 
-class QString;
-
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QTextCursor>
+#include <QString>
 
 #include "spellTextEdit.hpp"
 #include "highlighter.hpp"

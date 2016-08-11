@@ -1,13 +1,12 @@
 #ifndef TMPIMAGEDOWNLOADTOOL_HPP
 #define TMPIMAGEDOWNLOADTOOL_HPP
 
-class QNetworkAccessManager;
-class QNetworkReply;
-class QString;
-
 #include <QObject>
 #include <QTemporaryDir>
 #include <QStringList>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QString>
 
 class tmpImageDownloadToolClass : public QObject
 {

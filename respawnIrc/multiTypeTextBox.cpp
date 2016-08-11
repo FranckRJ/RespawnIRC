@@ -1,5 +1,4 @@
 #include <QScrollBar>
-#include <QString>
 #include <QSizePolicy>
 
 #include "multiTypeTextBox.hpp"

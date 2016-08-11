@@ -4,7 +4,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMessageBox>
-#include <QString>
 
 #include "addCookiesWindow.hpp"
 #include "styleTool.hpp"

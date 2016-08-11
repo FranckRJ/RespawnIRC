@@ -1,16 +1,15 @@
 #ifndef CONNECTWINDOW_HPP
 #define CONNECTWINDOW_HPP
 
-class QNetworkReply;
-class QWebView;
-class QWidget;
-
+#include <QWidget>
 #include <QDialog>
 #include <QNetworkCookie>
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QString>
 #include <QList>
+#include <QNetworkReply>
+#include <QWebView>
 
 class connectWindowClass : public QDialog
 {

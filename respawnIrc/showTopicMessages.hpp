@@ -1,11 +1,6 @@
 #ifndef SHOWTOPICMESSAGES_HPP
 #define SHOWTOPICMESSAGES_HPP
 
-class QNetworkReply;
-class QNetworkAccessManager;
-class QUrl;
-class QStringList;
-
 #include <QWidget>
 #include <QTextBrowser>
 #include <QThread>
@@ -14,6 +9,10 @@ class QStringList;
 #include <QNetworkCookie>
 #include <QList>
 #include <QPair>
+#include <QUrl>
+#include <QStringList>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 #include "colorPseudoListWindow.hpp"
 #include "getTopicMessages.hpp"

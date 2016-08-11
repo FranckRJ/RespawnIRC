@@ -1,7 +1,7 @@
 #ifndef SHORTCUTTOOL_HPP
 #define SHORTCUTTOOL_HPP
 
-class QString;
+#include <QString>
 
 namespace shortcutToolClass
 {

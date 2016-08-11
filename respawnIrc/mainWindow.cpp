@@ -5,9 +5,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>
-#include <QString>
-#include <QKeyEvent>
-#include <QCloseEvent>
 #include <QKeySequence>
 #include <QFont>
 

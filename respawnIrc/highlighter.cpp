@@ -1,6 +1,5 @@
 #include <QFileInfo>
 #include <QCoreApplication>
-#include <QTextCodec>
 #include <QByteArray>
 #include <QColor>
 #include <QStringList>

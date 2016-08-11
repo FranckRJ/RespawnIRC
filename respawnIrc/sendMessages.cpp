@@ -1,6 +1,4 @@
-#include <QNetworkAccessManager>
 #include <QNetworkCookieJar>
-#include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QMessageBox>
 #include <QHBoxLayout>

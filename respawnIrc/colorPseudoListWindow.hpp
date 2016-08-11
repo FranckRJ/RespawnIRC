@@ -1,8 +1,7 @@
 #ifndef COLORPSEUDOLISTWINDOW_HPP
 #define COLORPSEUDOLISTWINDOW_HPP
 
-class QWidget;
-
+#include <QWidget>
 #include <QDialog>
 #include <QString>
 #include <QList>

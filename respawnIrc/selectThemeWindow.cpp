@@ -3,7 +3,6 @@
 #include <QGridLayout>
 #include <QDir>
 #include <QCoreApplication>
-#include <QString>
 #include <QStringList>
 
 #include "selectThemeWindow.hpp"
