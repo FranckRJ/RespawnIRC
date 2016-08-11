@@ -1,9 +1,13 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkCookieJar>
+#include <QNetworkRequest>
 #include <QVBoxLayout>
 #include <QMenu>
+#include <QAction>
 #include <QDesktopServices>
+#include <QPoint>
+#include <QModelIndex>
 
 #include "showListOfTopic.hpp"
 #include "parsingTool.hpp"

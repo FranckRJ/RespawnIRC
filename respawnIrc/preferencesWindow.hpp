@@ -3,9 +3,12 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QString>
 
+class QWidget;
 class QCheckBox;
 class QHBoxLayout;
+class QStringList;
 
 class preferenceWindowClass : public QDialog
 {

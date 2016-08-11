@@ -2,7 +2,10 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QFileInfo>
+#include <QFile>
+#include <QIODevice>
 #include <QNetworkReply>
+#include <QString>
 
 #include "stickerDownloadTool.hpp"
 #include "parsingTool.hpp"

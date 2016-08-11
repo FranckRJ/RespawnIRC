@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QMessageBox>
+#include <QString>
 
 #include "selectTopicWindow.hpp"
 #include "parsingTool.hpp"

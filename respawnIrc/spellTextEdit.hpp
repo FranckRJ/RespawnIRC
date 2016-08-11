@@ -2,10 +2,15 @@
 #define SPELLTEXTEDIT_HPP
 
 #include <QTextEdit>
+#include <QString>
+#include <QVector>
+#include <QAction>
+#include <QStringList>
+#include <QPoint>
 #include "hunspell/hunspell.hxx"
 
+class QWidget;
 class QContextMenuEvent;
-class QAction;
 class QTextCodec;
 
 class spellTextEditClass : public QTextEdit

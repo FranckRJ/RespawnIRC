@@ -1,10 +1,15 @@
 #ifndef SETTINGTOOL_HPP
 #define SETTINGTOOL_HPP
 
-#include <QSettings>
+#include <QList>
 
-#include "accountListWindow.hpp"
-#include "colorPseudoListWindow.hpp"
+class QSettings;
+class QString;
+class QByteArray;
+class QVariant;
+class QNetworkCookie;
+struct accountStruct;
+struct pseudoWithColorStruct;
 
 struct intSettingStruct
 {

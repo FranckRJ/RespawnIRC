@@ -1,7 +1,10 @@
 #include <QNetworkAccessManager>
 #include <QNetworkCookieJar>
 #include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QMessageBox>
+#include <QHBoxLayout>
+#include <QUrl>
 
 #include "sendMessages.hpp"
 #include "parsingTool.hpp"

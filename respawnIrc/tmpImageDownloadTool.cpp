@@ -1,5 +1,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QString>
+#include <QFile>
+#include <QDir>
+#include <QIODevice>
 
 #include "tmpImageDownloadTool.hpp"
 #include "parsingTool.hpp"

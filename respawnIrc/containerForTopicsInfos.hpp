@@ -1,8 +1,15 @@
 #ifndef CONTAINERFORTOPICSINFOS_HPP
 #define CONTAINERFORTOPICSINFOS_HPP
 
+#include <QList>
+
 #include "showTopicMessages.hpp"
 #include "showListOfTopic.hpp"
+
+class QWidget;
+class QString;
+class QNetworkCookie;
+struct pseudoWithColorStruct;
 
 class containerForTopicsInfosClass : public QWidget
 {

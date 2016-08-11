@@ -2,8 +2,11 @@
 #define HIGHLIGHTER_HPP
 
 #include <QSyntaxHighlighter>
+#include <QString>
+#include <QTextCharFormat>
 #include "hunspell/hunspell.hxx"
 
+class QTextDocument;
 class QTextCodec;
 
 class highlighterClass : public QSyntaxHighlighter

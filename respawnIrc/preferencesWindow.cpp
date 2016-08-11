@@ -6,6 +6,10 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QCheckBox>
+#include <QStringList>
+#include <QTabWidget>
+#include <QWidget>
+#include <QObject>
 
 #include "preferencesWindow.hpp"
 #include "settingTool.hpp"

@@ -1,6 +1,10 @@
 #include <QFileInfo>
 #include <QCoreApplication>
 #include <QTextCodec>
+#include <QByteArray>
+#include <QColor>
+#include <QStringList>
+#include <QRegExp>
 
 #include "highlighter.hpp"
 #include "styleTool.hpp"

@@ -1,8 +1,14 @@
 #ifndef SHOWTOPICMESSAGES_HPP
 #define SHOWTOPICMESSAGES_HPP
 
+#include <QWidget>
 #include <QTextBrowser>
 #include <QThread>
+#include <QRegularExpression>
+#include <QString>
+#include <QNetworkCookie>
+#include <QList>
+#include <QPair>
 
 #include "colorPseudoListWindow.hpp"
 #include "getTopicMessages.hpp"
@@ -12,6 +18,8 @@
 
 class QNetworkReply;
 class QNetworkAccessManager;
+class QUrl;
+class QStringList;
 
 class showTopicMessagesClass : public QWidget
 {

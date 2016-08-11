@@ -1,8 +1,12 @@
 #ifndef SENDMESSAGES_HPP
 #define SENDMESSAGES_HPP
 
+#include <QWidget>
 #include <QNetworkCookie>
 #include <QPushButton>
+#include <QList>
+#include <QString>
+#include <QPair>
 
 #include "multiTypeTextBox.hpp"
 

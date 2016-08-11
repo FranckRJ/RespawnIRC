@@ -2,9 +2,11 @@
 #define STICKERDOWNLOADTOOL_HPP
 
 #include <QObject>
+#include <QStringList>
 
 class QNetworkAccessManager;
 class QNetworkReply;
+class QString;
 
 class stickerDownloadToolClass : public QObject
 {

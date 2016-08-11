@@ -3,6 +3,9 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QScrollBar>
+#include <QUrl>
+#include <QPoint>
+#include <QString>
 
 #include "selectStickerWindow.hpp"
 

@@ -4,6 +4,11 @@
 #include <QDialog>
 #include <QTextBrowser>
 
+class QWidget;
+class QUrl;
+class QPoint;
+class QString;
+
 class selectStickerWindowClass : public QDialog
 {
     Q_OBJECT

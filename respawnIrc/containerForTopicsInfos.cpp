@@ -1,7 +1,10 @@
 #include <QSplitter>
 #include <QHBoxLayout>
+#include <QString>
+#include <QNetworkCookie>
 
 #include "containerForTopicsInfos.hpp"
+#include "colorPseudoListWindow.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 

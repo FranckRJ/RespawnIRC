@@ -1,4 +1,9 @@
+#include <QCoreApplication>
 #include <QApplication>
+#include <QSettings>
+#include <QList>
+#include <QPair>
+#include <QString>
 
 #include "mainWindow.hpp"
 #include "settingTool.hpp"

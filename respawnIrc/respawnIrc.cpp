@@ -1,10 +1,17 @@
 #include <QSound>
+#include <QObject>
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QApplication>
 #include <QClipboard>
 #include <QMimeData>
+#include <QTextDocument>
+#include <QStringList>
+#include <QFocusEvent>
+#include <QHBoxLayout>
+#include <QGridLayout>
+#include <QPushButton>
 
 #include "respawnIrc.hpp"
 #include "connectWindow.hpp"
@@ -17,8 +24,12 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
-QRegularExpression respawnIrcClass::expForSmileyToCode("<img src=\"resources/smileys/(.*?)\\..*?\" />", QRegularExpression::OptimizeOnFirstUsageOption);
 const QString respawnIrcClass::currentVersionName("v2.6");
+
+namespace
+{
+    QRegularExpression expForSmileyToCode("<img src=\"resources/smileys/(.*?)\\..*?\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+}
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {

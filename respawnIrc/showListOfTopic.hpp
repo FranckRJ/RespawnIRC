@@ -1,8 +1,11 @@
 #ifndef SHOWLISTOFTOPIC_HPP
 #define SHOWLISTOFTOPIC_HPP
 
+#include <QWidget>
 #include <QTimer>
+#include <QString>
 #include <QListView>
+#include <QList>
 #include <QStringListModel>
 #include <QNetworkCookie>
 
@@ -10,6 +13,8 @@
 
 class QNetworkReply;
 class QNetworkAccessManager;
+class QPoint;
+class QModelIndex;
 
 class showListOfTopicClass : public QWidget
 {

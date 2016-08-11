@@ -4,6 +4,9 @@
 #include <QDialog>
 #include <QLineEdit>
 
+class QString;
+class QWidget;
+
 class selectTopicWindowClass : public QDialog
 {
     Q_OBJECT

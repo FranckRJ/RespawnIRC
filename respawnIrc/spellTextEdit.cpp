@@ -1,11 +1,16 @@
-#include <QAction>
 #include <QFile>
+#include <QFileInfo>
 #include <QTextStream>
+#include <QByteArray>
 #include <QCoreApplication>
+#include <QContextMenuEvent>
 #include <QTextCodec>
+#include <QTextCursor>
 #include <QFileInfo>
 #include <QTextBlock>
+#include <QIODevice>
 #include <QMenu>
+#include <QRegExp>
 
 #include "spellTextEdit.hpp"
 

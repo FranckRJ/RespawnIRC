@@ -6,6 +6,9 @@
 #include <QStringListModel>
 #include <QLabel>
 
+class QString;
+class QWidget;
+
 class selectThemeWindowClass : public QDialog
 {
     Q_OBJECT

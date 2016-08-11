@@ -5,7 +5,11 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QScrollBar>
+#include <QUrl>
+#include <QStringList>
+#include <QMetaObject>
 
 #include "showTopicMessages.hpp"
 #include "settingTool.hpp"

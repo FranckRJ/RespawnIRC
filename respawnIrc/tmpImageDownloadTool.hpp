@@ -3,9 +3,11 @@
 
 #include <QObject>
 #include <QTemporaryDir>
+#include <QStringList>
 
 class QNetworkAccessManager;
 class QNetworkReply;
+class QString;
 
 class tmpImageDownloadToolClass : public QObject
 {

@@ -1,7 +1,15 @@
 #ifndef RESPAWNIRC_HPP
 #define RESPAWNIRC_HPP
 
+#include <QWidget>
 #include <QLabel>
+#include <QString>
+#include <QMap>
+#include <QList>
+#include <QTabWidget>
+#include <QNetworkCookie>
+#include <QVector>
+#include <QPixmap>
 
 #include "containerForTopicsInfos.hpp"
 #include "sendMessages.hpp"
@@ -11,6 +19,10 @@
 #include "checkUpdate.hpp"
 #include "stickerDownloadTool.hpp"
 #include "tmpImageDownloadTool.hpp"
+
+class QStringList;
+class QFocusEvent;
+class QHBoxLayout;
 
 class respawnIrcClass : public QWidget
 {
@@ -81,7 +93,6 @@ signals:
 protected:
     void focusInEvent(QFocusEvent* event);
 private:
-    static QRegularExpression expForSmileyToCode;
     QHBoxLayout* buttonLayout;
     sendMessagesClass sendMessages;
     QTabWidget tabList;
