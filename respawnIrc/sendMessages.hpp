@@ -1,6 +1,9 @@
 #ifndef SENDMESSAGES_HPP
 #define SENDMESSAGES_HPP
 
+class QNetworkReply;
+class QNetworkAccessManager;
+
 #include <QWidget>
 #include <QNetworkCookie>
 #include <QPushButton>
@@ -9,9 +12,6 @@
 #include <QPair>
 
 #include "multiTypeTextBox.hpp"
-
-class QNetworkReply;
-class QNetworkAccessManager;
 
 class sendMessagesClass : public QWidget
 {

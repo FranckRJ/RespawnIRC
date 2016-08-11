@@ -1,14 +1,14 @@
 #ifndef PREFERENCEWINDOW_HPP
 #define PREFERENCEWINDOW_HPP
 
-#include <QDialog>
-#include <QMap>
-#include <QString>
-
 class QWidget;
 class QCheckBox;
 class QHBoxLayout;
 class QStringList;
+
+#include <QDialog>
+#include <QMap>
+#include <QString>
 
 class preferenceWindowClass : public QDialog
 {

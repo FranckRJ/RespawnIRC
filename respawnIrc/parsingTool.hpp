@@ -1,13 +1,13 @@
 #ifndef PARSINGTOOL_HPP
 #define PARSINGTOOL_HPP
 
-#include <QString>
-#include <QList>
-#include <QPair>
-
 class QStringList;
 class QNetworkRequest;
 class QRegularExpression;
+
+#include <QString>
+#include <QList>
+#include <QPair>
 
 struct pseudoInfoStruct
 {

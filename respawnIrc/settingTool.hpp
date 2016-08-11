@@ -1,8 +1,6 @@
 #ifndef SETTINGTOOL_HPP
 #define SETTINGTOOL_HPP
 
-#include <QList>
-
 class QSettings;
 class QString;
 class QByteArray;
@@ -10,6 +8,8 @@ class QVariant;
 class QNetworkCookie;
 struct accountStruct;
 struct pseudoWithColorStruct;
+
+#include <QList>
 
 struct intSettingStruct
 {

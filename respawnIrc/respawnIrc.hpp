@@ -1,6 +1,10 @@
 #ifndef RESPAWNIRC_HPP
 #define RESPAWNIRC_HPP
 
+class QStringList;
+class QFocusEvent;
+class QHBoxLayout;
+
 #include <QWidget>
 #include <QLabel>
 #include <QString>
@@ -19,10 +23,6 @@
 #include "checkUpdate.hpp"
 #include "stickerDownloadTool.hpp"
 #include "tmpImageDownloadTool.hpp"
-
-class QStringList;
-class QFocusEvent;
-class QHBoxLayout;
 
 class respawnIrcClass : public QWidget
 {

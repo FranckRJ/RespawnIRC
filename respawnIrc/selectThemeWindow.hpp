@@ -1,13 +1,13 @@
 #ifndef SELECTTHEMEWINDOW_HPP
 #define SELECTTHEMEWINDOW_HPP
 
+class QString;
+class QWidget;
+
 #include <QDialog>
 #include <QListView>
 #include <QStringListModel>
 #include <QLabel>
-
-class QString;
-class QWidget;
 
 class selectThemeWindowClass : public QDialog
 {

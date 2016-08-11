@@ -1,13 +1,13 @@
 #ifndef SELECTSTICKERWINDOW_HPP
 #define SELECTSTICKERWINDOW_HPP
 
-#include <QDialog>
-#include <QTextBrowser>
-
 class QWidget;
 class QUrl;
 class QPoint;
 class QString;
+
+#include <QDialog>
+#include <QTextBrowser>
 
 class selectStickerWindowClass : public QDialog
 {

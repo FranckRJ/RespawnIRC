@@ -1,13 +1,13 @@
 #ifndef COLORPSEUDOLISTWINDOW_HPP
 #define COLORPSEUDOLISTWINDOW_HPP
 
+class QWidget;
+
 #include <QDialog>
 #include <QString>
 #include <QList>
 #include <QListView>
 #include <QStringListModel>
-
-class QWidget;
 
 struct pseudoWithColorStruct
 {

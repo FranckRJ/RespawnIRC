@@ -1,6 +1,11 @@
 #ifndef SHOWLISTOFTOPIC_HPP
 #define SHOWLISTOFTOPIC_HPP
 
+class QNetworkReply;
+class QNetworkAccessManager;
+class QPoint;
+class QModelIndex;
+
 #include <QWidget>
 #include <QTimer>
 #include <QString>
@@ -10,11 +15,6 @@
 #include <QNetworkCookie>
 
 #include "autoTimeoutReply.hpp"
-
-class QNetworkReply;
-class QNetworkAccessManager;
-class QPoint;
-class QModelIndex;
 
 class showListOfTopicClass : public QWidget
 {
@@ -48,5 +48,4 @@ private:
     int topicNameMaxSize = 35;
 };
 
-#endif // SHOWLISTOFTOPIC_HPP
-
+#endif

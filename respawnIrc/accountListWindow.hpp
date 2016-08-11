@@ -1,6 +1,8 @@
 #ifndef ACCOUNTLISTWINDOW_HPP
 #define ACCOUNTLISTWINDOW_HPP
 
+class QWidget;
+
 #include <QDialog>
 #include <QNetworkCookie>
 #include <QList>
@@ -8,8 +10,6 @@
 #include <QListView>
 #include <QStringListModel>
 #include <QCheckBox>
-
-class QWidget;
 
 struct accountStruct
 {

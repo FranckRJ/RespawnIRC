@@ -1,6 +1,11 @@
 #ifndef SHOWTOPICMESSAGES_HPP
 #define SHOWTOPICMESSAGES_HPP
 
+class QNetworkReply;
+class QNetworkAccessManager;
+class QUrl;
+class QStringList;
+
 #include <QWidget>
 #include <QTextBrowser>
 #include <QThread>
@@ -15,11 +20,6 @@
 #include "autoTimeoutReply.hpp"
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
-
-class QNetworkReply;
-class QNetworkAccessManager;
-class QUrl;
-class QStringList;
 
 class showTopicMessagesClass : public QWidget
 {

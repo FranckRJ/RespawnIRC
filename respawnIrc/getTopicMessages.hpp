@@ -1,6 +1,11 @@
 #ifndef GETTOPICMESSAGES_HPP
 #define GETTOPICMESSAGES_HPP
 
+class QNetworkAccessManager;
+class QNetworkReply;
+class QTimer;
+class QStringList;
+
 #include <QObject>
 #include <QNetworkCookie>
 #include <QList>
@@ -10,11 +15,6 @@
 
 #include "autoTimeoutReply.hpp"
 #include "parsingTool.hpp"
-
-class QNetworkAccessManager;
-class QNetworkReply;
-class QTimer;
-class QStringList;
 
 class getTopicMessagesClass : public QObject
 {

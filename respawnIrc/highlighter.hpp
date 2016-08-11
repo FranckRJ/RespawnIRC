@@ -1,13 +1,13 @@
 #ifndef HIGHLIGHTER_HPP
 #define HIGHLIGHTER_HPP
 
+class QTextDocument;
+class QTextCodec;
+
 #include <QSyntaxHighlighter>
 #include <QString>
 #include <QTextCharFormat>
 #include "hunspell/hunspell.hxx"
-
-class QTextDocument;
-class QTextCodec;
 
 class highlighterClass : public QSyntaxHighlighter
 {

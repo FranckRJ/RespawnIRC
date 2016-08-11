@@ -37,4 +37,4 @@ namespace styleToolClass
     const colorInfoForMessageAndOtherStruct& getColorInfo();
 }
 
-#endif // STYLETOOL_HPP
+#endif

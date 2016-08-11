@@ -1,15 +1,15 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+class QString;
+class QKeyEvent;
+class QCloseEvent;
+
 #include <QMainWindow>
 #include <QVector>
 #include <QAction>
 
 #include "respawnIrc.hpp"
-
-class QString;
-class QKeyEvent;
-class QCloseEvent;
 
 class mainWindowClass : public QMainWindow
 {
