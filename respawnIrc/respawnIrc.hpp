@@ -20,8 +20,7 @@
 #include "accountListWindow.hpp"
 #include "multiTypeTextBox.hpp"
 #include "checkUpdate.hpp"
-#include "stickerDownloadTool.hpp"
-#include "tmpImageDownloadTool.hpp"
+#include "imageDownloadTool.hpp"
 
 class respawnIrcClass : public QWidget
 {
@@ -108,8 +107,7 @@ private:
     QString pseudoOfUser;
     QPixmap alertImage;
     checkUpdateClass checkUpdate;
-    stickerDownloadToolClass stickerDownloadTool;
-    tmpImageDownloadToolClass tmpImageDownloadTool;
+    imageDownloadToolClass imageDownloadTool;
     QString currentThemeName;
     bool beepWhenWarn;
     bool warnUser;

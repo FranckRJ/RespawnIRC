@@ -33,7 +33,8 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     tabList.setTabsClosable(true);
     tabList.setMovable(true);
     alertImage.load(QCoreApplication::applicationDirPath() + "/resources/alert.png");
-    stickerDownloadTool.updateListOfStickers();
+    imageDownloadTool.addRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
+    imageDownloadTool.addRule("noelshack", "/img/", true);
 
     addButtonToButtonLayout();
 
@@ -55,8 +56,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     connect(&tabList, &QTabWidget::currentChanged, this, &respawnIrcClass::currentTabChanged);
     connect(&tabList, &QTabWidget::tabCloseRequested, this, &respawnIrcClass::removeTab);
     connect(tabList.tabBar(), &QTabBar::tabMoved, this, &respawnIrcClass::tabHasMoved);
-    connect(&stickerDownloadTool, &stickerDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
-    connect(&tmpImageDownloadTool, &tmpImageDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
+    connect(&imageDownloadTool, &imageDownloadToolClass::oneDownloadFinished, this, &respawnIrcClass::updateImagesIfNeeded);
 
     loadSettings();
 
@@ -372,7 +372,7 @@ void respawnIrcClass::addNewTab()
         listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(currentCookieList, pseudoOfUser);
     }
 
-    listOfContainerForTopicsInfos.back()->getShowTopicMessages().addSearchPath(tmpImageDownloadTool.getPathOfTmpDir());
+    listOfContainerForTopicsInfos.back()->getShowTopicMessages().addSearchPath(imageDownloadTool.getPathOfTmpDir());
 
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
@@ -836,12 +836,12 @@ void respawnIrcClass::setEditMessage(int idOfMessageToEdit, bool useMessageEdit)
 
 void respawnIrcClass::downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck)
 {
-    stickerDownloadTool.checkAndStartDownloadMissingStickers(listOfStickersNeedToBeCheck);
+    imageDownloadTool.checkAndStartDownloadMissingImages(listOfStickersNeedToBeCheck, "sticker");
 }
 
 void respawnIrcClass::downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck)
 {
-    tmpImageDownloadTool.checkAndStartDownloadMissingImages(listOfNoelshackImagesNeedToBeCheck);
+    imageDownloadTool.checkAndStartDownloadMissingImages(listOfNoelshackImagesNeedToBeCheck, "noelshack");
 }
 
 void respawnIrcClass::updateImagesIfNeeded()
@@ -852,7 +852,7 @@ void respawnIrcClass::updateImagesIfNeeded()
     }
     else if(typeOfImageRefresh == 1)
     {
-        if(stickerDownloadTool.getNumberOfDownloadRemaining() == 0 && tmpImageDownloadTool.getNumberOfDownloadRemaining() == 0)
+        if(imageDownloadTool.getNumberOfDownloadRemaining() == 0)
         {
             getCurrentWidget()->getShowTopicMessages().relayoutDocumentHack();
         }

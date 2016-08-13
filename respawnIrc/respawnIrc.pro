@@ -37,8 +37,7 @@ SOURCES += \
     preferencesWindow.cpp \
     shortcutTool.cpp \
     addCookiesWindow.cpp \
-    stickerDownloadTool.cpp \
-    tmpImageDownloadTool.cpp
+    imageDownloadTool.cpp
 
 QT += \
     network \
@@ -89,8 +88,7 @@ HEADERS += \
     preferencesWindow.hpp \
     shortcutTool.hpp \
     addCookiesWindow.hpp \
-    stickerDownloadTool.hpp \
-    tmpImageDownloadTool.hpp
+    imageDownloadTool.hpp
 
 RC_FILE = respawnIrc.rc
 
