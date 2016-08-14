@@ -181,6 +181,8 @@ void showTopicMessagesClass::setTopicToErrorMode()
 
 void showTopicMessagesClass::updateSettingInfo()
 {
+    settingsForMessageParsingStruct settingsForMessageParsing;
+
     showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
     showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
     showEditButton = settingToolClass::getThisBoolOption("showEditButton");
@@ -197,21 +199,20 @@ void showTopicMessagesClass::updateSettingInfo()
     timeoutForQuoteInfo.updateTimeoutTime();
     timeoutForDeleteInfo.updateTimeoutTime();
 
-    QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection,
-                              Q_ARG(bool, settingToolClass::getThisBoolOption("loadTwoLastPage")),
-                              Q_ARG(int, settingToolClass::getThisIntOption("updateTopicTime").value),
-                              Q_ARG(bool, settingToolClass::getThisBoolOption("showStickers")),
-                              Q_ARG(int, settingToolClass::getThisIntOption("stickersSize").value),
-                              Q_ARG(int, settingToolClass::getThisIntOption("timeoutInSecond").value),
-                              Q_ARG(int, settingToolClass::getThisIntOption("maxNbOfQuotes").value),
-                              Q_ARG(bool, settingToolClass::getThisBoolOption("stickersToSmiley")),
-                              Q_ARG(bool, settingToolClass::getThisBoolOption("betterQuote")),
-                              Q_ARG(bool, settingToolClass::getThisBoolOption("downloadMissingStickers")),
-                              Q_ARG(bool, settingToolClass::getThisBoolOption("downloadNoelshackImages")));
+    settingsForMessageParsing.loadTwoLastPage = settingToolClass::getThisBoolOption("loadTwoLastPage");
+    settingsForMessageParsing.timerTime = settingToolClass::getThisIntOption("updateTopicTime").value;
+    settingsForMessageParsing.infoForMessageParsing.showStickers = settingToolClass::getThisBoolOption("showStickers");
+    settingsForMessageParsing.infoForMessageParsing.stickersSize = settingToolClass::getThisIntOption("stickersSize").value;
+    settingsForMessageParsing.timeoutTime = settingToolClass::getThisIntOption("timeoutInSecond").value;
+    settingsForMessageParsing.infoForMessageParsing.nbMaxQuote = settingToolClass::getThisIntOption("maxNbOfQuotes").value;
+    settingsForMessageParsing.infoForMessageParsing.stickerToSmiley = settingToolClass::getThisBoolOption("stickersToSmiley");
+    settingsForMessageParsing.infoForMessageParsing.betterQuote = settingToolClass::getThisBoolOption("betterQuote");
+    settingsForMessageParsing.downloadMissingStickers = settingToolClass::getThisBoolOption("downloadMissingStickers");
+    settingsForMessageParsing.downloadNoelshackImages = settingToolClass::getThisBoolOption("downloadNoelshackImages");
+    settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingToolClass::getThisIntOption("noelshackImageWidth").value;
+    settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingToolClass::getThisIntOption("noelshackImageHeight").value;
 
-    QMetaObject::invokeMethod(getTopicMessages, "otherSettingsChanged", Qt::QueuedConnection,
-                              Q_ARG(int, settingToolClass::getThisIntOption("noelshackImageWidth").value),
-                              Q_ARG(int, settingToolClass::getThisIntOption("noelshackImageHeight").value));
+    QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection, Q_ARG(settingsForMessageParsingStruct, settingsForMessageParsing));
 }
 
 void showTopicMessagesClass::addSearchPath(QString newSearchPath)

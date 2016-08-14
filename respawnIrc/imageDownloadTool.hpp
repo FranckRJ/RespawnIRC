@@ -8,6 +8,7 @@
 #include <QNetworkReply>
 #include <QString>
 #include <QList>
+#include <QMap>
 
 struct imageDownloadRuleStruct
 {

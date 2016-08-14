@@ -43,6 +43,17 @@ struct ajaxInfoStruct
     QString mod;
 };
 
+struct infoForMessageParsingStruct
+{
+    bool showStickers;
+    bool stickerToSmiley;
+    int stickersSize;
+    int nbMaxQuote;
+    bool betterQuote;
+    int noelshackImageWidth;
+    int noelshackImageHeight;
+};
+
 namespace parsingToolClass
 {
     ajaxInfoStruct getAjaxInfo(const QString& source);
@@ -64,9 +75,7 @@ namespace parsingToolClass
     QString getForumOfTopic(const QString& source);
     QString getForumName(const QString& source);
     QString jvfLinkToJvcLink(const QString& source);
-    QString parsingMessages(QString thisMessage, bool showStickers, bool stickerToSmiley, int stickersSize,
-                                   int nbMaxQuote, bool betterQuote, QStringList* listOfStickersUsed = nullptr, QStringList* listOfNoelshackImageUsed = nullptr,
-                                   int noelshackImageWidth = 68, int noelshackImageHeight = 51);
+    QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, QStringList* listOfStickersUsed = nullptr, QStringList* listOfNoelshackImageUsed = nullptr);
     QString parsingAjaxMessages(QString thisMessage);
     QNetworkRequest buildRequestWithThisUrl(QString url);
     QList<QString> getListOfThisCapNumber(const QString &source, const QRegularExpression& exp, int capNumber, bool globalMatch = true);

@@ -15,6 +15,16 @@
 #include "autoTimeoutReply.hpp"
 #include "parsingTool.hpp"
 
+struct settingsForMessageParsingStruct
+{
+    infoForMessageParsingStruct infoForMessageParsing;
+    bool loadTwoLastPage;
+    int timerTime;
+    int timeoutTime;
+    bool downloadMissingStickers;
+    bool downloadNoelshackImages;
+};
+
 class getTopicMessagesClass : public QObject
 {
     Q_OBJECT
@@ -23,9 +33,7 @@ public:
 public slots:
     void setNewTopic(QString newTopicLink, bool getFirstMessage);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages);
-    void settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize,
-                         int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote, bool newDownloadMissingStickers, bool newDownloadNoelshackImages);
-    void otherSettingsChanged(int newNoelshackImageWidth, int newNoelshackImageHeight);
+    void settingsChanged(settingsForMessageParsingStruct newSettings);
     void startGetMessage();
     void getMessages();
     void loadFirstPageFinish();
@@ -51,24 +59,15 @@ private:
     QTimer* timerForGetMessage;
     QString topicLink;
     QString pseudoOfUser;
+    settingsForMessageParsingStruct settingsForMessageParsing;
     bool needToGetFirstMessage;
     bool linkHasChanged = false;
     bool firstTimeGetMessages = true;
     bool needToGetMessages = false;
     bool retrievesMessage = false;
     bool needToSetCookies = false;
-    bool loadTwoLastPage;
     bool secondPageLoading = false;
-    bool showStickers;
-    bool stickerToSmiley;
-    bool betterQuote;
-    bool downloadMissingStickers;
-    bool downloadNoelshackImages;
     int idOfLastMessage = 0;
-    int stickersSize;
-    int maxNbOfQuotes;
-    int noelshackImageWidth;
-    int noelshackImageHeight;
 };
 
 #endif

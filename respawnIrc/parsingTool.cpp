@@ -369,12 +369,11 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
     }
 }
 
-QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers, bool stickerToSmiley, int stickersSize, int nbMaxQuote,
-                                          bool betterQuote, QStringList* listOfStickersUsed, QStringList* listOfNoelshackImageUsed, int noelshackImageWidth, int noelshackImageHeight)
+QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, QStringList* listOfStickersUsed, QStringList* listOfNoelshackImageUsed)
 {
     QString extraTableStyle;
 
-    if(betterQuote == true)
+    if(infoForParsing.betterQuote == true)
     {
         extraTableStyle = "background: " + styleToolClass::getColorInfo().tableBackgroundColor + ";color: " + styleToolClass::getColorInfo().tableTextColor + ";";
     }
@@ -390,12 +389,12 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
         //c'normal que c'est vide
     }
 
-    if(stickerToSmiley == true)
+    if(infoForParsing.stickerToSmiley == true)
     {
         shortcutToolClass::transformMessage(&thisMessage, "stickerToSmiley");
     }
 
-    if(showStickers == false)
+    if(infoForParsing.showStickers == false)
     {
         replaceWithCapNumber(thisMessage, expForStickers, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     }
@@ -406,7 +405,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
             listOfStickersUsed->append(getListOfThisCapNumber(thisMessage, expForStickers, 2, false));
         }
 
-        replaceWithCapNumber(thisMessage, expForStickers, 2, "<img width=" + QString::number(stickersSize) + " height=" + QString::number(stickersSize) + " src=\"resources/stickers/", ".png\" />");
+        replaceWithCapNumber(thisMessage, expForStickers, 2, "<img width=" + QString::number(infoForParsing.stickersSize) + " height=" + QString::number(infoForParsing.stickersSize) + " src=\"resources/stickers/", ".png\" />");
     }
 
     replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"resources/smileys/", "\" />");
@@ -427,7 +426,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
             }
         }
 
-        replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a href=\"", "\"><img width=" + QString::number(noelshackImageWidth) + " height=" + QString::number(noelshackImageHeight) + " src=\"img/", 2, "\" /></a>");
+        replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a href=\"", "\"><img width=" + QString::number(infoForParsing.noelshackImageWidth) + " height=" + QString::number(infoForParsing.noelshackImageHeight) + " src=\"img/", 2, "\" /></a>");
     }
     else
     {
@@ -438,7 +437,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, bool showStickers
     replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", false, false, true, 1);
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", false, true);
 
-    removeAllOverlyQuote(thisMessage, nbMaxQuote);
+    removeAllOverlyQuote(thisMessage, infoForParsing.nbMaxQuote);
 
     thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-bottom: 5px;margin-top: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";" + extraTableStyle + "\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");

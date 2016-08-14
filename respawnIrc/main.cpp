@@ -8,6 +8,7 @@
 #include "mainWindow.hpp"
 #include "settingTool.hpp"
 #include "parsingTool.hpp"
+#include "getTopicMessages.hpp"
 #include "shortcutTool.hpp"
 #include "styleTool.hpp"
 
@@ -24,6 +25,8 @@ int main(int argc, char* argv[])
     shortcutToolClass::loadShortcutRule("stickerToSmiley", "<img class=\"img-stickers\" src=\"http://jv.stkr.fr/p/", "\"/>", "<img src=\"resources/smileys/", "\"/>");
     styleToolClass::getModelInfo("");
 
+    qRegisterMetaType<infoForMessageParsingStruct>("infoForMessageParsingStruct");
+    qRegisterMetaType<settingsForMessageParsingStruct>("settingsForMessageParsingStruct");
     qRegisterMetaType<ajaxInfoStruct>("ajaxInfoStruct");
     qRegisterMetaType<messageStruct>("messageStruct");
     qRegisterMetaType<QList<messageStruct> >("QList<messageStruct>");

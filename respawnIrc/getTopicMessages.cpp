@@ -89,29 +89,14 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
     }
 }
 
-void getTopicMessagesClass::settingsChanged(bool getTwoLastPages, int timerTime, bool newShowStickers, int newStickerSize,
-                                            int timeoutTime, int newMaxNbOfQuotes, bool newStickersToSmiley, bool newBetterQuote,
-                                            bool newDownloadMissingStickers, bool newDownloadNoelshackImages)
+void getTopicMessagesClass::settingsChanged(settingsForMessageParsingStruct newSettings)
 {
-    loadTwoLastPage = getTwoLastPages;
-    showStickers = newShowStickers;
-    stickerToSmiley = newStickersToSmiley;
-    stickersSize = newStickerSize;
-    maxNbOfQuotes = newMaxNbOfQuotes;
-    betterQuote = newBetterQuote;
-    downloadMissingStickers = newDownloadMissingStickers;
-    downloadNoelshackImages = newDownloadNoelshackImages;
+    settingsForMessageParsing = newSettings;
 
-    timerForGetMessage->setInterval(timerTime);
+    timerForGetMessage->setInterval(settingsForMessageParsing.timerTime);
 
-    timeoutForFirstPage->updateTimeoutTime(timeoutTime);
-    timeoutForSecondPage->updateTimeoutTime(timeoutTime);
-}
-
-void getTopicMessagesClass::otherSettingsChanged(int newNoelshackImageWidth, int newNoelshackImageHeight)
-{
-    noelshackImageWidth = newNoelshackImageWidth;
-    noelshackImageHeight = newNoelshackImageHeight;
+    timeoutForFirstPage->updateTimeoutTime(settingsForMessageParsing.timeoutTime);
+    timeoutForSecondPage->updateTimeoutTime(settingsForMessageParsing.timeoutTime);
 }
 
 void getTopicMessagesClass::startGetMessage()
@@ -169,7 +154,7 @@ void getTopicMessagesClass::getMessages()
                 errorWhenTryToGetMessages = true;
             }
 
-            if(loadTwoLastPage == true && beforeLastPage.isEmpty() == false)
+            if(settingsForMessageParsing.loadTwoLastPage == true && beforeLastPage.isEmpty() == false)
             {
                 QNetworkRequest requestForSecondPage = parsingToolClass::buildRequestWithThisUrl(beforeLastPage);
                 secondPageLoading = true;
@@ -201,7 +186,7 @@ void getTopicMessagesClass::getMessages()
 
 void getTopicMessagesClass::loadFirstPageFinish()
 {
-    if(loadTwoLastPage == true && secondPageLoading == true)
+    if(settingsForMessageParsing.loadTwoLastPage == true && secondPageLoading == true)
     {
         if(replyForSecondPage != nullptr)
         {
@@ -244,7 +229,7 @@ void getTopicMessagesClass::analyzeMessages()
     timeoutForSecondPage->resetReply();
 
     listOfPageReply.append(replyForFirstPage);
-    if(loadTwoLastPage == true && secondPageLoading == true)
+    if(settingsForMessageParsing.loadTwoLastPage == true && secondPageLoading == true)
     {
         listOfPageReply.append(replyForSecondPage);
     }
@@ -322,9 +307,9 @@ void getTopicMessagesClass::analyzeMessages()
 
                 tmpMsg.isFirstMessage = true;
                 tmpMsg.isAnEdit = false;
-                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote,
-                                                                   (downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
-                                                                   (downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr), noelshackImageWidth, noelshackImageHeight);
+                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, settingsForMessageParsing.infoForMessageParsing,
+                                                                   (settingsForMessageParsing.downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
+                                                                   (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
 
                 listOfNewMessages.push_front(tmpMsg);
             }
@@ -369,9 +354,9 @@ void getTopicMessagesClass::analyzeMessages()
                     idOfLastMessage = currentMessage.idOfMessage;
                 }
 
-                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, showStickers, stickerToSmiley, stickersSize, maxNbOfQuotes, betterQuote,
-                                                                           (downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
-                                                                           (downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr), noelshackImageWidth, noelshackImageHeight);
+                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, settingsForMessageParsing.infoForMessageParsing,
+                                                                           (settingsForMessageParsing.downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
+                                                                           (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
                 listOfNewMessages.push_back(currentMessage);
 
                 listOfEdit[currentMessage.idOfMessage] = currentMessage.lastTimeEdit;
