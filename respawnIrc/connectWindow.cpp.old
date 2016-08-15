@@ -52,6 +52,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     mainLayout->addWidget(buttonHelp);
 
     setLayout(mainLayout);
+    setWindowTitle("Page de connexion");
 
     QNetworkAccessManager* tmpManagerForReply;
 
