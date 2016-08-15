@@ -52,6 +52,7 @@ struct infoForMessageParsingStruct
     bool betterQuote;
     int noelshackImageWidth;
     int noelshackImageHeight;
+    bool useNewLayout;
 };
 
 namespace parsingToolClass

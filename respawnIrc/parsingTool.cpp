@@ -375,7 +375,11 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
 
     if(infoForParsing.betterQuote == true)
     {
-        extraTableStyle = "background: " + styleToolClass::getColorInfo().tableBackgroundColor + ";color: " + styleToolClass::getColorInfo().tableTextColor + ";";
+        extraTableStyle += "background: " + styleToolClass::getColorInfo().tableBackgroundColor + ";color: " + styleToolClass::getColorInfo().tableTextColor + ";";
+    }
+    if(infoForParsing.useNewLayout == false)
+    {
+        extraTableStyle += "margin-bottom: 5px;";
     }
 
     replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", true);
@@ -383,10 +387,13 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
 
     thisMessage.replace("\n", "");
 
-    replaceWithCapNumber(thisMessage, expForStickers, 0, "<p>", "</p>");
-    while(replaceWithCapNumber(thisMessage, QRegularExpression("(" + expForStickers.pattern() + ")\\s*</p>\\s*<p>\\s*(" + expForStickers.pattern() + ")"), 1, "", "", 4) == true)
+    if(infoForParsing.useNewLayout == false)
     {
-        //c'normal que c'est vide
+        replaceWithCapNumber(thisMessage, expForStickers, 0, "<p>", "</p>");
+        while(replaceWithCapNumber(thisMessage, QRegularExpression("(" + expForStickers.pattern() + ")\\s*</p>\\s*<p>\\s*(" + expForStickers.pattern() + ")"), 1, "", "", 4) == true)
+        {
+            //c'normal que c'est vide
+        }
     }
 
     if(infoForParsing.stickerToSmiley == true)
@@ -439,12 +446,15 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
 
     removeAllOverlyQuote(thisMessage, infoForParsing.nbMaxQuote);
 
-    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-bottom: 5px;margin-top: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";" + extraTableStyle + "\"><tr><td>");
+    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";" + extraTableStyle + "\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
 
-    thisMessage.replace(QRegularExpression("</p> *<p>"), "<br /><br />");
-    thisMessage.replace("<p>", "");
-    thisMessage.replace("</p>", "");
+    if(infoForParsing.useNewLayout == false)
+    {
+        thisMessage.replace(QRegularExpression("</p> *<p>"), "<br /><br />");
+        thisMessage.replace("<p>", "");
+        thisMessage.replace("</p>", "");
+    }
 
     thisMessage.remove("</div>");
     while(thisMessage.endsWith(' ') == true)

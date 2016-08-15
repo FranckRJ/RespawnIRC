@@ -47,6 +47,8 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["cutLongTopicNameInTopicList"] = true;
     listOfDefaultBoolOption["downloadMissingStickers"] = true;
     listOfDefaultBoolOption["downloadNoelshackImages"] = true;
+    listOfDefaultBoolOption["useNewLayoutForMessageParsing"] = false;
+    listOfDefaultBoolOption["expertMode"] = false;
     listOfDefaultIntOption["updateTopicTime"].value = 3500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 500;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 10000;

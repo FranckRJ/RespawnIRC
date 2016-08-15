@@ -15,8 +15,8 @@ class preferenceWindowClass : public QDialog
 public:
     preferenceWindowClass(QWidget* parent);
     QWidget* createWidgetForMainTab();
-    QWidget* createWidgetForImageTab();
     QWidget* createWidgetForMessageAndTopicStyleTab();
+    QWidget* createWidgetForImageTab();
     QCheckBox* makeNewCheckBox(QString messageInfo, QString boxNameValue);
     QHBoxLayout* makeNewSpinBox(QString messageInfo, QString boxNameValue);
     QHBoxLayout* makeNewComboBox(QString messageInfo, QString boxNameValue, QStringList listOfChoices);
@@ -31,6 +31,7 @@ signals:
 private:
     QMap<QString, bool> listOfBoolOptionChanged;
     QMap<QString, int> listOfIntOptionChanged;
+    bool expertMode;
 };
 
 #endif

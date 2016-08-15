@@ -211,6 +211,7 @@ void showTopicMessagesClass::updateSettingInfo()
     settingsForMessageParsing.downloadNoelshackImages = settingToolClass::getThisBoolOption("downloadNoelshackImages");
     settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingToolClass::getThisIntOption("noelshackImageWidth").value;
     settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingToolClass::getThisIntOption("noelshackImageHeight").value;
+    settingsForMessageParsing.infoForMessageParsing.useNewLayout = settingToolClass::getThisBoolOption("useNewLayoutForMessageParsing");
 
     QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection, Q_ARG(settingsForMessageParsingStruct, settingsForMessageParsing));
 }

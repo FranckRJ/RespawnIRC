@@ -13,6 +13,7 @@
 preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+    expertMode = settingToolClass::getThisBoolOption("expertMode");
 
     QTabWidget* mainWidget = new QTabWidget(this);
 
@@ -106,51 +107,6 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     return mainTabWidget;
 }
 
-QWidget* preferenceWindowClass::createWidgetForImageTab()
-{
-    QWidget* mainTabWidget = new QWidget(this);
-
-    QGroupBox* groupBoxGeneral = new QGroupBox("Général", this);
-
-    QVBoxLayout* vboxGeneral = new QVBoxLayout();
-    vboxGeneral->addLayout(makeNewComboBox("Type de rafraichissement des images :", "typeOfImageRefresh", {"Manuel (lors d'une action de l'utilisateur)", "Optimisé (toutes en même temps)", "Rapide (une par une)"}));
-    vboxGeneral->addStretch(1);
-    groupBoxGeneral->setLayout(vboxGeneral);
-
-    QGroupBox* groupBoxStickers = new QGroupBox("Stickers", this);
-
-    QVBoxLayout* vboxStickers = new QVBoxLayout();
-    vboxStickers->addWidget(makeNewCheckBox("Afficher les stickers", "showStickers"));
-    vboxStickers->addWidget(makeNewCheckBox("Télécharger automatiquement les stickers manquants", "downloadMissingStickers"));
-    vboxStickers->addWidget(makeNewCheckBox("Remplacer les stickers par des smileys", "stickersToSmiley"));
-    vboxStickers->addLayout(makeNewSpinBox("Taille des stickers", "stickersSize"));
-    vboxStickers->addStretch(1);
-    groupBoxStickers->setLayout(vboxStickers);
-
-    QGroupBox* groupBoxOtherNoelshack = new QGroupBox("Noelshack", this);
-
-    QVBoxLayout* vboxNoelshack = new QVBoxLayout();
-    vboxNoelshack->addWidget(makeNewCheckBox("Afficher les miniatures noelshack", "downloadNoelshackImages"));
-    vboxNoelshack->addLayout(makeNewSpinBox("Largeur des miniatures noelshack", "noelshackImageWidth"));
-    vboxNoelshack->addLayout(makeNewSpinBox("Hauteur des miniatures noelshack", "noelshackImageHeight"));
-    vboxNoelshack->addStretch(1);
-    groupBoxOtherNoelshack->setLayout(vboxNoelshack);
-
-    QGridLayout* mainLayout = new QGridLayout();
-    mainLayout->addWidget(groupBoxGeneral, 0, 0, 1, 2);
-    mainLayout->addWidget(groupBoxStickers, 1, 0);
-    mainLayout->addWidget(groupBoxOtherNoelshack, 1, 1);
-    mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
-
-    QVBoxLayout* realMainLayout = new QVBoxLayout();
-    realMainLayout->addLayout(mainLayout);
-    realMainLayout->addStretch(1);
-
-    mainTabWidget->setLayout(realMainLayout);
-
-    return mainTabWidget;
-}
-
 QWidget* preferenceWindowClass::createWidgetForMessageAndTopicStyleTab()
 {
     QWidget* mainTabWidget = new QWidget(this);
@@ -189,6 +145,63 @@ QWidget* preferenceWindowClass::createWidgetForMessageAndTopicStyleTab()
     mainLayout->addWidget(groupBoxTopicStyle, 0, 0, 1, 2);
     mainLayout->addWidget(groupBoxMessageButtons, 1, 0);
     mainLayout->addWidget(groupBoxMessageStyle, 1, 1);
+    mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
+
+    if(expertMode == true)
+    {
+        QGroupBox* groupBoxAdvanced = new QGroupBox("Avancé", this);
+
+        QVBoxLayout* vboxAdvanced = new QVBoxLayout();
+        vboxAdvanced->addWidget(makeNewCheckBox("Utiliser le nouvel agencement pour les messages", "useNewLayoutForMessageParsing"));
+        vboxAdvanced->addStretch(1);
+        groupBoxAdvanced->setLayout(vboxAdvanced);
+
+        mainLayout->addWidget(groupBoxAdvanced, 2, 0, 1, 2);
+    }
+
+    QVBoxLayout* realMainLayout = new QVBoxLayout();
+    realMainLayout->addLayout(mainLayout);
+    realMainLayout->addStretch(1);
+
+    mainTabWidget->setLayout(realMainLayout);
+
+    return mainTabWidget;
+}
+
+QWidget* preferenceWindowClass::createWidgetForImageTab()
+{
+    QWidget* mainTabWidget = new QWidget(this);
+
+    QGroupBox* groupBoxGeneral = new QGroupBox("Général", this);
+
+    QVBoxLayout* vboxGeneral = new QVBoxLayout();
+    vboxGeneral->addLayout(makeNewComboBox("Type de rafraichissement des images :", "typeOfImageRefresh", {"Manuel (lors d'une action de l'utilisateur)", "Optimisé (toutes en même temps)", "Rapide (une par une)"}));
+    vboxGeneral->addStretch(1);
+    groupBoxGeneral->setLayout(vboxGeneral);
+
+    QGroupBox* groupBoxStickers = new QGroupBox("Stickers", this);
+
+    QVBoxLayout* vboxStickers = new QVBoxLayout();
+    vboxStickers->addWidget(makeNewCheckBox("Afficher les stickers", "showStickers"));
+    vboxStickers->addWidget(makeNewCheckBox("Télécharger automatiquement les stickers manquants", "downloadMissingStickers"));
+    vboxStickers->addWidget(makeNewCheckBox("Remplacer les stickers par des smileys", "stickersToSmiley"));
+    vboxStickers->addLayout(makeNewSpinBox("Taille des stickers", "stickersSize"));
+    vboxStickers->addStretch(1);
+    groupBoxStickers->setLayout(vboxStickers);
+
+    QGroupBox* groupBoxOtherNoelshack = new QGroupBox("Noelshack", this);
+
+    QVBoxLayout* vboxNoelshack = new QVBoxLayout();
+    vboxNoelshack->addWidget(makeNewCheckBox("Afficher les miniatures noelshack", "downloadNoelshackImages"));
+    vboxNoelshack->addLayout(makeNewSpinBox("Largeur des miniatures noelshack", "noelshackImageWidth"));
+    vboxNoelshack->addLayout(makeNewSpinBox("Hauteur des miniatures noelshack", "noelshackImageHeight"));
+    vboxNoelshack->addStretch(1);
+    groupBoxOtherNoelshack->setLayout(vboxNoelshack);
+
+    QGridLayout* mainLayout = new QGridLayout();
+    mainLayout->addWidget(groupBoxGeneral, 0, 0, 1, 2);
+    mainLayout->addWidget(groupBoxStickers, 1, 0);
+    mainLayout->addWidget(groupBoxOtherNoelshack, 1, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     QVBoxLayout* realMainLayout = new QVBoxLayout();
