@@ -11,6 +11,7 @@
 #include <QPushButton>
 
 #include "respawnIrc.hpp"
+#include "webNavigator.hpp"
 #include "connectWindow.hpp"
 #include "selectTopicWindow.hpp"
 #include "selectThemeWindow.hpp"
@@ -262,6 +263,18 @@ void respawnIrcClass::updateSettingInfoForList()
     {
         thisContainer->updateSettingsForInfo();
     }
+}
+
+void respawnIrcClass::showWebNavigator()
+{
+    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, getCurrentWidget()->getShowTopicMessages().getTopicLink(), getCurrentWidget()->getShowTopicMessages().getListOfCookies());
+    myWebNavigator->exec();
+}
+
+void respawnIrcClass::showWebNavigatorAtPM()
+{
+    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, "http://www.jeuxvideo.com/messages-prives/boite-reception.php", getCurrentWidget()->getShowTopicMessages().getListOfCookies());
+    myWebNavigator->exec();
 }
 
 void respawnIrcClass::showConnect()

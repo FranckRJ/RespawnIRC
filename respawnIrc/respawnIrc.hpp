@@ -40,6 +40,8 @@ public:
     void updateSettingInfoForList();
     static const QString currentVersionName;
 public slots:
+    void showWebNavigator();
+    void showWebNavigatorAtPM();
     void showConnect();
     void showAccountListWindow();
     void showSelectSticker();

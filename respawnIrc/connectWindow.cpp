@@ -50,6 +50,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     mainLayout->addWidget(buttonHelp);
 
     setLayout(mainLayout);
+    setWindowTitle("Page de connexion");
 
     connect(buttonShowWebView, &QPushButton::pressed, this, &connectWindowClass::addWebView);
     connect(buttonAddCookies, &QPushButton::pressed, this, &connectWindowClass::showAddCookiesWindow);

@@ -1,0 +1,17 @@
+#ifndef WEBNAVIGATOR_HPP
+#define WEBNAVIGATOR_HPP
+
+#include <QWidget>
+#include <QDialog>
+#include <QNetworkCookie>
+#include <QList>
+#include <QString>
+
+class webNavigatorClass : public QDialog
+{
+    Q_OBJECT
+public:
+    webNavigatorClass(QWidget* parent, QString startUrl = "", QList<QNetworkCookie> cookiesList = QList<QNetworkCookie>());
+};
+
+#endif

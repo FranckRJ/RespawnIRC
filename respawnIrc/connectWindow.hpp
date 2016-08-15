@@ -10,7 +10,6 @@
 #include <QList>
 #include <QVBoxLayout>
 #include <QPushButton>
-#include <QWebEngineView>
 #include <QString>
 
 class connectWindowClass : public QDialog
@@ -35,4 +34,5 @@ private:
     QLineEdit pseudoLine;
     QCheckBox rememberBox;
 };
+
 #endif

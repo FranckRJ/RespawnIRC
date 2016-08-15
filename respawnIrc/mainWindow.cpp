@@ -24,6 +24,9 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     menuFile->addSeparator();
     QAction* actionTabAddTab = menuFile->addAction("Ajouter un onglet");
     menuFile->addSeparator();
+    QAction* actionOpenWebNavigator = menuFile->addAction("Ouvrir RespawnIRC Navigator");
+    QAction* actionOpenWebNavigatorAtPM = menuFile->addAction("Accéder aux MP via RespawnIRC Navigator");
+    menuFile->addSeparator();
     QAction* actionGoToMp = menuFile->addAction("Accéder à la boîte de réception");
     QAction* actionCheckUpdate = menuFile->addAction("Chercher une mise à jour");
     menuFile->addSeparator();
@@ -31,6 +34,8 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     actionConnect->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
     actionShowAccountList->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
     actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
+    actionOpenWebNavigator->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
+    actionOpenWebNavigatorAtPM->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_M));
     actionGoToMp->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
     actionCheckUpdate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_U));
     actionQuit->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
@@ -151,6 +156,8 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     connect(actionDisconnectFromCurrentTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromCurrentTab);
     connect(actionDisconnectFromAllTabs, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromAllTabs);
     connect(actionTabAddTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::addNewTab);
+    connect(actionOpenWebNavigator, &QAction::triggered, &respawnIrc, &respawnIrcClass::showWebNavigator);
+    connect(actionOpenWebNavigatorAtPM, &QAction::triggered, &respawnIrc, &respawnIrcClass::showWebNavigatorAtPM);
     connect(actionGoToMp, &QAction::triggered, this, &mainWindowClass::goToMp);
     connect(actionCheckUpdate, &QAction::triggered, &respawnIrc, &respawnIrcClass::checkForUpdate);
     connect(actionSelectTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTopic);

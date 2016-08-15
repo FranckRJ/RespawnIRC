@@ -1,0 +1,17 @@
+#include <QVBoxLayout>
+#include <QLabel>
+
+#include "webNavigator.hpp"
+
+webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> cookiesList) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+{
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    QLabel* infoLabel = new QLabel("RespawnIRC Navigator n'est pas supporté par votre version de RespawnIRC", this);
+
+    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    mainLayout->addWidget(infoLabel);
+
+    setLayout(mainLayout);
+    setWindowTitle("RespawnIRC Navigator");
+}
