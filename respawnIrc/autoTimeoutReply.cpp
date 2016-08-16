@@ -1,13 +1,13 @@
 #include "autoTimeoutReply.hpp"
 #include "settingTool.hpp"
 
-autoTimeoutReplyClass::autoTimeoutReplyClass(QObject* parent) : QObject(parent)
+autoTimeoutReplyClass::autoTimeoutReplyClass(int newTimeoutTimeInSeconds, QObject* parent) : QObject(parent)
 {
     timerForTimeout = new QTimer(this);
 
     timerForTimeout->setTimerType(Qt::CoarseTimer);
     timerForTimeout->setSingleShot(true);
-    updateTimeoutTime();
+    updateTimeoutTime(newTimeoutTimeInSeconds);
     timerForTimeout->stop();
 
     connect(timerForTimeout, &QTimer::timeout, this, &autoTimeoutReplyClass::timeoutCurrentReply);

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QNetworkCookie>
+#include <QVector>
 #include <QList>
 #include <QMap>
 #include <QString>
@@ -36,8 +37,7 @@ public slots:
     void settingsChanged(settingsForMessageParsingStruct newSettings);
     void startGetMessage();
     void getMessages();
-    void loadFirstPageFinish();
-    void loadSecondPageFinish();
+    void loadForThisPageFinish();
     void analyzeMessages();
 signals:
     void newMessagesAreAvailable(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
@@ -50,10 +50,8 @@ signals:
     void theseNoelshackImagesAreUsed(QStringList listOfNoelshackImagesUsed);
 private:
     QNetworkAccessManager* networkManager;
-    autoTimeoutReplyClass* timeoutForFirstPage;
-    autoTimeoutReplyClass* timeoutForSecondPage;
-    QNetworkReply* replyForFirstPage = nullptr;
-    QNetworkReply* replyForSecondPage = nullptr;
+    QVector<autoTimeoutReplyClass*> listOfTimeoutForReplys;
+    QVector<QNetworkReply*> listOfReplys;
     QList<QNetworkCookie> currentCookieList;
     QMap<int, QString> listOfEdit;
     QTimer* timerForGetMessage;
@@ -66,7 +64,7 @@ private:
     bool needToGetMessages = false;
     bool retrievesMessage = false;
     bool needToSetCookies = false;
-    bool secondPageLoading = false;
+    int numberOfPagesToLoad;
     int idOfLastMessage = 0;
 };
 

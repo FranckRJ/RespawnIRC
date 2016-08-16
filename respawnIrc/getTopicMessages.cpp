@@ -8,9 +8,6 @@ getTopicMessagesClass::getTopicMessagesClass(QObject* parent) : QObject(parent)
 {
     networkManager = new QNetworkAccessManager(this);
 
-    timeoutForFirstPage = new autoTimeoutReplyClass(this);
-    timeoutForSecondPage = new autoTimeoutReplyClass(this);
-
     timerForGetMessage = new QTimer(this);
 
     timerForGetMessage->setTimerType(Qt::CoarseTimer);
@@ -44,19 +41,14 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
     }
     else
     {
-        if(replyForFirstPage != nullptr)
+        for(QNetworkReply*& thisReply : listOfReplys)
         {
-            if(replyForFirstPage->isRunning())
+            if(thisReply != nullptr)
             {
-                replyForFirstPage->abort();
-            }
-        }
-
-        if(replyForSecondPage != nullptr)
-        {
-            if(replyForSecondPage->isRunning())
-            {
-                replyForSecondPage->abort();
+                if(thisReply->isRunning())
+                {
+                    thisReply->abort();
+                }
             }
         }
     }
@@ -93,10 +85,17 @@ void getTopicMessagesClass::settingsChanged(settingsForMessageParsingStruct newS
 {
     settingsForMessageParsing = newSettings;
 
+    numberOfPagesToLoad = (settingsForMessageParsing.loadTwoLastPage == true ? 2 : 1);
+
     timerForGetMessage->setInterval(settingsForMessageParsing.timerTime);
 
-    timeoutForFirstPage->updateTimeoutTime(settingsForMessageParsing.timeoutTime);
-    timeoutForSecondPage->updateTimeoutTime(settingsForMessageParsing.timeoutTime);
+    for(autoTimeoutReplyClass*& autoTimeout : listOfTimeoutForReplys)
+    {
+        if(autoTimeout != nullptr)
+        {
+            autoTimeout->updateTimeoutTime(settingsForMessageParsing.timeoutTime);
+        }
+    }
 }
 
 void getTopicMessagesClass::startGetMessage()
@@ -119,7 +118,6 @@ void getTopicMessagesClass::startGetMessage()
 void getTopicMessagesClass::getMessages()
 {
     bool itsNewManager = false;
-    bool errorWhenTryToGetMessages = false;
 
     if(networkManager == nullptr)
     {
@@ -129,87 +127,94 @@ void getTopicMessagesClass::getMessages()
 
     if(retrievesMessage == false)
     {
-        if(replyForFirstPage == nullptr)
+        QString currentPageToLoad;
+        bool errorWhenTryToGetMessages = false;
+
+        for(QNetworkReply*& thisReply : listOfReplys)
         {
-            if(itsNewManager == true || needToSetCookies == true)
+            if(thisReply != nullptr)
             {
-                setNewCookies(currentCookieList, pseudoOfUser, false);
-                needToSetCookies = false;
+                thisReply->deleteLater();
+                thisReply = nullptr;
             }
+        }
 
-            retrievesMessage = true;
-
-            QString beforeLastPage = parsingToolClass::getBeforeLastPageOfTopic(topicLink);
-            QNetworkRequest requestForFirstPage = parsingToolClass::buildRequestWithThisUrl(topicLink);
-            emit newMessageStatus("Récupération des messages en cours...");
-            secondPageLoading = false;
-            linkHasChanged = false;
-            replyForFirstPage = timeoutForFirstPage->resetReply(networkManager->get(requestForFirstPage));
-            if(replyForFirstPage->isOpen() == true)
+        for(autoTimeoutReplyClass*& autoTimeout : listOfTimeoutForReplys)
+        {
+            if(autoTimeout != nullptr)
             {
-                connect(replyForFirstPage, &QNetworkReply::finished, this, &getTopicMessagesClass::loadFirstPageFinish);
+                autoTimeout->deleteLater();
+                autoTimeout = nullptr;
             }
-            else
-            {
-                errorWhenTryToGetMessages = true;
-            }
+        }
 
-            if(settingsForMessageParsing.loadTwoLastPage == true && beforeLastPage.isEmpty() == false)
+        if(itsNewManager == true || needToSetCookies == true)
+        {
+            setNewCookies(currentCookieList, pseudoOfUser, false);
+            needToSetCookies = false;
+        }
+
+        retrievesMessage = true;
+        currentPageToLoad = topicLink;
+        linkHasChanged = false;
+        emit newMessageStatus("Récupération des messages en cours...");
+        listOfReplys.fill(nullptr, numberOfPagesToLoad);
+        listOfTimeoutForReplys.fill(new autoTimeoutReplyClass(settingsForMessageParsing.timeoutTime, this), listOfReplys.size());
+
+        for(int i = 0; i < listOfReplys.size(); ++i)
+        {
+            if(currentPageToLoad.isEmpty() == false)
             {
-                QNetworkRequest requestForSecondPage = parsingToolClass::buildRequestWithThisUrl(beforeLastPage);
-                secondPageLoading = true;
-                replyForSecondPage = timeoutForSecondPage->resetReply(networkManager->get(requestForSecondPage));
-                if(replyForSecondPage->isOpen() == true)
+                QNetworkRequest requestForThisPage = parsingToolClass::buildRequestWithThisUrl(currentPageToLoad);
+
+                listOfReplys[i] = listOfTimeoutForReplys[i]->resetReply(networkManager->get(requestForThisPage));
+
+                if(listOfReplys[i]->isOpen() == true)
                 {
-                    connect(replyForSecondPage, &QNetworkReply::finished, this, &getTopicMessagesClass::loadSecondPageFinish);
+                    connect(listOfReplys[i], &QNetworkReply::finished, this, &getTopicMessagesClass::loadForThisPageFinish);
                 }
                 else
                 {
                     errorWhenTryToGetMessages = true;
+                    break;
                 }
-            }
 
-            if(errorWhenTryToGetMessages == true)
+                currentPageToLoad = parsingToolClass::getBeforeLastPageOfTopic(currentPageToLoad);
+            }
+            else
             {
-                analyzeMessages();
-                networkManager->deleteLater();
-                networkManager = nullptr;
+                break;
             }
         }
-        else
-        {
-            retrievesMessage = false;
-        }
-    }
-}
 
-
-void getTopicMessagesClass::loadFirstPageFinish()
-{
-    if(settingsForMessageParsing.loadTwoLastPage == true && secondPageLoading == true)
-    {
-        if(replyForSecondPage != nullptr)
-        {
-            if(replyForSecondPage->isFinished() == true)
-            {
-                analyzeMessages();
-            }
-        }
-    }
-    else
-    {
-        analyzeMessages();
-    }
-}
-
-void getTopicMessagesClass::loadSecondPageFinish()
-{
-    if(replyForFirstPage != nullptr)
-    {
-        if(replyForFirstPage->isFinished() == true)
+        if(errorWhenTryToGetMessages == true)
         {
             analyzeMessages();
+            networkManager->deleteLater();
+            networkManager = nullptr;
         }
+    }
+}
+
+
+void getTopicMessagesClass::loadForThisPageFinish()
+{
+    bool allIsFinished = true;
+
+    for(QNetworkReply*& thisReply : listOfReplys)
+    {
+        if(thisReply != nullptr)
+        {
+            if(thisReply->isFinished() == false)
+            {
+                allIsFinished = false;
+            }
+        }
+    }
+
+    if(allIsFinished == true)
+    {
+        analyzeMessages();
     }
 }
 
@@ -222,38 +227,39 @@ void getTopicMessagesClass::analyzeMessages()
     QStringList listOfStickersUsed;
     QStringList listOfNoelshackImagesUsed;
     QVector<QString> listOfPageSource;
-    QVector<QNetworkReply*> listOfPageReply;
+    QVector<QString> listOfPageUrl;
     int firstValidePageNumber = -1;
 
-    timeoutForFirstPage->resetReply();
-    timeoutForSecondPage->resetReply();
-
-    listOfPageReply.append(replyForFirstPage);
-    if(settingsForMessageParsing.loadTwoLastPage == true && secondPageLoading == true)
+    for(autoTimeoutReplyClass*& autoTimeout : listOfTimeoutForReplys)
     {
-        listOfPageReply.append(replyForSecondPage);
+        autoTimeout->resetReply();
+        autoTimeout->deleteLater();
+        autoTimeout = nullptr;
     }
 
-    listOfPageSource.resize(listOfPageReply.size());
+    listOfPageSource.resize(listOfReplys.size());
+    listOfPageUrl.resize(listOfReplys.size());
 
-    for(int i = 0; i < listOfPageReply.size(); ++i)
+    for(int i = 0; i < listOfReplys.size(); ++i)
     {
-        if(listOfPageReply[i] != nullptr)
+        if(listOfReplys[i] != nullptr)
         {
-            if(listOfPageReply[i]->isReadable() == true)
+            if(listOfReplys[i]->isReadable() == true)
             {
-                listOfPageSource[i] = listOfPageReply[i]->readAll();
+                listOfPageSource[i] = listOfReplys[i]->readAll();
 
                 if(firstValidePageNumber == -1 && listOfPageSource[i].isEmpty() == false)
                 {
                     firstValidePageNumber = i;
                 }
             }
-            listOfPageReply[i]->deleteLater();
+
+            listOfPageUrl[i] = listOfReplys[i]->request().url().toDisplayString();
+
+            listOfReplys[i]->deleteLater();
+            listOfReplys[i] = nullptr;
         }
     }
-    replyForFirstPage = nullptr;
-    replyForSecondPage = nullptr;
 
     emit newMessageStatus("Récupération des messages terminée !");
 
@@ -283,9 +289,9 @@ void getTopicMessagesClass::analyzeMessages()
 
     newTopicLink = parsingToolClass::getLastPageOfTopic(listOfPageSource[firstValidePageNumber]);
 
-    if(newTopicLink.isEmpty() == true && topicLink != listOfPageReply[firstValidePageNumber]->request().url().toDisplayString())
+    if(newTopicLink.isEmpty() == true && topicLink != listOfPageUrl[firstValidePageNumber])
     {
-        newTopicLink = listOfPageReply[firstValidePageNumber]->request().url().toDisplayString();
+        newTopicLink = listOfPageUrl[firstValidePageNumber];
     }
 
     if(firstTimeGetMessages == true)
