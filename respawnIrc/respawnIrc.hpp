@@ -26,7 +26,7 @@ class respawnIrcClass : public QWidget
 {
     Q_OBJECT
 public:
-    respawnIrcClass(QWidget* parent = 0);
+    explicit respawnIrcClass(QWidget* parent = 0);
     ~respawnIrcClass();
     void loadSettings();
     containerForTopicsInfosClass* getCurrentWidget();

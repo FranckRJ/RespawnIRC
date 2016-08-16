@@ -11,7 +11,7 @@ class checkUpdateClass : public QObject
 {
     Q_OBJECT
 public:
-    checkUpdateClass(QWidget* newParent, QString currentVersionName);
+    explicit checkUpdateClass(QWidget* newParent, QString currentVersionName);
     void startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpdate = false);
     bool itsANewerVersion(QString newVersionName);
 public slots:

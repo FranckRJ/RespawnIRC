@@ -14,7 +14,7 @@ class webNavigatorClass : public QDialog
 {
     Q_OBJECT
 public:
-    webNavigatorClass(QWidget* parent, QString startUrl = "", QList<QNetworkCookie> cookiesList = QList<QNetworkCookie>());
+    explicit webNavigatorClass(QWidget* parent, QString startUrl = "", QList<QNetworkCookie> cookiesList = QList<QNetworkCookie>());
 public slots:
     void changeUrl(QUrl newUrl);
     void goToUrl();

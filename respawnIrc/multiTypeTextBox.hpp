@@ -14,7 +14,7 @@ class multiTypeTextBoxClass : public QWidget
 {
     Q_OBJECT
 public:
-    multiTypeTextBoxClass(QWidget* parent = 0);
+    explicit multiTypeTextBoxClass(QWidget* parent = 0);
     void clear();
     QString text();
     void moveCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);

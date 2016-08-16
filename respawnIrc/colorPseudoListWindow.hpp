@@ -20,7 +20,7 @@ class colorPseudoListWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    colorPseudoListWindowClass(QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent);
+    explicit colorPseudoListWindowClass(QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent);
     bool addPseudoToColorPseudoList(QString newPseudo, bool reallyAddPseudoToList = true);
     void updateList();
 public slots:

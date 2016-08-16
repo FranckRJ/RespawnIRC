@@ -24,7 +24,7 @@ class showTopicMessagesClass : public QWidget
 {
     Q_OBJECT
 public:
-    showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    explicit showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
     ~showTopicMessagesClass();
     static void startThread();
     static void stopThread();

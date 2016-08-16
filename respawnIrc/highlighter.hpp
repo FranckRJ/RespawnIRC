@@ -12,7 +12,7 @@ class highlighterClass : public QSyntaxHighlighter
 {
     Q_OBJECT
 public:
-    highlighterClass(QTextDocument* parent = 0);
+    explicit highlighterClass(QTextDocument* parent = 0);
     ~highlighterClass();
     void enableSpellChecking(const bool state);
     bool setDic(const QString newSpellDic);

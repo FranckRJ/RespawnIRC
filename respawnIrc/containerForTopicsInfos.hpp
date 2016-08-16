@@ -14,7 +14,7 @@ class containerForTopicsInfosClass : public QWidget
 {
     Q_OBJECT
 public:
-    containerForTopicsInfosClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    explicit containerForTopicsInfosClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
     showTopicMessagesClass& getShowTopicMessages();
     void setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser);
     void updateSettingsForInfo();

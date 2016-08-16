@@ -12,7 +12,7 @@ class selectStickerWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    selectStickerWindowClass(QWidget* parent);
+    explicit selectStickerWindowClass(QWidget* parent);
     void loadListOfStickers();
 public slots:
     void linkClicked(const QUrl &link);

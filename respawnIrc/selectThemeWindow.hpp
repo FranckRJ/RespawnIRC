@@ -12,7 +12,7 @@ class selectThemeWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    selectThemeWindowClass(QString newCurrentThemeName, QWidget* parent);
+    explicit selectThemeWindowClass(QString newCurrentThemeName, QWidget* parent);
     void loadListOfThemes();
 public slots:
     void selectThisTheme();

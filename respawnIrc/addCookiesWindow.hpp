@@ -10,7 +10,7 @@ class addCookiesWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    addCookiesWindowClass(QWidget* parent);
+    explicit addCookiesWindowClass(QWidget* parent);
 public slots:
     void valideCookies();
 signals:

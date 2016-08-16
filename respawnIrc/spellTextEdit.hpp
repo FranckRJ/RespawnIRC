@@ -16,7 +16,7 @@ class spellTextEditClass : public QTextEdit
 {
     Q_OBJECT
 public:
-    spellTextEditClass(QWidget* parent = 0);
+    explicit spellTextEditClass(QWidget* parent = 0);
     ~spellTextEditClass();
     QStringList getWordPropositions(const QString word);
     bool setDic(const QString newSpellDic);

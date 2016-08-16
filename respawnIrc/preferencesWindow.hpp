@@ -13,7 +13,7 @@ class preferenceWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    preferenceWindowClass(QWidget* parent);
+    explicit preferenceWindowClass(QWidget* parent);
     QWidget* createWidgetForMainTab();
     QWidget* createWidgetForMessageAndTopicStyleTab();
     QWidget* createWidgetForImageTab();

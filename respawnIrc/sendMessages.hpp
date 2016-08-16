@@ -16,7 +16,7 @@ class sendMessagesClass : public QWidget
 {
     Q_OBJECT
 public:
-    sendMessagesClass(QWidget* parent = 0);
+    explicit sendMessagesClass(QWidget* parent = 0);
     ~sendMessagesClass();
     QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
     void clearMessageLine();

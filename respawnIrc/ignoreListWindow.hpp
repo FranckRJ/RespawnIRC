@@ -12,7 +12,7 @@ class ignoreListWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    ignoreListWindowClass(QList<QString>* newListOfIgnoredPseudo, QWidget* parent);
+    explicit ignoreListWindowClass(QList<QString>* newListOfIgnoredPseudo, QWidget* parent);
     void updateList();
 public slots:
     void addPseudo();

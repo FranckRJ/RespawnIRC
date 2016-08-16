@@ -14,7 +14,7 @@ class mainWindowClass : public QMainWindow
 {
     Q_OBJECT
 public:
-    mainWindowClass();
+    explicit mainWindowClass();
 public slots:
     void goToMp();
     void useFavoriteClicked();

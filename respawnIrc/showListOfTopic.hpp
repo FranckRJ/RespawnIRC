@@ -19,7 +19,7 @@ class showListOfTopicClass : public QWidget
 {
     Q_OBJECT
 public:
-    showListOfTopicClass(QWidget* parent = 0);
+    explicit showListOfTopicClass(QWidget* parent = 0);
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies);
     void updateSettings();

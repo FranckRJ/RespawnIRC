@@ -10,7 +10,7 @@ class addPseudoWindowClass : public QDialog
 {
     Q_OBJECT
 public:
-    addPseudoWindowClass(QWidget* parent, QString currentPseudo = "");
+    explicit addPseudoWindowClass(QWidget* parent, QString currentPseudo = "");
     bool pseudoIsValide(QString pseudo);
 public slots:
     void setPseudo();
