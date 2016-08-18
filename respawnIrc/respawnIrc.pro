@@ -1,15 +1,4 @@
 SOURCES += \
-    hunspell/affentry.cxx \
-    hunspell/affixmgr.cxx \
-    hunspell/csutil.cxx \
-    hunspell/dictmgr.cxx \
-    hunspell/filemgr.cxx \
-    hunspell/hashmgr.cxx \
-    hunspell/hunspell.cxx \
-    hunspell/hunzip.cxx \
-    hunspell/phonet.cxx \
-    hunspell/suggestmgr.cxx \
-    hunspell/utf_info.cxx \
     main.cpp \
     mainWindow.cpp \
     respawnIrc.cpp \
@@ -47,22 +36,6 @@ QT += \
     webenginewidgets
 
 HEADERS += \
-    hunspell/affentry.hxx \
-    hunspell/affixmgr.hxx \
-    hunspell/atypes.hxx \
-    hunspell/baseaffix.hxx \
-    hunspell/csutil.hxx \
-    hunspell/dictmgr.hxx \
-    hunspell/filemgr.hxx \
-    hunspell/hashmgr.hxx \
-    hunspell/htypes.hxx \
-    hunspell/hunspell.h \
-    hunspell/hunspell.hxx \
-    hunspell/hunzip.hxx \
-    hunspell/langnum.hxx \
-    hunspell/phonet.hxx \
-    hunspell/suggestmgr.hxx \
-    hunspell/w_char.hxx \
     mainWindow.hpp \
     respawnIrc.hpp \
     connectWindow.hpp \
@@ -98,3 +71,8 @@ QMAKE_CXXFLAGS_RELEASE += -O2
 QMAKE_LFLAGS += /NODEFAULTLIB:LIBCMT.lib
 
 CONFIG += c++11
+
+unix|win32: LIBS += -L$$PWD/../hunspell/lib/ -llibhunspell
+
+INCLUDEPATH += $$PWD/../hunspell/include
+DEPENDPATH += $$PWD/../hunspell/include
