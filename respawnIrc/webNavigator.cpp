@@ -48,9 +48,9 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
 
     connect(&webView, &QWebEngineView::urlChanged, this, &webNavigatorClass::changeUrl);
     connect(&urlLine, &QLineEdit::returnPressed, goButton, &QPushButton::click);
-    connect(goButton, &QPushButton::released, this, &webNavigatorClass::goToUrl);
-    connect(backwardButton, &QPushButton::released, &webView, &QWebEngineView::back);
-    connect(forwardButton, &QPushButton::released, &webView, &QWebEngineView::forward);
+    connect(goButton, &QPushButton::clicked, this, &webNavigatorClass::goToUrl);
+    connect(backwardButton, &QPushButton::clicked, &webView, &QWebEngineView::back);
+    connect(forwardButton, &QPushButton::clicked, &webView, &QWebEngineView::forward);
 }
 
 void webNavigatorClass::changeUrl(QUrl newUrl)

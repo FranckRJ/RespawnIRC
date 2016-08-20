@@ -35,10 +35,10 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
     updateList();
     viewListOfAccount.setModel(&modelForListView);
 
-    connect(buttonAddAccount, &QPushButton::released, this, &accountListWindowClass::showConnectWindow);
-    connect(buttonRemoveAccount, &QPushButton::released, this, &accountListWindowClass::removeCurrentAccount);
-    connect(buttonLogin, &QPushButton::released, this, &accountListWindowClass::connectWithThisAccount);
-    connect(buttonLoginOneTopic, &QPushButton::released, this, &accountListWindowClass::connectToOneTopicWithThisAccount);
+    connect(buttonAddAccount, &QPushButton::clicked, this, &accountListWindowClass::showConnectWindow);
+    connect(buttonRemoveAccount, &QPushButton::clicked, this, &accountListWindowClass::removeCurrentAccount);
+    connect(buttonLogin, &QPushButton::clicked, this, &accountListWindowClass::connectWithThisAccount);
+    connect(buttonLoginOneTopic, &QPushButton::clicked, this, &accountListWindowClass::connectToOneTopicWithThisAccount);
 }
 
 bool accountListWindowClass::addAcountToThisList(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, QList<accountStruct>* thisList)

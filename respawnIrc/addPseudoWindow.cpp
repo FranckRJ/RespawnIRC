@@ -29,8 +29,8 @@ addPseudoWindowClass::addPseudoWindowClass(QWidget* parent, QString currentPseud
     setWindowTitle("Choisir un pseudo");
     pseudoLine.setFocus();
 
-    connect(buttonValide, &QPushButton::released, this, &addPseudoWindowClass::setPseudo);
-    connect(buttonCancel, &QPushButton::released, this, &addPseudoWindowClass::close);
+    connect(buttonValide, &QPushButton::clicked, this, &addPseudoWindowClass::setPseudo);
+    connect(buttonCancel, &QPushButton::clicked, this, &addPseudoWindowClass::close);
 }
 
 bool addPseudoWindowClass::pseudoIsValide(QString pseudo)

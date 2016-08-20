@@ -25,7 +25,7 @@ sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 
     setLayout(layout);
 
-    connect(&sendButton, &QPushButton::released, this, &sendMessagesClass::needToPostMessage);
+    connect(&sendButton, &QPushButton::clicked, this, &sendMessagesClass::needToPostMessage);
     connect(&messageLine, &multiTypeTextBoxClass::returnPressed, &sendButton, &QPushButton::click);
 }
 

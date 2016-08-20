@@ -31,8 +31,8 @@ selectTopicWindowClass::selectTopicWindowClass(QString currentTopic, QWidget* pa
     setWindowTitle("Choisir un topic");
     topicLine.setFocus();
 
-    connect(buttonSelect, &QPushButton::released, this, &selectTopicWindowClass::selectThisTopic);
-    connect(buttonCancel, &QPushButton::released, this, &selectTopicWindowClass::close);
+    connect(buttonSelect, &QPushButton::clicked, this, &selectTopicWindowClass::selectThisTopic);
+    connect(buttonCancel, &QPushButton::clicked, this, &selectTopicWindowClass::close);
 }
 
 QString selectTopicWindowClass::transformLinkIfNeeded(QString link)
