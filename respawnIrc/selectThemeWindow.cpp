@@ -12,7 +12,7 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
     setAttribute(Qt::WA_DeleteOnClose);
 
     QLabel* labTheme = new QLabel("Thème actuel :", this);
-    QPushButton* buttonSelect = new QPushButton("Choisir ce theme", this);
+    QPushButton* buttonSelect = new QPushButton("Sélectionner ce thème", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
 
     listViewOfTheme.setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -37,7 +37,7 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
     }
 
     setLayout(mainLayout);
-    setWindowTitle("Choisir un thème");
+    setWindowTitle("Sélectionner un thème");
     listViewOfTheme.setModel(&modelForListViewOfTheme);
 
     connect(buttonSelect, &QPushButton::pressed, this, &selectThemeWindowClass::selectThisTheme);
