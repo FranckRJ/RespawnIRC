@@ -31,6 +31,11 @@ showListOfTopicClass::showListOfTopicClass(QWidget* parent) : QWidget(parent)
     connect(&timerForGetList, &QTimer::timeout, this, &showListOfTopicClass::startGetListOfTopic);
 }
 
+bool showListOfTopicClass::getLoadNeeded()
+{
+    return loadNeeded;
+}
+
 void showListOfTopicClass::setForumLink(QString newForumLink)
 {
     if(reply != nullptr)
@@ -45,8 +50,11 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
     modelForListView.setStringList(QList<QString>());
     if(newForumLink.isEmpty() == false)
     {
-        startGetListOfTopic();
-        timerForGetList.start();
+        if(loadNeeded == true)
+        {
+            startGetListOfTopic();
+            timerForGetList.start();
+        }
     }
     else
     {
@@ -69,18 +77,25 @@ void showListOfTopicClass::updateSettings()
 {
     showNumberOfMessages = settingToolClass::getThisBoolOption("showNumberOfMessagesInTopicList");
     cutLongTopicName = settingToolClass::getThisBoolOption("cutLongTopicNameInTopicList");
+    setLoadNeeded(settingToolClass::getThisBoolOption("showListOfTopic"));
     timeoutForReply.updateTimeoutTime();
 }
 
 void showListOfTopicClass::setLoadNeeded(bool newVal)
 {
-    if(newVal == false)
+    if(newVal != loadNeeded)
     {
-        timerForGetList.stop();
-    }
-    else
-    {
-        timerForGetList.start();
+        loadNeeded = newVal;
+
+        if(loadNeeded == false)
+        {
+            timerForGetList.stop();
+        }
+        else
+        {
+            startGetListOfTopic();
+            timerForGetList.start();
+        }
     }
 }
 

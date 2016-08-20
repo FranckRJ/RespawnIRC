@@ -41,25 +41,10 @@ void containerForTopicsInfosClass::setNewCookiesForInfo(QList<QNetworkCookie> ne
 
 void containerForTopicsInfosClass::updateSettingsForInfo()
 {
-    if(settingToolClass::getThisBoolOption("showListOfTopic") == true)
-    {
-        if(showListOfTopic.isVisible() == false)
-        {
-            showListOfTopic.setLoadNeeded(true);
-            showListOfTopic.setVisible(true);
-        }
-    }
-    else
-    {
-        if(showListOfTopic.isVisible() == true)
-        {
-            showListOfTopic.setLoadNeeded(false);
-        }
-        showListOfTopic.setVisible(false);
-    }
-
     showTopicMessages.updateSettingInfo();
     showListOfTopic.updateSettings();
+
+    showListOfTopic.setVisible(showListOfTopic.getLoadNeeded());
 }
 
 void containerForTopicsInfosClass::setNewThemeForInfo(QString newThemeName)

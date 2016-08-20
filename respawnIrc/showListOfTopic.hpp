@@ -20,6 +20,7 @@ class showListOfTopicClass : public QWidget
     Q_OBJECT
 public:
     explicit showListOfTopicClass(QWidget* parent = 0);
+    bool getLoadNeeded();
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies);
     void updateSettings();
@@ -44,6 +45,7 @@ private:
     QList<QString> listOfLink;
     bool showNumberOfMessages;
     bool cutLongTopicName;
+    bool loadNeeded = true;
     int topicNameMaxSize = 35;
 };
 
