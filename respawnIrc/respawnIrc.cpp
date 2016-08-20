@@ -196,15 +196,15 @@ void respawnIrcClass::addButtonToButtonLayout()
     buttonLayout->addWidget(buttonCode);
     buttonLayout->addWidget(buttonSpoil);
 
-    connect(buttonBold, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addBold);
-    connect(buttonItalic, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addItalic);
-    connect(buttonUnderline, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
-    connect(buttonStrike, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addStrike);
-    connect(buttonUList, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addUList);
-    connect(buttonOList, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addOListe);
-    connect(buttonQuote, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addQuote);
-    connect(buttonCode, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addCode);
-    connect(buttonSpoil, &QPushButton::pressed, getMessageLine(), &multiTypeTextBoxClass::addSpoil);
+    connect(buttonBold, &QPushButton::released, getMessageLine(), &multiTypeTextBoxClass::addBold);
+    connect(buttonItalic, &QPushButton::released, getMessageLine(), &multiTypeTextBoxClass::addItalic);
+    connect(buttonUnderline, &QPushButton::released, getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
+    connect(buttonStrike, &QPushButton::released, getMessageLine(), &multiTypeTextBoxClass::addStrike);
+    connect(buttonUList, &QPushButton::released, getMessageLine(), &multiTypeTextBoxClass::addUList);
+    connect(buttonOList, &QPushButton::released, getMessageLine(), &multiTypeTextBoxClass::addOListe);
+    connect(buttonQuote, &QPushButton::released, getMessageLine(), &multiTypeTextBoxClass::addQuote);
+    connect(buttonCode, &QPushButton::released, getMessageLine(), &multiTypeTextBoxClass::addCode);
+    connect(buttonSpoil, &QPushButton::released, getMessageLine(), &multiTypeTextBoxClass::addSpoil);
 }
 
 void respawnIrcClass::selectThisTab(int number)

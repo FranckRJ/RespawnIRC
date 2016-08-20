@@ -34,11 +34,11 @@ colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStru
     updateList();
     viewListOfColorPseudo.setModel(&modelForListView);
 
-    connect(buttonAddPseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::addPseudo);
-    connect(buttonEditPseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::editCurrentPseudo);
-    connect(buttonRemovePseudo, &QPushButton::pressed, this, &colorPseudoListWindowClass::removeCurrentPseudo);
-    connect(buttonValidate, &QPushButton::pressed, this, &colorPseudoListWindowClass::chooseColor);
-    connect(buttonOk, &QPushButton::pressed, this, &colorPseudoListWindowClass::close);
+    connect(buttonAddPseudo, &QPushButton::released, this, &colorPseudoListWindowClass::addPseudo);
+    connect(buttonEditPseudo, &QPushButton::released, this, &colorPseudoListWindowClass::editCurrentPseudo);
+    connect(buttonRemovePseudo, &QPushButton::released, this, &colorPseudoListWindowClass::removeCurrentPseudo);
+    connect(buttonValidate, &QPushButton::released, this, &colorPseudoListWindowClass::chooseColor);
+    connect(buttonOk, &QPushButton::released, this, &colorPseudoListWindowClass::close);
 }
 
 bool colorPseudoListWindowClass::addPseudoToColorPseudoList(QString newPseudo, bool reallyAddPseudoToList)

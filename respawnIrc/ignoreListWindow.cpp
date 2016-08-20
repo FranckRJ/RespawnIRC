@@ -30,10 +30,10 @@ ignoreListWindowClass::ignoreListWindowClass(QList<QString>* newListOfIgnoredPse
     modelForListView.setStringList(*listOfIgnoredPseudo);
     viewListOfIgnoredPseudo.setModel(&modelForListView);
 
-    connect(buttonAddPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::addPseudo);
-    connect(buttonEditPseudo, &QPushButton::pressed, this, &ignoreListWindowClass::editCurrentPseudo);
-    connect(buttonRemovePseudo, &QPushButton::pressed, this, &ignoreListWindowClass::removeCurrentPseudo);
-    connect(buttonOk, &QPushButton::pressed, this, &ignoreListWindowClass::close);
+    connect(buttonAddPseudo, &QPushButton::released, this, &ignoreListWindowClass::addPseudo);
+    connect(buttonEditPseudo, &QPushButton::released, this, &ignoreListWindowClass::editCurrentPseudo);
+    connect(buttonRemovePseudo, &QPushButton::released, this, &ignoreListWindowClass::removeCurrentPseudo);
+    connect(buttonOk, &QPushButton::released, this, &ignoreListWindowClass::close);
 }
 
 void ignoreListWindowClass::updateList()

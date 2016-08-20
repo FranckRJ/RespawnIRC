@@ -42,9 +42,9 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     setWindowTitle("Préférences");
 
     connect(this, &preferenceWindowClass::setApplyButtonEnable, buttonApply, &QPushButton::setEnabled);
-    connect(buttonOK, &QPushButton::pressed, this, &preferenceWindowClass::applySettingsAndClose);
-    connect(buttonCancel, &QPushButton::pressed, this, &preferenceWindowClass::close);
-    connect(buttonApply, &QPushButton::pressed, this, &preferenceWindowClass::applySettings);
+    connect(buttonOK, &QPushButton::released, this, &preferenceWindowClass::applySettingsAndClose);
+    connect(buttonCancel, &QPushButton::released, this, &preferenceWindowClass::close);
+    connect(buttonApply, &QPushButton::released, this, &preferenceWindowClass::applySettings);
 }
 
 QWidget* preferenceWindowClass::createWidgetForMainTab()
