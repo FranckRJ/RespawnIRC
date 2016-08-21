@@ -50,8 +50,8 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["useNewLayoutForMessageParsing"] = false;
     listOfDefaultBoolOption["expertMode"] = false;
     listOfDefaultIntOption["updateTopicTime"].value = 3500;
-    listOfDefaultIntOption["updateTopicTime"].minValue = 500;
-    listOfDefaultIntOption["updateTopicTime"].maxValue = 10000;
+    listOfDefaultIntOption["updateTopicTime"].minValue = 250;
+    listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"].value = 10;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"].minValue = 1;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"].maxValue = 40;
