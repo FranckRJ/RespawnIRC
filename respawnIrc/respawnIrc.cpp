@@ -689,6 +689,7 @@ void respawnIrcClass::setNewTopic(QString newTopic)
 void respawnIrcClass::setNewTheme(QString newThemeName)
 {
     currentThemeName = newThemeName;
+    styleToolClass::loadThemeFont(currentThemeName);
     emit themeChanged(currentThemeName);
 
     for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)

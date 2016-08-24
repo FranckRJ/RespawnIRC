@@ -3,12 +3,16 @@
 #include <QCoreApplication>
 #include <QTextStream>
 #include <QVector>
+#include <QDir>
+#include <QList>
+#include <QFontDatabase>
 
 #include "styleTool.hpp"
 
 namespace
 {
     colorInfoForMessageAndOtherStruct colorInfoForMessageAndOther;
+    QList<QString> listOfFontsAlreadyLoaded;
 }
 
 QString styleToolClass::getStyle(QString themeName)
@@ -114,7 +118,27 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     return modelInfo;
 }
 
-const colorInfoForMessageAndOtherStruct &styleToolClass::getColorInfo()
+const colorInfoForMessageAndOtherStruct& styleToolClass::getColorInfo()
 {
     return colorInfoForMessageAndOther;
+}
+
+void styleToolClass::loadThemeFont(QString themeName)
+{
+    QDir fontDir(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/fonts/");
+    QStringList listOfFontsInDir;
+
+    if(fontDir.exists() == true)
+    {
+        listOfFontsInDir = fontDir.entryList(QDir::Files);
+    }
+
+    for(QString& thisFont : listOfFontsInDir)
+    {
+        if(listOfFontsAlreadyLoaded.indexOf(thisFont.toLower()) == -1)
+        {
+            QFontDatabase::addApplicationFont(fontDir.path() + "/" + thisFont);
+            listOfFontsAlreadyLoaded.append(thisFont.toLower());
+        }
+    }
 }

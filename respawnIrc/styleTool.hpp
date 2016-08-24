@@ -35,6 +35,7 @@ namespace styleToolClass
     QString getModel(QString themeName);
     modelInfoStruct getModelInfo(QString themeName);
     const colorInfoForMessageAndOtherStruct& getColorInfo();
+    void loadThemeFont(QString themeName);
 }
 
 #endif
