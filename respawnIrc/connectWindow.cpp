@@ -36,7 +36,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 
     if(showRemeberBox == true)
     {
-        QLabel* labForRemember = new QLabel("Enregistrer le compte dans la liste des comptes :", this);
+        QLabel* labForRemember = new QLabel("Enregistrer le compte dans la liste des comptes (se souvenir) :", this);
         QHBoxLayout* rememberLayout = new QHBoxLayout;
         rememberLayout->addWidget(labForRemember);
         rememberLayout->addWidget(&rememberBox, 1, Qt::AlignLeft);
