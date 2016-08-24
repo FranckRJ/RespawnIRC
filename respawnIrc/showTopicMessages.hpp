@@ -114,6 +114,7 @@ private:
     bool colorUserPseudoInMessages;
     bool getFirstMessageOfTopic;
     bool warnWhenEdit;
+    bool warnOnFirstTime;
     int currentErrorStreak = 0;
     int idOfLastMessageOfUser = 0;
     int oldIdOfLastMessageOfUser = 0;

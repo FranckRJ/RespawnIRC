@@ -195,6 +195,7 @@ void showTopicMessagesClass::updateSettingInfo()
     getFirstMessageOfTopic = settingToolClass::getThisBoolOption("getFirstMessageOfTopic");
     warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
     numberOfErrorsBeforeWarning = settingToolClass::getThisIntOption("numberOfErrorsBeforeWarning").value;
+    warnOnFirstTime = settingToolClass::getThisBoolOption("warnOnFirstTime");
 
     timeoutForEditInfo.updateTimeoutTime();
     timeoutForQuoteInfo.updateTimeoutTime();
@@ -471,6 +472,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
     QString colorOfDate;
     bool appendHrAtEndOfFirstMessage = false;
     bool errorHappen = false;
+    bool firstTimeAddMessages = false;
 
     if(parsingToolClass::getFirstPageOfTopic(fromThisTopic) != topicLink)
     {
@@ -521,6 +523,8 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             firstMessageOfTopic.isFirstMessage = false;
             appendHrAtEndOfFirstMessage = true;
         }
+
+        firstTimeAddMessages = true;
     }
 
     for(messageStruct& currentMessage : listOfNewMessages)
@@ -643,9 +647,9 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
         }
 
-        if(pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower())
+        if(pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower() && (warnOnFirstTime == true || firstTimeAddMessages == false))
         {
-            if(warnWhenEdit == true || (warnWhenEdit == false && currentMessage.isAnEdit == false))
+            if(warnWhenEdit == true || currentMessage.isAnEdit == false)
             {
                 emit newMessagesAvailable();
             }

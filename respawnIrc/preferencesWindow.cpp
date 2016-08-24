@@ -57,6 +57,7 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     vboxAlert->addWidget(makeNewCheckBox("Beeper lors de la réception d'un message", "beepWhenWarn"));
     vboxAlert->addWidget(makeNewCheckBox("Avertir visuellement lors de la réception d'un message", "warnUser"));
     vboxAlert->addWidget(makeNewCheckBox("Avertir lors de l'édition d'un message", "warnWhenEdit"));
+    vboxAlert->addWidget(makeNewCheckBox("Avertir lors de la première réception des messages", "warnOnFirstTime"));
     vboxAlert->addStretch(1);
     groupBoxAlert->setLayout(vboxAlert);
 
