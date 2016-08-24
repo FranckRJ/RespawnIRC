@@ -109,15 +109,16 @@ private:
     bool errorMode = false;
     bool oldUseMessageEdit = false;
     bool needToGetMessages = false;
-    bool errorLastTime = false;
     bool colorModoAndAdminPseudo;
     bool colorPEMT;
     bool colorUserPseudoInMessages;
     bool getFirstMessageOfTopic;
     bool warnWhenEdit;
+    int currentErrorStreak = 0;
     int idOfLastMessageOfUser = 0;
     int oldIdOfLastMessageOfUser = 0;
     int numberOfMessageShowedFirstTime;
+    int numberOfErrorsBeforeWarning;
     int topicNameMaxSize = 45;
 };
 

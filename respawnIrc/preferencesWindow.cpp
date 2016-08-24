@@ -98,6 +98,18 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     mainLayout->addWidget(groupBoxAdvanced, 1, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
+    if(expertMode == true)
+    {
+        QGroupBox* groupBoxExpert = new QGroupBox("Expert", this);
+
+        QVBoxLayout* vboxExpert = new QVBoxLayout();
+        vboxExpert->addLayout(makeNewSpinBox("Nombre d'erreurs avant avertissement", "numberOfErrorsBeforeWarning"));
+        vboxExpert->addStretch(1);
+        groupBoxExpert->setLayout(vboxExpert);
+
+        mainLayout->addWidget(groupBoxExpert, 2, 0, 1, 2);
+    }
+
     QVBoxLayout* realMainLayout = new QVBoxLayout();
     realMainLayout->addLayout(mainLayout);
     realMainLayout->addStretch(1);
@@ -149,14 +161,14 @@ QWidget* preferenceWindowClass::createWidgetForMessageAndTopicStyleTab()
 
     if(expertMode == true)
     {
-        QGroupBox* groupBoxAdvanced = new QGroupBox("Avancé", this);
+        QGroupBox* groupBoxExpert = new QGroupBox("Expert", this);
 
-        QVBoxLayout* vboxAdvanced = new QVBoxLayout();
-        vboxAdvanced->addWidget(makeNewCheckBox("Utiliser le nouvel agencement pour les messages", "useNewLayoutForMessageParsing"));
-        vboxAdvanced->addStretch(1);
-        groupBoxAdvanced->setLayout(vboxAdvanced);
+        QVBoxLayout* vboxExpert = new QVBoxLayout();
+        vboxExpert->addWidget(makeNewCheckBox("Utiliser le nouvel agencement pour les messages", "useNewLayoutForMessageParsing"));
+        vboxExpert->addStretch(1);
+        groupBoxExpert->setLayout(vboxExpert);
 
-        mainLayout->addWidget(groupBoxAdvanced, 2, 0, 1, 2);
+        mainLayout->addWidget(groupBoxExpert, 2, 0, 1, 2);
     }
 
     QVBoxLayout* realMainLayout = new QVBoxLayout();

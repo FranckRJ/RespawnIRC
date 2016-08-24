@@ -79,6 +79,9 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["noelshackImageHeight"].value = 51;
     listOfDefaultIntOption["noelshackImageHeight"].minValue = 0;
     listOfDefaultIntOption["noelshackImageHeight"].maxValue = 1000;
+    listOfDefaultIntOption["numberOfErrorsBeforeWarning"].value = 3;
+    listOfDefaultIntOption["numberOfErrorsBeforeWarning"].minValue = 1;
+    listOfDefaultIntOption["numberOfErrorsBeforeWarning"].maxValue = 10;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

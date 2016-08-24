@@ -139,7 +139,7 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
         networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
-        errorLastTime = false;
+        currentErrorStreak = 0;
     }
 
     QMetaObject::invokeMethod(getTopicMessages, "setNewCookies", Qt::QueuedConnection,
@@ -194,6 +194,7 @@ void showTopicMessagesClass::updateSettingInfo()
     numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime").value;
     getFirstMessageOfTopic = settingToolClass::getThisBoolOption("getFirstMessageOfTopic");
     warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
+    numberOfErrorsBeforeWarning = settingToolClass::getThisIntOption("numberOfErrorsBeforeWarning").value;
 
     timeoutForEditInfo.updateTimeoutTime();
     timeoutForQuoteInfo.updateTimeoutTime();
@@ -244,7 +245,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     topicLink = parsingToolClass::getFirstPageOfTopic(newTopic);
     firstTimeGetMessages = true;
     errorMode = false;
-    errorLastTime = false;
+    currentErrorStreak = 0;
     idOfLastMessageOfUser = 0;
     oldIdOfLastMessageOfUser = 0;
     needToGetMessages = false;
@@ -469,6 +470,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
     QString colorOfPseudo;
     QString colorOfDate;
     bool appendHrAtEndOfFirstMessage = false;
+    bool errorHappen = false;
 
     if(parsingToolClass::getFirstPageOfTopic(fromThisTopic) != topicLink)
     {
@@ -479,13 +481,13 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
 
     if(listOfNewMessages.isEmpty() == true && listIsReallyEmpty == true)
     {
-        if(errorLastTime == true)
+        if(currentErrorStreak >= (numberOfErrorsBeforeWarning - 1))
         {
             setTopicToErrorMode();
         }
         else
         {
-            errorLastTime = true;
+            ++currentErrorStreak;
         }
         return;
     }
@@ -657,7 +659,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
 
         if(listOfInput.isEmpty() == true)
         {
-            if(errorLastTime == true)
+            if(currentErrorStreak >= (numberOfErrorsBeforeWarning - 1))
             {
                 if(ignoreNetworkError == false)
                 {
@@ -671,18 +673,19 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             }
             else
             {
-                errorLastTime = true;
+                ++currentErrorStreak;
             }
-        }
-        else
-        {
-            errorLastTime = false;
+
+            errorHappen = true;
         }
     }
-    else
+
+
+    if(errorHappen == false)
     {
-        errorLastTime = false;
+        currentErrorStreak = 0;
     }
+
     firstTimeGetMessages = false;
 }
 
