@@ -117,3 +117,59 @@ QTabBar::tab:selected, QTabBar::tab:hover
 {
 	background: grey;
 }
+
+QPushButton
+{
+    background: lightgrey;
+    color: dimgrey;
+	border: 2px solid darkgrey;
+	padding: 3px;
+	min-width: 50px;
+}
+
+QPushButton#boldButton, QPushButton#italicButton, QPushButton#underlineButton, QPushButton#strikeButton, 
+QPushButton#ulistButton, QPushButton#olistButton, QPushButton#quoteButton, QPushButton#codeButton, QPushButton#spoilButton
+{
+	min-width: 40px;
+	margin-right: 3px;
+}
+
+QPushButton:hover, QPushButton:focus:hover
+{
+	background: #f2f2f2;
+}
+
+QPushButton:focus
+{
+	background: #e6e6e6;
+}
+
+QPushButton:pressed, QPushButton:focus:pressed
+{
+	background: #bfbfbf;
+}
+
+QPushButton:!enabled
+{
+	background: #b3b3b3;
+}
+
+QScrollBar
+{
+	background: grey;
+	margin: 0px;
+}
+
+QScrollBar::handle
+{
+	background: darkgrey;
+	border: 2px solid dimgrey;
+}
+
+QScrollBar::up-arrow, QScrollBar::down-arrow, QScrollBar::add-page, QScrollBar::sub-page, QScrollBar::sub-line, QScrollBar::add-line
+{
+	border: 0px;
+	width: 0px;
+	height: 0px;
+	background: none;
+}
