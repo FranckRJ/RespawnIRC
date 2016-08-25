@@ -123,6 +123,18 @@ const colorInfoForMessageAndOtherStruct& styleToolClass::getColorInfo()
     return colorInfoForMessageAndOther;
 }
 
+QString styleToolClass::getImagePathOfThemeIfExist(QString themeName)
+{
+    QDir imgDir(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/img/");
+
+    if(imgDir.exists() == true)
+    {
+        return imgDir.path();
+    }
+
+    return "";
+}
+
 void styleToolClass::loadThemeFont(QString themeName)
 {
     QDir fontDir(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/fonts/");

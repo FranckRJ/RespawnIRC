@@ -688,14 +688,24 @@ void respawnIrcClass::setNewTopic(QString newTopic)
 
 void respawnIrcClass::setNewTheme(QString newThemeName)
 {
+    QString themeImgDir;
+
     currentThemeName = newThemeName;
+    themeImgDir = styleToolClass::getImagePathOfThemeIfExist(newThemeName);
     styleToolClass::loadThemeFont(currentThemeName);
+
+
     emit themeChanged(currentThemeName);
 
     for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
     {
         listOfContainerForTopicsInfos.at(i)->setNewThemeForInfo(currentThemeName);
         listOfContainerForTopicsInfos.at(i)->setNewTopicForInfo(listOfTopicLink[i]);
+
+        if(themeImgDir.isEmpty() == false)
+        {
+            listOfContainerForTopicsInfos.at(i)->getShowTopicMessages().addSearchPath(themeImgDir);
+        }
     }
 
     sendMessages.styleChanged();

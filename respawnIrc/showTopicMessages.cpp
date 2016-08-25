@@ -221,8 +221,12 @@ void showTopicMessagesClass::updateSettingInfo()
 void showTopicMessagesClass::addSearchPath(QString newSearchPath)
 {
     QStringList currentSearchPaths = messagesBox.searchPaths();
-    currentSearchPaths.append(newSearchPath);
-    messagesBox.setSearchPaths(currentSearchPaths);
+
+    if(currentSearchPaths.indexOf(newSearchPath) == -1)
+    {
+        currentSearchPaths.append(newSearchPath);
+        messagesBox.setSearchPaths(currentSearchPaths);
+    }
 }
 
 void showTopicMessagesClass::relayoutDocumentHack()
@@ -476,6 +480,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
 
     if(parsingToolClass::getFirstPageOfTopic(fromThisTopic) != topicLink)
     {
+        startGetMessage();
         return;
     }
 
