@@ -22,7 +22,7 @@ QMenuBar::item:selected
 {
     background: #003E5D;
 }
-QTabWidget:pane
+respawnIrcClass > QTabWidget:pane
 {
 	border: 0px;
 }
@@ -30,7 +30,6 @@ QTabWidget:pane
 /* Tabs des topics */
 respawnIrcClass > QTabWidget > QTabBar::tab
 {
-    height: 30px;
     padding: 5px;
     color: white;
     background-color: #003E5D;
@@ -44,6 +43,12 @@ respawnIrcClass > QTabWidget > QTabBar::tab:selected
     background-color: white;
     border-bottom-color: #FF6600;
 }
+respawnIrcClass > QTabWidget > QTabBar::tab:hover:!selected
+{
+    color: #FF6600;
+    background-color: white;
+    border-bottom-color: white;
+}
 
 /* Sections des messages */
 QTextBrowser, QTextEdit, QLineEdit
@@ -55,11 +60,27 @@ QTextBrowser, QTextEdit, QLineEdit
 /* Scrollbar*/
 QScrollBar
 {
-    background-color: #DFDFDF;
+	background: #F2F2F2;
+	margin: 0px;
 }
-QScrollBar::handle:vertical {
-    background-color: rgb(200, 200, 200);
-    min-height: 10px;
+
+QScrollBar::handle:vertical
+{
+	background-color: rgb(200, 200, 200);
+	min-height: 10px;
+}
+QScrollBar::handle:horizontal
+{
+	background-color: rgb(200, 200, 200);
+	min-width: 10px;
+}
+
+QScrollBar::up-arrow, QScrollBar::down-arrow, QScrollBar::add-page, QScrollBar::sub-page, QScrollBar::sub-line, QScrollBar::add-line
+{
+	border: 0px;
+	width: 0px;
+	height: 0px;
+	background: none;
 }
 
 /* Barre de séparation */
@@ -69,18 +90,18 @@ QSplitter:handle
 }
 
 /* Liste des topics */
-QListView
+QTabWidget QListView
 {
     color: #B5B5B5;
     padding-top: 4px;
     background-color: #2A2A2A;
 }
-QListView::item:hover
+QTabWidget QListView::item:hover
 {
     color: white;
     background-color: rgba(0, 0, 0, 0.0);
 }
-QListView::item:selected
+QTabWidget QListView::item:selected
 {
     color:  white;
     background-color: rgba(0, 0, 0, 0.0);
@@ -145,10 +166,4 @@ QPushButton#sendButton:pressed
 {
     color: #FFF;
     background: #B64821;
-}
-
-/* Selection des thèmes */
-QDialog QListView {
-    color: #B5B5B5;
-    background-color: #2A2A2A;
 }
