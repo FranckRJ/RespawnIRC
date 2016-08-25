@@ -15,7 +15,7 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
     stickerBrowser.setOpenExternalLinks(false);
     stickerBrowser.setOpenLinks(false);
     stickerBrowser.setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
-    stickerBrowser.setMinimumWidth(450);
+    stickerBrowser.setMinimumWidth(465);
     stickerBrowser.setMinimumHeight(430);
 
     QHBoxLayout* mainLayout = new QHBoxLayout;
