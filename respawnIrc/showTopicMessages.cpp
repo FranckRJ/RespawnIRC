@@ -46,6 +46,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicMessagesClass::setCookiesFromRequest);
     connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicMessagesClass::downloadTheseStickersIfNeeded);
     connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicMessagesClass::downloadTheseNoelshackImagesIfNeeded);
+    connect(getTopicMessages, &getTopicMessagesClass::newLinkForTopic, this, &showTopicMessagesClass::setUpdatedTopicLink);
 }
 
 showTopicMessagesClass::~showTopicMessagesClass()
@@ -74,9 +75,14 @@ const QList<QPair<QString, QString> >& showTopicMessagesClass::getListOfInput()
     return listOfInput;
 }
 
-QString showTopicMessagesClass::getTopicLink()
+QString showTopicMessagesClass::getTopicLinkLastPage()
 {
     return topicLinkLastPage;
+}
+
+QString showTopicMessagesClass::getTopicLinkFirstPage()
+{
+    return topicLinkFirstPage;
 }
 
 QString showTopicMessagesClass::getTopicName()
@@ -154,14 +160,13 @@ void showTopicMessagesClass::setTopicToErrorMode()
         if(firstTimeGetMessages == true)
         {
             topicLinkLastPage.clear();
-            topicLink.clear();
             topicName.clear();
             messagesBox.clear();
             firstMessageOfTopic.isFirstMessage = false;
             setMessageStatus("Erreur, topic invalide.");
             setNumberOfConnectedAndMP("", "", true);
             QMessageBox::warning(this, "Erreur", "Le topic n'existe pas.");
-            QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, topicLink), Q_ARG(bool, getFirstMessageOfTopic));
+            QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, ""), Q_ARG(bool, getFirstMessageOfTopic));
         }
         else
         {
@@ -247,7 +252,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     lastDate.clear();
     firstMessageOfTopic.isFirstMessage = false;
     topicLinkLastPage = newTopic;
-    topicLink = parsingToolClass::getFirstPageOfTopic(newTopic);
+    topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopic);
     firstTimeGetMessages = true;
     errorMode = false;
     currentErrorStreak = 0;
@@ -478,7 +483,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
     bool errorHappen = false;
     bool firstTimeAddMessages = false;
 
-    if(parsingToolClass::getFirstPageOfTopic(fromThisTopic) != topicLink)
+    if(parsingToolClass::getFirstPageOfTopic(fromThisTopic) != topicLinkFirstPage)
     {
         startGetMessage();
         return;
@@ -746,4 +751,9 @@ void showTopicMessagesClass::setCookiesFromRequest(QList<QNetworkCookie> newList
         setNewCookies(newListOfCookies, pseudoOfUser, false);
         emit newCookiesHaveToBeSet();
     }
+}
+
+void showTopicMessagesClass::setUpdatedTopicLink(QString newTopicLink)
+{
+    topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopicLink);
 }

@@ -236,10 +236,10 @@ void respawnIrcClass::useThisFavorite(int index)
 
 QString respawnIrcClass::addThisFavorite(int index)
 {
-    if(getCurrentWidget()->getShowTopicMessages().getTopicLink().isEmpty() == false && getCurrentWidget()->getShowTopicMessages().getTopicName().isEmpty() == false)
+    if(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage().isEmpty() == false && getCurrentWidget()->getShowTopicMessages().getTopicName().isEmpty() == false)
     {
-        vectorOfFavoriteLink[index] = getCurrentWidget()->getShowTopicMessages().getTopicLink();
-        settingToolClass::saveThisOption("favoriteLink" + QString::number(index), getCurrentWidget()->getShowTopicMessages().getTopicLink());
+        vectorOfFavoriteLink[index] = getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage();
+        settingToolClass::saveThisOption("favoriteLink" + QString::number(index), getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage());
         settingToolClass::saveThisOption("favoriteName" + QString::number(index), getCurrentWidget()->getShowTopicMessages().getTopicName());
 
         return getCurrentWidget()->getShowTopicMessages().getTopicName();
@@ -267,7 +267,7 @@ void respawnIrcClass::updateSettingInfoForList()
 
 void respawnIrcClass::showWebNavigator()
 {
-    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, getCurrentWidget()->getShowTopicMessages().getTopicLink(), getCurrentWidget()->getShowTopicMessages().getListOfCookies());
+    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, getCurrentWidget()->getShowTopicMessages().getTopicLinkLastPage(), getCurrentWidget()->getShowTopicMessages().getListOfCookies());
     myWebNavigator->exec();
 }
 
@@ -296,7 +296,7 @@ void respawnIrcClass::showAccountListWindow()
 
 void respawnIrcClass::showSelectTopic()
 {
-    selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(getCurrentWidget()->getShowTopicMessages().getTopicLink(), this);
+    selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage(), this);
     connect(mySelectTopicWindow, &selectTopicWindowClass::newTopicSelected, this, &respawnIrcClass::setNewTopic);
     mySelectTopicWindow->exec();
 }
@@ -460,9 +460,9 @@ void respawnIrcClass::reloadAllTopic()
 
 void respawnIrcClass::goToCurrentTopic()
 {
-    if(getCurrentWidget()->getShowTopicMessages().getTopicLink().isEmpty() == false)
+    if(getCurrentWidget()->getShowTopicMessages().getTopicLinkLastPage().isEmpty() == false)
     {
-        QDesktopServices::openUrl(QUrl(getCurrentWidget()->getShowTopicMessages().getTopicLink()));
+        QDesktopServices::openUrl(QUrl(getCurrentWidget()->getShowTopicMessages().getTopicLinkLastPage()));
     }
     else
     {
@@ -472,9 +472,9 @@ void respawnIrcClass::goToCurrentTopic()
 
 void respawnIrcClass::goToCurrentForum()
 {
-    if(parsingToolClass::getForumOfTopic(getCurrentWidget()->getShowTopicMessages().getTopicLink()).isEmpty() == false)
+    if(parsingToolClass::getForumOfTopic(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage()).isEmpty() == false)
     {
-        QDesktopServices::openUrl(QUrl(parsingToolClass::getForumOfTopic(getCurrentWidget()->getShowTopicMessages().getTopicLink())));
+        QDesktopServices::openUrl(QUrl(parsingToolClass::getForumOfTopic(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage())));
     }
     else
     {
@@ -824,7 +824,7 @@ void respawnIrcClass::currentTabChanged(int newIndex)
 
 void respawnIrcClass::messageHaveToBePosted()
 {
-    sendMessages.postMessage(getCurrentWidget()->getShowTopicMessages().getPseudoUsed(), getCurrentWidget()->getShowTopicMessages().getTopicLink(),
+    sendMessages.postMessage(getCurrentWidget()->getShowTopicMessages().getPseudoUsed(), getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage(),
                              getCurrentWidget()->getShowTopicMessages().getListOfCookies(), getCurrentWidget()->getShowTopicMessages().getListOfInput());
 }
 

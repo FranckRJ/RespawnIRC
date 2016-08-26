@@ -30,7 +30,8 @@ public:
     static void stopThread();
     void startGetMessage();
     const QList<QPair<QString, QString> >& getListOfInput();
-    QString getTopicLink();
+    QString getTopicLinkLastPage();
+    QString getTopicLinkFirstPage();
     QString getTopicName();
     QString getMessagesStatus();
     QString getNumberOfConnectedAndMP();
@@ -58,6 +59,7 @@ public slots:
     void setNumberOfConnectedAndMP(QString newNumberConnected, QString newNumberMP, bool forceSet = false);
     void setTopicName(QString newTopicName);
     void setCookiesFromRequest(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser);
+    void setUpdatedTopicLink(QString newTopicLink);
 signals:
     void quoteThisMessage(QString messageToQuote);
     void addToBlacklist(QString pseudoToBlacklist);
@@ -90,7 +92,7 @@ private:
     QList<pseudoWithColorStruct>* listOfColorPseudo;
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;
-    QString topicLink;
+    QString topicLinkFirstPage;
     QString topicLinkLastPage;
     QString topicName;
     QString pseudoOfUser;

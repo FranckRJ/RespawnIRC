@@ -228,6 +228,7 @@ void getTopicMessagesClass::analyzeMessages()
     QStringList listOfNoelshackImagesUsed;
     QVector<QString> listOfPageSource;
     QVector<QString> listOfPageUrl;
+    QString locationHeader = ".";
     int firstValidePageNumber = -1;
 
     for(autoTimeoutReplyClass*& autoTimeout : listOfTimeoutForReplys)
@@ -247,6 +248,11 @@ void getTopicMessagesClass::analyzeMessages()
             if(listOfReplys[i]->isReadable() == true)
             {
                 listOfPageSource[i] = listOfReplys[i]->readAll();
+
+                if(locationHeader == ".")
+                {
+                    locationHeader = listOfReplys[i]->rawHeader("Location");
+                }
 
                 if(firstValidePageNumber == -1 && listOfPageSource[i].isEmpty() == false)
                 {
@@ -272,9 +278,20 @@ void getTopicMessagesClass::analyzeMessages()
 
     if(firstValidePageNumber == -1)
     {
-        emit newMessagesAreAvailable(QList<messageStruct>(), listOfInput, ajaxInfo, topicLink, true);
-        retrievesMessage = false;
-        return;
+        if(locationHeader.startsWith("/forums/") == true)
+        {
+            topicLink = "http://www.jeuxvideo.com" + locationHeader;
+            emit newLinkForTopic(topicLink);
+            retrievesMessage = false;
+            startGetMessage();
+            return;
+        }
+        else
+        {
+            emit newMessagesAreAvailable(QList<messageStruct>(), listOfInput, ajaxInfo, topicLink, true);
+            retrievesMessage = false;
+            return;
+        }
     }
 
     if(currentCookieList.isEmpty() == false)
