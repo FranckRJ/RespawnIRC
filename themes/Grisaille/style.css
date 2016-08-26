@@ -67,6 +67,7 @@ QListView
 	background: grey;
 	color: lightgrey;
 	border: 0px;
+	outline: none;
 }
 
 QDialog QListView
@@ -125,6 +126,7 @@ QPushButton
 	border: 2px solid darkgrey;
 	padding: 3px;
 	min-width: 50px;
+	outline: none;
 }
 
 QPushButton#boldButton, QPushButton#italicButton, QPushButton#underlineButton, QPushButton#strikeButton, 

@@ -6,34 +6,34 @@ QMainWindow, QDialog
 QLabel, QCheckBox, QGroupBox
 {
 	color: white;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 }
 
 QMenuBar
 {
 	background: black;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 }
 
 QMenuBar::item
 {
 	background: black;
 	color: white;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 }
 
 QMenuBar::item:selected
 {
 	background: #333333;
 	color: white;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 }
 
 QMenu
 {
 	background: black;
 	color: white;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 	border: 1px solid white;
 }
 
@@ -61,7 +61,7 @@ QTextEdit, QLineEdit
 	background: black;
 	color: white;
 	border: 1px solid white;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 }
 
 QLineEdit:disabled
@@ -73,7 +73,7 @@ QTextBrowser
 {
 	background: black;
 	color: white;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 	border: 0px;
 }
 
@@ -81,8 +81,9 @@ QListView
 {
 	background: black;
 	color: white;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 	border: 0px;
+	outline: none;
 }
 
 QDialog QListView
@@ -147,11 +148,12 @@ QPushButton
 	background: black;
 	color: white;
 	border: 1px solid white;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 	padding-right: 3px;
 	padding-left: 3px;
 	padding-top: 2px;
 	padding-bottom: 2px;
+	outline: none;
 }
 
 QPushButton#sendButton
@@ -160,7 +162,7 @@ QPushButton#sendButton
 	color: white;
 	border: 1px solid white;
 	padding: 5px;
-	font-family: "Dejavu Sans Mono";
+	font-family: "DejaVu Sans Mono";
 	height: 53px;
 }
 
