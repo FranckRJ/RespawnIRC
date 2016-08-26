@@ -95,16 +95,17 @@ QTabWidget QListView
     color: #B5B5B5;
     padding-top: 4px;
     background-color: #2A2A2A;
+	outline: none;
 }
 QTabWidget QListView::item:hover
 {
     color: white;
-    background-color: rgba(0, 0, 0, 0.0);
+    background-color: rgba(0, 0, 0, 0);
 }
 QTabWidget QListView::item:selected
 {
     color:  white;
-    background-color: rgba(0, 0, 0, 0.0);
+    background-color: rgba(0, 0, 0, 100);
 }
 
 /* Décoration de texte */
@@ -112,25 +113,29 @@ QPushButton#boldButton, QPushButton#italicButton, QPushButton#underlineButton, Q
 QPushButton#ulistButton, QPushButton#olistButton, QPushButton#quoteButton, QPushButton#codeButton, QPushButton#spoilButton
 {
     color: #8A8A8A;
+	background: #E6E6E6;
     font: 12px;
     min-width: 30px;
     padding: 0px 4px 0px 4px;
-    height: 80px;
+    min-height: 17px;
+	border: 1px solid #B3B3B3;
+	font-weight: bold;
+	outline: none;
+}
+QPushButton#boldButton:focus, QPushButton#italicButton:focus, QPushButton#underlineButton:focus, QPushButton#strikeButton:focus, 
+QPushButton#ulistButton:focus, QPushButton#olistButton:focus, QPushButton#quoteButton:focus, QPushButton#codeButton:focus, QPushButton#spoilButton:focus
+{
+    color: #404040;
 }
 QPushButton#boldButton:hover, QPushButton#italicButton:hover, QPushButton#underlineButton:hover, QPushButton#strikeButton:hover, 
 QPushButton#ulistButton:hover, QPushButton#olistButton:hover, QPushButton#quoteButton:hover, QPushButton#codeButton:hover, QPushButton#spoilButton:hover
 {
     color: black;
 }
-QPushButton#boldButton:focus, QPushButton#italicButton:focus, QPushButton#underlineButton:focus, QPushButton#strikeButton:focus, 
-QPushButton#ulistButton:focus, QPushButton#olistButton:focus, QPushButton#quoteButton:focus, QPushButton#codeButton:focus, QPushButton#spoilButton:focus
-{
-    color: black;
-}
 QPushButton#boldButton:pressed, QPushButton#italicButton:pressed, QPushButton#underlineButton:pressed, QPushButton#strikeButton:pressed, 
 QPushButton#ulistButton:pressed, QPushButton#olistButton:pressed, QPushButton#quoteButton:pressed, QPushButton#codeButton:pressed, QPushButton#spoilButton:pressed
 {
-    background: #DDDDDD;
+    background: #CCCCCC;
 }
 
 /* Zone d'édition de texte */
@@ -156,8 +161,14 @@ QPushButton#sendButton
     margin-bottom: 0;
     padding: 0 40px;
     background: #FD612C;
+	outline: none;
 }
-QPushButton#sendButton:hover, QPushButton#sendButton:focus
+QPushButton#sendButton:focus
+{
+    color: #000;
+    background: #D75628;
+}
+QPushButton#sendButton:hover
 {
     color: #000;
     background: #C85025;
