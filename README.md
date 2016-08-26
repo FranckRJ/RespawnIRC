@@ -17,7 +17,7 @@ Pour Windows le plus simple reste de télécharger la dernière version de Qt (h
 
 ### Linux
 
-Pour Linux, il vous suffit d'installer les paquets `qt5-default qtmultimedia5-dev libqt5webkit5-dev`. Ensuite, vous n'avez plus qu'à vous rendre dans le dossier `respawnIrc` qui contient le .pro et exécuter ces commandes :
+Pour Linux, il vous suffit d'installer les paquets `qt5-default qtmultimedia5-dev` ainsi que `libqt5webkit5-dev` si vous utilisez webkit ou `qt5-webengine` (nom de paquet à vérifier) si vous utilisez webengine, le programme utilise webengine par défaut, si vous l'avez modifié pour utiliser les fichiers .old à la place des fichiers normaux vous utilisez webkit. Ensuite, vous n'avez plus qu'à vous rendre dans le dossier `respawnIrc` qui contient le .pro et exécuter ces commandes :
 
     qmake
     make
