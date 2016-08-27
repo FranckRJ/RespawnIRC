@@ -137,6 +137,20 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos)
         end = textBlock.size();
     }
 
+    while((textBlock.at(begin + 1) == '\'' || textBlock.at(begin + 1) == '-') && (begin + 1) < pos)
+    {
+        begin += 1;
+    }
+    while((textBlock.at(end - 1) == '\'' || textBlock.at(end - 1) == '-') && (end - 1) > pos)
+    {
+        end -= 1;
+    }
+
+    if(begin == end)
+    {
+        begin -= 1;
+    }
+
     textBlock = textBlock.mid(begin + 1, end - begin - 1);
 
     return textBlock;
@@ -162,7 +176,7 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 
     thisFont.setBold(true);
 
-    if(wordUnderCursor.isEmpty() == false && checkWord(wordUnderCursor) == false)
+    if(wordUnderCursor.size() > 1 && checkWord(wordUnderCursor) == false)
     {
         menuRightClick->addSeparator();
         menuRightClick->addAction("Add...", this, SLOT(addWordToUserDic()));
@@ -174,7 +188,7 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 
             for(int i = 0; i < qMin(wordPropositionsActions.size(), listOfWord.size()); ++i)
             {
-                wordPropositionsActions[i]->setText(listOfWord.at(i).trimmed());
+                wordPropositionsActions[i]->setText(listOfWord.at(i).trimmed().replace("’", "'"));
                 wordPropositionsActions[i]->setVisible(true);
                 wordPropositionsActions[i]->setFont(thisFont);
                 menuRightClick->addAction(wordPropositionsActions[i]);
@@ -215,6 +229,20 @@ void spellTextEditClass::correctWord()
         if(end == -1)
         {
             end = textBlock.size();
+        }
+
+        while((textBlock.at(begin + 1) == '\'' || textBlock.at(begin + 1) == '-') && (begin + 1) < pos)
+        {
+            begin += 1;
+        }
+        while((textBlock.at(end - 1) == '\'' || textBlock.at(end - 1) == '-') && (end - 1) > pos)
+        {
+            end -= 1;
+        }
+
+        if(begin == end)
+        {
+            begin -= 1;
         }
 
         cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, pos - begin - 1);

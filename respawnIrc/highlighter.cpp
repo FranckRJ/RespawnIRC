@@ -111,22 +111,30 @@ void highlighterClass::spellCheck(const QString &text)
         if(simplifiedText.isEmpty() == false)
         {
             QStringList checkList = simplifiedText.split(QRegExp("[^\\w'-]+"), QString::SkipEmptyParts);
-            for(const QString& thisString : checkList)
+            for(QString thisString : checkList)
             {
-                simplifiedText = thisString;
-                if(simplifiedText.length() > 1)
+                while(thisString.startsWith('\'') == true || thisString.startsWith('-') == true)
                 {
-                    if(checkWord(simplifiedText) == false)
+                    thisString.remove(0, 1);
+                }
+                while(thisString.endsWith('\'') == true || thisString.endsWith('-') == true)
+                {
+                    thisString.remove(thisString.size() - 1, 1);
+                }
+
+                if(thisString.size() > 1)
+                {
+                    if(checkWord(thisString) == false)
                     {
                         int wordCount;
                         int index = -1;
-                        wordCount = text.count(QRegExp("\\b" + simplifiedText + "\\b"));
+                        wordCount = text.count(QRegExp("\\b" + thisString + "\\b"));
                         for(int j = 0; j < wordCount; ++j)
                         {
-                            index = text.indexOf(QRegExp("\\b" + simplifiedText + "\\b"), index + 1);
+                            index = text.indexOf(QRegExp("\\b" + thisString + "\\b"), index + 1);
                             if(index >= 0)
                             {
-                                setFormat(index, simplifiedText.length(), spellCheckFormat);
+                                setFormat(index, thisString.size(), spellCheckFormat);
                             }
                         }
                     }
