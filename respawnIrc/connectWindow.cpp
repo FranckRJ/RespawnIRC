@@ -62,10 +62,12 @@ void connectWindowClass::addWebView()
 {
     if(webView == nullptr)
     {
+        QWebEngineProfile* customProfile = new QWebEngineProfile(this);
+        QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
+
         webView = new QWebEngineView(this);
 
-        webView->page()->profile()->cookieStore()->deleteAllCookies();
-        webView->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+        webView->setPage(customPage);
         webView->load(QUrl("http://www.jeuxvideo.com/login"));
 
         mainLayout->removeWidget(buttonShowWebView);

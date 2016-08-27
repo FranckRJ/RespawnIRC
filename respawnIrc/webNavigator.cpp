@@ -10,6 +10,9 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
+    QWebEngineProfile* customProfile = new QWebEngineProfile(this);
+    QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
+
     QPushButton* backwardButton = new QPushButton("←", this);
     QPushButton* forwardButton = new QPushButton("→", this);
     QPushButton* goButton = new QPushButton("Go", this);
@@ -34,6 +37,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     setLayout(mainLayout);
     setWindowTitle("RespawnIRC Navigator");
 
+    webView.setPage(customPage);
     for(const QNetworkCookie& thisCookie : cookiesList)
     {
         webView.page()->profile()->cookieStore()->setCookie(thisCookie);
