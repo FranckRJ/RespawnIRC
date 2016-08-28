@@ -58,11 +58,12 @@ struct infoForMessageParsingStruct
 namespace parsingToolClass
 {
     ajaxInfoStruct getAjaxInfo(const QString& source);
-    QString getMessageEdit(QString& source);
-    QString getMessageQuote(QString& source);
+    QString getMessageEdit(QString source);
+    QString getMessageQuote(const QString& source);
     QString getVersionName(const QString& source);
     QString getVersionChangelog(const QString& source);
-    void getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
+    void getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
+    bool getTopicLocked(const QString& source);
     QString getCaptchaLink(const QString& source);
     QString getErrorMessage(const QString& source);
     QString getLastPageOfTopic(const QString& source);
@@ -79,7 +80,7 @@ namespace parsingToolClass
     QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, QStringList* listOfStickersUsed = nullptr, QStringList* listOfNoelshackImageUsed = nullptr);
     QString parsingAjaxMessages(QString thisMessage);
     QNetworkRequest buildRequestWithThisUrl(QString url);
-    QList<QString> getListOfThisCapNumber(const QString &source, const QRegularExpression& exp, int capNumber, bool globalMatch = true);
+    QList<QString> getListOfThisCapNumber(const QString& source, const QRegularExpression& exp, int capNumber, bool globalMatch = true);
     void removeAllOverlyQuote(QString& source, int maxNumberQuote);
     bool replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "",

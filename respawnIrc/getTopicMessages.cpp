@@ -400,6 +400,14 @@ void getTopicMessagesClass::analyzeMessages()
     {
         ajaxInfo = parsingToolClass::getAjaxInfo(listOfPageSource[firstValidePageNumber]);
         parsingToolClass::getListOfHiddenInputFromThisForm(listOfPageSource[firstValidePageNumber], "form-post-topic", listOfInput);
+
+        if(listOfInput.isEmpty() == true)
+        {
+            if(parsingToolClass::getTopicLocked(listOfPageSource[firstValidePageNumber]) == true)
+            {
+                listOfInput.append(QPair<QString, QString>("locked", "true"));
+            }
+        }
     }
     firstTimeGetMessages = false;
     retrievesMessage = false;

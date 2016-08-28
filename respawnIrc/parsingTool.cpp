@@ -20,6 +20,7 @@ namespace
     const QRegularExpression expForFormTopic("(<form role=\"form\" class=\"form-post-topic[^\"]*\" method=\"post\" action=\"\".*?>.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForFormConnect("(<form role=\"form\" class=\"form-connect-jv\" method=\"post\" action=\"\".*?>.*?</form>)", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForInput("<input ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\" ([^=]*)=\"([^\"]*)\"/>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForTopicLocked("<div class=\"message-lock-topic\">", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForCaptcha("<img src=\"([^\"]*)\" alt=[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForError("<div class=\"alert-row\">([^<]*)</div>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForCurrentPage("<span class=\"page-active\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -78,7 +79,7 @@ ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
     return newAjaxInfo;
 }
 
-QString parsingToolClass::getMessageEdit(QString& source)
+QString parsingToolClass::getMessageEdit(QString source)
 {
     source.remove("\n");
     source.replace("\\\"", "\"");
@@ -87,7 +88,7 @@ QString parsingToolClass::getMessageEdit(QString& source)
     return parsingAjaxMessages(expForMessageEdit.match(source).captured(1));
 }
 
-QString parsingToolClass::getMessageQuote(QString &source)
+QString parsingToolClass::getMessageQuote(const QString& source)
 {
     QString message = parsingAjaxMessages(expForMessageQuote.match(source).captured(1));
     message.replace("\n", "\n>");
@@ -95,30 +96,32 @@ QString parsingToolClass::getMessageQuote(QString &source)
     return message;
 }
 
-QString parsingToolClass::getVersionName(const QString &source)
+QString parsingToolClass::getVersionName(const QString& source)
 {
     return expForVersionName.match(source).captured(1);
 }
 
-QString parsingToolClass::getVersionChangelog(const QString &source)
+QString parsingToolClass::getVersionChangelog(const QString& source)
 {
     QString changelog = expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--").replace("   --", "---").replace("\\\\", "\\");
     replaceWithCapNumber(changelog, expForNormalLink, 0, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 0, "</a>");
     return changelog;
 }
 
-void parsingToolClass::getListOfHiddenInputFromThisForm(QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput)
+void parsingToolClass::getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput)
 {
+    QString formSource;
+
     if(formName == "form-post-topic")
     {
-        source = expForFormTopic.match(source).captured(1);
+        formSource = expForFormTopic.match(source).captured(1);
     }
     else if(formName == "form-connect-jv")
     {
-        source = expForFormConnect.match(source).captured(1);
+        formSource = expForFormConnect.match(source).captured(1);
     }
 
-    QRegularExpressionMatchIterator matchIteratorForInput = expForInput.globalMatch(source);
+    QRegularExpressionMatchIterator matchIteratorForInput = expForInput.globalMatch(formSource);
     while(matchIteratorForInput.hasNext())
     {
         QRegularExpressionMatch matchForInput = matchIteratorForInput.next();
@@ -156,6 +159,11 @@ void parsingToolClass::getListOfHiddenInputFromThisForm(QString& source, QString
             }
         }
     }
+}
+
+bool parsingToolClass::getTopicLocked(const QString& source)
+{
+    return expForTopicLocked.match(source).hasMatch();
 }
 
 QString parsingToolClass::getCaptchaLink(const QString& source)
@@ -197,7 +205,7 @@ QString parsingToolClass::getLastPageOfTopic(const QString& source)
     return lastPage;
 }
 
-QString parsingToolClass::getFirstPageOfTopic(const QString &source)
+QString parsingToolClass::getFirstPageOfTopic(const QString& source)
 {
     QRegularExpressionMatch matchForFirstPage = expForBeforeLastPage.match(source);
 
@@ -211,7 +219,7 @@ QString parsingToolClass::getFirstPageOfTopic(const QString &source)
     }
 }
 
-QString parsingToolClass::getBeforeLastPageOfTopic(const QString &source)
+QString parsingToolClass::getBeforeLastPageOfTopic(const QString& source)
 {
     QRegularExpressionMatch matchForBeforeLastPage = expForBeforeLastPage.match(source);
     QString pageNumber = matchForBeforeLastPage.captured(2);
@@ -231,12 +239,12 @@ QString parsingToolClass::getNameOfTopic(const QString& source)
     return expForNameOfTopic.match(source).captured(1).replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");
 }
 
-QString parsingToolClass::getNumberOfConnected(const QString &source)
+QString parsingToolClass::getNumberOfConnected(const QString& source)
 {
     return expForNumberOfConnected.match(source).captured(1);
 }
 
-QString parsingToolClass::getNumberOfMp(const QString &source)
+QString parsingToolClass::getNumberOfMp(const QString& source)
 {
     int numberOfMp = 0;
     QRegularExpressionMatch match = expForMpJvc.match(source);
@@ -256,7 +264,7 @@ QString parsingToolClass::getNumberOfMp(const QString &source)
     }
 }
 
-QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars(const QString &source)
+QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars(const QString& source)
 {
     QList<QString> listOfEntireMessage;
     QList<messageStruct> listOfMessages;
@@ -296,7 +304,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
     return listOfMessages;
 }
 
-QList<topicStruct> parsingToolClass::getListOfTopic(const QString &source)
+QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source)
 {
     QList<topicStruct> listOfTopic;
     QList<QString> listOfEntireTopic;
@@ -332,7 +340,7 @@ QString parsingToolClass::getForumOfTopic(const QString& source)
     }
 }
 
-QString parsingToolClass::getForumName(const QString &source)
+QString parsingToolClass::getForumName(const QString& source)
 {
     QString forumName = expForForumName.match(source).captured(1);
 
@@ -344,7 +352,7 @@ QString parsingToolClass::getForumName(const QString &source)
     return forumName;
 }
 
-QString parsingToolClass::jvfLinkToJvcLink(const QString &source)
+QString parsingToolClass::jvfLinkToJvcLink(const QString& source)
 {
     QRegularExpressionMatch matchForJvfLink = expForJvfLink.match(source);
     QString forumNumber = matchForJvfLink.captured(1);

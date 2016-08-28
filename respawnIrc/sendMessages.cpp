@@ -142,6 +142,31 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         networkManager = new QNetworkAccessManager(this);
     }
 
+    if(pseudoUsed.isEmpty() == true)
+    {
+        QMessageBox::warning(this, "Erreur", "Impossible de poster le message, vous n'êtes pas connecté.");
+        return;
+    }
+    if(topicLink.isEmpty() == true)
+    {
+        QMessageBox::warning(this, "Erreur", "Impossible de poster le message, le topic est invalide.");
+        return;
+    }
+    if(listOfInput.isEmpty() == true)
+    {
+        QMessageBox::warning(this, "Erreur", "Impossible de poster le message, veuillez réessayer plus tard.\n"
+                                             "Si le problème persiste, le compte est sans doute invalide.");
+        return;
+    }
+    else
+    {
+        if(listOfInput.first().first == "locked" && listOfInput.first().second == "true")
+        {
+            QMessageBox::warning(this, "Erreur", "Impossible de poster le message, le topic est fermé.");
+            return;
+        }
+    }
+
     if(replyForSendMessage == nullptr && pseudoUsed.isEmpty() == false && topicLink.isEmpty() == false && sendButton.isEnabled() == true)
     {
         QNetworkRequest request;
