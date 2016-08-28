@@ -122,6 +122,7 @@ QTabBar::tab
 	border-right: 0px;
 	padding-bottom: 5px;
 	padding-left: 4px;
+	padding-right: 4px;
 	padding-top: 2px;
 }
 
@@ -131,9 +132,14 @@ QTabBar::tab:!selected
 	margin-top: 2px;
 }
 
-QTabBar::tab:selected, QTabBar::tab:hover
+QTabBar::tab:hover
 {
-	background: #191919;
+	background: #262626;
+}
+
+QTabBar::tab:selected
+{
+	background: #1a1a1a;
 }
 
 QTabBar::close-button
@@ -149,31 +155,43 @@ QPushButton
 	color: white;
 	border: 1px solid white;
 	font-family: "DejaVu Sans Mono";
-	padding-right: 3px;
-	padding-left: 3px;
+	padding-right: 10px;
+	padding-left: 10px;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	outline: none;
+	min-width: 20px;
 }
 
 QPushButton#sendButton
 {
-	background: black;
-	color: white;
-	border: 1px solid white;
-	padding: 5px;
-	font-family: "DejaVu Sans Mono";
-	height: 53px;
-}
-
-QPushButton#quoteButton
-{
-	min-width: 20px;
+	padding: 10px;
 }
 
 QPushButton#spoilButton
 {
 	min-width: 40px;
+}
+
+QPushButton:default, QPushButton:focus
+{
+	background: #1a1a1a;
+}
+
+QPushButton:hover, QPushButton:focus:hover
+{
+	background: #333333;
+}
+
+QPushButton:pressed, QPushButton:focus:pressed
+{
+	color: #808080;
+	background: #1a1a1a;
+}
+
+QPushButton:!enabled
+{
+	color: #4d4d4d;
 }
 
 QScrollBar:vertical
