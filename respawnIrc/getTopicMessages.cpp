@@ -159,7 +159,7 @@ void getTopicMessagesClass::getMessages()
         linkHasChanged = false;
         emit newMessageStatus("Récupération des messages en cours...");
         listOfReplys.fill(nullptr, numberOfPagesToLoad);
-        listOfTimeoutForReplys.fill(new autoTimeoutReplyClass(settingsForMessageParsing.timeoutTime, this), listOfReplys.size());
+        listOfTimeoutForReplys.fill(nullptr, listOfReplys.size());
 
         for(int i = 0; i < listOfReplys.size(); ++i)
         {
@@ -167,6 +167,7 @@ void getTopicMessagesClass::getMessages()
             {
                 QNetworkRequest requestForThisPage = parsingToolClass::buildRequestWithThisUrl(currentPageToLoad);
 
+                listOfTimeoutForReplys[i] = new autoTimeoutReplyClass(settingsForMessageParsing.timeoutTime, this);
                 listOfReplys[i] = listOfTimeoutForReplys[i]->resetReply(networkManager->get(requestForThisPage));
 
                 if(listOfReplys[i]->isOpen() == true)
@@ -233,9 +234,12 @@ void getTopicMessagesClass::analyzeMessages()
 
     for(autoTimeoutReplyClass*& autoTimeout : listOfTimeoutForReplys)
     {
-        autoTimeout->resetReply();
-        autoTimeout->deleteLater();
-        autoTimeout = nullptr;
+        if(autoTimeout != nullptr)
+        {
+            autoTimeout->resetReply();
+            autoTimeout->deleteLater();
+            autoTimeout = nullptr;
+        }
     }
 
     listOfPageSource.resize(listOfReplys.size());
