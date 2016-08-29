@@ -22,7 +22,7 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v2.7.1");
+const QString respawnIrcClass::currentVersionName("v2.7.2");
 
 namespace
 {
@@ -698,7 +698,6 @@ void respawnIrcClass::setNewTheme(QString newThemeName)
     currentThemeName = newThemeName;
     themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
     styleToolClass::loadThemeFont(currentThemeName);
-
 
     emit themeChanged(currentThemeName);
 
