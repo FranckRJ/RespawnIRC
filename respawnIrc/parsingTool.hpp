@@ -58,7 +58,7 @@ struct infoForMessageParsingStruct
 namespace parsingToolClass
 {
     ajaxInfoStruct getAjaxInfo(const QString& source);
-    QString getMessageEdit(QString source);
+    QString getMessageEditAndChangeSource(QString& source); //ici le & est important
     QString getMessageQuote(const QString& source);
     QString getVersionName(const QString& source);
     QString getVersionChangelog(const QString& source);

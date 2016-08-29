@@ -418,7 +418,7 @@ void showTopicMessagesClass::analyzeEditInfo()
     }
     replyForEditInfo->deleteLater();
 
-    message = parsingToolClass::getMessageEdit(source);
+    message = parsingToolClass::getMessageEditAndChangeSource(source);
     parsingToolClass::getListOfHiddenInputFromThisForm(source, "form-post-topic", listOfEditInput);
 
     for(const QPair<QString, QString>& thisInput : listOfEditInput)

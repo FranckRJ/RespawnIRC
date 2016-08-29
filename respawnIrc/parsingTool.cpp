@@ -79,7 +79,7 @@ ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
     return newAjaxInfo;
 }
 
-QString parsingToolClass::getMessageEdit(QString source)
+QString parsingToolClass::getMessageEditAndChangeSource(QString& source)
 {
     source.remove("\n");
     source.replace("\\\"", "\"");
