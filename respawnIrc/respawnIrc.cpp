@@ -349,6 +349,7 @@ void respawnIrcClass::showAbout()
 
 void respawnIrcClass::addNewTab()
 {
+    QString themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
     listOfContainerForTopicsInfos.push_back(new containerForTopicsInfosClass(&listOfIgnoredPseudo, &listOfColorPseudo, currentThemeName, this));
 
     if(listOfContainerForTopicsInfos.size() > listOfTopicLink.size())
@@ -386,6 +387,10 @@ void respawnIrcClass::addNewTab()
     }
 
     listOfContainerForTopicsInfos.back()->getShowTopicMessages().addSearchPath(imageDownloadTool.getPathOfTmpDir());
+    if(themeImgDir.isEmpty() == false)
+    {
+        listOfContainerForTopicsInfos.back()->getShowTopicMessages().addSearchPath(themeImgDir);
+    }
 
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
@@ -691,7 +696,7 @@ void respawnIrcClass::setNewTheme(QString newThemeName)
     QString themeImgDir;
 
     currentThemeName = newThemeName;
-    themeImgDir = styleToolClass::getImagePathOfThemeIfExist(newThemeName);
+    themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
     styleToolClass::loadThemeFont(currentThemeName);
 
 
