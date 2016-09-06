@@ -25,14 +25,11 @@ highlighterClass::~highlighterClass()
 
 void highlighterClass::enableSpellChecking(const bool state)
 {
-    bool old = spellCheckActive;
+    bool old = spellCheckingIsEnabled;
 
-    if(spellerError == false)
-    {
-        spellCheckActive = state;
-    }
+    spellCheckingIsEnabled = state;
 
-    if(old != spellCheckActive)
+    if(old != spellCheckingIsEnabled)
     {
         rehighlight();
     }
@@ -40,7 +37,6 @@ void highlighterClass::enableSpellChecking(const bool state)
 
 bool highlighterClass::setDic(const QString newSpellDic)
 {
-    spellerError = false;
     spellDic = newSpellDic;
 
     if(spellChecker != nullptr)
@@ -52,8 +48,6 @@ bool highlighterClass::setDic(const QString newSpellDic)
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
         spellChecker = nullptr;
-        spellCheckActive = false;
-        spellerError = true;
         codec = QTextCodec::codecForName("UTF-8");
     }
     else
@@ -105,7 +99,7 @@ void highlighterClass::highlightBlock(const QString& text)
 
 void highlighterClass::spellCheck(const QString &text)
 {
-    if(spellCheckActive == true)
+    if(spellChecker != nullptr && codec != nullptr && spellCheckingIsEnabled == true)
     {
         QString simplifiedText = text.simplified();
         if(simplifiedText.isEmpty() == false)

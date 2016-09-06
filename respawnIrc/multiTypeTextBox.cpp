@@ -117,14 +117,17 @@ void multiTypeTextBoxClass::styleChanged()
 
 void multiTypeTextBoxClass::settingsChanged()
 {
-    if(settingToolClass::getThisBoolOption("useSpellChecker") == true && dicAreLoaded == false)
+    bool useSpellChecker = settingToolClass::getThisBoolOption("useSpellChecker");
+
+    if(useSpellChecker == true && dicAreLoaded == false)
     {
         textEdit.setDic("fr");
         highlighter->setDic("fr");
         dicAreLoaded = true;
     }
 
-    highlighter->enableSpellChecking(settingToolClass::getThisBoolOption("useSpellChecker"));
+    highlighter->enableSpellChecking(useSpellChecker);
+    textEdit.enableSpellChecking(useSpellChecker);
     textEdit.setFixedHeight(settingToolClass::getThisIntOption("textBoxSize").value);
 }
 

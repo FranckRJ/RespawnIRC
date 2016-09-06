@@ -63,6 +63,44 @@ spellTextEditClass::~spellTextEditClass()
     }
 }
 
+void spellTextEditClass::enableSpellChecking(bool newVal)
+{
+    spellCheckingIsEnabled = newVal;
+}
+
+void spellTextEditClass::searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos)
+{
+    endPos = textBlock.indexOf(QRegExp("[^\\w'-]"), checkPos);
+    beginPos = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), checkPos);
+
+    if(endPos == -1)
+    {
+        endPos = textBlock.size();
+    }
+
+    while((textBlock.at(beginPos + 1) == '\'' || textBlock.at(beginPos + 1) == '-') &&
+          (beginPos + 1) <= endPos && (beginPos + 2) < textBlock.size())
+    {
+        beginPos += 1;
+    }
+    while((textBlock.at(endPos - 1) == '\'' || textBlock.at(endPos - 1) == '-') &&
+          endPos >= (beginPos + 1) && (endPos - 2) >= 0)
+    {
+        endPos -= 1;
+    }
+
+    if(beginPos == endPos)
+    {
+        beginPos -= 1;
+    }
+
+    if((beginPos + 1) > checkPos || (endPos - 1) < checkPos)
+    {
+        endPos = checkPos;
+        beginPos = endPos - 1;
+    }
+}
+
 QStringList spellTextEditClass::getWordPropositions(const QString word)
 {
     QStringList wordList;
@@ -128,30 +166,17 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos)
 {
     QTextCursor cursor = cursorForPosition(cursorPos);
     QString textBlock = cursor.block().text();
-    int pos = cursor.positionInBlock();
-    int end = textBlock.indexOf(QRegExp("[^\\w'-]"), pos);
-    int begin = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), pos);
 
-    if(end == -1)
+    if(textBlock.isEmpty() == false)
     {
-        end = textBlock.size();
-    }
+        int pos = cursor.positionInBlock();
+        int end;
+        int begin;
 
-    while((textBlock.at(begin + 1) == '\'' || textBlock.at(begin + 1) == '-') && (begin + 1) < pos)
-    {
-        begin += 1;
-    }
-    while((textBlock.at(end - 1) == '\'' || textBlock.at(end - 1) == '-') && (end - 1) > pos)
-    {
-        end -= 1;
-    }
+        searchWordBoundaryPosition(textBlock, pos, begin, end);
 
-    if(begin == end)
-    {
-        begin -= 1;
+        textBlock = textBlock.mid(begin + 1, end - begin - 1);
     }
-
-    textBlock = textBlock.mid(begin + 1, end - begin - 1);
 
     return textBlock;
 }
@@ -168,37 +193,44 @@ void spellTextEditClass::createActions()
 
 void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 {
-    QFont thisFont;
-    lastPos = event->pos();
-    QString wordUnderCursor = getWordUnderCursor(lastPos);
-    QMenu* menuRightClick = createStandardContextMenu();
-    QStringList listOfWord = getWordPropositions(wordUnderCursor);
-
-    thisFont.setBold(true);
-
-    if(wordUnderCursor.size() > 1 && checkWord(wordUnderCursor) == false)
+    if(spellChecker != nullptr && codecUsed != nullptr && spellCheckingIsEnabled == true)
     {
-        menuRightClick->addSeparator();
-        menuRightClick->addAction("Add...", this, SLOT(addWordToUserDic()));
-        menuRightClick->addAction("Ignore...", this, SLOT(ignoreWord()));
+        QFont thisFont;
+        lastPos = event->pos();
+        QString wordUnderCursor = getWordUnderCursor(lastPos);
+        QMenu* menuRightClick = createStandardContextMenu();
+        QStringList listOfWord = getWordPropositions(wordUnderCursor);
 
-        if(listOfWord.isEmpty() == false)
+        thisFont.setBold(true);
+
+        if(wordUnderCursor.size() > 1 && checkWord(wordUnderCursor) == false)
         {
             menuRightClick->addSeparator();
+            menuRightClick->addAction("Add...", this, SLOT(addWordToUserDic()));
+            menuRightClick->addAction("Ignore...", this, SLOT(ignoreWord()));
 
-            for(int i = 0; i < qMin(wordPropositionsActions.size(), listOfWord.size()); ++i)
+            if(listOfWord.isEmpty() == false)
             {
-                wordPropositionsActions[i]->setText(listOfWord.at(i).trimmed().replace("’", "'"));
-                wordPropositionsActions[i]->setVisible(true);
-                wordPropositionsActions[i]->setFont(thisFont);
-                menuRightClick->addAction(wordPropositionsActions[i]);
+                menuRightClick->addSeparator();
+
+                for(int i = 0; i < qMin(wordPropositionsActions.size(), listOfWord.size()); ++i)
+                {
+                    wordPropositionsActions[i]->setText(listOfWord.at(i).trimmed().replace("’", "'"));
+                    wordPropositionsActions[i]->setVisible(true);
+                    wordPropositionsActions[i]->setFont(thisFont);
+                    menuRightClick->addAction(wordPropositionsActions[i]);
+                }
+
             }
-
         }
-    }
 
-    menuRightClick->exec(event->globalPos());
-    delete menuRightClick;
+        menuRightClick->exec(event->globalPos());
+        delete menuRightClick;
+    }
+    else
+    {
+        QTextEdit::contextMenuEvent(event);
+    }
 }
 
 bool spellTextEditClass::checkWord(QString word)
@@ -222,33 +254,21 @@ void spellTextEditClass::correctWord()
         QString replacement = thisAction->text();
         QTextCursor cursor = cursorForPosition(lastPos);
         QString textBlock = cursor.block().text();
-        int pos = cursor.positionInBlock();
-        int end = textBlock.indexOf(QRegExp("[^\\w'-]"), pos);
-        int begin = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), pos);
 
-        if(end == -1)
+        if(textBlock.isEmpty() == false)
         {
-            end = textBlock.size();
+            int pos = cursor.positionInBlock();
+            int end;
+            int begin;
+
+            searchWordBoundaryPosition(textBlock, pos, begin, end);
+
+            cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, pos - begin - 1);
+            cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, end - begin - 1);
+
+            cursor.removeSelectedText();
         }
 
-        while((textBlock.at(begin + 1) == '\'' || textBlock.at(begin + 1) == '-') && (begin + 1) < pos)
-        {
-            begin += 1;
-        }
-        while((textBlock.at(end - 1) == '\'' || textBlock.at(end - 1) == '-') && (end - 1) > pos)
-        {
-            end -= 1;
-        }
-
-        if(begin == end)
-        {
-            begin -= 1;
-        }
-
-        cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, pos - begin - 1);
-        cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, end - begin - 1);
-
-        cursor.deleteChar();
         cursor.insertText(replacement);
     }
 }

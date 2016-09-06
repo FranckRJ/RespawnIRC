@@ -18,6 +18,8 @@ class spellTextEditClass : public QTextEdit
 public:
     explicit spellTextEditClass(QWidget* parent = 0);
     ~spellTextEditClass();
+    void enableSpellChecking(bool newVal);
+    void searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos);
     QStringList getWordPropositions(const QString word);
     bool setDic(const QString newSpellDic);
     QString getWordUnderCursor(QPoint cursorPos);
@@ -38,6 +40,7 @@ private:
     QTextCodec* codecUsed = nullptr;
     QStringList addedWords;
     QPoint lastPos;
+    bool spellCheckingIsEnabled = false;
 };
 
 #endif

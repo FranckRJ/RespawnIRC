@@ -27,8 +27,7 @@ private:
     QString spellDic;
     QString spellEncoding;
     Hunspell* spellChecker = nullptr;
-    bool spellCheckActive = false;
-    bool spellerError = true;
+    bool spellCheckingIsEnabled = false;
     QTextCharFormat spellCheckFormat;
     QTextCodec* codec = nullptr;
 };
