@@ -20,6 +20,7 @@ struct settingsForMessageParsingStruct
 {
     infoForMessageParsingStruct infoForMessageParsing;
     bool loadTwoLastPage;
+    int numberOfPagesToLoad;
     int timerTime;
     int timeoutTime;
     bool downloadMissingStickers;
@@ -65,7 +66,7 @@ private:
     bool needToGetMessages = false;
     bool retrievesMessage = false;
     bool needToSetCookies = false;
-    int numberOfPagesToLoad;
+    int numberOfPagesToDownload;
     int idOfLastMessage = 0;
 };
 

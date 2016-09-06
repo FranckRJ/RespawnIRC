@@ -87,6 +87,7 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     vboxAdvanced->addWidget(makeNewCheckBox("Charger les deux dernières pages", "loadTwoLastPage"));
     vboxAdvanced->addWidget(makeNewCheckBox("Ignorer les erreurs réseau", "ignoreNetworkError"));
     vboxAdvanced->addLayout(makeNewSpinBox("Temps en secondes avant le timeout des requêtes", "timeoutInSecond"));
+    vboxAdvanced->addLayout(makeNewSpinBox("Nombre d'erreurs avant avertissement", "numberOfErrorsBeforeWarning"));
     vboxAdvanced->addLayout(makeNewSpinBox("Taux de rafraichissement des topics", "updateTopicTime"));
     vboxAdvanced->addLayout(makeNewSpinBox("Nombre maximal de quotes imbriquées", "maxNbOfQuotes"));
     vboxAdvanced->addStretch(1);
@@ -104,7 +105,7 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
         QGroupBox* groupBoxExpert = new QGroupBox("Expert", this);
 
         QVBoxLayout* vboxExpert = new QVBoxLayout();
-        vboxExpert->addLayout(makeNewSpinBox("Nombre d'erreurs avant avertissement", "numberOfErrorsBeforeWarning"));
+        vboxExpert->addLayout(makeNewSpinBox("Nombre de pages à charger", "numberOfPagesToLoad"));
         vboxExpert->addStretch(1);
         groupBoxExpert->setLayout(vboxExpert);
 

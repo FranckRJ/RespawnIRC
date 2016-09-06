@@ -85,7 +85,11 @@ void getTopicMessagesClass::settingsChanged(settingsForMessageParsingStruct newS
 {
     settingsForMessageParsing = newSettings;
 
-    numberOfPagesToLoad = (settingsForMessageParsing.loadTwoLastPage == true ? 2 : 1);
+    numberOfPagesToDownload = (settingsForMessageParsing.loadTwoLastPage == true ? 2 : 1);
+    if(settingsForMessageParsing.numberOfPagesToLoad != -1)
+    {
+        numberOfPagesToDownload = settingsForMessageParsing.numberOfPagesToLoad;
+    }
 
     timerForGetMessage->setInterval(settingsForMessageParsing.timerTime);
 
@@ -158,7 +162,7 @@ void getTopicMessagesClass::getMessages()
         currentPageToLoad = topicLink;
         linkHasChanged = false;
         emit newMessageStatus("Récupération des messages en cours...");
-        listOfReplys.fill(nullptr, numberOfPagesToLoad);
+        listOfReplys.fill(nullptr, numberOfPagesToDownload);
         listOfTimeoutForReplys.fill(nullptr, listOfReplys.size());
 
         for(int i = 0; i < listOfReplys.size(); ++i)

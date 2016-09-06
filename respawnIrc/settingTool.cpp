@@ -83,6 +83,9 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].value = 3;
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].minValue = 1;
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].maxValue = 10;
+    listOfDefaultIntOption["numberOfPagesToLoad"].value = -1;
+    listOfDefaultIntOption["numberOfPagesToLoad"].minValue = -1;
+    listOfDefaultIntOption["numberOfPagesToLoad"].maxValue = 5;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 
