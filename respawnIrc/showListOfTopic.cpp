@@ -77,6 +77,7 @@ void showListOfTopicClass::updateSettings()
 {
     showNumberOfMessages = settingToolClass::getThisBoolOption("showNumberOfMessagesInTopicList");
     cutLongTopicName = settingToolClass::getThisBoolOption("cutLongTopicNameInTopicList");
+    timerForGetList.setInterval(settingToolClass::getThisIntOption("updateTopicListTime").value);
     setLoadNeeded(settingToolClass::getThisBoolOption("showListOfTopic"));
     timeoutForReply.updateTimeoutTime();
 }

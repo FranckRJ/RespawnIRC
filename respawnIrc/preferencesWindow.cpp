@@ -35,7 +35,8 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     realMainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     mainWidget->addTab(createWidgetForMainTab(), "Général");
-    mainWidget->addTab(createWidgetForMessageAndTopicStyleTab(), "Style des messages / topics");
+    mainWidget->addTab(createWidgetForMessageStyleTab(), "Style des messages");
+    mainWidget->addTab(createWidgetForTopicListTab(), "Liste des topics");
     mainWidget->addTab(createWidgetForImageTab(), "Image");
 
     setLayout(realMainLayout);
@@ -121,17 +122,9 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     return mainTabWidget;
 }
 
-QWidget* preferenceWindowClass::createWidgetForMessageAndTopicStyleTab()
+QWidget* preferenceWindowClass::createWidgetForMessageStyleTab()
 {
     QWidget* mainTabWidget = new QWidget(this);
-
-    QGroupBox* groupBoxTopicStyle = new QGroupBox("Style des topics", this);
-
-    QVBoxLayout* vboxTopicStyle = new QVBoxLayout();
-    vboxTopicStyle->addWidget(makeNewCheckBox("Afficher le nombre de réponses dans la liste des topics", "showNumberOfMessagesInTopicList"));
-    vboxTopicStyle->addWidget(makeNewCheckBox("Couper les longs noms de topics dans la liste des topics", "cutLongTopicNameInTopicList"));
-    vboxTopicStyle->addStretch(1);
-    groupBoxTopicStyle->setLayout(vboxTopicStyle);
 
     QGroupBox* groupBoxMessageButtons = new QGroupBox("Bouton des messages", this);
 
@@ -156,9 +149,8 @@ QWidget* preferenceWindowClass::createWidgetForMessageAndTopicStyleTab()
     groupBoxMessageStyle->setLayout(vboxMessageStyle);
 
     QGridLayout* mainLayout = new QGridLayout();
-    mainLayout->addWidget(groupBoxTopicStyle, 0, 0, 1, 2);
-    mainLayout->addWidget(groupBoxMessageButtons, 1, 0);
-    mainLayout->addWidget(groupBoxMessageStyle, 1, 1);
+    mainLayout->addWidget(groupBoxMessageButtons, 0, 0);
+    mainLayout->addWidget(groupBoxMessageStyle, 0, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     if(expertMode == true)
@@ -170,8 +162,41 @@ QWidget* preferenceWindowClass::createWidgetForMessageAndTopicStyleTab()
         vboxExpert->addStretch(1);
         groupBoxExpert->setLayout(vboxExpert);
 
-        mainLayout->addWidget(groupBoxExpert, 2, 0, 1, 2);
+        mainLayout->addWidget(groupBoxExpert, 1, 0, 1, 2);
     }
+
+    QVBoxLayout* realMainLayout = new QVBoxLayout();
+    realMainLayout->addLayout(mainLayout);
+    realMainLayout->addStretch(1);
+
+    mainTabWidget->setLayout(realMainLayout);
+
+    return mainTabWidget;
+}
+
+QWidget* preferenceWindowClass::createWidgetForTopicListTab()
+{
+    QWidget* mainTabWidget = new QWidget(this);
+
+    QGroupBox* groupBoxGeneral = new QGroupBox("Général", this);
+
+    QVBoxLayout* vboxGeneral = new QVBoxLayout();
+    vboxGeneral->addLayout(makeNewSpinBox("Taux de rafraichissement de la liste des topics", "updateTopicListTime"));
+    vboxGeneral->addStretch(1);
+    groupBoxGeneral->setLayout(vboxGeneral);
+
+    QGroupBox* groupBoxTopicStyle = new QGroupBox("Style des topics", this);
+
+    QVBoxLayout* vboxTopicStyle = new QVBoxLayout();
+    vboxTopicStyle->addWidget(makeNewCheckBox("Afficher le nombre de réponses dans la liste des topics", "showNumberOfMessagesInTopicList"));
+    vboxTopicStyle->addWidget(makeNewCheckBox("Couper les longs noms de topics dans la liste des topics", "cutLongTopicNameInTopicList"));
+    vboxTopicStyle->addStretch(1);
+    groupBoxTopicStyle->setLayout(vboxTopicStyle);
+
+    QGridLayout* mainLayout = new QGridLayout();
+    mainLayout->addWidget(groupBoxGeneral, 0, 0);
+    mainLayout->addWidget(groupBoxTopicStyle, 1, 0);
+    mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     QVBoxLayout* realMainLayout = new QVBoxLayout();
     realMainLayout->addLayout(mainLayout);
