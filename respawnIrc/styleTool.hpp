@@ -9,6 +9,7 @@ struct modelInfoStruct
     QString blacklistModel;
     QString editModel;
     QString deleteModel;
+    QString signatureModel;
     QString normalDateColor;
     QString editDateColor;
     QString normalPseudoColor;

@@ -24,6 +24,7 @@ struct messageStruct
     QString wholeDate;
     QString message;
     QString lastTimeEdit;
+    QString signature;
     bool operator<(const messageStruct& otherStruct) const
     {
         return (idOfMessage < otherStruct.idOfMessage);

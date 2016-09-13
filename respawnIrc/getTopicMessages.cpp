@@ -341,6 +341,8 @@ void getTopicMessagesClass::analyzeMessages()
                 tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, settingsForMessageParsing.infoForMessageParsing,
                                                                    (settingsForMessageParsing.downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
                                                                    (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
+                tmpMsg.signature = parsingToolClass::parsingMessages(tmpMsg.signature, settingsForMessageParsing.infoForMessageParsing, nullptr,
+                                                                     (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
 
                 listOfNewMessages.push_front(tmpMsg);
             }
@@ -388,6 +390,8 @@ void getTopicMessagesClass::analyzeMessages()
                 currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, settingsForMessageParsing.infoForMessageParsing,
                                                                            (settingsForMessageParsing.downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
                                                                            (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
+                currentMessage.signature = parsingToolClass::parsingMessages(currentMessage.signature, settingsForMessageParsing.infoForMessageParsing, nullptr,
+                                                                             (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
                 listOfNewMessages.push_back(currentMessage);
 
                 listOfEdit[currentMessage.idOfMessage] = currentMessage.lastTimeEdit;

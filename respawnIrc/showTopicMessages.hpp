@@ -106,6 +106,7 @@ private:
     bool showBlacklistButton;
     bool showEditButton;
     bool showDeleteButton;
+    bool showSignatures;
     bool ignoreNetworkError;
     bool firstTimeGetMessages = true;
     bool errorMode = false;

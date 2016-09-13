@@ -192,6 +192,7 @@ void showTopicMessagesClass::updateSettingInfo()
     showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
     showEditButton = settingToolClass::getThisBoolOption("showEditButton");
     showDeleteButton = settingToolClass::getThisBoolOption("showDeleteButton");
+    showSignatures = settingToolClass::getThisBoolOption("showSignatures");
     ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
     colorModoAndAdminPseudo = settingToolClass::getThisBoolOption("colorModoAndAdminPseudo");
     colorPEMT = settingToolClass::getThisBoolOption("colorPEMT");
@@ -630,6 +631,11 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             newMessageToAppend.replace("<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel);
         }
 
+        if(showSignatures == true && currentMessage.signature.isEmpty() == false)
+        {
+            newMessageToAppend.replace("<%SIGNATURE_MODEL%>", baseModelInfo.signatureModel);
+        }
+
         if(colorUserPseudoInMessages == true && pseudoOfUser.isEmpty() == false)
         {
             parsingToolClass::replaceWithCapNumber(currentMessage.message, expForColorPseudo, 0,
@@ -644,6 +650,11 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
         newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
         newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", currentMessage.pseudoInfo.pseudoName);
         newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", currentMessage.message);
+
+        if(showSignatures == true && currentMessage.signature.isEmpty() == false)
+        {
+            newMessageToAppend.replace("<%SIGNATURE_SIGNATURE%>", currentMessage.signature);
+        }
 
         if(appendHrAtEndOfFirstMessage == true)
         {

@@ -148,9 +148,17 @@ QWidget* preferenceWindowClass::createWidgetForMessageStyleTab()
     vboxMessageStyle->addStretch(1);
     groupBoxMessageStyle->setLayout(vboxMessageStyle);
 
+    QGroupBox* groupBoxThemesSettings = new QGroupBox("Options spécifiques aux thèmes", this);
+
+    QVBoxLayout* vboxThemesSettings = new QVBoxLayout();
+    vboxThemesSettings->addWidget(makeNewCheckBox("Afficher les signatures (si activé sur JVC)", "showSignatures"));
+    vboxThemesSettings->addStretch(1);
+    groupBoxThemesSettings->setLayout(vboxThemesSettings);
+
     QGridLayout* mainLayout = new QGridLayout();
     mainLayout->addWidget(groupBoxMessageButtons, 0, 0);
     mainLayout->addWidget(groupBoxMessageStyle, 0, 1);
+    mainLayout->addWidget(groupBoxThemesSettings, 1, 0, 1, 2);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     if(expertMode == true)
@@ -162,7 +170,7 @@ QWidget* preferenceWindowClass::createWidgetForMessageStyleTab()
         vboxExpert->addStretch(1);
         groupBoxExpert->setLayout(vboxExpert);
 
-        mainLayout->addWidget(groupBoxExpert, 1, 0, 1, 2);
+        mainLayout->addWidget(groupBoxExpert, 2, 0, 1, 2);
     }
 
     QVBoxLayout* realMainLayout = new QVBoxLayout();

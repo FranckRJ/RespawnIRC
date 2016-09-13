@@ -42,7 +42,7 @@ QString styleToolClass::getModel(QString themeName)
         return "<table><tr><td><%BUTTON_QUOTE%><%BUTTON_BLACKLIST%><%BUTTON_EDIT%><%BUTTON_DELETE%>[<a style=\"color: <%DATE_COLOR%>;text-decoration: none\" href=\"http://www.jeuxvideo.com/"
                 "<%PSEUDO_LOWER%>/forums/message/<%ID_MESSAGE%>\"><%DATE_MESSAGE%></a>] &lt;<a href=\"http://www.jeuxvideo.com/profil/"
                 "<%PSEUDO_LOWER%>?mode=infos\"><span style=\"color: <%PSEUDO_COLOR%>;text-decoration: none\"><%PSEUDO_PSEUDO%>"
-                "</span></a>&gt;</td><td><%MESSAGE_MESSAGE%></td></tr></table>";
+                "</span></a>&gt;</td><td><%MESSAGE_MESSAGE%><%SIGNATURE_MODEL%></td></tr></table>";
     }
 }
 
@@ -77,6 +77,8 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
 
     listOfInfos.push_back("green"); //edit message color
 
+    listOfInfos.push_back("<hr><span style=\"font-size: 1px;\"><br></span><i><%SIGNATURE_SIGNATURE%></i>");
+
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -86,7 +88,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
         }
     }
 
-    while(listOfLine.size() < 18)
+    while(listOfLine.size() < 19)
     {
         listOfLine.push_back(listOfInfos.at(listOfLine.size()));
     }
@@ -114,6 +116,8 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     modelInfo.deleteModel = listOfLine.at(16);
 
     colorInfoForMessageAndOther.editMessageColor = listOfLine.at(17);
+
+    modelInfo.signatureModel = listOfLine.at(18);
 
     return modelInfo;
 }

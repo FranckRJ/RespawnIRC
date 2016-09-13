@@ -38,6 +38,7 @@ namespace
     const QRegularExpression expForDate("<div class=\"bloc-date-msg\">([^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*))", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">((.*?)(?=<div class=\"info-edition-msg\">)|(.*?)(?=<div class=\"signature-msg)|(.*))", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForSignature("<div class=\"signature-msg[^\"]*\">(.*?)</div>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForForumName("<title>(.*?)- jeuxvideo.com</title>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -283,6 +284,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
         listOfMessages.back().wholeDate = expForDate.match(thisMessage).captured(2);
         listOfMessages.back().message = expForMessage.match(thisMessage).captured(1);
         listOfMessages.back().lastTimeEdit = expForEdit.match(thisMessage).captured(1);
+        listOfMessages.back().signature = expForSignature.match(thisMessage).captured(1);
 
         if(listOfMessages.back().pseudoInfo.pseudoName.isEmpty() == true)
         {
