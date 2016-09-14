@@ -78,6 +78,15 @@ void spellTextEditClass::searchWordBoundaryPosition(QString textBlock, int check
         endPos = textBlock.size();
     }
 
+    if(beginPos + 1 >= textBlock.size())
+    {
+        beginPos -= 1;
+    }
+    if(endPos - 1 < 0)
+    {
+        endPos += 1;
+    }
+
     while((textBlock.at(beginPos + 1) == '\'' || textBlock.at(beginPos + 1) == '-') &&
           (beginPos + 1) <= endPos && (beginPos + 2) < textBlock.size())
     {
