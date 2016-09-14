@@ -15,7 +15,7 @@ class preferenceWindowClass : public QDialog
 public:
     explicit preferenceWindowClass(QWidget* parent);
     QWidget* createWidgetForMainTab();
-    QWidget* createWidgetForMessageStyleTab();
+    QWidget* createWidgetForMessagesTab();
     QWidget* createWidgetForTopicListTab();
     QWidget* createWidgetForImageTab();
     QCheckBox* makeNewCheckBox(QString messageInfo, QString boxNameValue);

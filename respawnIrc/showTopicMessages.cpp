@@ -25,6 +25,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     messagesBox.setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
 
     updateSettingInfo();
+    currentRealTimeEdit = realRealTimeEdit;
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
     listOfColorPseudo = newListOfColorPseudo;
     firstMessageOfTopic.isFirstMessage = false;
@@ -202,6 +203,7 @@ void showTopicMessagesClass::updateSettingInfo()
     warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
     numberOfErrorsBeforeWarning = settingToolClass::getThisIntOption("numberOfErrorsBeforeWarning").value;
     warnOnFirstTime = settingToolClass::getThisBoolOption("warnOnFirstTime");
+    realRealTimeEdit = settingToolClass::getThisBoolOption("realTimeEdit");
 
     timeoutForEditInfo.updateTimeoutTime();
     timeoutForQuoteInfo.updateTimeoutTime();
@@ -248,11 +250,14 @@ void showTopicMessagesClass::addMessageToTheEndOfMessagesBox(const QString& newM
 
     messagesBox.append(newMessage);
 
-    newInfos.cursor = messagesBox.textCursor();
-    newInfos.messageSize = messagesBox.document()->characterCount() - baseSizeOfDocument - 1;
-    newInfos.realPosition = newInfos.cursor.position();
+    if(currentRealTimeEdit == true)
+    {
+        newInfos.cursor = messagesBox.textCursor();
+        newInfos.messageSize = messagesBox.document()->characterCount() - baseSizeOfDocument - 1;
+        newInfos.realPosition = newInfos.cursor.position();
 
-    listOfInfosForEdit[messageID] = newInfos;
+        listOfInfosForEdit[messageID] = newInfos;
+    }
 }
 
 void showTopicMessagesClass::editThisMessageOfMessagesBox(const QString& newMessage, int messageID)
@@ -296,6 +301,8 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     messagesBox.clear();
     topicName.clear();
     lastDate.clear();
+    listOfInfosForEdit.clear();
+    currentRealTimeEdit = realRealTimeEdit;
     firstMessageOfTopic.isFirstMessage = false;
     topicLinkLastPage = newTopic;
     topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopic);
@@ -706,7 +713,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             appendHrAtEndOfFirstMessage = false;
         }
 
-        if(currentMessage.isAnEdit == false)
+        if(currentMessage.isAnEdit == false || currentRealTimeEdit == false)
         {
             addMessageToTheEndOfMessagesBox(newMessageToAppend, currentMessage.idOfMessage);
         }

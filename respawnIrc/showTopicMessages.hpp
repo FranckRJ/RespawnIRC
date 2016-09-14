@@ -130,6 +130,8 @@ private:
     bool getFirstMessageOfTopic;
     bool warnWhenEdit;
     bool warnOnFirstTime;
+    bool realRealTimeEdit;
+    bool currentRealTimeEdit;
     int currentErrorStreak = 0;
     int idOfLastMessageOfUser = 0;
     int oldIdOfLastMessageOfUser = 0;

@@ -51,6 +51,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["expertMode"] = false;
     listOfDefaultBoolOption["warnOnFirstTime"] = true;
     listOfDefaultBoolOption["showSignatures"] = false;
+    listOfDefaultBoolOption["realTimeEdit"] = false;
     listOfDefaultIntOption["updateTopicTime"].value = 3500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 250;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;

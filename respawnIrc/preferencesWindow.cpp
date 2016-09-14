@@ -35,7 +35,7 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     realMainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     mainWidget->addTab(createWidgetForMainTab(), "Général");
-    mainWidget->addTab(createWidgetForMessageStyleTab(), "Style des messages");
+    mainWidget->addTab(createWidgetForMessagesTab(), "Messages");
     mainWidget->addTab(createWidgetForTopicListTab(), "Liste des topics");
     mainWidget->addTab(createWidgetForImageTab(), "Image");
 
@@ -122,7 +122,7 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     return mainTabWidget;
 }
 
-QWidget* preferenceWindowClass::createWidgetForMessageStyleTab()
+QWidget* preferenceWindowClass::createWidgetForMessagesTab()
 {
     QWidget* mainTabWidget = new QWidget(this);
 
@@ -143,10 +143,17 @@ QWidget* preferenceWindowClass::createWidgetForMessageStyleTab()
     vboxMessageStyle->addWidget(makeNewCheckBox("Colorer les PEMT", "colorPEMT"));
     vboxMessageStyle->addWidget(makeNewCheckBox("Colorer votre pseudo dans les messages", "colorUserPseudoInMessages"));
     vboxMessageStyle->addWidget(makeNewCheckBox("Améliorer les citations", "betterQuote"));
-    vboxMessageStyle->addWidget(makeNewCheckBox("Récupérer le premier message du topic", "getFirstMessageOfTopic"));
-    vboxMessageStyle->addLayout(makeNewSpinBox("Nombre de messages affichés au premier chargement", "numberOfMessageShowedFirstTime"));
     vboxMessageStyle->addStretch(1);
     groupBoxMessageStyle->setLayout(vboxMessageStyle);
+
+    QGroupBox* groupBoxMessageBehavior = new QGroupBox("Comportement des messages", this);
+
+    QVBoxLayout* vboxMessageBehavior = new QVBoxLayout();
+    vboxMessageBehavior->addWidget(makeNewCheckBox("Editer les messages en temps réel", "realTimeEdit"));
+    vboxMessageBehavior->addWidget(makeNewCheckBox("Récupérer le premier message du topic", "getFirstMessageOfTopic"));
+    vboxMessageBehavior->addLayout(makeNewSpinBox("Nombre de messages affichés au premier chargement", "numberOfMessageShowedFirstTime"));
+    vboxMessageBehavior->addStretch(1);
+    groupBoxMessageBehavior->setLayout(vboxMessageBehavior);
 
     QGroupBox* groupBoxThemesSettings = new QGroupBox("Options spécifiques aux thèmes", this);
 
@@ -158,7 +165,8 @@ QWidget* preferenceWindowClass::createWidgetForMessageStyleTab()
     QGridLayout* mainLayout = new QGridLayout();
     mainLayout->addWidget(groupBoxMessageButtons, 0, 0);
     mainLayout->addWidget(groupBoxMessageStyle, 0, 1);
-    mainLayout->addWidget(groupBoxThemesSettings, 1, 0, 1, 2);
+    mainLayout->addWidget(groupBoxThemesSettings, 1, 0);
+    mainLayout->addWidget(groupBoxMessageBehavior, 1, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     if(expertMode == true)

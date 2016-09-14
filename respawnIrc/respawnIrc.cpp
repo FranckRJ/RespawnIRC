@@ -543,6 +543,7 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     QMap<QString, bool>::iterator boolIte;
     QMap<QString, int>::iterator intIte;
     bool sendMessageAlreadyUpdated = false;
+    bool reloadForAllTopicNeeded = false;
 
     for(boolIte = newBoolOptions.begin(); boolIte != newBoolOptions.end(); ++boolIte)
     {
@@ -591,6 +592,10 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
         }
         newBoolOptions.erase(boolIte);
     }
+    if((boolIte = newBoolOptions.find("realTimeEdit")) != newBoolOptions.end())
+    {
+        reloadForAllTopicNeeded = true;
+    }
 
     if((intIte = newIntOptions.find("textBoxSize")) != newIntOptions.end())
     {
@@ -610,6 +615,10 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     if(newBoolOptions.isEmpty() == false || newIntOptions.isEmpty() == false)
     {
         updateSettingInfoForList();
+        if(reloadForAllTopicNeeded == true)
+        {
+            reloadAllTopic();
+        }
     }
 }
 
