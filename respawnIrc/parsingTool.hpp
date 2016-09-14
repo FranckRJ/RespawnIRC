@@ -16,7 +16,7 @@ struct pseudoInfoStruct
 
 struct messageStruct
 {
-    int idOfMessage;
+    long idOfMessage;
     bool isAnEdit = false;
     bool isFirstMessage = false;
     pseudoInfoStruct pseudoInfo;

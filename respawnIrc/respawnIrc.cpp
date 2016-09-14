@@ -847,7 +847,7 @@ void respawnIrcClass::editLastMessage()
 }
 
 
-void respawnIrcClass::setEditMessage(int idOfMessageToEdit, bool useMessageEdit)
+void respawnIrcClass::setEditMessage(long idOfMessageToEdit, bool useMessageEdit)
 {
     if(sendMessages.getIsSending() == false)
     {

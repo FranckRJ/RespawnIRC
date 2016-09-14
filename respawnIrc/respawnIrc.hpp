@@ -83,7 +83,7 @@ public slots:
     void currentTabChanged(int newIndex);
     void messageHaveToBePosted();
     void editLastMessage();
-    void setEditMessage(int idOfMessageToEdit = 0, bool useMessageEdit = true);
+    void setEditMessage(long idOfMessageToEdit = 0, bool useMessageEdit = true);
     void downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck);
     void downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck);
     void updateImagesIfNeeded();

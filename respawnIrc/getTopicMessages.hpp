@@ -55,7 +55,7 @@ private:
     QVector<autoTimeoutReplyClass*> listOfTimeoutForReplys;
     QVector<QNetworkReply*> listOfReplys;
     QList<QNetworkCookie> currentCookieList;
-    QMap<int, QString> listOfEdit;
+    QMap<long, QString> listOfEdit;
     QTimer* timerForGetMessage;
     QString topicLink;
     QString pseudoOfUser;
@@ -66,8 +66,8 @@ private:
     bool needToGetMessages = false;
     bool retrievesMessage = false;
     bool needToSetCookies = false;
+    long idOfLastMessage = 0;
     int numberOfPagesToDownload;
-    int idOfLastMessage = 0;
 };
 
 #endif

@@ -367,7 +367,7 @@ void getTopicMessagesClass::analyzeMessages()
 
         for(messageStruct& currentMessage : listOfEntireMessages)
         {
-            QMap<int, QString>::const_iterator listOfEditIterator = listOfEdit.find(currentMessage.idOfMessage);
+            QMap<long, QString>::const_iterator listOfEditIterator = listOfEdit.find(currentMessage.idOfMessage);
             QString valueOfEditIte = currentMessage.lastTimeEdit;
 
             if(listOfEditIterator != listOfEdit.end())

@@ -243,7 +243,7 @@ void showTopicMessagesClass::relayoutDocumentHack()
     messagesBox.setLineWrapColumnOrWidth(messagesBox.lineWrapColumnOrWidth());
 }
 
-void showTopicMessagesClass::addMessageToTheEndOfMessagesBox(const QString& newMessage, int messageID)
+void showTopicMessagesClass::addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID)
 {
     messagePositionInfoStruct newInfos;
     int baseSizeOfDocument = messagesBox.document()->characterCount();
@@ -260,9 +260,9 @@ void showTopicMessagesClass::addMessageToTheEndOfMessagesBox(const QString& newM
     }
 }
 
-void showTopicMessagesClass::editThisMessageOfMessagesBox(const QString& newMessage, int messageID)
+void showTopicMessagesClass::editThisMessageOfMessagesBox(const QString& newMessage, long messageID)
 {
-    QMap<int, messagePositionInfoStruct>::iterator ite = listOfInfosForEdit.find(messageID);
+    QMap<long, messagePositionInfoStruct>::iterator ite = listOfInfosForEdit.find(messageID);
 
     if(ite == listOfInfosForEdit.end())
     {
@@ -333,7 +333,7 @@ void showTopicMessagesClass::linkClicked(const QUrl& link)
     }
     else if(linkInString.startsWith("edit"))
     {
-        emit editThisMessage(linkInString.remove(0, linkInString.indexOf(':') + 1).toInt(), true);
+        emit editThisMessage(linkInString.remove(0, linkInString.indexOf(':') + 1).toLong(), true);
     }
     else if(linkInString.startsWith("delete"))
     {
@@ -346,7 +346,7 @@ void showTopicMessagesClass::linkClicked(const QUrl& link)
     }
 }
 
-bool showTopicMessagesClass::getEditInfo(int idOfMessageToEdit, bool useMessageEdit)
+bool showTopicMessagesClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
 {
     if(networkManager == nullptr)
     {

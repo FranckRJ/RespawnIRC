@@ -52,13 +52,13 @@ public:
     void updateSettingInfo();
     void addSearchPath(QString newSearchPath);
     void relayoutDocumentHack();
-    void addMessageToTheEndOfMessagesBox(const QString& newMessage, int messageID);
-    void editThisMessageOfMessagesBox(const QString& newMessage, int messageID);
+    void addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID);
+    void editThisMessageOfMessagesBox(const QString& newMessage, long messageID);
 public slots:
     void setNewTheme(QString newThemeName);
     void setNewTopic(QString newTopic);
     void linkClicked(const QUrl& link);
-    bool getEditInfo(int idOfMessageToEdit = 0, bool useMessageEdit = true);
+    bool getEditInfo(long idOfMessageToEdit = 0, bool useMessageEdit = true);
     void getQuoteInfo(QString idOfMessageQuoted);
     void deleteMessage(QString idOfMessageDeleted);
     void analyzeEditInfo();
@@ -74,10 +74,10 @@ public slots:
 signals:
     void quoteThisMessage(QString messageToQuote);
     void addToBlacklist(QString pseudoToBlacklist);
-    void editThisMessage(int idOfMessageEdit, bool useMessageEdit);
+    void editThisMessage(long idOfMessageEdit, bool useMessageEdit);
     void newMessageStatus();
     void newNumberOfConnectedAndMP();
-    void setEditInfo(int idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
+    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
     void newCookiesHaveToBeSet();
@@ -101,7 +101,7 @@ private:
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;
     QList<pseudoWithColorStruct>* listOfColorPseudo;
-    QMap<int, messagePositionInfoStruct> listOfInfosForEdit;
+    QMap<long, messagePositionInfoStruct> listOfInfosForEdit;
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;
     QString topicLinkFirstPage;
@@ -132,9 +132,9 @@ private:
     bool warnOnFirstTime;
     bool realRealTimeEdit;
     bool currentRealTimeEdit;
+    long idOfLastMessageOfUser = 0;
+    long oldIdOfLastMessageOfUser = 0;
     int currentErrorStreak = 0;
-    int idOfLastMessageOfUser = 0;
-    int oldIdOfLastMessageOfUser = 0;
     int numberOfMessageShowedFirstTime;
     int numberOfErrorsBeforeWarning;
     int topicNameMaxSize = 45;

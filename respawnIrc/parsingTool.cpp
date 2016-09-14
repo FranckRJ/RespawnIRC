@@ -269,7 +269,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
 {
     QList<QString> listOfEntireMessage;
     QList<messageStruct> listOfMessages;
-    int lastIdOfMessage = 0;
+    long lastIdOfMessage = 0;
     bool sortNeeded = false;
 
     listOfEntireMessage = getListOfThisCapNumber(source, expForEntireMessage, 1, false);
@@ -277,7 +277,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
     for(const QString& thisMessage : listOfEntireMessage)
     {
         listOfMessages.push_back(messageStruct());
-        listOfMessages.back().idOfMessage = expForMessageID.match(thisMessage).captured(1).toInt();
+        listOfMessages.back().idOfMessage = expForMessageID.match(thisMessage).captured(1).toLong();
         listOfMessages.back().pseudoInfo.pseudoName = expForPseudo.match(thisMessage).captured(2);
         listOfMessages.back().pseudoInfo.pseudoType = expForPseudo.match(thisMessage).captured(1);
         listOfMessages.back().date = expForDate.match(thisMessage).captured(3);
