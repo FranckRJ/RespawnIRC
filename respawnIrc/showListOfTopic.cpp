@@ -203,7 +203,7 @@ void showListOfTopicClass::clickedOnLink(QModelIndex index)
     }
 }
 
-void showListOfTopicClass::createContextMenu(const QPoint &thisPoint)
+void showListOfTopicClass::createContextMenu(const QPoint& thisPoint)
 {
     QModelIndex indexSelected = listViewOfTopic.indexAt(thisPoint);
     if(indexSelected.row() >= 1)

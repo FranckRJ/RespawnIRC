@@ -8,17 +8,26 @@
 #include <QString>
 #include <QNetworkCookie>
 #include <QList>
+#include <QMap>
 #include <QPair>
 #include <QUrl>
 #include <QStringList>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QTextCursor>
 
 #include "colorPseudoListWindow.hpp"
 #include "getTopicMessages.hpp"
 #include "autoTimeoutReply.hpp"
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
+
+struct messagePositionInfoStruct
+{
+    QTextCursor cursor;
+    int messageSize = 0;
+    int realPosition;
+};
 
 class showTopicMessagesClass : public QWidget
 {
@@ -43,6 +52,8 @@ public:
     void updateSettingInfo();
     void addSearchPath(QString newSearchPath);
     void relayoutDocumentHack();
+    void addMessageToTheEndOfMessagesBox(const QString& newMessage, int messageID);
+    void editThisMessageOfMessagesBox(const QString& newMessage, int messageID);
 public slots:
     void setNewTheme(QString newThemeName);
     void setNewTopic(QString newTopic);
@@ -90,6 +101,7 @@ private:
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;
     QList<pseudoWithColorStruct>* listOfColorPseudo;
+    QMap<int, messagePositionInfoStruct> listOfInfosForEdit;
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;
     QString topicLinkFirstPage;

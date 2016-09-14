@@ -15,7 +15,7 @@ public:
     explicit selectStickerWindowClass(QWidget* parent);
     void loadListOfStickers();
 public slots:
-    void linkClicked(const QUrl &link);
+    void linkClicked(const QUrl& link);
     void createContextMenu(const QPoint& thisPoint);
     void scrollBarSizeChanged();
 signals:

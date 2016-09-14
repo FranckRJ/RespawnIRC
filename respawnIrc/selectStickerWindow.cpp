@@ -49,14 +49,14 @@ void selectStickerWindowClass::loadListOfStickers()
     }
 }
 
-void selectStickerWindowClass::linkClicked(const QUrl &link)
+void selectStickerWindowClass::linkClicked(const QUrl& link)
 {
     QString linkInString = link.toDisplayString();
 
     emit addThisSticker("[[sticker:p/" + linkInString.remove(0, linkInString.indexOf(':') + 1) + "]]");
 }
 
-void selectStickerWindowClass::createContextMenu(const QPoint &thisPoint)
+void selectStickerWindowClass::createContextMenu(const QPoint& thisPoint)
 {
     (void)thisPoint;
     close();

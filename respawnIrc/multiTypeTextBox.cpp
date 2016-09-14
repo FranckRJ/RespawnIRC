@@ -20,8 +20,8 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
 
     setLayout(&layout);
 
-    QObject::connect(&lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnIsPressed);
-    QObject::connect(&textEdit, &spellTextEditClass::addWord, highlighter, &highlighterClass::addWordToDic);
+    connect(&lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnIsPressed);
+    connect(&textEdit, &spellTextEditClass::addWord, highlighter, &highlighterClass::addWordToDic);
 }
 
 void multiTypeTextBoxClass::clear()

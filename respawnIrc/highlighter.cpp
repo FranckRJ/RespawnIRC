@@ -97,7 +97,7 @@ void highlighterClass::highlightBlock(const QString& text)
     spellCheck(text);
 }
 
-void highlighterClass::spellCheck(const QString &text)
+void highlighterClass::spellCheck(const QString& text)
 {
     if(spellChecker != nullptr && codec != nullptr && spellCheckingIsEnabled == true)
     {
