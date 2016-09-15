@@ -8,13 +8,11 @@
 #include <QString>
 #include <QNetworkCookie>
 #include <QList>
-#include <QMap>
 #include <QPair>
 #include <QUrl>
 #include <QStringList>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QTextCursor>
 
 #include "colorPseudoListWindow.hpp"
 #include "getTopicMessages.hpp"
@@ -24,7 +22,6 @@
 
 struct messagePositionInfoStruct
 {
-    QTextCursor cursor;
     int messageSize = 0;
     int realPosition;
 };
@@ -101,7 +98,7 @@ private:
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;
     QList<pseudoWithColorStruct>* listOfColorPseudo;
-    QMap<long, messagePositionInfoStruct> listOfInfosForEdit;
+    QList<QPair<long, messagePositionInfoStruct> > listOfInfosForEdit;
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;
     QString topicLinkFirstPage;

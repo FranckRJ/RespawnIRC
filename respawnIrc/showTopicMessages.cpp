@@ -6,6 +6,8 @@
 #include <QNetworkRequest>
 #include <QScrollBar>
 #include <QMetaObject>
+#include <QMutableListIterator>
+#include <QTextCursor>
 
 #include "showTopicMessages.hpp"
 #include "settingTool.hpp"
@@ -252,19 +254,29 @@ void showTopicMessagesClass::addMessageToTheEndOfMessagesBox(const QString& newM
 
     if(currentRealTimeEdit == true)
     {
-        newInfos.cursor = messagesBox.textCursor();
-        newInfos.messageSize = messagesBox.document()->characterCount() - baseSizeOfDocument - 1;
-        newInfos.realPosition = newInfos.cursor.position();
+        newInfos.realPosition = messagesBox.document()->characterCount() - 1;
+        newInfos.messageSize = newInfos.realPosition - baseSizeOfDocument;
 
-        listOfInfosForEdit[messageID] = newInfos;
+        listOfInfosForEdit.push_back(QPair<long, messagePositionInfoStruct>(messageID, newInfos));
     }
 }
 
 void showTopicMessagesClass::editThisMessageOfMessagesBox(const QString& newMessage, long messageID)
 {
-    QMap<long, messagePositionInfoStruct>::iterator ite = listOfInfosForEdit.find(messageID);
+    QMutableListIterator<QPair<long, messagePositionInfoStruct> > ite(listOfInfosForEdit);
 
-    if(ite == listOfInfosForEdit.end())
+    ite.toBack();
+
+    while(ite.hasPrevious() == true)
+    {
+        if(ite.peekPrevious().first == messageID)
+        {
+            break;
+        }
+        ite.previous();
+    }
+
+    if(ite.hasPrevious() == false)
     {
         addMessageToTheEndOfMessagesBox(newMessage, messageID);
     }
@@ -272,20 +284,20 @@ void showTopicMessagesClass::editThisMessageOfMessagesBox(const QString& newMess
     {
         int baseSizeOfDocument = messagesBox.document()->characterCount();
         int newSizeOfDocument;
-        QTextCursor currentCurs = ite.value().cursor;
+        QTextCursor currentCurs = messagesBox.textCursor();
 
-        currentCurs.setPosition(ite.value().realPosition);
-        currentCurs.setPosition(ite.value().realPosition - ite.value().messageSize, QTextCursor::KeepAnchor);
+        currentCurs.setPosition(ite.peekPrevious().second.realPosition);
+        currentCurs.setPosition(ite.peekPrevious().second.realPosition - ite.peekPrevious().second.messageSize, QTextCursor::KeepAnchor);
         currentCurs.insertHtml(newMessage);
 
         newSizeOfDocument = messagesBox.document()->characterCount() - baseSizeOfDocument;
-        ite.value().messageSize += newSizeOfDocument;
+        ite.peekPrevious().second.messageSize += newSizeOfDocument;
 
-        while(ite != listOfInfosForEdit.end())
+        ite.previous();
+        while(ite.hasNext())
         {
-            ite.value().cursor.setPosition(ite.value().realPosition + newSizeOfDocument);
-            ite.value().realPosition = ite.value().cursor.position();
-            ++ite;
+            ite.peekNext().second.realPosition += newSizeOfDocument;
+            ite.next();
         }
     }
 }
@@ -740,7 +752,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
 
     while(listOfInfosForEdit.size() > 40)
     {
-        listOfInfosForEdit.erase(listOfInfosForEdit.begin());
+        listOfInfosForEdit.pop_front();
     }
 
     if(pseudoOfUser.isEmpty() == false)
