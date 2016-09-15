@@ -15,7 +15,7 @@ addCookiesWindowClass::addCookiesWindowClass(QWidget* parent) : QDialog(parent, 
     QLabel* labHello = new QLabel("Cookie \"dlrowolleh\" :", this);
     QLabel* labConnect = new QLabel("Cookie \"coniunctio\" :", this);
     QLabel* labHelp = new QLabel("Pour de l'aide concernant l'ajout manuel des cookies, veuillez consulter le "
-                                 "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/LEpigeon888/RespawnIRC/wiki/Ajouter-manuellement-des-cookies\">wiki</a>.", this);
+                                 "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/FranckRJ/RespawnIRC/wiki/Ajouter-manuellement-des-cookies\">wiki</a>.", this);
     QPushButton* buttonValide = new QPushButton("Valider", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
 

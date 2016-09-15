@@ -22,7 +22,7 @@ void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpd
 
     if(reply == nullptr)
     {
-        reply = networkManager->get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repos/LEpigeon888/RespawnIRC/releases/latest"));
+        reply = networkManager->get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repos/FranckRJ/RespawnIRC/releases/latest"));
         alwaysShowMessage = showMessageWhenNoUpdate;
 
         if(reply->isOpen() == true)
@@ -100,9 +100,9 @@ void checkUpdateClass::analyzeLatestUpdatePage()
         {
             newVersionName.remove(0, 1);
             QMessageBox::information(parent, "Nouvelle version disponible !", "La version " + newVersionName + " est disponible à cette adresse :" +
-                            " <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/LEpigeon888/RespawnIRC/releases/latest\">https://github.com/LEpigeon888/RespawnIRC/releases/latest</a><br />" +
-                                "Lien de téléchargement direct : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/LEpigeon888/RespawnIRC/releases/download/v" + newVersionName + "/RespawnIRC-v" + newVersionName +
-                                ".zip\">https://github.com/LEpigeon888/RespawnIRC/releases/download/v" + newVersionName + "/RespawnIRC-v" + newVersionName + ".zip</a>" +
+                            " <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/FranckRJ/RespawnIRC/releases/latest\">https://github.com/FranckRJ/RespawnIRC/releases/latest</a><br />" +
+                                "Lien de téléchargement direct : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/FranckRJ/RespawnIRC/releases/download/v" + newVersionName + "/RespawnIRC-v" + newVersionName +
+                                ".zip\">https://github.com/FranckRJ/RespawnIRC/releases/download/v" + newVersionName + "/RespawnIRC-v" + newVersionName + ".zip</a>" +
                                 "<br /><br />Le changelog :<br />" + parsingToolClass::getVersionChangelog(source));
         }
         else if(alwaysShowMessage == true)
