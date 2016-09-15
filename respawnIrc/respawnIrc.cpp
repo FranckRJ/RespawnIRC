@@ -594,10 +594,6 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
         }
         newBoolOptions.erase(boolIte);
     }
-    if((boolIte = newBoolOptions.find("realTimeEdit")) != newBoolOptions.end())
-    {
-        reloadForAllTopicNeeded = true;
-    }
 
     if((intIte = newIntOptions.find("textBoxSize")) != newIntOptions.end())
     {
@@ -612,6 +608,10 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     {
         typeOfImageRefresh = intIte.value();
         newIntOptions.erase(intIte);
+    }
+    if((intIte = newIntOptions.find("typeOfEdit")) != newIntOptions.end())
+    {
+        reloadForAllTopicNeeded = true;
     }
 
     if(newBoolOptions.isEmpty() == false || newIntOptions.isEmpty() == false)

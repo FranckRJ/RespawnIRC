@@ -10,6 +10,7 @@ struct modelInfoStruct
     QString editModel;
     QString deleteModel;
     QString signatureModel;
+    QString updateMessageForEditModel;
     QString normalDateColor;
     QString editDateColor;
     QString normalPseudoColor;

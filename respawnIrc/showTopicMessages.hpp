@@ -20,10 +20,11 @@
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
 
-struct messagePositionInfoStruct
+struct messageInfoForEditStruct
 {
+    QString messageContent;
     int messageSize = 0;
-    int realPosition;
+    int realPosition = 0;
 };
 
 class showTopicMessagesClass : public QWidget
@@ -50,7 +51,7 @@ public:
     void addSearchPath(QString newSearchPath);
     void relayoutDocumentHack();
     void addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID);
-    void editThisMessageOfMessagesBox(const QString& newMessage, long messageID);
+    void editThisMessageOfMessagesBox(QString newMessage, long messageID);
 public slots:
     void setNewTheme(QString newThemeName);
     void setNewTopic(QString newTopic);
@@ -98,7 +99,7 @@ private:
     QList<QPair<QString, QString> > listOfInput;
     QList<QString>* listOfIgnoredPseudo;
     QList<pseudoWithColorStruct>* listOfColorPseudo;
-    QList<QPair<long, messagePositionInfoStruct> > listOfInfosForEdit;
+    QList<QPair<long, messageInfoForEditStruct> > listOfInfosForEdit;
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;
     QString topicLinkFirstPage;
@@ -127,10 +128,10 @@ private:
     bool getFirstMessageOfTopic;
     bool warnWhenEdit;
     bool warnOnFirstTime;
-    bool realRealTimeEdit;
-    bool currentRealTimeEdit;
     long idOfLastMessageOfUser = 0;
     long oldIdOfLastMessageOfUser = 0;
+    int realTypeOfEdit;
+    int currentTypeOfEdit;
     int currentErrorStreak = 0;
     int numberOfMessageShowedFirstTime;
     int numberOfErrorsBeforeWarning;

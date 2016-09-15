@@ -27,7 +27,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     messagesBox.setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
 
     updateSettingInfo();
-    currentRealTimeEdit = realRealTimeEdit;
+    currentTypeOfEdit = realTypeOfEdit;
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
     listOfColorPseudo = newListOfColorPseudo;
     firstMessageOfTopic.isFirstMessage = false;
@@ -205,7 +205,7 @@ void showTopicMessagesClass::updateSettingInfo()
     warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
     numberOfErrorsBeforeWarning = settingToolClass::getThisIntOption("numberOfErrorsBeforeWarning").value;
     warnOnFirstTime = settingToolClass::getThisBoolOption("warnOnFirstTime");
-    realRealTimeEdit = settingToolClass::getThisBoolOption("realTimeEdit");
+    realTypeOfEdit = settingToolClass::getThisIntOption("typeOfEdit").value;
 
     timeoutForEditInfo.updateTimeoutTime();
     timeoutForQuoteInfo.updateTimeoutTime();
@@ -247,23 +247,28 @@ void showTopicMessagesClass::relayoutDocumentHack()
 
 void showTopicMessagesClass::addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID)
 {
-    messagePositionInfoStruct newInfos;
+    messageInfoForEditStruct newInfos;
     int baseSizeOfDocument = messagesBox.document()->characterCount();
 
     messagesBox.append(newMessage);
 
-    if(currentRealTimeEdit == true)
+    if(currentTypeOfEdit > 0)
     {
+        if(currentTypeOfEdit == 1)
+        {
+            newInfos.messageContent = newMessage;
+        }
+
         newInfos.realPosition = messagesBox.document()->characterCount() - 1;
         newInfos.messageSize = newInfos.realPosition - baseSizeOfDocument;
 
-        listOfInfosForEdit.push_back(QPair<long, messagePositionInfoStruct>(messageID, newInfos));
+        listOfInfosForEdit.push_back(QPair<long, messageInfoForEditStruct>(messageID, newInfos));
     }
 }
 
-void showTopicMessagesClass::editThisMessageOfMessagesBox(const QString& newMessage, long messageID)
+void showTopicMessagesClass::editThisMessageOfMessagesBox(QString newMessage, long messageID)
 {
-    QMutableListIterator<QPair<long, messagePositionInfoStruct> > ite(listOfInfosForEdit);
+    QMutableListIterator<QPair<long, messageInfoForEditStruct> > ite(listOfInfosForEdit);
 
     ite.toBack();
 
@@ -278,13 +283,21 @@ void showTopicMessagesClass::editThisMessageOfMessagesBox(const QString& newMess
 
     if(ite.hasPrevious() == false)
     {
-        addMessageToTheEndOfMessagesBox(newMessage, messageID);
+        if(currentTypeOfEdit != 1)
+        {
+            addMessageToTheEndOfMessagesBox(newMessage, messageID);
+        }
     }
     else
     {
         int baseSizeOfDocument = messagesBox.document()->characterCount();
         int newSizeOfDocument;
         QTextCursor currentCurs = messagesBox.textCursor();
+
+        if(currentTypeOfEdit == 1)
+        {
+            newMessage.replace("<%MESSAGE_TO_UPDATE%>", ite.peekPrevious().second.messageContent);
+        }
 
         currentCurs.setPosition(ite.peekPrevious().second.realPosition);
         currentCurs.setPosition(ite.peekPrevious().second.realPosition - ite.peekPrevious().second.messageSize, QTextCursor::KeepAnchor);
@@ -314,7 +327,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     topicName.clear();
     lastDate.clear();
     listOfInfosForEdit.clear();
-    currentRealTimeEdit = realRealTimeEdit;
+    currentTypeOfEdit = realTypeOfEdit;
     firstMessageOfTopic.isFirstMessage = false;
     topicLinkLastPage = newTopic;
     topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopic);
@@ -726,13 +739,21 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             appendHrAtEndOfFirstMessage = false;
         }
 
-        if(currentMessage.isAnEdit == false || currentRealTimeEdit == false)
+        if(currentMessage.isAnEdit == false || currentTypeOfEdit <= 0)
         {
             addMessageToTheEndOfMessagesBox(newMessageToAppend, currentMessage.idOfMessage);
         }
         else
         {
-            editThisMessageOfMessagesBox(newMessageToAppend, currentMessage.idOfMessage);
+            if(currentTypeOfEdit == 1)
+            {
+                editThisMessageOfMessagesBox(baseModelInfo.updateMessageForEditModel, currentMessage.idOfMessage);
+                addMessageToTheEndOfMessagesBox(newMessageToAppend, currentMessage.idOfMessage);
+            }
+            else
+            {
+                editThisMessageOfMessagesBox(newMessageToAppend, currentMessage.idOfMessage);
+            }
         }
 
         if(pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower() && (warnOnFirstTime == true || firstTimeAddMessages == false))

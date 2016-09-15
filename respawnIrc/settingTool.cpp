@@ -51,7 +51,6 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["expertMode"] = false;
     listOfDefaultBoolOption["warnOnFirstTime"] = true;
     listOfDefaultBoolOption["showSignatures"] = false;
-    listOfDefaultBoolOption["realTimeEdit"] = false;
     listOfDefaultIntOption["updateTopicTime"].value = 3500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 250;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;
@@ -91,6 +90,9 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["updateTopicListTime"].value = 5000;
     listOfDefaultIntOption["updateTopicListTime"].minValue = 500;
     listOfDefaultIntOption["updateTopicListTime"].maxValue = 60000;
+    listOfDefaultIntOption["typeOfEdit"].value = 0;
+    listOfDefaultIntOption["typeOfEdit"].minValue = 0;
+    listOfDefaultIntOption["typeOfEdit"].maxValue = 2;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

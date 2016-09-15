@@ -78,6 +78,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     listOfInfos.push_back("green"); //edit message color
 
     listOfInfos.push_back("<hr><span style=\"font-size: 1px;\"><br></span><i><%SIGNATURE_SIGNATURE%></i>");
+    listOfInfos.push_back("<i><%MESSAGE_TO_UPDATE%></i>");
 
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
@@ -88,7 +89,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
         }
     }
 
-    while(listOfLine.size() < 19)
+    while(listOfLine.size() < listOfInfos.size())
     {
         listOfLine.push_back(listOfInfos.at(listOfLine.size()));
     }
@@ -118,6 +119,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     colorInfoForMessageAndOther.editMessageColor = listOfLine.at(17);
 
     modelInfo.signatureModel = listOfLine.at(18);
+    modelInfo.updateMessageForEditModel = listOfLine.at(19);
 
     return modelInfo;
 }

@@ -149,9 +149,9 @@ QWidget* preferenceWindowClass::createWidgetForMessagesTab()
     QGroupBox* groupBoxMessageBehavior = new QGroupBox("Comportement des messages", this);
 
     QVBoxLayout* vboxMessageBehavior = new QVBoxLayout();
-    vboxMessageBehavior->addWidget(makeNewCheckBox("Editer les messages en temps réel", "realTimeEdit"));
     vboxMessageBehavior->addWidget(makeNewCheckBox("Récupérer le premier message du topic", "getFirstMessageOfTopic"));
     vboxMessageBehavior->addLayout(makeNewSpinBox("Nombre de messages affichés au premier chargement", "numberOfMessageShowedFirstTime"));
+    vboxMessageBehavior->addLayout(makeNewComboBox("Type d'édition des messages :", "typeOfEdit", {"Ajout", "Ajout avec modification de l'ancien message", "Modification de l'ancien message"}));
     vboxMessageBehavior->addStretch(1);
     groupBoxMessageBehavior->setLayout(vboxMessageBehavior);
 
