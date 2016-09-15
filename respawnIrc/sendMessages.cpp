@@ -11,9 +11,10 @@
 
 sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 {
+    sendButton.setObjectName("sendButton");
+
     sendButton.setText("Envoyer");
     sendButton.setAutoDefault(true);
-    sendButton.setObjectName("sendButton");
 
     changeColorOnEdit = settingToolClass::getThisBoolOption("changeColorOnEdit");
     networkManager = new QNetworkAccessManager(this);

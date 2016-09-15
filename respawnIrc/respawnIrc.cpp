@@ -31,6 +31,8 @@ namespace
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
 {
+    tabList.setObjectName("tabListForTopics");
+
     tabList.setTabsClosable(true);
     tabList.setMovable(true);
     alertImage.load(QCoreApplication::applicationDirPath() + "/resources/alert.png");

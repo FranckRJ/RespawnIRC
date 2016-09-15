@@ -9,6 +9,9 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
 {
     highlighter = new highlighterClass(textEdit.document());
 
+    textEdit.setObjectName("sendMessageText");
+    lineEdit.setObjectName("sendMessageLine");
+
     textEdit.setTabChangesFocus(true);
     textEdit.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     textEdit.setAcceptRichText(false);
