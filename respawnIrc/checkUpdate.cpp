@@ -22,7 +22,7 @@ void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpd
 
     if(reply == nullptr)
     {
-        reply = networkManager->get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repos/FranckRJ/RespawnIRC/releases/latest"));
+        reply = networkManager->get(parsingToolClass::buildRequestWithThisUrl("https://api.github.com/repositories/40536245/releases/latest"));
         alwaysShowMessage = showMessageWhenNoUpdate;
 
         if(reply->isOpen() == true)
