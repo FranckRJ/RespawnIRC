@@ -105,11 +105,15 @@ void multiTypeTextBoxClass::setEditMode(bool newVal)
 {
     if(newVal == true)
     {
-        textEdit.setStyleSheet("color: " + styleToolClass::getColorInfo().editMessageColor + ";");
+        QString newStyle = "#sendMessageText, #sendMessageLine { color: " + styleToolClass::getColorInfo().editMessageColor + "; }";
+
+        textEdit.setStyleSheet(newStyle);
+        lineEdit.setStyleSheet(newStyle);
     }
     else
     {
         textEdit.setStyleSheet("");
+        lineEdit.setStyleSheet("");
     }
 }
 
