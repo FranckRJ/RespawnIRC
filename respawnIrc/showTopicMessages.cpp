@@ -535,6 +535,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
     bool appendHrAtEndOfFirstMessage = false;
     bool errorHappen = false;
     bool firstTimeAddMessages = false;
+    bool needToScrollDown = messagesBox.verticalScrollBar()->value() >= messagesBox.verticalScrollBar()->maximum();
 
     if(parsingToolClass::getFirstPageOfTopic(fromThisTopic) != topicLinkFirstPage)
     {
@@ -722,12 +723,6 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             editThisMessageOfMessagesBox(newMessageToAppend, currentMessage.idOfMessage);
         }
 
-        if(messagesBox.verticalScrollBar()->value() >= messagesBox.verticalScrollBar()->maximum())
-        {
-            messagesBox.verticalScrollBar()->updateGeometry();
-            messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
-        }
-
         if(pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower() && (warnOnFirstTime == true || firstTimeAddMessages == false))
         {
             if(warnWhenEdit == true || currentMessage.isAnEdit == false)
@@ -735,6 +730,12 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
                 emit newMessagesAvailable();
             }
         }
+    }
+
+    if(needToScrollDown == true)
+    {
+        messagesBox.verticalScrollBar()->updateGeometry();
+        messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
     }
 
     while(listOfInfosForEdit.size() > 40)
