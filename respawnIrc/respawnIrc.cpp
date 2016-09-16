@@ -68,11 +68,22 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 
 respawnIrcClass::~respawnIrcClass()
 {
+    QList<QString> listOfTopicLink;
+
+    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
+    {
+        listOfTopicLink.push_back(thisContainer->getShowTopicMessages().getTopicLinkFirstPage());
+    }
+
+    settingToolClass::saveListOfTopicLink(listOfTopicLink);
+
     showTopicMessagesClass::stopThread();
 }
 
 void respawnIrcClass::loadSettings()
 {
+    QList<QString> listOfTopicLink;
+
     beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
     warnUser = settingToolClass::getThisBoolOption("warnUser");
     typeOfImageRefresh = settingToolClass::getThisIntOption("typeOfImageRefresh").value;
@@ -230,9 +241,6 @@ void respawnIrcClass::useThisFavorite(int index)
     if(vectorOfFavoriteLink.at(index).isEmpty() == false)
     {
         getCurrentWidget()->setNewTopicForInfo(vectorOfFavoriteLink.at(index));
-        listOfTopicLink[tabList.currentIndex()] = vectorOfFavoriteLink.at(index);
-
-        settingToolClass::saveListOfTopicLink(listOfTopicLink);
     }
 }
 
@@ -354,11 +362,6 @@ void respawnIrcClass::addNewTab()
     QString themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
     listOfContainerForTopicsInfos.push_back(new containerForTopicsInfosClass(&listOfIgnoredPseudo, &listOfColorPseudo, currentThemeName, this));
 
-    if(listOfContainerForTopicsInfos.size() > listOfTopicLink.size())
-    {
-        listOfTopicLink.push_back(QString());
-    }
-
     if(listOfContainerForTopicsInfos.size() > listOfPseudoForTopic.size())
     {
         listOfPseudoForTopic.push_back(QString());
@@ -423,8 +426,6 @@ void respawnIrcClass::removeTab(int index)
     if(listOfContainerForTopicsInfos.size() > 1)
     {
         tabList.removeTab(index);
-        listOfTopicLink.removeAt(index);
-        settingToolClass::saveListOfTopicLink(listOfTopicLink);
         listOfPseudoForTopic.removeAt(index);
         settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
         delete listOfContainerForTopicsInfos.takeAt(index);
@@ -434,8 +435,6 @@ void respawnIrcClass::removeTab(int index)
 
 void respawnIrcClass::tabHasMoved(int indexFrom, int indexTo)
 {
-    listOfTopicLink.move(indexFrom, indexTo);
-    settingToolClass::saveListOfTopicLink(listOfTopicLink);
     listOfPseudoForTopic.move(indexFrom, indexTo);
     settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
     listOfContainerForTopicsInfos.move(indexFrom, indexTo);
@@ -454,14 +453,14 @@ void respawnIrcClass::updateTopic()
 
 void respawnIrcClass::reloadTopic()
 {
-    getCurrentWidget()->setNewTopicForInfo(listOfTopicLink[tabList.currentIndex()]);
+    getCurrentWidget()->setNewTopicForInfo(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage());
 }
 
 void respawnIrcClass::reloadAllTopic()
 {
-    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
+    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
-        listOfContainerForTopicsInfos.at(i)->setNewTopicForInfo(listOfTopicLink[i]);
+        thisContainer->setNewTopicForInfo(thisContainer->getShowTopicMessages().getTopicLinkFirstPage());
     }
 }
 
@@ -697,9 +696,6 @@ void respawnIrcClass::setNewCookiesForPseudo()
 void respawnIrcClass::setNewTopic(QString newTopic)
 {
     getCurrentWidget()->setNewTopicForInfo(newTopic);
-    listOfTopicLink[tabList.currentIndex()] = newTopic;
-
-    settingToolClass::saveListOfTopicLink(listOfTopicLink);
 }
 
 void respawnIrcClass::setNewTheme(QString newThemeName)
@@ -712,14 +708,14 @@ void respawnIrcClass::setNewTheme(QString newThemeName)
 
     emit themeChanged(currentThemeName);
 
-    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
+    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
-        listOfContainerForTopicsInfos.at(i)->setNewThemeForInfo(currentThemeName);
-        listOfContainerForTopicsInfos.at(i)->setNewTopicForInfo(listOfTopicLink[i]);
+        thisContainer->setNewThemeForInfo(currentThemeName);
+        thisContainer->setNewTopicForInfo(thisContainer->getShowTopicMessages().getTopicLinkFirstPage());
 
         if(themeImgDir.isEmpty() == false)
         {
-            listOfContainerForTopicsInfos.at(i)->getShowTopicMessages().addSearchPath(themeImgDir);
+            thisContainer->getShowTopicMessages().addSearchPath(themeImgDir);
         }
     }
 

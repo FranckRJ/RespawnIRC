@@ -99,7 +99,6 @@ private:
     QVector<QString> vectorOfFavoriteLink;
     QList<QNetworkCookie> currentCookieList;
     QList<containerForTopicsInfosClass*> listOfContainerForTopicsInfos;
-    QList<QString> listOfTopicLink;
     QList<QString> listOfIgnoredPseudo;
     QList<pseudoWithColorStruct> listOfColorPseudo;
     QList<accountStruct> listOfAccount;
