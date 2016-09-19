@@ -5,6 +5,11 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
+namespace
+{
+    QRegularExpression expForLineReturn("(?<!\\\\)&n", QRegularExpression::OptimizeOnFirstUsageOption);
+}
+
 multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
 {
     highlighter = new highlighterClass(textEdit.document());
@@ -41,7 +46,7 @@ QString multiTypeTextBoxClass::text()
     }
     else
     {
-        return lineEdit.text();
+        return lineEdit.text().replace(expForLineReturn, "\n").replace("\\&n", "&n");
     }
 }
 
@@ -148,7 +153,7 @@ void multiTypeTextBoxClass::insertText(QString newText)
     }
     else
     {
-        lineEdit.insert(newText);
+        lineEdit.insert(newText.replace("&n", "\\&n").replace("\n", "&n"));
     }
 }
 
