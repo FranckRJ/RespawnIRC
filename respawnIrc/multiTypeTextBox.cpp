@@ -18,7 +18,7 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
 
     settingsChanged();
 
-    layout.addWidget(&textEdit);
+    layout.addWidget(&lineEdit);
     layout.setMargin(0);
 
     setLayout(&layout);
@@ -163,12 +163,14 @@ void multiTypeTextBoxClass::setTextEditSelected(bool newVal)
         lineEdit.setVisible(false);
         layout.addWidget(&textEdit);
         textEdit.setVisible(true);
+        setTabOrder(&lineEdit, &textEdit);
     }
     else
     {
         textEdit.setVisible(false);
         layout.addWidget(&lineEdit);
         lineEdit.setVisible(true);
+        setTabOrder(&textEdit, &lineEdit);
     }
 }
 
