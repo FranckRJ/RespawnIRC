@@ -69,13 +69,34 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 respawnIrcClass::~respawnIrcClass()
 {
     QList<QString> listOfTopicLink;
+    QList<QString> listOfPseudoForTopic;
 
     for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
-        listOfTopicLink.push_back(thisContainer->getShowTopicMessages().getTopicLinkFirstPage());
+        if(thisContainer->getShowTopicMessages().getTopicLinkFirstPage().isEmpty() == false)
+        {
+            listOfTopicLink.push_back(thisContainer->getShowTopicMessages().getTopicLinkFirstPage());
+
+            if(thisContainer->getPseudoTypeOfSave() == typeOfSaveForPseudo::REMEMBER)
+            {
+                if(thisContainer->getShowTopicMessages().getPseudoUsed().isEmpty() == true)
+                {
+                    listOfPseudoForTopic.push_back(".");
+                }
+                else
+                {
+                    listOfPseudoForTopic.push_back(thisContainer->getShowTopicMessages().getPseudoUsed());
+                }
+            }
+            else
+            {
+                listOfPseudoForTopic.push_back("");
+            }
+        }
     }
 
     settingToolClass::saveListOfTopicLink(listOfTopicLink);
+    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
 
     showTopicMessagesClass::stopThread();
 }
@@ -83,6 +104,7 @@ respawnIrcClass::~respawnIrcClass()
 void respawnIrcClass::loadSettings()
 {
     QList<QString> listOfTopicLink;
+    QList<QString> listOfPseudoForTopic;
 
     beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
     warnUser = settingToolClass::getThisBoolOption("warnUser");
@@ -122,7 +144,7 @@ void respawnIrcClass::loadSettings()
 
     for(int i = 0; i < listOfTopicLink.size(); ++i)
     {
-        addNewTab();
+        addNewTabWithPseudo((i < listOfPseudoForTopic.size() ? listOfPseudoForTopic.at(i) : ""));
         tabList.setCurrentIndex(i);
         setNewTopic(listOfTopicLink.at(i));
         tabList.setCurrentIndex(0);
@@ -359,36 +381,31 @@ void respawnIrcClass::showAbout()
 
 void respawnIrcClass::addNewTab()
 {
+    addNewTabWithPseudo("");
+}
+
+void respawnIrcClass::addNewTabWithPseudo(QString useThisPseudo)
+{
     QString themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
     listOfContainerForTopicsInfos.push_back(new containerForTopicsInfosClass(&listOfIgnoredPseudo, &listOfColorPseudo, currentThemeName, this));
 
-    if(listOfContainerForTopicsInfos.size() > listOfPseudoForTopic.size())
+    if(useThisPseudo.isEmpty() == false)
     {
-        listOfPseudoForTopic.push_back(QString());
-    }
-
-    if(listOfPseudoForTopic.at(listOfContainerForTopicsInfos.size() - 1).isEmpty() == false)
-    {
-        if(listOfPseudoForTopic.at(listOfContainerForTopicsInfos.size() - 1) != ".")
+        if(useThisPseudo != ".")
         {
             for(int j = 0; j < listOfAccount.size(); ++j)
             {
-                if(listOfAccount.at(j).pseudo.toLower() == listOfPseudoForTopic.at(listOfContainerForTopicsInfos.size() - 1).toLower())
+                if(listOfAccount.at(j).pseudo.toLower() == useThisPseudo.toLower())
                 {
-                    listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo);
+                    listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo, typeOfSaveForPseudo::REMEMBER);
                     break;
-                }
-                else if(j == listOfAccount.size() - 1)
-                {
-                    listOfPseudoForTopic[listOfContainerForTopicsInfos.size() - 1].clear();
-                    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
                 }
             }
         }
     }
     else if(pseudoOfUser.isEmpty() == false)
     {
-        listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(currentCookieList, pseudoOfUser);
+        listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT);
     }
 
     listOfContainerForTopicsInfos.back()->getShowTopicMessages().addSearchPath(imageDownloadTool.getPathOfTmpDir());
@@ -426,17 +443,13 @@ void respawnIrcClass::removeTab(int index)
     if(listOfContainerForTopicsInfos.size() > 1)
     {
         tabList.removeTab(index);
-        listOfPseudoForTopic.removeAt(index);
-        settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
-        delete listOfContainerForTopicsInfos.takeAt(index);
+        listOfContainerForTopicsInfos.takeAt(index)->deleteLater();
         currentTabChanged(-1);
     }
 }
 
 void respawnIrcClass::tabHasMoved(int indexFrom, int indexTo)
 {
-    listOfPseudoForTopic.move(indexFrom, indexTo);
-    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
     listOfContainerForTopicsInfos.move(indexFrom, indexTo);
     currentTabChanged(-1);
 }
@@ -492,21 +505,17 @@ void respawnIrcClass::disconnectFromAllTabs()
 {
     currentCookieList = QList<QNetworkCookie>();
     pseudoOfUser = "";
-    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
+    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
-        listOfContainerForTopicsInfos.at(i)->setNewCookiesForInfo(QList<QNetworkCookie>(), "");
-        listOfPseudoForTopic[i] = "";
+        thisContainer->setNewCookiesForInfo(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
     }
     settingToolClass::saveThisOption("pseudo", pseudoOfUser);
-    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
 void respawnIrcClass::disconnectFromCurrentTab()
 {
-    getCurrentWidget()->setNewCookiesForInfo(QList<QNetworkCookie>(), ".");
-    listOfPseudoForTopic[tabList.currentIndex()] = ".";
-    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+    getCurrentWidget()->setNewCookiesForInfo(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
@@ -518,15 +527,13 @@ void respawnIrcClass::disconnectFromThisPseudo(QString thisPseudo)
         pseudoOfUser = "";
     }
 
-    for(int i = 0; i < listOfContainerForTopicsInfos.size(); ++i)
+    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
-        if(listOfContainerForTopicsInfos.at(i)->getShowTopicMessages().getPseudoUsed().toLower() == thisPseudo.toLower())
+        if(thisContainer->getShowTopicMessages().getPseudoUsed().toLower() == thisPseudo.toLower())
         {
-            listOfContainerForTopicsInfos.at(i)->setNewCookiesForInfo(currentCookieList, pseudoOfUser);
-            listOfPseudoForTopic[i] = "";
+            thisContainer->setNewCookiesForInfo(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT);
         }
     }
-    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
@@ -636,7 +643,7 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
         pseudoOfUser = newPseudoOfUser;
         for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
         {
-            thisContainer->setNewCookiesForInfo(currentCookieList, newPseudoOfUser);
+            thisContainer->setNewCookiesForInfo(currentCookieList, pseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::DEFAULT : typeOfSaveForPseudo::DONT_REMEMBER));
         }
         setNewNumberOfConnectedAndPseudoUsed();
 
@@ -649,25 +656,14 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
         if(savePseudo == true)
         {
             settingToolClass::saveThisOption("pseudo", pseudoOfUser);
-            for(QString& thisPseudo : listOfPseudoForTopic)
-            {
-                thisPseudo.clear();
-            }
-            settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
         }
     }
 }
 
 void respawnIrcClass::setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo)
 {
-    getCurrentWidget()->setNewCookiesForInfo(newCookies, newPseudoOfUser);
+    getCurrentWidget()->setNewCookiesForInfo(newCookies, newPseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::REMEMBER : typeOfSaveForPseudo::DONT_REMEMBER));
     setNewNumberOfConnectedAndPseudoUsed();
-
-    if(savePseudo == true)
-    {
-        listOfPseudoForTopic[tabList.currentIndex()] = newPseudoOfUser;
-        settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
-    }
 }
 
 void respawnIrcClass::setNewCookiesForPseudo()

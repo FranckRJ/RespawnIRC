@@ -33,8 +33,15 @@ showTopicMessagesClass& containerForTopicsInfosClass::getShowTopicMessages()
     return showTopicMessages;
 }
 
-void containerForTopicsInfosClass::setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser)
+typeOfSaveForPseudo containerForTopicsInfosClass::getPseudoTypeOfSave()
 {
+    return pseudoTypeOfSave;
+}
+
+void containerForTopicsInfosClass::setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave)
+{
+    pseudoTypeOfSave = newTypeOfSave;
+
     showTopicMessages.setNewCookies(newCookies, newPseudoOfUser);
     showListOfTopic.setNewCookies(newCookies);
 }

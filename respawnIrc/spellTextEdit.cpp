@@ -234,7 +234,7 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
         }
 
         menuRightClick->exec(event->globalPos());
-        delete menuRightClick;
+        menuRightClick->deleteLater();
     }
     else
     {

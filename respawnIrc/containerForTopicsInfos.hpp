@@ -10,13 +10,16 @@
 #include "showListOfTopic.hpp"
 #include "colorPseudoListWindow.hpp"
 
+enum class typeOfSaveForPseudo { DONT_REMEMBER, DEFAULT, REMEMBER };
+
 class containerForTopicsInfosClass : public QWidget
 {
     Q_OBJECT
 public:
     explicit containerForTopicsInfosClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
     showTopicMessagesClass& getShowTopicMessages();
-    void setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser);
+    typeOfSaveForPseudo getPseudoTypeOfSave();
+    void setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave);
     void updateSettingsForInfo();
 public slots:
     void setNewThemeForInfo(QString newThemeName);
@@ -27,6 +30,8 @@ signals:
 private:
     showTopicMessagesClass showTopicMessages;
     showListOfTopicClass showListOfTopic;
+    typeOfSaveForPseudo pseudoTypeOfSave = typeOfSaveForPseudo::DEFAULT;
+
 };
 
 #endif

@@ -128,11 +128,6 @@ const QList<QNetworkCookie>& showTopicMessagesClass::getListOfCookies()
 
 void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages)
 {
-    if(newPseudoOfUser == ".")
-    {
-        newPseudoOfUser.clear();
-    }
-
     currentCookieList = newCookies;
     pseudoOfUser = newPseudoOfUser;
     expForColorPseudo.setPattern("");

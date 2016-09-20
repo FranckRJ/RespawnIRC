@@ -52,6 +52,7 @@ public slots:
     void showColorPseudoListWindow();
     void showAbout();
     void addNewTab();
+    void addNewTabWithPseudo(QString useThisPseudo);
     void addNewTabWithTopic(QString newTopicLink);
     void removeTab(int index);
     void tabHasMoved(int indexFrom, int indexTo);
@@ -102,7 +103,6 @@ private:
     QList<QString> listOfIgnoredPseudo;
     QList<pseudoWithColorStruct> listOfColorPseudo;
     QList<accountStruct> listOfAccount;
-    QList<QString> listOfPseudoForTopic;
     QLabel messagesStatus;
     QLabel numberOfConnectedAndPseudoUsed;
     QString pseudoOfUser;
