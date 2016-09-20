@@ -81,9 +81,9 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["noelshackImageHeight"].value = 51;
     listOfDefaultIntOption["noelshackImageHeight"].minValue = 0;
     listOfDefaultIntOption["noelshackImageHeight"].maxValue = 1000;
-    listOfDefaultIntOption["numberOfErrorsBeforeWarning"].value = 3;
+    listOfDefaultIntOption["numberOfErrorsBeforeWarning"].value = 5;
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].minValue = 1;
-    listOfDefaultIntOption["numberOfErrorsBeforeWarning"].maxValue = 10;
+    listOfDefaultIntOption["numberOfErrorsBeforeWarning"].maxValue = 25;
     listOfDefaultIntOption["numberOfPagesToLoad"].value = -1;
     listOfDefaultIntOption["numberOfPagesToLoad"].minValue = -1;
     listOfDefaultIntOption["numberOfPagesToLoad"].maxValue = 5;
