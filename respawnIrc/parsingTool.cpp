@@ -396,6 +396,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", true);
 
     thisMessage.replace("\n", "");
+    thisMessage.replace("\r", "");
 
     if(infoForParsing.useNewLayout == false)
     {
