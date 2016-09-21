@@ -6,7 +6,7 @@
 #include <QString>
 #include <QListView>
 #include <QList>
-#include <QStringListModel>
+#include <QStandardItemModel>
 #include <QNetworkCookie>
 #include <QPoint>
 #include <QModelIndex>
@@ -37,7 +37,7 @@ private:
     QTimer timerForGetList;
     QString forumLink;
     QListView listViewOfTopic;
-    QStringListModel modelForListView;
+    QStandardItemModel modelForListView;
     autoTimeoutReplyClass timeoutForReply;
     QNetworkReply* reply = nullptr;
     QNetworkAccessManager* networkManager;

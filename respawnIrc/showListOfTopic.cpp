@@ -4,6 +4,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QDesktopServices>
+#include <QStandardItem>
 
 #include "showListOfTopic.hpp"
 #include "parsingTool.hpp"
@@ -47,7 +48,7 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
     }
 
     forumLink = newForumLink;
-    modelForListView.setStringList(QList<QString>());
+    modelForListView.clear();
     if(newForumLink.isEmpty() == false)
     {
         if(loadNeeded == true)
@@ -163,33 +164,32 @@ void showListOfTopicClass::analyzeReply()
     else
     {
         QList<topicStruct> listOfTopic = parsingToolClass::getListOfTopic(source);
-        QList<QString> listOfTopicName;
 
+        modelForListView.clear();
         listOfLink.clear();
-        listOfTopicName.append(parsingToolClass::getForumName(source));
+        modelForListView.appendRow(new QStandardItem(parsingToolClass::getForumName(source)));
         listOfLink.append("");
 
         for(const topicStruct& thisTopic : listOfTopic)
         {
-            listOfTopicName.append(thisTopic.name);
+            QString currentTopicName = thisTopic.name;
 
             if(cutLongTopicName == true)
             {
-                if(listOfTopicName.back().size() >= (topicNameMaxSize + 3))
+                if(currentTopicName.size() >= (topicNameMaxSize + 3))
                 {
-                    listOfTopicName.back() = listOfTopicName.back().left(topicNameMaxSize) + "...";
+                    currentTopicName = currentTopicName.left(topicNameMaxSize) + "...";
                 }
             }
 
             if(showNumberOfMessages == true)
             {
-                listOfTopicName.back().append(" (" + thisTopic.numberOfMessage + ")");
+                currentTopicName.append(" (" + thisTopic.numberOfMessage + ")");
             }
 
             listOfLink.append(thisTopic.link);
+            modelForListView.appendRow(new QStandardItem(currentTopicName));
         }
-
-        modelForListView.setStringList(listOfTopicName);
     }
 
     reply = nullptr;
@@ -205,6 +205,7 @@ void showListOfTopicClass::clickedOnLink(QModelIndex index)
 
 void showListOfTopicClass::createContextMenu(const QPoint& thisPoint)
 {
+    QList<QString> oldListOfTopicLink = listOfLink;
     QModelIndex indexSelected = listViewOfTopic.indexAt(thisPoint);
     if(indexSelected.row() >= 1)
     {
@@ -217,15 +218,15 @@ void showListOfTopicClass::createContextMenu(const QPoint& thisPoint)
 
         if(actionSelected == actionOpen)
         {
-            emit openThisTopic(listOfLink.at(indexSelected.row()));
+            emit openThisTopic(oldListOfTopicLink.at(indexSelected.row()));
         }
         else if(actionSelected == actionOpenInNewTab)
         {
-            emit openThisTopicInNewTab(listOfLink.at(indexSelected.row()));
+            emit openThisTopicInNewTab(oldListOfTopicLink.at(indexSelected.row()));
         }
         else if(actionSelected == actionOpenInNavigator)
         {
-            QDesktopServices::openUrl(listOfLink.at(indexSelected.row()));
+            QDesktopServices::openUrl(oldListOfTopicLink.at(indexSelected.row()));
         }
     }
 }
