@@ -12,6 +12,7 @@
 #include <QModelIndex>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QPixmap>
 
 #include "autoTimeoutReply.hpp"
 #include "styleTool.hpp"
@@ -46,9 +47,21 @@ private:
     QList<QNetworkCookie> currentCookieList;
     QList<QString> listOfLink;
     modelInfoStruct baseModelInfo;
+    QPixmap pinnedOnTagImage;
+    QPixmap pinnedOffTagImage;
+    QPixmap hotTagImage;
+    QPixmap lockTagImage;
+    QPixmap resolvedTagImage;
+    QPixmap normalTagImage;
     bool showNumberOfMessages;
     bool cutLongTopicName;
     bool colorModoAndAdminTopic;
+    bool showPinnedTagOnTopic;
+    bool showHotTagOnTopic;
+    bool showLockTagOnTopic;
+    bool showResolvedTagOnTopic;
+    bool showNormalTagOnTopic;
+    bool useIconInsteadOfTag;
     bool loadNeeded = true;
     int topicNameMaxSize;
 };

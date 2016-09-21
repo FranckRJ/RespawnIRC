@@ -5,6 +5,7 @@
 #include <QAction>
 #include <QDesktopServices>
 #include <QStandardItem>
+#include <QCoreApplication>
 
 #include "showListOfTopic.hpp"
 #include "parsingTool.hpp"
@@ -12,6 +13,13 @@
 
 showListOfTopicClass::showListOfTopicClass(QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
+    pinnedOnTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-on.png");
+    pinnedOffTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-off.png");
+    hotTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier2.png");
+    lockTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-lock.png");
+    resolvedTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-resolu.png");
+    normalTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier1.png");
+
     listViewOfTopic.setModel(&modelForListView);
     listViewOfTopic.setEditTriggers(QAbstractItemView::NoEditTriggers);
     listViewOfTopic.setContextMenuPolicy(Qt::CustomContextMenu);
@@ -80,6 +88,12 @@ void showListOfTopicClass::updateSettings()
     showNumberOfMessages = settingToolClass::getThisBoolOption("showNumberOfMessagesInTopicList");
     cutLongTopicName = settingToolClass::getThisBoolOption("cutLongTopicNameInTopicList");
     colorModoAndAdminTopic = settingToolClass::getThisBoolOption("colorModoAndAdminTopicInTopicList");
+    showPinnedTagOnTopic = settingToolClass::getThisBoolOption("showPinnedTagOnTopicInTopicList");
+    showHotTagOnTopic = settingToolClass::getThisBoolOption("showHotTagOnTopicInTopicList");
+    showLockTagOnTopic = settingToolClass::getThisBoolOption("showLockTagOnTopicInTopicList");
+    showResolvedTagOnTopic = settingToolClass::getThisBoolOption("showResolvedTagOnTopicInTopicList");
+    showNormalTagOnTopic = settingToolClass::getThisBoolOption("showNormalTagOnTopicInTopicList");
+    useIconInsteadOfTag = settingToolClass::getThisBoolOption("useIconInsteadOfTagInTopicList");
     timerForGetList.setInterval(settingToolClass::getThisIntOption("updateTopicListTime").value);
     topicNameMaxSize = settingToolClass::getThisIntOption("topicNameMaxSizeInTopicList").value;
     setLoadNeeded(settingToolClass::getThisBoolOption("showListOfTopic"));
@@ -204,8 +218,95 @@ void showListOfTopicClass::analyzeReply()
                 currentTopicName.append(" (" + thisTopic.numberOfMessage + ")");
             }
 
-            newItemToAppend = new QStandardItem(currentTopicName);
+            newItemToAppend = new QStandardItem();
             newItemToAppend->setEditable(false);
+
+            if(thisTopic.topicType.startsWith("marque") == true)
+            {
+                if(showPinnedTagOnTopic == true)
+                {
+                    if(thisTopic.topicType == "marque-on")
+                    {
+                        if(useIconInsteadOfTag == true)
+                        {
+                            newItemToAppend->setIcon(QIcon(pinnedOnTagImage));
+                        }
+                        else
+                        {
+                            currentTopicName = "[EO] " + currentTopicName;
+                        }
+                    }
+                    else if(thisTopic.topicType == "marque-off")
+                    {
+                        if(useIconInsteadOfTag == true)
+                        {
+                            newItemToAppend->setIcon(QIcon(pinnedOffTagImage));
+                        }
+                        else
+                        {
+                            currentTopicName = "[EF] " + currentTopicName;
+                        }
+                    }
+                }
+            }
+            else if(thisTopic.topicType == "dossier2")
+            {
+                if(showHotTagOnTopic == true)
+                {
+                    if(useIconInsteadOfTag == true)
+                    {
+                        newItemToAppend->setIcon(QIcon(hotTagImage));
+                    }
+                    else
+                    {
+                        currentTopicName = "[M] " + currentTopicName;
+                    }
+                }
+            }
+            else if(thisTopic.topicType == "lock")
+            {
+                if(showLockTagOnTopic == true)
+                {
+                    if(useIconInsteadOfTag == true)
+                    {
+                        newItemToAppend->setIcon(QIcon(lockTagImage));
+                    }
+                    else
+                    {
+                        currentTopicName = "[F] " + currentTopicName;
+                    }
+                }
+            }
+            else if(thisTopic.topicType == "resolu")
+            {
+                if(showResolvedTagOnTopic == true)
+                {
+                    if(useIconInsteadOfTag == true)
+                    {
+                        newItemToAppend->setIcon(QIcon(resolvedTagImage));
+                    }
+                    else
+                    {
+                        currentTopicName = "[R] " + currentTopicName;
+                    }
+                }
+            }
+            else
+            {
+                if(showNormalTagOnTopic == true)
+                {
+                    if(useIconInsteadOfTag == true)
+                    {
+                        newItemToAppend->setIcon(QIcon(normalTagImage));
+                    }
+                    else
+                    {
+                        currentTopicName = "[N] " + currentTopicName;
+                    }
+                }
+            }
+
+            newItemToAppend->setText(currentTopicName);
 
             if(colorModoAndAdminTopic == true)
             {

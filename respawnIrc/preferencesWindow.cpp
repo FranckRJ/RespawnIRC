@@ -201,6 +201,18 @@ QWidget* preferenceWindowClass::createWidgetForTopicListTab()
     vboxGeneral->addStretch(1);
     groupBoxGeneral->setLayout(vboxGeneral);
 
+    QGroupBox* groupBoxTopicTag = new QGroupBox("Balise des topics", this);
+
+    QVBoxLayout* vboxTopicTag = new QVBoxLayout();
+    vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics épinglés ouverts/fermés", "showPinnedTagOnTopicInTopicList"));
+    vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics multipages", "showHotTagOnTopicInTopicList"));
+    vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics fermés", "showLockTagOnTopicInTopicList"));
+    vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics résolus", "showResolvedTagOnTopicInTopicList"));
+    vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics normaux", "showNormalTagOnTopicInTopicList"));
+    vboxTopicTag->addWidget(makeNewCheckBox("Utiliser des icônes au lieu des balises", "useIconInsteadOfTagInTopicList"));
+    vboxTopicTag->addStretch(1);
+    groupBoxTopicTag->setLayout(vboxTopicTag);
+
     QGroupBox* groupBoxTopicStyle = new QGroupBox("Style des topics", this);
 
     QVBoxLayout* vboxTopicStyle = new QVBoxLayout();
@@ -212,8 +224,9 @@ QWidget* preferenceWindowClass::createWidgetForTopicListTab()
     groupBoxTopicStyle->setLayout(vboxTopicStyle);
 
     QGridLayout* mainLayout = new QGridLayout();
-    mainLayout->addWidget(groupBoxGeneral, 0, 0);
-    mainLayout->addWidget(groupBoxTopicStyle, 1, 0);
+    mainLayout->addWidget(groupBoxGeneral, 0, 0, 1, 2);
+    mainLayout->addWidget(groupBoxTopicTag, 1, 0);
+    mainLayout->addWidget(groupBoxTopicStyle, 1, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     QVBoxLayout* realMainLayout = new QVBoxLayout();
