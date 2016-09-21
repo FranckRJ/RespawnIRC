@@ -36,6 +36,7 @@ struct topicStruct
     QString name;
     QString link;
     QString numberOfMessage;
+    pseudoInfoStruct pseudoInfo;
 };
 
 struct ajaxInfoStruct

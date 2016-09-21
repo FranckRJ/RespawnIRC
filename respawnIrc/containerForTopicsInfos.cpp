@@ -6,7 +6,7 @@
 #include "settingTool.hpp"
 
 containerForTopicsInfosClass::containerForTopicsInfosClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) :
-    QWidget(parent), showTopicMessages(newListOfIgnoredPseudo, newListOfColorPseudo, currentThemeName)
+    QWidget(parent), showTopicMessages(newListOfIgnoredPseudo, newListOfColorPseudo, currentThemeName), showListOfTopic(currentThemeName)
 {
     QSplitter* splitter = new QSplitter(this);
     splitter->addWidget(&showTopicMessages);
@@ -57,6 +57,7 @@ void containerForTopicsInfosClass::updateSettingsForInfo()
 void containerForTopicsInfosClass::setNewThemeForInfo(QString newThemeName)
 {
     showTopicMessages.setNewTheme(newThemeName);
+    showListOfTopic.setNewTheme(newThemeName);
 }
 
 void containerForTopicsInfosClass::setNewTopicForInfo(QString newTopic)

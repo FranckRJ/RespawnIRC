@@ -33,6 +33,7 @@ namespace
     const QRegularExpression expForEntireTopic("<li class=\"\" data-id=\"[^\"]*\">[^<]*<span class=\"topic-subject\">.*?</li>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForTopicNameAndLink("<a class=\"lien-jv topic-title\" href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForTopicNumberMessage("<span class=\"topic-count\">[^0-9]*([0-9]*)", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForTopicPseudoInfo("<span class=\"JvCare [^ ]* text-([^ ]*) topic-author", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForMessageID("<div class=\"bloc-message-forum \" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-([^\"]*)\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForDate("<div class=\"bloc-date-msg\">([^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*))", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -323,6 +324,7 @@ QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source)
         listOfTopic.back().name = name;
         listOfTopic.back().link = link;
         listOfTopic.back().numberOfMessage = expForTopicNumberMessage.match(thisTopic).captured(1);
+        listOfTopic.back().pseudoInfo.pseudoType = expForTopicPseudoInfo.match(thisTopic).captured(1);
     }
 
     return listOfTopic;

@@ -14,18 +14,20 @@
 #include <QNetworkReply>
 
 #include "autoTimeoutReply.hpp"
+#include "styleTool.hpp"
 
 class showListOfTopicClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit showListOfTopicClass(QWidget* parent = 0);
+    explicit showListOfTopicClass(QString currentThemeName, QWidget* parent = 0);
     bool getLoadNeeded();
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies);
     void updateSettings();
     void setLoadNeeded(bool newVal);
 public slots:
+    void setNewTheme(QString newThemeName);
     void startGetListOfTopic();
     void analyzeReply();
     void clickedOnLink(QModelIndex index);
@@ -43,10 +45,12 @@ private:
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> currentCookieList;
     QList<QString> listOfLink;
+    modelInfoStruct baseModelInfo;
     bool showNumberOfMessages;
     bool cutLongTopicName;
+    bool colorModoAndAdminTopic;
     bool loadNeeded = true;
-    int topicNameMaxSize = 35;
+    int topicNameMaxSize;
 };
 
 #endif

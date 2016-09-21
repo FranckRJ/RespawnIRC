@@ -38,6 +38,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["warnUser"] = true;
     listOfDefaultBoolOption["getFirstMessageOfTopic"] = false;
     listOfDefaultBoolOption["colorModoAndAdminPseudo"] = true;
+    listOfDefaultBoolOption["colorModoAndAdminTopicInTopicList"] = true;
     listOfDefaultBoolOption["colorPEMT"] = true;
     listOfDefaultBoolOption["colorUserPseudoInMessages"] = true;
     listOfDefaultBoolOption["warnWhenEdit"] = true;
@@ -93,6 +94,9 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["typeOfEdit"].value = 0;
     listOfDefaultIntOption["typeOfEdit"].minValue = 0;
     listOfDefaultIntOption["typeOfEdit"].maxValue = 2;
+    listOfDefaultIntOption["topicNameMaxSizeInTopicList"].value = 35;
+    listOfDefaultIntOption["topicNameMaxSizeInTopicList"].minValue = 10;
+    listOfDefaultIntOption["topicNameMaxSizeInTopicList"].maxValue = 100;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

@@ -204,8 +204,10 @@ QWidget* preferenceWindowClass::createWidgetForTopicListTab()
     QGroupBox* groupBoxTopicStyle = new QGroupBox("Style des topics", this);
 
     QVBoxLayout* vboxTopicStyle = new QVBoxLayout();
+    vboxTopicStyle->addWidget(makeNewCheckBox("Colorer les topics des modo/admin", "colorModoAndAdminTopicInTopicList"));
     vboxTopicStyle->addWidget(makeNewCheckBox("Afficher le nombre de réponses dans la liste des topics", "showNumberOfMessagesInTopicList"));
     vboxTopicStyle->addWidget(makeNewCheckBox("Couper les longs noms de topics dans la liste des topics", "cutLongTopicNameInTopicList"));
+    vboxTopicStyle->addLayout(makeNewSpinBox("Taille maximum des titres des topics", "topicNameMaxSizeInTopicList"));
     vboxTopicStyle->addStretch(1);
     groupBoxTopicStyle->setLayout(vboxTopicStyle);
 

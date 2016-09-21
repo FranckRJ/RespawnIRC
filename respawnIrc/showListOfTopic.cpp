@@ -10,7 +10,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-showListOfTopicClass::showListOfTopicClass(QWidget* parent) : QWidget(parent)
+showListOfTopicClass::showListOfTopicClass(QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
     listViewOfTopic.setModel(&modelForListView);
     listViewOfTopic.setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -18,6 +18,7 @@ showListOfTopicClass::showListOfTopicClass(QWidget* parent) : QWidget(parent)
     timerForGetList.setTimerType(Qt::CoarseTimer);
     timerForGetList.setInterval(5000);
     updateSettings();
+    setNewTheme(currentThemeName);
 
     networkManager = new QNetworkAccessManager(this);
 
@@ -78,7 +79,9 @@ void showListOfTopicClass::updateSettings()
 {
     showNumberOfMessages = settingToolClass::getThisBoolOption("showNumberOfMessagesInTopicList");
     cutLongTopicName = settingToolClass::getThisBoolOption("cutLongTopicNameInTopicList");
+    colorModoAndAdminTopic = settingToolClass::getThisBoolOption("colorModoAndAdminTopicInTopicList");
     timerForGetList.setInterval(settingToolClass::getThisIntOption("updateTopicListTime").value);
+    topicNameMaxSize = settingToolClass::getThisIntOption("topicNameMaxSizeInTopicList").value;
     setLoadNeeded(settingToolClass::getThisBoolOption("showListOfTopic"));
     timeoutForReply.updateTimeoutTime();
 }
@@ -99,6 +102,11 @@ void showListOfTopicClass::setLoadNeeded(bool newVal)
             timerForGetList.start();
         }
     }
+}
+
+void showListOfTopicClass::setNewTheme(QString newThemeName)
+{
+    baseModelInfo = styleToolClass::getModelInfo(newThemeName);
 }
 
 void showListOfTopicClass::startGetListOfTopic()
@@ -164,10 +172,19 @@ void showListOfTopicClass::analyzeReply()
     else
     {
         QList<topicStruct> listOfTopic = parsingToolClass::getListOfTopic(source);
+        QStandardItem* newItemToAppend;
+        QFont tmpFont;
 
         modelForListView.clear();
         listOfLink.clear();
-        modelForListView.appendRow(new QStandardItem(parsingToolClass::getForumName(source)));
+
+        newItemToAppend = new QStandardItem(parsingToolClass::getForumName(source));
+        newItemToAppend->setEditable(false);
+        tmpFont = newItemToAppend->font();
+        tmpFont.setBold(true);
+        newItemToAppend->setFont(tmpFont);
+        modelForListView.appendRow(newItemToAppend);
+
         listOfLink.append("");
 
         for(const topicStruct& thisTopic : listOfTopic)
@@ -187,8 +204,24 @@ void showListOfTopicClass::analyzeReply()
                 currentTopicName.append(" (" + thisTopic.numberOfMessage + ")");
             }
 
+            newItemToAppend = new QStandardItem(currentTopicName);
+            newItemToAppend->setEditable(false);
+
+            if(colorModoAndAdminTopic == true)
+            {
+                if(thisTopic.pseudoInfo.pseudoType == "modo")
+                {
+                    newItemToAppend->setForeground(QBrush(QColor(baseModelInfo.modoPseudoColor)));
+                }
+                else if(thisTopic.pseudoInfo.pseudoType == "admin" || thisTopic.pseudoInfo.pseudoType == "staff")
+                {
+                    newItemToAppend->setForeground(QBrush(QColor(baseModelInfo.adminPseudoColor)));
+                }
+            }
+
+            modelForListView.appendRow(newItemToAppend);
+
             listOfLink.append(thisTopic.link);
-            modelForListView.appendRow(new QStandardItem(currentTopicName));
         }
     }
 
