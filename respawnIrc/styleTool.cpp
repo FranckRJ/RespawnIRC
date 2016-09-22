@@ -18,7 +18,7 @@ namespace
 QString styleToolClass::getStyle(QString themeName)
 {
     QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/style.css");
-    if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
+    if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
         return textStream.readAll();
@@ -32,7 +32,7 @@ QString styleToolClass::getStyle(QString themeName)
 QString styleToolClass::getModel(QString themeName)
 {
     QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/model.txt");
-    if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
+    if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
         return textStream.readAll();
@@ -80,7 +80,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     listOfInfos.push_back("<hr><span style=\"font-size: 1px;\"><br></span><i><%SIGNATURE_SIGNATURE%></i>");
     listOfInfos.push_back("<i><%MESSAGE_TO_UPDATE%></i>");
 
-    if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
+    if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
         while(textStream.atEnd() == false)
@@ -133,7 +133,7 @@ QString styleToolClass::getImagePathOfThemeIfExist(QString themeName)
 {
     QDir imgDir(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/img/");
 
-    if(imgDir.exists() == true)
+    if(themeName.isEmpty() == false && imgDir.exists() == true)
     {
         return imgDir.path();
     }
@@ -146,7 +146,7 @@ void styleToolClass::loadThemeFont(QString themeName)
     QDir fontDir(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/fonts/");
     QStringList listOfFontsInDir;
 
-    if(fontDir.exists() == true)
+    if(themeName.isEmpty() == false && fontDir.exists() == true)
     {
         listOfFontsInDir = fontDir.entryList(QDir::Files);
     }

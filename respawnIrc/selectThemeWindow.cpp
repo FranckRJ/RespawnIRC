@@ -44,6 +44,7 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
     connect(buttonCancel, &QPushButton::clicked, this, &selectThemeWindowClass::close);
 
     loadListOfThemes();
+    listViewOfTheme.setFocus();
 }
 
 void selectThemeWindowClass::loadListOfThemes()
@@ -60,11 +61,19 @@ void selectThemeWindowClass::loadListOfThemes()
 
     listOfTheme.push_front("Défaut");
     modelForListViewOfTheme.setStringList(listOfTheme);
+
+    /* Valide même si indexof renvoi -1 car il faut associer l'index actuel à un index invalide dans ce cas */
+    listViewOfTheme.setCurrentIndex(modelForListViewOfTheme.index(listOfTheme.indexOf(currentThemeName.text())));
 }
 
 void selectThemeWindowClass::selectThisTheme()
 {
-    if(listViewOfTheme.currentIndex().row() != -1)
+    if(listViewOfTheme.currentIndex().row() == 0)
+    {
+        emit newThemeSelected("");
+        close();
+    }
+    else if(listViewOfTheme.currentIndex().row() != -1)
     {
         emit newThemeSelected(modelForListViewOfTheme.index(listViewOfTheme.currentIndex().row()).data().toString());
         close();
