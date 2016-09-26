@@ -21,6 +21,7 @@ void settingToolClass::setSettings(QSettings* newSetting)
 void settingToolClass::initializeDefaultListsOption()
 {
     listOfDefaultBoolOption["showQuoteButton"] = true;
+    listOfDefaultBoolOption["disableSelfQuoteButton"] = false;
     listOfDefaultBoolOption["showBlacklistButton"] = true;
     listOfDefaultBoolOption["showEditButton"] = true;
     listOfDefaultBoolOption["showDeleteButton"] = false;

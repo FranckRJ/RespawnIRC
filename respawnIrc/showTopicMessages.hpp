@@ -113,6 +113,7 @@ private:
     QString numberOfConnected;
     messageStruct firstMessageOfTopic;
     bool showQuoteButton;
+    bool disableSelfQuoteButton;
     bool showBlacklistButton;
     bool showEditButton;
     bool showDeleteButton;

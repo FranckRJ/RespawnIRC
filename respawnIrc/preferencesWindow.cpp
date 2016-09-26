@@ -130,6 +130,7 @@ QWidget* preferenceWindowClass::createWidgetForMessagesTab()
 
     QVBoxLayout* vboxMessageButtons = new QVBoxLayout();
     vboxMessageButtons->addWidget(makeNewCheckBox("Ajouter un bouton pour citer un message", "showQuoteButton"));
+    vboxMessageButtons->addWidget(makeNewCheckBox("Désactiver le bouton citer pour soi-même", "disableSelfQuoteButton"));
     vboxMessageButtons->addWidget(makeNewCheckBox("Ajouter un bouton pour ignorer un pseudo", "showBlacklistButton"));
     vboxMessageButtons->addWidget(makeNewCheckBox("Ajouter un bouton pour éditer un message", "showEditButton"));
     vboxMessageButtons->addWidget(makeNewCheckBox("Ajouter un bouton pour supprimer un message", "showDeleteButton"));

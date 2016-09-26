@@ -187,6 +187,7 @@ void showTopicMessagesClass::updateSettingInfo()
     settingsForMessageParsingStruct settingsForMessageParsing;
 
     showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
+    disableSelfQuoteButton = settingToolClass::getThisBoolOption("disableSelfQuoteButton");
     showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
     showEditButton = settingToolClass::getThisBoolOption("showEditButton");
     showDeleteButton = settingToolClass::getThisBoolOption("showDeleteButton");
@@ -682,7 +683,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             }
         }
 
-        if(showQuoteButton == true)
+        if(showQuoteButton == true && (disableSelfQuoteButton == false || pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower()))
         {
             newMessageToAppend.replace("<%BUTTON_QUOTE%>", baseModelInfo.quoteModel);
         }
