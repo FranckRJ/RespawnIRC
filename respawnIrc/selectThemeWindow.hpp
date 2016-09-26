@@ -5,8 +5,11 @@
 #include <QDialog>
 #include <QListView>
 #include <QStringListModel>
+#include <QModelIndex>
 #include <QLabel>
 #include <QString>
+
+#include "viewThemeInfos.hpp"
 
 class selectThemeWindowClass : public QDialog
 {
@@ -16,12 +19,14 @@ public:
     void loadListOfThemes();
 public slots:
     void selectThisTheme();
+    void changeThemeInfos(const QModelIndex& selection);
 signals:
     void newThemeSelected(QString newTheme);
 private:
     QListView listViewOfTheme;
     QStringListModel modelForListViewOfTheme;
     QLabel currentThemeName;
+    viewThemeInfosClass* viewThemeInfos;
 };
 
 #endif

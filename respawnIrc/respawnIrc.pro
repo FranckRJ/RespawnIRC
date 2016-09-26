@@ -27,7 +27,8 @@ SOURCES += \
     shortcutTool.cpp \
     addCookiesWindow.cpp \
     imageDownloadTool.cpp \
-    webNavigator.cpp
+    webNavigator.cpp \
+    viewThemeInfos.cpp
 
 QT += \
     network \
@@ -63,7 +64,8 @@ HEADERS += \
     shortcutTool.hpp \
     addCookiesWindow.hpp \
     imageDownloadTool.hpp \
-    webNavigator.hpp
+    webNavigator.hpp \
+    viewThemeInfos.hpp
 
 RC_FILE = respawnIrc.rc
 

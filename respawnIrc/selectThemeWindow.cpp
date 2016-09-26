@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QStringList>
+#include <QItemSelectionModel>
 
 #include "selectThemeWindow.hpp"
 
@@ -15,6 +16,8 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
     QPushButton* buttonSelect = new QPushButton("Sélectionner ce thème", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
 
+    viewThemeInfos = new viewThemeInfosClass(this);
+
     listViewOfTheme.setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     QHBoxLayout* labLayout = new QHBoxLayout;
@@ -23,9 +26,10 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
 
     QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(&listViewOfTheme, 0, 0);
+    mainLayout->addWidget(viewThemeInfos, 0, 1);
     mainLayout->addLayout(labLayout, 1, 0);
-    mainLayout->addWidget(buttonSelect, 2, 0);
-    mainLayout->addWidget(buttonCancel, 3, 0);
+    mainLayout->addWidget(buttonSelect, 2, 0, 1, 2);
+    mainLayout->addWidget(buttonCancel, 3, 0, 1, 2);
 
     if(newCurrentThemeName.isEmpty() == true)
     {
@@ -42,6 +46,7 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
 
     connect(buttonSelect, &QPushButton::clicked, this, &selectThemeWindowClass::selectThisTheme);
     connect(buttonCancel, &QPushButton::clicked, this, &selectThemeWindowClass::close);
+    connect(listViewOfTheme.selectionModel(), &QItemSelectionModel::currentChanged, this, &selectThemeWindowClass::changeThemeInfos);
 
     loadListOfThemes();
     listViewOfTheme.setFocus();
@@ -64,6 +69,8 @@ void selectThemeWindowClass::loadListOfThemes()
 
     /* Valide même si indexof renvoi -1 car il faut associer l'index actuel à un index invalide dans ce cas */
     listViewOfTheme.setCurrentIndex(modelForListViewOfTheme.index(listOfTheme.indexOf(currentThemeName.text())));
+
+    changeThemeInfos(listViewOfTheme.currentIndex());
 }
 
 void selectThemeWindowClass::selectThisTheme()
@@ -77,5 +84,17 @@ void selectThemeWindowClass::selectThisTheme()
     {
         emit newThemeSelected(modelForListViewOfTheme.index(listViewOfTheme.currentIndex().row()).data().toString());
         close();
+    }
+}
+
+void selectThemeWindowClass::changeThemeInfos(const QModelIndex& selection)
+{
+    if(selection.row() != -1)
+    {
+        viewThemeInfos->setThemeToShow(modelForListViewOfTheme.index(selection.row()).data().toString());
+    }
+    else
+    {
+        viewThemeInfos->setThemeToShow("");
     }
 }
