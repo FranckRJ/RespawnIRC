@@ -34,7 +34,7 @@ void viewThemeInfosClass::setThemeToShow(QString newThemeName)
                               "Bouton éditer : " + boolToYesOrNo(hasButtonEdit) + "<br>" +
                               "Bouton supprimer : " + boolToYesOrNo(hasButtonDelete) + "<br>" +
                               "Support des signatures : " + boolToYesOrNo(hasSupportSignature) + "<br>" +
-                              "Support des avatarss : " + boolToYesOrNo(hasSupportAvatars));
+                              "Support des avatars : " + boolToYesOrNo(hasSupportAvatars));
     }
     else
     {
@@ -44,7 +44,7 @@ void viewThemeInfosClass::setThemeToShow(QString newThemeName)
                               "Bouton éditer : <br>"
                               "Bouton supprimer : <br>"
                               "Support des signatures : <br>"
-                              "Support des avatarss : ");
+                              "Support des avatars : ");
     }
 }
 
