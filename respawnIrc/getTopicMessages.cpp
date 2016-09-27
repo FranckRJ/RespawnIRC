@@ -229,12 +229,15 @@ void getTopicMessagesClass::analyzeMessages()
     ajaxInfoStruct ajaxInfo;
     QList<messageStruct> listOfNewMessages;
     QList<QPair<QString, QString> > listOfInput;
-    QStringList listOfStickersUsed;
-    QStringList listOfNoelshackImagesUsed;
+    QStringList tmpListOfStickersUsed;
+    QStringList tmpListOfNoelshackImagesUsed;
     QVector<QString> listOfPageSource;
     QVector<QString> listOfPageUrl;
     QString locationHeader = ".";
     int firstValidePageNumber = -1;
+
+    settingsForMessageParsing.infoForMessageParsing.listOfStickersUsed = (settingsForMessageParsing.downloadMissingStickers == true ? &tmpListOfStickersUsed : nullptr);
+    settingsForMessageParsing.infoForMessageParsing.listOfNoelshackImageUsed = (settingsForMessageParsing.downloadNoelshackImages == true ? &tmpListOfNoelshackImagesUsed : nullptr);
 
     for(autoTimeoutReplyClass*& autoTimeout : listOfTimeoutForReplys)
     {
@@ -340,11 +343,8 @@ void getTopicMessagesClass::analyzeMessages()
 
                 tmpMsg.isFirstMessage = true;
                 tmpMsg.isAnEdit = false;
-                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, settingsForMessageParsing.infoForMessageParsing,
-                                                                   (settingsForMessageParsing.downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
-                                                                   (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
-                tmpMsg.signature = parsingToolClass::parsingMessages(tmpMsg.signature, settingsForMessageParsing.infoForMessageParsing, nullptr,
-                                                                     (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
+                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, settingsForMessageParsing.infoForMessageParsing);
+                tmpMsg.signature = parsingToolClass::parsingMessages(tmpMsg.signature, settingsForMessageParsing.infoForMessageParsing, false);
 
                 listOfNewMessages.push_front(tmpMsg);
             }
@@ -389,11 +389,8 @@ void getTopicMessagesClass::analyzeMessages()
                     idOfLastMessage = currentMessage.idOfMessage;
                 }
 
-                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, settingsForMessageParsing.infoForMessageParsing,
-                                                                           (settingsForMessageParsing.downloadMissingStickers == true ? &listOfStickersUsed : nullptr),
-                                                                           (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
-                currentMessage.signature = parsingToolClass::parsingMessages(currentMessage.signature, settingsForMessageParsing.infoForMessageParsing, nullptr,
-                                                                             (settingsForMessageParsing.downloadNoelshackImages == true ? &listOfNoelshackImagesUsed : nullptr));
+                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, settingsForMessageParsing.infoForMessageParsing);
+                currentMessage.signature = parsingToolClass::parsingMessages(currentMessage.signature, settingsForMessageParsing.infoForMessageParsing, false);
                 listOfNewMessages.push_back(currentMessage);
 
                 listOfEdit[currentMessage.idOfMessage] = currentMessage.lastTimeEdit;
@@ -423,8 +420,8 @@ void getTopicMessagesClass::analyzeMessages()
     retrievesMessage = false;
 
     emit newMessagesAreAvailable(listOfNewMessages, listOfInput, ajaxInfo, topicLink, false);
-    emit theseStickersAreUsed(listOfStickersUsed);
-    emit theseNoelshackImagesAreUsed(listOfNoelshackImagesUsed);
+    emit theseStickersAreUsed(tmpListOfStickersUsed);
+    emit theseNoelshackImagesAreUsed(tmpListOfNoelshackImagesUsed);
 
     if(newTopicLink.isEmpty() == false)
     {

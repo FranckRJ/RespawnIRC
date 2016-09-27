@@ -53,6 +53,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["expertMode"] = false;
     listOfDefaultBoolOption["warnOnFirstTime"] = true;
     listOfDefaultBoolOption["showSignatures"] = false;
+    listOfDefaultBoolOption["showAvatars"] = false;
     listOfDefaultBoolOption["showPinnedTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showHotTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showLockTagOnTopicInTopicList"] = true;

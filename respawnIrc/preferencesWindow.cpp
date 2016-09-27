@@ -160,6 +160,7 @@ QWidget* preferenceWindowClass::createWidgetForMessagesTab()
 
     QVBoxLayout* vboxThemesSettings = new QVBoxLayout();
     vboxThemesSettings->addWidget(makeNewCheckBox("Afficher les signatures (si activé sur JVC)", "showSignatures"));
+    vboxThemesSettings->addWidget(makeNewCheckBox("Afficher les avatars (si activé sur JVC)", "showAvatars"));
     vboxThemesSettings->addStretch(1);
     groupBoxThemesSettings->setLayout(vboxThemesSettings);
 

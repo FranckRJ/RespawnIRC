@@ -87,6 +87,7 @@ public slots:
     void setEditMessage(long idOfMessageToEdit = 0, bool useMessageEdit = true);
     void downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck);
     void downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck);
+    void downloadAvatarsIfNeeded(QStringList listOfAvatarsNeedToBeCheck);
     void updateImagesIfNeeded();
     void clipboardChanged();
 signals:

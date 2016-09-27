@@ -81,6 +81,7 @@ signals:
     void newCookiesHaveToBeSet();
     void downloadTheseStickersIfNeeded(QStringList listOfStickersToCheck);
     void downloadTheseNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesToCheck);
+    void downloadTheseAvatarsIfNeeded(QStringList listOfAvatarsUsed);
 private:
     static QThread threadForGetMessages;
     QRegularExpression expForColorPseudo;
@@ -118,6 +119,7 @@ private:
     bool showEditButton;
     bool showDeleteButton;
     bool showSignatures;
+    bool showAvatars;
     bool ignoreNetworkError;
     bool firstTimeGetMessages = true;
     bool errorMode = false;

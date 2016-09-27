@@ -25,6 +25,7 @@ struct messageStruct
     QString message;
     QString lastTimeEdit;
     QString signature;
+    QString avatarLink;
     bool operator<(const messageStruct& otherStruct) const
     {
         return (idOfMessage < otherStruct.idOfMessage);
@@ -56,6 +57,8 @@ struct infoForMessageParsingStruct
     int noelshackImageWidth;
     int noelshackImageHeight;
     bool useNewLayout;
+    QStringList* listOfStickersUsed = nullptr;
+    QStringList* listOfNoelshackImageUsed = nullptr;
 };
 
 namespace parsingToolClass
@@ -80,7 +83,7 @@ namespace parsingToolClass
     QString getForumOfTopic(const QString& source);
     QString getForumName(const QString& source);
     QString jvfLinkToJvcLink(const QString& source);
-    QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, QStringList* listOfStickersUsed = nullptr, QStringList* listOfNoelshackImageUsed = nullptr);
+    QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers = true);
     QString parsingAjaxMessages(QString thisMessage);
     QNetworkRequest buildRequestWithThisUrl(QString url);
     QList<QString> getListOfThisCapNumber(const QString& source, const QRegularExpression& exp, int capNumber, bool globalMatch = true);

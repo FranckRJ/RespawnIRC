@@ -192,6 +192,7 @@ void showTopicMessagesClass::updateSettingInfo()
     showEditButton = settingToolClass::getThisBoolOption("showEditButton");
     showDeleteButton = settingToolClass::getThisBoolOption("showDeleteButton");
     showSignatures = settingToolClass::getThisBoolOption("showSignatures");
+    showAvatars = settingToolClass::getThisBoolOption("showAvatars");
     ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
     colorModoAndAdminPseudo = settingToolClass::getThisBoolOption("colorModoAndAdminPseudo");
     colorPEMT = settingToolClass::getThisBoolOption("colorPEMT");
@@ -553,6 +554,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
 {
     QString colorOfPseudo;
     QString colorOfDate;
+    QStringList listOfAvatarsUsed;
     bool appendHrAtEndOfFirstMessage = false;
     bool errorHappen = false;
     bool firstTimeAddMessages = false;
@@ -709,6 +711,11 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
             newMessageToAppend.replace("<%SIGNATURE_MODEL%>", baseModelInfo.signatureModel);
         }
 
+        if(showAvatars == true && currentMessage.avatarLink.isEmpty() == false)
+        {
+            newMessageToAppend.replace("<%AVATAR_MODEL%>", baseModelInfo.avatarModel);
+        }
+
         if(colorUserPseudoInMessages == true && pseudoOfUser.isEmpty() == false)
         {
             parsingToolClass::replaceWithCapNumber(currentMessage.message, expForColorPseudo, 0,
@@ -727,6 +734,12 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
         if(showSignatures == true && currentMessage.signature.isEmpty() == false)
         {
             newMessageToAppend.replace("<%SIGNATURE_SIGNATURE%>", currentMessage.signature);
+        }
+
+        if(showAvatars == true && currentMessage.avatarLink.isEmpty() == false)
+        {
+            newMessageToAppend.replace("<%AVATAR_LINK%>", "vtr/" + currentMessage.avatarLink);
+            listOfAvatarsUsed.append(currentMessage.avatarLink);
         }
 
         if(appendHrAtEndOfFirstMessage == true)
@@ -807,6 +820,8 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
     }
 
     firstTimeGetMessages = false;
+
+    emit downloadTheseAvatarsIfNeeded(listOfAvatarsUsed);
 }
 
 void showTopicMessagesClass::setMessageStatus(QString newStatus)

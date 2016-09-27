@@ -36,6 +36,7 @@ namespace
     const QRegularExpression expForTopicPseudoInfo("<span class=\"JvCare [^ ]* text-([^ ]*) topic-author", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForTopicType("<img src=\"/img/forums/topic-(.*?).png\"", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForMessageID("<div class=\"bloc-message-forum \" data-id=\"([^\"]*)\">", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForAvatars("<img src=\"[^\"]*\" data-srcset=\"//([^\"]*)\" class=\"user-avatar-msg\"", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForPseudo("<span class=\"JvCare [^ ]* bloc-pseudo-msg text-([^\"]*)\" target=\"_blank\">[^a-zA-Z0-9_\\[\\]-]*([a-zA-Z0-9_\\[\\]-]*)[^<]*</span>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForDate("<div class=\"bloc-date-msg\">([^<]*<span class=\"JvCare [^ ]* lien-jv\" target=\"_blank\">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*))", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">((.*?)(?=<div class=\"info-edition-msg\">)|(.*?)(?=<div class=\"signature-msg)|(.*))", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
@@ -280,6 +281,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
     {
         listOfMessages.push_back(messageStruct());
         listOfMessages.back().idOfMessage = expForMessageID.match(thisMessage).captured(1).toLong();
+        listOfMessages.back().avatarLink = expForAvatars.match(thisMessage).captured(1);
         listOfMessages.back().pseudoInfo.pseudoName = expForPseudo.match(thisMessage).captured(2);
         listOfMessages.back().pseudoInfo.pseudoType = expForPseudo.match(thisMessage).captured(1);
         listOfMessages.back().date = expForDate.match(thisMessage).captured(3);
@@ -383,7 +385,7 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString& source)
     }
 }
 
-QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, QStringList* listOfStickersUsed, QStringList* listOfNoelshackImageUsed)
+QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers)
 {
     QString extraTableStyle;
 
@@ -422,9 +424,9 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     }
     else
     {
-        if(listOfStickersUsed != nullptr)
+        if(infoForParsing.listOfStickersUsed != nullptr && reallyDownloadStickers == true)
         {
-            listOfStickersUsed->append(getListOfThisCapNumber(thisMessage, expForStickers, 2, false));
+            infoForParsing.listOfStickersUsed->append(getListOfThisCapNumber(thisMessage, expForStickers, 2, false));
         }
 
         replaceWithCapNumber(thisMessage, expForStickers, 2, "<img width=" + QString::number(infoForParsing.stickersSize) + " height=" + QString::number(infoForParsing.stickersSize) + " src=\"resources/stickers/", ".png\" />");
@@ -436,11 +438,11 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
 
-    if(listOfNoelshackImageUsed != nullptr)
+    if(infoForParsing.listOfNoelshackImageUsed != nullptr)
     {
-        listOfNoelshackImageUsed->append(getListOfThisCapNumber(thisMessage, expForNoelshack, 2, false));
+        infoForParsing.listOfNoelshackImageUsed->append(getListOfThisCapNumber(thisMessage, expForNoelshack, 2, false));
 
-        for(QString& thisNoelshackImage : *listOfNoelshackImageUsed)
+        for(QString& thisNoelshackImage : *infoForParsing.listOfNoelshackImageUsed)
         {
             if(thisNoelshackImage.startsWith("http://") == false)
             {

@@ -38,6 +38,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     alertImage.load(QCoreApplication::applicationDirPath() + "/resources/alert.png");
     imageDownloadTool.addRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
     imageDownloadTool.addRule("noelshack", "/img/", true);
+    imageDownloadTool.addRule("avatar", "/vtr/", true, false, "http://");
 
     addButtonToButtonLayout();
 
@@ -424,6 +425,7 @@ void respawnIrcClass::addNewTabWithPseudo(QString useThisPseudo)
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::downloadTheseStickersIfNeeded, this, &respawnIrcClass::downloadStickersIfNeeded);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::downloadTheseNoelshackImagesIfNeeded, this, &respawnIrcClass::downloadNoelshackImagesIfNeeded);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::downloadTheseAvatarsIfNeeded, this, &respawnIrcClass::downloadAvatarsIfNeeded);
     connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
     connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
@@ -873,6 +875,11 @@ void respawnIrcClass::downloadStickersIfNeeded(QStringList listOfStickersNeedToB
 void respawnIrcClass::downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck)
 {
     imageDownloadTool.checkAndStartDownloadMissingImages(listOfNoelshackImagesNeedToBeCheck, "noelshack");
+}
+
+void respawnIrcClass::downloadAvatarsIfNeeded(QStringList listOfAvatarsNeedToBeCheck)
+{
+    imageDownloadTool.checkAndStartDownloadMissingImages(listOfAvatarsNeedToBeCheck, "avatar");
 }
 
 void respawnIrcClass::updateImagesIfNeeded()

@@ -79,6 +79,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
 
     listOfInfos.push_back("<hr><span style=\"font-size: 1px;\"><br></span><i><%SIGNATURE_SIGNATURE%></i>");
     listOfInfos.push_back("<i><%MESSAGE_TO_UPDATE%></i>");
+    listOfInfos.push_back("<img width=60 height=60 src=\"<%AVATAR_LINK%>\">");
 
     if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
@@ -120,6 +121,7 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
 
     modelInfo.signatureModel = listOfLine.at(18);
     modelInfo.updateMessageForEditModel = listOfLine.at(19);
+    modelInfo.avatarModel = listOfLine.at(20);
 
     return modelInfo;
 }
