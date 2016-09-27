@@ -394,14 +394,26 @@ void respawnIrcClass::addNewTabWithPseudo(QString useThisPseudo)
     {
         if(useThisPseudo != ".")
         {
+            bool pseudoFound = false;
+
             for(int j = 0; j < listOfAccount.size(); ++j)
             {
                 if(listOfAccount.at(j).pseudo.toLower() == useThisPseudo.toLower())
                 {
+                    pseudoFound = true;
                     listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo, typeOfSaveForPseudo::REMEMBER);
                     break;
                 }
             }
+
+            if(pseudoFound == false)
+            {
+                listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT);
+            }
+        }
+        else
+        {
+            listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
         }
     }
     else if(pseudoOfUser.isEmpty() == false)
