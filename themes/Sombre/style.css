@@ -1,0 +1,177 @@
+QMainWindow, QDialog
+{
+    background: #303030;
+}
+
+QLabel, QGroupBox, QCheckBox
+{
+    color: #E0E0E0;
+}
+
+QMenuBar
+{
+	background: #262626;
+}
+
+QMenuBar::item
+{
+	background: #262626;
+	color: white;
+}
+
+QMenuBar::item:selected
+{
+	background: #333333;
+	color: white;
+}
+
+QMenu
+{
+	background: #333333;
+	color: white;
+	border: 1px solid #444444;
+	border-top-color: #333333;
+}
+
+QMenu::item:selected
+{
+	background: #444444;
+	color: white;
+}
+
+QMenu::item:disabled
+{
+	color: #858585;
+}
+
+QTextBrowser, QListView, QTabWidget::pane, QTextEdit, QLineEdit
+{
+    background: #444444;
+    color: #E0E0E0;
+	border: 1px;
+}
+
+QTextBrowser, QTextEdit, QLineEdit
+{
+	selection-background-color: #B7B7B7;
+	selection-color: #505050;
+}
+
+QListView::item:hover
+{
+	background: #595959;
+}
+
+QListView::item:selected
+{
+	background: #737373;
+}
+
+QPushButton
+{
+    background: #484A4B;
+    color: white;
+	border-radius: 0px;
+	padding: 3px;
+	min-width: 60px;
+}
+
+QPushButton#boldButton, QPushButton#italicButton, QPushButton#underlineButton, QPushButton#strikeButton, 
+QPushButton#ulistButton, QPushButton#olistButton, QPushButton#quoteButton, QPushButton#codeButton, QPushButton#spoilButton
+{
+	text-transform: uppercase;
+	min-width: 50px;
+	max-height: 19px;
+	margin-right: 5px;
+}
+
+QPushButton#sendButton
+{
+	text-transform: uppercase;
+	border: 1px solid #494C4C;
+	min-width:63px;
+	min-height:57px;
+}
+
+QPushButton:hover, QPushButton:focus:hover
+{
+	background: #535556;
+}
+
+QPushButton:focus
+{
+	background: #535556;
+}
+
+QPushButton:pressed, QPushButton:focus:pressed
+{
+	background: #3A3C3D;
+}
+
+QSplitter::handle
+{
+    background: #444444;
+	border-left: 1px solid #444444;
+	border-right: 1px solid #A5A5A5;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-right: 4px;
+}
+
+QScrollBar
+{
+	background: #444444;
+	margin: 0px;
+}
+
+QScrollBar::handle
+{
+	background: #444444;
+	border: 1px solid white;
+}
+
+QScrollBar::up-arrow, QScrollBar::down-arrow, QScrollBar::add-page, QScrollBar::sub-page, QScrollBar::sub-line, QScrollBar::add-line
+{
+	border: 0px;
+	width: 0px;
+	height: 0px;
+	background: none;
+}
+
+QTabBar::tab
+{
+	background: #505050;
+	color: white;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+QTabBar::close-button
+{
+	image: url(themes/Sombre/close.png);
+	subcontrol-position: right;
+}
+
+QTabBar::tab:selected
+{
+	background: #444444;
+	border-right: 1px solid #505050;
+}
+
+QTabBar::tab:!selected:hover
+{
+	background: #575757;
+}
+
+QTabBar::tab:!selected
+{
+    margin-top: 3px;
+	border-right: 1px solid #444444;
+}
+
+QSpinBox
+{
+	selection-background-color: #B7B7B7;
+}
