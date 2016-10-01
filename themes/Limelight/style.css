@@ -1,0 +1,130 @@
+QMainWindow
+{
+	background-image: url("themes/Limelight/bg.jpg");
+	background-color: rgba(0, 0, 0, 0);
+	background-position: left bottom;
+}
+
+QTextBrowser, QTabWidget#tabListForTopics QListView, QTextEdit#sendMessageText, QLineEdit#sendMessageLine, QTabWidget#tabListForTopics::pane
+{
+    border: none;
+}
+
+QTabWidget#tabListForTopics QListView
+{
+	border: 5px solid white;
+	border-bottom: 0px;
+}
+
+QPushButton#boldButton
+{
+	background-image: url("themes/Limelight/bold.png");
+}
+
+QPushButton#italicButton
+{
+	background-image: url("themes/Limelight/ital.png");
+}
+
+QPushButton#underlineButton
+{
+	background-image: url("themes/Limelight/undl.png");
+}
+
+QPushButton#strikeButton
+{
+	background-image: url("themes/Limelight/strike.png");
+}
+
+QPushButton#ulistButton
+{
+	background-image: url("themes/Limelight/ulist.png");
+}
+
+QPushButton#olistButton
+{
+	background-image: url("themes/Limelight/olist.png");
+}
+
+QPushButton#quoteButton
+{
+	background-image: url("themes/Limelight/quote.png");
+}
+
+QPushButton#codeButton
+{
+	background-image: url("themes/Limelight/code.png");
+}
+
+QPushButton#spoilButton
+{
+	background-image: url("themes/Limelight/spoil.png");
+}
+
+QPushButton#boldButton, QPushButton#italicButton, QPushButton#underlineButton, QPushButton#strikeButton, QPushButton#ulistButton, QPushButton#olistButton, QPushButton#quoteButton, QPushButton#codeButton, QPushButton#spoilButton
+{
+    border: 2px solid white;
+	background-color: white;
+	background-repeat: no-repeat;
+	background-origin: content;
+	background-position: left;
+	color: rgba(0, 0, 0, 0);
+	font-size: 1px;
+	min-width: 18px;
+	min-height: 18px;
+	margin-left: 0px;
+	border-radius: 2px;
+}
+
+QPushButton#boldButton:hover, QPushButton#italicButton:hover, QPushButton#underlineButton:hover, QPushButton#strikeButton:hover, QPushButton#ulistButton:hover, QPushButton#olistButton:hover, QPushButton#quoteButton:hover, QPushButton#codeButton:hover, QPushButton#spoilButton:hover, QPushButton#boldButton:focus:hover, QPushButton#italicButton:focus:hover, QPushButton#underlineButton:focus:hover, QPushButton#strikeButton:focus:hover, QPushButton#ulistButton:focus:hover, QPushButton#olistButton:focus:hover, QPushButton#quoteButton:focus:hover, QPushButton#codeButton:focus:hover, QPushButton#spoilButton:focus:hover
+{
+	background-position: center;
+}
+
+QPushButton#boldButton:pressed, QPushButton#italicButton:pressed, QPushButton#underlineButton:pressed, QPushButton#strikeButton:pressed, QPushButton#ulistButton:pressed, QPushButton#olistButton:pressed, QPushButton#quoteButton:pressed, QPushButton#codeButton:pressed, QPushButton#spoilButton:pressed, QPushButton#boldButton:focus:pressed, QPushButton#italicButton:focus:pressed, QPushButton#underlineButton:focus:pressed, QPushButton#strikeButton:focus:pressed, QPushButton#ulistButton:focus:pressed, QPushButton#olistButton:focus:pressed, QPushButton#quoteButton:focus:pressed, QPushButton#codeButton:focus:pressed, QPushButton#spoilButton:focus:pressed
+{
+	background-position: right;
+	border-color: #E6E6E6;
+}
+
+QPushButton#sendButton
+{
+	border: none;
+	background: white;
+	min-height: 65px;
+	min-width: 53px;
+}
+
+QPushButton#sendButton:pressed, QPushButton#sendButton:focus:pressed
+{
+	background: #F5F9DA;
+}
+
+QTabWidget#tabListForTopics QTabBar::tab
+{
+	border: none;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	background: #F5F9DA;
+	padding-top: 4px;
+	padding-bottom: 5px;
+	padding-left: 7px; 
+	padding-right: 3px; 
+	margin-right: 2px;
+}
+
+QTabWidget#tabListForTopics QTabBar::tab:selected
+{
+	background: white;
+}
+
+QTabWidget#tabListForTopics QTabBar::tab:!selected:hover, QPushButton#sendButton:hover
+{
+	background: #F8FFE0;
+}
+
+QTabWidget#tabListForTopics QTabBar::close-button
+{
+	image: url(themes/Limelight/close.png);
+	subcontrol-position: right;
+}
