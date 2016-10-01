@@ -1,16 +1,16 @@
 QMainWindow
 {
-	background-image: url("themes/Limette/bg.jpg");
+	background-image: url("themes/Limelight/bg.jpg");
 	background-color: rgba(0, 0, 0, 0);
 	background-position: left bottom;
 }
 
-QTextBrowser, QListView, QTextEdit#sendMessageText, QLineEdit#sendMessageLine, QTabWidget#tabListForTopics::pane
+QTextBrowser, QTabWidget#tabListForTopics QListView, QTextEdit#sendMessageText, QLineEdit#sendMessageLine, QTabWidget#tabListForTopics::pane
 {
     border: none;
 }
 
-QListView
+QTabWidget#tabListForTopics QListView
 {
 	border: 5px solid white;
 	border-bottom: 0px;
@@ -18,47 +18,47 @@ QListView
 
 QPushButton#boldButton
 {
-	background-image: url("themes/Limette/bold.png");
+	background-image: url("themes/Limelight/bold.png");
 }
 
 QPushButton#italicButton
 {
-	background-image: url("themes/Limette/ital.png");
+	background-image: url("themes/Limelight/ital.png");
 }
 
 QPushButton#underlineButton
 {
-	background-image: url("themes/Limette/undl.png");
+	background-image: url("themes/Limelight/undl.png");
 }
 
 QPushButton#strikeButton
 {
-	background-image: url("themes/Limette/strike.png");
+	background-image: url("themes/Limelight/strike.png");
 }
 
 QPushButton#ulistButton
 {
-	background-image: url("themes/Limette/ulist.png");
+	background-image: url("themes/Limelight/ulist.png");
 }
 
 QPushButton#olistButton
 {
-	background-image: url("themes/Limette/olist.png");
+	background-image: url("themes/Limelight/olist.png");
 }
 
 QPushButton#quoteButton
 {
-	background-image: url("themes/Limette/quote.png");
+	background-image: url("themes/Limelight/quote.png");
 }
 
 QPushButton#codeButton
 {
-	background-image: url("themes/Limette/code.png");
+	background-image: url("themes/Limelight/code.png");
 }
 
 QPushButton#spoilButton
 {
-	background-image: url("themes/Limette/spoil.png");
+	background-image: url("themes/Limelight/spoil.png");
 }
 
 QPushButton#boldButton, QPushButton#italicButton, QPushButton#underlineButton, QPushButton#strikeButton, QPushButton#ulistButton, QPushButton#olistButton, QPushButton#quoteButton, QPushButton#codeButton, QPushButton#spoilButton
@@ -125,6 +125,6 @@ QTabWidget#tabListForTopics QTabBar::tab:!selected:hover, QPushButton#sendButton
 
 QTabWidget#tabListForTopics QTabBar::close-button
 {
-	image: url(themes/Limette/close.png);
+	image: url(themes/Limelight/close.png);
 	subcontrol-position: right;
 }
