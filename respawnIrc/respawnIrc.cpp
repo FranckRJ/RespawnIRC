@@ -67,7 +67,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
     showTopicMessagesClass::startThread();
 }
 
-respawnIrcClass::~respawnIrcClass()
+void respawnIrcClass::doStuffBeforeQuit()
 {
     QList<QString> listOfTopicLink;
     QList<QString> listOfPseudoForTopic;
@@ -100,6 +100,8 @@ respawnIrcClass::~respawnIrcClass()
     settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
 
     showTopicMessagesClass::stopThread();
+
+    sendMessages.doStuffBeforeQuit();
 }
 
 void respawnIrcClass::loadSettings()

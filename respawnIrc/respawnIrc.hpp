@@ -27,7 +27,7 @@ class respawnIrcClass : public QWidget
     Q_OBJECT
 public:
     explicit respawnIrcClass(QWidget* parent = 0);
-    ~respawnIrcClass();
+    void doStuffBeforeQuit();
     void loadSettings();
     containerForTopicsInfosClass* getCurrentWidget();
     multiTypeTextBoxClass* getMessageLine();

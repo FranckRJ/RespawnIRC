@@ -18,6 +18,7 @@ class spellTextEditClass : public QTextEdit
 public:
     explicit spellTextEditClass(QWidget* parent = 0);
     ~spellTextEditClass();
+    void doStuffBeforeQuit();
     void enableSpellChecking(bool newVal);
     void searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos);
     QStringList getWordPropositions(const QString word);

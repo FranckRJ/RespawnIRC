@@ -21,6 +21,14 @@ spellTextEditClass::spellTextEditClass(QWidget* parent) : QTextEdit(parent)
 
 spellTextEditClass::~spellTextEditClass()
 {
+    if(spellChecker != nullptr)
+    {
+        delete spellChecker;
+    }
+}
+
+void spellTextEditClass::doStuffBeforeQuit()
+{
     if(addedWords.isEmpty() == false)
     {
         QFile file(QCoreApplication::applicationDirPath() + "/user_" + spellDic + ".dic");
@@ -55,11 +63,6 @@ spellTextEditClass::~spellTextEditClass()
 
             file.close();
         }
-    }
-
-    if(spellChecker != nullptr)
-    {
-        delete spellChecker;
     }
 }
 

@@ -187,8 +187,14 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
     connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
     connect(&respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
+    connect(QApplication::instance(), &QApplication::aboutToQuit, this, &mainWindowClass::doStuffBeforeQuit);
 
     respawnIrc.setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
+}
+
+void mainWindowClass::doStuffBeforeQuit()
+{
+    respawnIrc.doStuffBeforeQuit();
 }
 
 void mainWindowClass::goToMp()

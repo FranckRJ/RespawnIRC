@@ -30,10 +30,11 @@ sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
     connect(&messageLine, &multiTypeTextBoxClass::returnPressed, &sendButton, &QPushButton::click);
 }
 
-sendMessagesClass::~sendMessagesClass()
+void sendMessagesClass::doStuffBeforeQuit()
 {
     settingToolClass::saveThisOption("nbOfMessagesSend",
                                      settingToolClass::getThisIntOption("nbOfMessagesSend").value + nbOfMessagesSend);
+    messageLine.doStuffBeforeQuit();
 }
 
 QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput)

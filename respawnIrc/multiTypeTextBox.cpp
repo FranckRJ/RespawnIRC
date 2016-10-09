@@ -32,6 +32,11 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
     connect(&textEdit, &spellTextEditClass::addWord, highlighter, &highlighterClass::addWordToDic);
 }
 
+void multiTypeTextBoxClass::doStuffBeforeQuit()
+{
+    textEdit.doStuffBeforeQuit();
+}
+
 void multiTypeTextBoxClass::clear()
 {
     textEdit.clear();
