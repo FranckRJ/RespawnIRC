@@ -39,6 +39,7 @@ signals:
 private:
     QTimer timerForGetList;
     QString forumLink;
+    QString mWebsite;
     QListView listViewOfTopic;
     QStandardItemModel modelForListView;
     autoTimeoutReplyClass timeoutForReply;

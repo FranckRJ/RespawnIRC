@@ -18,7 +18,8 @@ class connectWindowClass : public QDialog
 public:
     explicit connectWindowClass(QWidget* parent, bool showRemeberBox = true);
 public slots:
-    void addWebView();
+    void addWebViewJVC();
+    void addWebViewForumJV();
     void checkThisCookie(QNetworkCookie cookie);
     void showAddCookiesWindow();
     void addCookiesManually(QString newHelloCookie, QString newConnectCookie);
@@ -29,7 +30,9 @@ signals:
 private:
     QList<QNetworkCookie> cookieList;
     QWebEngineView* webView = nullptr;
-    QPushButton* buttonShowWebView;
+    QPushButton* buttonShowJVCWebView;
+    QPushButton* buttonShowForumJVWebView;
+    QString website;
     QVBoxLayout* mainLayout;
     QLineEdit pseudoLine;
     QCheckBox rememberBox;
