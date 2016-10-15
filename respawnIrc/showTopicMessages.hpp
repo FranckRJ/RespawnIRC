@@ -105,6 +105,7 @@ private:
     QString numberOfConnectedAndMP;
     QString topicLinkFirstPage;
     QString topicLinkLastPage;
+    QString website;
     QString topicName;
     QString pseudoOfUser;
     ajaxInfoStruct ajaxInfo;
