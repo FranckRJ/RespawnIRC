@@ -5,10 +5,10 @@
 		</a>
 	</td>
 	<td style="vertical-align: bottom">
-		<a style="color: <%DATE_COLOR%>; text-decoration:none; font-style: italic; font-size: 9px" href="http://www.jeuxvideo.com/<%PSEUDO_LOWER%>/forums/message/<%ID_MESSAGE%>">
-			<%DATE_STRING%>
+		<a style="color: darkgray; text-decoration:none; font-style: italic; font-size: 9px" href="http://www.jeuxvideo.com/<%PSEUDO_LOWER%>/forums/message/<%ID_MESSAGE%>">
+			<%DATE_STRING%><%DATE_COLOR%>
 		</a>
-		<span style="color: <%DATE_COLOR%>; font-size: 9px">|</span><%BUTTON_QUOTE%><%BUTTON_BLACKLIST%><%BUTTON_EDIT%><%BUTTON_DELETE%>
+		<span style="color: darkgray; font-size: 9px">|</span><%BUTTON_QUOTE%><%BUTTON_BLACKLIST%><%BUTTON_EDIT%><%BUTTON_DELETE%>
 	</td></tr></table>
 	<%MESSAGE_MESSAGE%>
 	<%SIGNATURE_MODEL%>
