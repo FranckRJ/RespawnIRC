@@ -111,7 +111,10 @@ void accountListWindowClass::connectWithThisAccount()
 {
     if(viewListOfAccount.currentIndex().row() != -1)
     {
-        emit useThisAccount(listOfAccount->at(viewListOfAccount.currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo, false, rememberBox.isChecked());
+        QString pseudo = listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo;
+        pseudo.remove(pseudo.indexOf(' '), pseudo.size() - pseudo.indexOf(' '));
+
+        emit useThisAccount(listOfAccount->at(viewListOfAccount.currentIndex().row()).listOfCookie, pseudo, false, rememberBox.isChecked());
         close();
     }
 }
@@ -120,6 +123,9 @@ void accountListWindowClass::connectToOneTopicWithThisAccount()
 {
     if(viewListOfAccount.currentIndex().row() != -1)
     {
+        QString pseudo = listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo;
+        pseudo.remove(pseudo.indexOf(' '), pseudo.size() - pseudo.indexOf(' '));
+
         emit useThisAccountForOneTopic(listOfAccount->at(viewListOfAccount.currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo, rememberBox.isChecked());
         close();
     }

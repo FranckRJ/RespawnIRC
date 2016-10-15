@@ -33,7 +33,7 @@ class getTopicMessagesClass : public QObject
 public:
     explicit getTopicMessagesClass(QObject* parent = 0);
 public slots:
-    void setNewTopic(QString newTopicLink, bool getFirstMessage);
+    void setNewTopic(QString newTopicLink, bool getFirstMessage, QString website);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages);
     void settingsChanged(settingsForMessageParsingStruct newSettings);
     void startGetMessage();
@@ -58,6 +58,7 @@ private:
     QMap<long, QString> listOfEdit;
     QTimer* timerForGetMessage;
     QString topicLink;
+    QString mWebsite;
     QString pseudoOfUser;
     settingsForMessageParsingStruct settingsForMessageParsing;
     bool needToGetFirstMessage;

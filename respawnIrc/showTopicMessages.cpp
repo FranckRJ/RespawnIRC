@@ -142,7 +142,7 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://"+website));
         currentErrorStreak = 0;
     }
 
@@ -327,6 +327,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     currentTypeOfEdit = realTypeOfEdit;
     firstMessageOfTopic.isFirstMessage = false;
     topicLinkLastPage = newTopic;
+    website = parsingToolClass::getWebsite(newTopic);
     topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopic);
     firstTimeGetMessages = true;
     errorMode = false;
@@ -335,7 +336,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     oldIdOfLastMessageOfUser = 0;
     needToGetMessages = false;
     oldUseMessageEdit = false;
-    QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, newTopic), Q_ARG(bool, getFirstMessageOfTopic));
+    QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, newTopic), Q_ARG(bool, getFirstMessageOfTopic), Q_ARG(QString, website));
 }
 
 void showTopicMessagesClass::linkClicked(const QUrl& link)
@@ -392,7 +393,7 @@ bool showTopicMessagesClass::getEditInfo(long idOfMessageToEdit, bool useMessage
                 oldIdOfLastMessageOfUser = idOfMessageToEdit;
             }
 
-            urlToGet = "http://www.jeuxvideo.com/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfLastMessageOfUser) + "&" + ajaxInfo.list + "&action=get";
+            urlToGet = "http://"+website+"/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfLastMessageOfUser) + "&" + ajaxInfo.list + "&action=get";
             requestForEditInfo = parsingToolClass::buildRequestWithThisUrl(urlToGet);
             oldAjaxInfo = ajaxInfo;
             ajaxInfo.list.clear();
@@ -427,7 +428,7 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
 
     if(ajaxInfo.list.isEmpty() == false && replyForQuoteInfo == nullptr)
     {
-        QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/forums/ajax_citation.php");
+        QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://"+website+"/forums/ajax_citation.php");
         QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo.list;
         replyForQuoteInfo = timeoutForQuoteInfo.resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
 
@@ -458,7 +459,7 @@ void showTopicMessagesClass::deleteMessage(QString idOfMessageDeleted)
 
     if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)
     {
-        QNetworkRequest requestForDeleteInfo = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
+        QNetworkRequest requestForDeleteInfo = parsingToolClass::buildRequestWithThisUrl("http://"+website+"/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
         replyForDeleteInfo = timeoutForDeleteInfo.resetReply(networkManager->get(requestForDeleteInfo));
 
         if(replyForDeleteInfo->isOpen() == true)
