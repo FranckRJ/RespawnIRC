@@ -65,10 +65,12 @@ void connectWindowClass::addWebViewJVC()
 {
     if(webView == nullptr)
     {
+        QWebEngineProfile* customProfile = new QWebEngineProfile(this);
+        QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
+
         webView = new QWebEngineView(this);
 
-        webView->page()->profile()->cookieStore()->deleteAllCookies();
-        webView->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+        webView->setPage(customPage);
         webView->load(QUrl("http://www.jeuxvideo.com/login"));
         website = "JeuxVideo.com";
 
@@ -85,10 +87,12 @@ void connectWindowClass::addWebViewForumJV()
 {
     if(webView == nullptr)
     {
+        QWebEngineProfile* customProfile = new QWebEngineProfile(this);
+        QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
+
         webView = new QWebEngineView(this);
 
-        webView->page()->profile()->cookieStore()->deleteAllCookies();
-        webView->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+        webView->setPage(customPage);
         webView->load(QUrl("http://www.forumjv.com/login"));
         website = "ForumJV";
 
