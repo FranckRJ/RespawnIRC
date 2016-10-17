@@ -66,7 +66,7 @@ namespace parsingToolClass
     ajaxInfoStruct getAjaxInfo(const QString& source);
     QString getMessageEditAndChangeSource(QString& source); //ici le & est important
     QString getMessageQuote(const QString& source);
-    QString getWebsite(const QString &source);
+    QString getWebsite(const QString& source);
     QString getVersionName(const QString& source);
     QString getVersionChangelog(const QString& source);
     void getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
@@ -80,7 +80,7 @@ namespace parsingToolClass
     QString getNumberOfConnected(const QString& source);
     QString getNumberOfMp(const QString& source);
     QList<messageStruct> getListOfEntireMessagesWithoutMessagePars(const QString& source);
-    QList<topicStruct> getListOfTopic(const QString& source, const QString &website);
+    QList<topicStruct> getListOfTopic(const QString& source, const QString& website);
     QString getForumOfTopic(const QString& source);
     QString getForumName(const QString& source);
     QString jvfLinkToJvcLink(const QString& source);

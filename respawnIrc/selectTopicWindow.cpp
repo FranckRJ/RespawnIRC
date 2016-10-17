@@ -56,10 +56,11 @@ QString selectTopicWindowClass::transformLinkIfNeeded(QString link)
         link.replace("http://jeuxvideo.com/", "http://www.jeuxvideo.com/");
     }
 
-  //  if(link.startsWith("http://www.jeuxvideo.com/") == false && link.startsWith("http://jvforum.fr/") == false)
-   // {
-  //      return "";
-  //  }
+    if(link.startsWith("http://www.jeuxvideo.com/") == false && link.startsWith("http://jvforum.fr/") == false
+       && link.startsWith("http://www.forumjv.com/") == false)
+    {
+        return "";
+    }
 
     return link;
 }
@@ -70,14 +71,14 @@ void selectTopicWindowClass::selectThisTopic()
 
     if(newLink.isEmpty() == false)
     {
-      //  if(newLink.startsWith("http://jvforum.fr/") == true)
-      //  {
-       //     emit newTopicSelected(parsingToolClass::jvfLinkToJvcLink(newLink));
-      // }
-      //  else
-      //  {
-        //    emit newTopicSelected(newLink);
-       // }
+        if(newLink.startsWith("http://jvforum.fr/") == true)
+        {
+            emit newTopicSelected(parsingToolClass::jvfLinkToJvcLink(newLink));
+        }
+        else
+        {
+            emit newTopicSelected(newLink);
+        }
         close();
     }
     else

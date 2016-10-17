@@ -15,8 +15,8 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 
     QLabel* labForPseudo = new QLabel("Entrez le pseudo avec lequel vous voulez vous connecter :", this);
     QLabel* labForButton = new QLabel("Une fois connecté, cliquez ici :", this);
-    buttonShowJVCWebView = new QPushButton("Login with jeuxvideo.com", this);
-    buttonShowForumJVWebView = new QPushButton("Login with forumjv.com", this);
+    buttonShowJVCWebView = new QPushButton("Se connecter sur jeuxvideo.com", this);
+    buttonShowForumJVWebView = new QPushButton("Se connecter sur forumjv.com", this);
     QPushButton* buttonAddCookies = new QPushButton("Ajouter des cookies", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
     QPushButton* buttonHelp = new QPushButton("Aide pour se connecter", this);
@@ -142,7 +142,7 @@ void connectWindowClass::valideConnect()
 {
     if(pseudoLine.text().isEmpty() == false && cookieList.size() >= 2)
     {
-        QString pseudo = pseudoLine.text() + " ("+website+")";
+        QString pseudo = pseudoLine.text() + " (" + website + ")";
 
         emit newCookiesAvailable(cookieList, pseudo, rememberBox.isChecked(), rememberBox.isChecked());
         close();

@@ -68,7 +68,7 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
         {
             networkManager->clearAccessCache();
             networkManager->setCookieJar(new QNetworkCookieJar(this));
-            networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://"+mWebsite));
+            networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + mWebsite));
 
             if(updateMessages == true)
             {
@@ -292,7 +292,7 @@ void getTopicMessagesClass::analyzeMessages()
     {
         if(locationHeader.startsWith("/forums/") == true)
         {
-            topicLink = "hhttp://"+mWebsite + locationHeader;
+            topicLink = "http://" + mWebsite + locationHeader;
             emit newLinkForTopic(topicLink);
             retrievesMessage = false;
             startGetMessage();

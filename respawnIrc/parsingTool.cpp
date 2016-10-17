@@ -59,7 +59,7 @@ namespace
     const QRegularExpression expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForHtmlTag("<.+?>", QRegularExpression::OptimizeOnFirstUsageOption);
-    const QRegularExpression expForWebsite("^http?\://([^/:?#]+)(?:[/:?#]|$)", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForWebsite("^http?\://([^/:?#]+)(?:[/:?#]|$)", QRegularExpression::OptimizeOnFirstUsageOption); //à vérifier (warning à la compilation)
 }
 
 ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
@@ -102,7 +102,7 @@ QString parsingToolClass::getMessageQuote(const QString& source)
 }
 
 
-QString parsingToolClass::getWebsite(const QString &source)
+QString parsingToolClass::getWebsite(const QString& source)
 {
     return expForWebsite.match(source).captured(1);
 }
@@ -318,7 +318,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
     return listOfMessages;
 }
 
-QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source, const QString &website)
+QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source, const QString& website)
 {
     QList<topicStruct> listOfTopic;
     QList<QString> listOfEntireTopic;
@@ -348,7 +348,7 @@ QString parsingToolClass::getForumOfTopic(const QString& source)
 
     if(forumNumber.isEmpty() == false)
     {
-        return "http://"+parsingToolClass::getWebsite(source)+"/forums/0-" + forumNumber + "-0-1-0-1-0-respawn-irc.htm";
+        return "http://" + getWebsite(source) + "/forums/0-" + forumNumber + "-0-1-0-1-0-respawn-irc.htm";
     }
     else
     {
