@@ -88,14 +88,12 @@ QPushButton#ulistButton, QPushButton#olistButton, QPushButton#quoteButton, QPush
 QPushButton#sendButton
 {
 	text-transform: uppercase;
-	border: 1px solid #494C4C;
-	min-width:63px;
-	min-height:57px;
+	padding: 6px;
 }
 
 QPushButton:hover, QPushButton:focus:hover
 {
-	background: #535556;
+	background: #646768;
 }
 
 QPushButton:focus
@@ -106,6 +104,12 @@ QPushButton:focus
 QPushButton:pressed, QPushButton:focus:pressed
 {
 	background: #3A3C3D;
+}
+
+QPushButton:!enabled
+{
+	background: #3E4041;
+    color: #999999;
 }
 
 QSplitter::handle

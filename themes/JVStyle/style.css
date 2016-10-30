@@ -178,3 +178,8 @@ QPushButton#sendButton:pressed
     color: #FFF;
     background: #B64821;
 }
+QPushButton#sendButton:!enabled
+{
+    color: #B3B3B3;
+    background: #813418;
+}
