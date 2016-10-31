@@ -130,7 +130,7 @@ void sendMessagesClass::quoteThisMessage(QString messageToQuote)
 {
     if(messageLine.text().isEmpty() == false)
     {
-        messageLine.insertText("\n");
+        messageLine.insertText("\n\n");
     }
     messageLine.insertText(messageToQuote);
     messageLine.insertText("\n\n");
