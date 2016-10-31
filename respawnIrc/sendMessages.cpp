@@ -128,9 +128,13 @@ void sendMessagesClass::setEnableSendButton(bool newVal)
 
 void sendMessagesClass::quoteThisMessage(QString messageToQuote)
 {
-    if(messageLine.text().isEmpty() == false)
+    if(messageLine.text().isEmpty() == false && messageLine.text().endsWith("\n\n") == false)
     {
-        messageLine.insertText("\n\n");
+        if(messageLine.text().endsWith("\n") == false)
+        {
+            messageLine.insertText("\n");
+        }
+        messageLine.insertText("\n");
     }
     messageLine.insertText(messageToQuote);
     messageLine.insertText("\n\n");
