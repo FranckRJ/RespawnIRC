@@ -54,8 +54,8 @@ namespace
     const QRegularExpression expForYoutubeVideo("<div class=\"player-contenu\"><div class=\"[^\"]*\"><iframe .*? src=\"http(s)?://www.youtube.com/embed/([^\"]*)\"[^>]*></iframe></div></div>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForSpoilBlock("<span class=\"bloc-spoil-jv\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForCodeLine("<code class=\"code-jv\">([^<]*)</code>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForCodeBlock("<pre class=\"pre-jv\"><code class=\"code-jv\">([^<]*)</code></pre>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForCodeLine("<code class=\"code-jv\">(.*?)</code>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForHtmlTag("<.+?>", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -407,7 +407,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     }
 
     replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", true);
-    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", true);
+    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", false);
 
     thisMessage.replace("\n", "");
     thisMessage.replace("\r", "");
