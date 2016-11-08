@@ -47,13 +47,13 @@ QString selectTopicWindowClass::transformLinkIfNeeded(QString link)
         link.insert(0, "http://");
     }
 
-    if(link.startsWith("http://m.jeuxvideo.com/") == true)
+    if(link.startsWith("http://m.") == true)
     {
-        link.replace("http://m.jeuxvideo.com/", "http://www.jeuxvideo.com/");
+        link.replace("http://m.", "http://www.");
     }
-    else if(link.startsWith("http://jeuxvideo.com/") == true)
+    else if(link.startsWith("http://jeuxvideo.com/") == true || link.startsWith("http://forumjv.com/") == true)
     {
-        link.replace("http://jeuxvideo.com/", "http://www.jeuxvideo.com/");
+        link.replace("http://", "http://www.");
     }
 
     if(link.startsWith("http://www.jeuxvideo.com/") == false && link.startsWith("http://jvforum.fr/") == false

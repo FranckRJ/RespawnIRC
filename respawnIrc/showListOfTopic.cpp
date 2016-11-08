@@ -57,8 +57,8 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
     }
 
     forumLink = newForumLink;
+    websiteOfForum = parsingToolClass::getWebsite(forumLink);
 
-    mWebsite = parsingToolClass::getWebsite(newForumLink);
     modelForListView.clear();
     if(newForumLink.isEmpty() == false)
     {
@@ -74,14 +74,15 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
     }
 }
 
-void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies)
+void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies)
 {
     currentCookieList = newCookies;
+    websiteOfCookies = newWebsiteOfCookies;
     if(networkManager != nullptr)
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + mWebsite));
+        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + websiteOfCookies));
     }
 }
 
@@ -139,7 +140,7 @@ void showListOfTopicClass::startGetListOfTopic()
     {
         if(itsNewManager == true)
         {
-            setNewCookies(currentCookieList);
+            setNewCookies(currentCookieList, websiteOfCookies);
         }
 
         if(forumLink.isEmpty() == false)
@@ -179,7 +180,7 @@ void showListOfTopicClass::analyzeReply()
     {
         if(locationHeader.startsWith("/forums/") == true)
         {
-            forumLink = "http://" + mWebsite+ locationHeader;
+            forumLink = "http://" + websiteOfForum + locationHeader;
             reply = nullptr;
             startGetListOfTopic();
             return;
@@ -187,7 +188,7 @@ void showListOfTopicClass::analyzeReply()
     }
     else
     {
-        QList<topicStruct> listOfTopic = parsingToolClass::getListOfTopic(source, mWebsite);
+        QList<topicStruct> listOfTopic = parsingToolClass::getListOfTopic(source, websiteOfForum);
         QStandardItem* newItemToAppend;
         QFont tmpFont;
 

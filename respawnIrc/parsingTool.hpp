@@ -66,7 +66,7 @@ namespace parsingToolClass
     ajaxInfoStruct getAjaxInfo(const QString& source);
     QString getMessageEditAndChangeSource(QString& source); //ici le & est important
     QString getMessageQuote(const QString& source);
-    QString getWebsite(const QString& source);
+    QString getWebsite(const QString& topicLink);
     QString getVersionName(const QString& source);
     QString getVersionChangelog(const QString& source);
     void getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
@@ -74,16 +74,16 @@ namespace parsingToolClass
     QString getCaptchaLink(const QString& source);
     QString getErrorMessage(const QString& source);
     QString getLastPageOfTopic(const QString& source, const QString& website);
-    QString getFirstPageOfTopic(const QString& source);
-    QString getBeforeLastPageOfTopic(const QString& source);
+    QString getFirstPageOfTopic(const QString& topicLink);
+    QString getBeforeLastPageOfTopic(const QString& topicLink);
     QString getNameOfTopic(const QString& source);
     QString getNumberOfConnected(const QString& source);
     QString getNumberOfMp(const QString& source);
     QList<messageStruct> getListOfEntireMessagesWithoutMessagePars(const QString& source);
     QList<topicStruct> getListOfTopic(const QString& source, const QString& website);
-    QString getForumOfTopic(const QString& source);
+    QString getForumOfTopic(const QString& topicLink);
     QString getForumName(const QString& source);
-    QString jvfLinkToJvcLink(const QString& source);
+    QString jvfLinkToJvcLink(const QString& jvfTopicLink);
     QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers = true);
     QString parsingAjaxMessages(QString thisMessage);
     QNetworkRequest buildRequestWithThisUrl(QString url);

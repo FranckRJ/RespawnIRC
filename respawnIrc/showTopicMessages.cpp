@@ -126,9 +126,10 @@ const QList<QNetworkCookie>& showTopicMessagesClass::getListOfCookies()
     return currentCookieList;
 }
 
-void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages)
+void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages)
 {
     currentCookieList = newCookies;
+    websiteOfCookies = newWebsiteOfCookies;
     pseudoOfUser = newPseudoOfUser;
     expForColorPseudo.setPattern("");
     newPseudoOfUser.replace("[", "\\[").replace("]", "\\]");
@@ -142,12 +143,12 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + website));
+        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + websiteOfCookies));
         currentErrorStreak = 0;
     }
 
     QMetaObject::invokeMethod(getTopicMessages, "setNewCookies", Qt::QueuedConnection,
-                              Q_ARG(QList<QNetworkCookie>, newCookies), Q_ARG(QString, pseudoOfUser), Q_ARG(bool, updateMessages));
+                              Q_ARG(QList<QNetworkCookie>, newCookies), Q_ARG(QString, websiteOfCookies), Q_ARG(QString, pseudoOfUser), Q_ARG(bool, updateMessages));
 }
 
 void showTopicMessagesClass::setTopicToErrorMode()
@@ -327,8 +328,8 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     currentTypeOfEdit = realTypeOfEdit;
     firstMessageOfTopic.isFirstMessage = false;
     topicLinkLastPage = newTopic;
-    website = parsingToolClass::getWebsite(newTopic);
     topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopic);
+    websiteOfTopic = parsingToolClass::getWebsite(topicLinkLastPage);
     firstTimeGetMessages = true;
     errorMode = false;
     currentErrorStreak = 0;
@@ -336,7 +337,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     oldIdOfLastMessageOfUser = 0;
     needToGetMessages = false;
     oldUseMessageEdit = false;
-    QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, newTopic), Q_ARG(bool, getFirstMessageOfTopic), Q_ARG(QString, website));
+    QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, newTopic), Q_ARG(bool, getFirstMessageOfTopic));
 }
 
 void showTopicMessagesClass::linkClicked(const QUrl& link)
@@ -374,7 +375,7 @@ bool showTopicMessagesClass::getEditInfo(long idOfMessageToEdit, bool useMessage
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, pseudoOfUser, false);
+        setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
     }
 
     if(ajaxInfo.list.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
@@ -393,7 +394,7 @@ bool showTopicMessagesClass::getEditInfo(long idOfMessageToEdit, bool useMessage
                 oldIdOfLastMessageOfUser = idOfMessageToEdit;
             }
 
-            urlToGet = "http://" + website + "/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfLastMessageOfUser) + "&" + ajaxInfo.list + "&action=get";
+            urlToGet = "http://" + websiteOfTopic + "/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfLastMessageOfUser) + "&" + ajaxInfo.list + "&action=get";
             requestForEditInfo = parsingToolClass::buildRequestWithThisUrl(urlToGet);
             oldAjaxInfo = ajaxInfo;
             ajaxInfo.list.clear();
@@ -423,12 +424,12 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, pseudoOfUser, false);
+        setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
     }
 
     if(ajaxInfo.list.isEmpty() == false && replyForQuoteInfo == nullptr)
     {
-        QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://" + website + "/forums/ajax_citation.php");
+        QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://" + websiteOfTopic + "/forums/ajax_citation.php");
         QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo.list;
         replyForQuoteInfo = timeoutForQuoteInfo.resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
 
@@ -454,12 +455,12 @@ void showTopicMessagesClass::deleteMessage(QString idOfMessageDeleted)
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, pseudoOfUser, false);
+        setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
     }
 
     if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)
     {
-        QNetworkRequest requestForDeleteInfo = parsingToolClass::buildRequestWithThisUrl("http://" + website + "/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
+        QNetworkRequest requestForDeleteInfo = parsingToolClass::buildRequestWithThisUrl("http://" + websiteOfTopic + "/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
         replyForDeleteInfo = timeoutForDeleteInfo.resetReply(networkManager->get(requestForDeleteInfo));
 
         if(replyForDeleteInfo->isOpen() == true)
@@ -798,7 +799,7 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
                 if(ignoreNetworkError == false)
                 {
                     QString oldPseudo = pseudoOfUser;
-                    setNewCookies(QList<QNetworkCookie>(), "");
+                    setNewCookies(QList<QNetworkCookie>(), websiteOfCookies, "");
                     QMessageBox::warning(this, "Erreur sur " + topicName + " avec " + oldPseudo,
                                        "Le compte semble invalide, veuillez vous déconnecter de l'onglet puis vous y reconnecter (sans supprimer le compte de la liste des comptes).\n"
                                        "Si le problème persiste, redémarrez RespawnIRC ou supprimez le pseudo de la liste des comptes et ajoutez-le à nouveau.\n\n"
@@ -870,7 +871,7 @@ void showTopicMessagesClass::setCookiesFromRequest(QList<QNetworkCookie> newList
 {
     if(currentPseudoOfUser == pseudoOfUser)
     {
-        setNewCookies(newListOfCookies, pseudoOfUser, false);
+        setNewCookies(newListOfCookies, websiteOfCookies, pseudoOfUser, false);
         emit newCookiesHaveToBeSet();
     }
 }

@@ -143,11 +143,18 @@ void sendMessagesClass::quoteThisMessage(QString messageToQuote)
 
 void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString> >& listOfInput)
 {
+    QString website = parsingToolClass::getWebsite(topicLink);
+
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
     }
 
+    if(website == "www.forumjv.com")
+    {
+        QMessageBox::warning(this, "Erreur", "Impossible de poster sur un topic ForumJV pour le moment.");
+        return;
+    }
     if(pseudoUsed.isEmpty() == true)
     {
         QMessageBox::warning(this, "Erreur", "Impossible de poster le message, vous n'êtes pas connecté.");
@@ -177,7 +184,6 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
     {
         QNetworkRequest request;
         QString data;
-        QString website = parsingToolClass::getWebsite(topicLink);
 
         cookieListForPostMsg = listOfCookies;
         networkManager->clearAccessCache();

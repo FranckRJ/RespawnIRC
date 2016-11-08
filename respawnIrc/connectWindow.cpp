@@ -15,8 +15,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 
     QLabel* labForPseudo = new QLabel("Entrez le pseudo avec lequel vous voulez vous connecter :", this);
     QLabel* labForButton = new QLabel("Une fois connecté, cliquez ici :", this);
-    buttonShowJVCWebView = new QPushButton("Se connecter sur jeuxvideo.com", this);
-    buttonShowForumJVWebView = new QPushButton("Se connecter sur forumjv.com", this);
+    buttonShowWebView = new QPushButton("Afficher la page de connexion", this);
     QPushButton* buttonAddCookies = new QPushButton("Ajouter des cookies", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
     QPushButton* buttonHelp = new QPushButton("Aide pour se connecter", this);
@@ -32,8 +31,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     bottomLayout->addWidget(buttonValidate);
 
     mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(buttonShowJVCWebView);
-    mainLayout->addWidget(buttonShowForumJVWebView);
+    mainLayout->addWidget(buttonShowWebView);
     mainLayout->addLayout(bottomLayout);
 
     if(showRemeberBox == true)
@@ -54,14 +52,13 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     setLayout(mainLayout);
     setWindowTitle("Page de connexion");
 
-    connect(buttonShowJVCWebView, &QPushButton::pressed, this, &connectWindowClass::addWebViewJVC);
-    connect(buttonShowForumJVWebView, &QPushButton::pressed, this, &connectWindowClass::addWebViewForumJV);
+    connect(buttonShowWebView, &QPushButton::clicked, this, &connectWindowClass::addWebView);
     connect(buttonAddCookies, &QPushButton::clicked, this, &connectWindowClass::showAddCookiesWindow);
     connect(buttonValidate, &QPushButton::clicked, this, &connectWindowClass::valideConnect);
     connect(buttonHelp, &QPushButton::clicked, this, &connectWindowClass::showHelpConnect);
 }
 
-void connectWindowClass::addWebViewJVC()
+void connectWindowClass::addWebView()
 {
     if(webView == nullptr)
     {
@@ -74,31 +71,9 @@ void connectWindowClass::addWebViewJVC()
         webView->load(QUrl("http://www.jeuxvideo.com/login"));
         website = "JeuxVideo.com";
 
-        mainLayout->removeWidget(buttonShowJVCWebView);
-        buttonShowJVCWebView->setEnabled(false);
-        buttonShowJVCWebView->setVisible(false);
-        mainLayout->insertWidget(0, webView);
-
-        connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);
-    }
-}
-
-void connectWindowClass::addWebViewForumJV()
-{
-    if(webView == nullptr)
-    {
-        QWebEngineProfile* customProfile = new QWebEngineProfile(this);
-        QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
-
-        webView = new QWebEngineView(this);
-
-        webView->setPage(customPage);
-        webView->load(QUrl("http://www.forumjv.com/login"));
-        website = "ForumJV";
-
-        mainLayout->removeWidget(buttonShowForumJVWebView);
-        buttonShowForumJVWebView->setEnabled(false);
-        buttonShowForumJVWebView->setVisible(false);
+        mainLayout->removeWidget(buttonShowWebView);
+        buttonShowWebView->setEnabled(false);
+        buttonShowWebView->setVisible(false);
         mainLayout->insertWidget(0, webView);
 
         connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);

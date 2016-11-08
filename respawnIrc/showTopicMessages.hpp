@@ -45,7 +45,7 @@ public:
     QString getPseudoUsed();
     QString getColorOfThisPseudo(QString pseudo);
     const QList<QNetworkCookie>& getListOfCookies();
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages = true);
+    void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages = true);
     void setTopicToErrorMode();
     void updateSettingInfo();
     void addSearchPath(QString newSearchPath);
@@ -90,6 +90,7 @@ private:
     getTopicMessagesClass* getTopicMessages;
     modelInfoStruct baseModelInfo;
     QList<QNetworkCookie> currentCookieList;
+    QString websiteOfCookies;
     autoTimeoutReplyClass timeoutForEditInfo;
     autoTimeoutReplyClass timeoutForQuoteInfo;
     autoTimeoutReplyClass timeoutForDeleteInfo;
@@ -105,7 +106,7 @@ private:
     QString numberOfConnectedAndMP;
     QString topicLinkFirstPage;
     QString topicLinkLastPage;
-    QString website;
+    QString websiteOfTopic;
     QString topicName;
     QString pseudoOfUser;
     ajaxInfoStruct ajaxInfo;
