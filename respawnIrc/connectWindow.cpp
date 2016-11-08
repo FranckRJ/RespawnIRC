@@ -69,7 +69,6 @@ void connectWindowClass::addWebView()
 
         webView->setPage(customPage);
         webView->load(QUrl("http://www.jeuxvideo.com/login"));
-        website = "JeuxVideo.com";
 
         mainLayout->removeWidget(buttonShowWebView);
         buttonShowWebView->setEnabled(false);
@@ -117,9 +116,7 @@ void connectWindowClass::valideConnect()
 {
     if(pseudoLine.text().isEmpty() == false && cookieList.size() >= 2)
     {
-        QString pseudo = pseudoLine.text() + " (" + website + ")";
-
-        emit newCookiesAvailable(cookieList, pseudo, rememberBox.isChecked(), rememberBox.isChecked());
+        emit newCookiesAvailable(cookieList, pseudoLine.text(), rememberBox.isChecked(), rememberBox.isChecked());
         close();
         return;
     }

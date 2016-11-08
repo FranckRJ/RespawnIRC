@@ -100,12 +100,10 @@ QString parsingToolClass::getMessageQuote(const QString& source)
     return message;
 }
 
-
 QString parsingToolClass::getWebsite(const QString& topicLink)
 {
     return expForWebsite.match(topicLink).captured(1);
 }
-
 
 QString parsingToolClass::getVersionName(const QString& source)
 {

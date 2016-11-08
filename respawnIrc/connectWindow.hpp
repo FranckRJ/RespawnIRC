@@ -30,7 +30,6 @@ private:
     QList<QNetworkCookie> cookieList;
     QWebEngineView* webView = nullptr;
     QPushButton* buttonShowWebView;
-    QString website;
     QVBoxLayout* mainLayout;
     QLineEdit pseudoLine;
     QCheckBox rememberBox;
