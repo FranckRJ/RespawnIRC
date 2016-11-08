@@ -25,7 +25,6 @@ namespace
     const QRegularExpression expForError("<div class=\"alert-row\">([^<]*)</div>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForCurrentPage("<span class=\"page-active\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForPageLink("<span><a href=\"([^\"]*)\" class=\"lien-jv\">([^<]*)</a></span>", QRegularExpression::OptimizeOnFirstUsageOption);
-    const QRegularExpression expForBeforeLastPage("(http://www.jeuxvideo.com/forums/[^-]*-[^-]*-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForNameOfTopic("<span id=\"bloc-title-forum\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForNumberOfConnected("<span class=\"nb-connect-fofo\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForMpJvc("<span[^c]*class=\"account-number-mp[^\"]*\".*?data-val=\"([^\"]*)\"", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
@@ -42,7 +41,7 @@ namespace
     const QRegularExpression expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">((.*?)(?=<div class=\"info-edition-msg\">)|(.*?)(?=<div class=\"signature-msg)|(.*))", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForSignature("<div class=\"signature-msg[^\"]*\">(.*?)</div>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForForum("http://www.jeuxvideo.com/forums/[^-]*-([^-]*)-[^-]*-[^-]*-[^-]*-[^-]*-[^-]*-[^.]*.htm", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForTopicLinkNumber("(http://([^/]*)/forums/[^-]*-([^-]*)-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForForumName("<title>(.*?)- jeuxvideo.com</title>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -54,11 +53,12 @@ namespace
     const QRegularExpression expForYoutubeVideo("<div class=\"player-contenu\"><div class=\"[^\"]*\"><iframe .*? src=\"http(s)?://www.youtube.com/embed/([^\"]*)\"[^>]*></iframe></div></div>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForSpoilLine("<span class=\"bloc-spoil-jv en-ligne\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForSpoilBlock("<span class=\"bloc-spoil-jv\">.*?<span class=\"contenu-spoil\">(.*?)</span></span>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForCodeLine("<code class=\"code-jv\">([^<]*)</code>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForCodeBlock("<pre class=\"pre-jv\"><code class=\"code-jv\">([^<]*)</code></pre>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForCodeLine("<code class=\"code-jv\">(.*?)</code>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForHtmlTag("<.+?>", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForWebsite("http://([^/]*)/", QRegularExpression::OptimizeOnFirstUsageOption);
 }
 
 ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
@@ -98,6 +98,11 @@ QString parsingToolClass::getMessageQuote(const QString& source)
     message.replace("\n", "\n>");
 
     return message;
+}
+
+QString parsingToolClass::getWebsite(const QString& topicLink)
+{
+    return expForWebsite.match(topicLink).captured(1);
 }
 
 QString parsingToolClass::getVersionName(const QString& source)
@@ -189,7 +194,7 @@ QString parsingToolClass::getErrorMessage(const QString& source)
     }
 }
 
-QString parsingToolClass::getLastPageOfTopic(const QString& source)
+QString parsingToolClass::getLastPageOfTopic(const QString& source, const QString& website)
 {
     int currentPage = 0;
     QString lastPage;
@@ -202,20 +207,20 @@ QString parsingToolClass::getLastPageOfTopic(const QString& source)
         if(matchForPageLink.captured(2).toInt() > currentPage)
         {
             currentPage = matchForPageLink.captured(2).toInt();
-            lastPage = "http://www.jeuxvideo.com" + matchForPageLink.captured(1);
+            lastPage = "http://" + website + matchForPageLink.captured(1);
         }
     }
 
     return lastPage;
 }
 
-QString parsingToolClass::getFirstPageOfTopic(const QString& source)
+QString parsingToolClass::getFirstPageOfTopic(const QString& topicLink)
 {
-    QRegularExpressionMatch matchForFirstPage = expForBeforeLastPage.match(source);
+    QRegularExpressionMatch matchForFirstPage = expForTopicLinkNumber.match(topicLink);
 
     if(matchForFirstPage.hasMatch() == true)
     {
-        return matchForFirstPage.captured(1) + QString::number(1) + matchForFirstPage.captured(3);
+        return matchForFirstPage.captured(1) + "1" + matchForFirstPage.captured(5);
     }
     else
     {
@@ -223,14 +228,14 @@ QString parsingToolClass::getFirstPageOfTopic(const QString& source)
     }
 }
 
-QString parsingToolClass::getBeforeLastPageOfTopic(const QString& source)
+QString parsingToolClass::getBeforeLastPageOfTopic(const QString& topicLink)
 {
-    QRegularExpressionMatch matchForBeforeLastPage = expForBeforeLastPage.match(source);
-    QString pageNumber = matchForBeforeLastPage.captured(2);
+    QRegularExpressionMatch matchForBeforeLastPage = expForTopicLinkNumber.match(topicLink);
+    QString pageNumber = matchForBeforeLastPage.captured(4);
 
     if(pageNumber.isEmpty() == false && pageNumber != "1")
     {
-        return matchForBeforeLastPage.captured(1) + QString::number(pageNumber.toInt() - 1) + matchForBeforeLastPage.captured(3);
+        return matchForBeforeLastPage.captured(1) + QString::number(pageNumber.toInt() - 1) + matchForBeforeLastPage.captured(5);
     }
     else
     {
@@ -310,7 +315,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
     return listOfMessages;
 }
 
-QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source)
+QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source, const QString& website)
 {
     QList<topicStruct> listOfTopic;
     QList<QString> listOfEntireTopic;
@@ -320,7 +325,7 @@ QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source)
     for(const QString& thisTopic : listOfEntireTopic)
     {
         QString topicInfo = expForTopicNameAndLink.match(thisTopic).captured(1);
-        QString link = "http://www.jeuxvideo.com" + topicInfo.left(topicInfo.indexOf("\""));
+        QString link = "http://" + website + topicInfo.left(topicInfo.indexOf("\""));
         QString name = topicInfo.right(topicInfo.size() - topicInfo.indexOf("title=\"") - 7);
         name.replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");
         listOfTopic.append(topicStruct());
@@ -334,13 +339,13 @@ QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source)
     return listOfTopic;
 }
 
-QString parsingToolClass::getForumOfTopic(const QString& source)
+QString parsingToolClass::getForumOfTopic(const QString& topicLink)
 {
-    QString forumNumber = expForForum.match(source).captured(1);
+    QRegularExpressionMatch infosMatcher = expForTopicLinkNumber.match(topicLink);
 
-    if(forumNumber.isEmpty() == false)
+    if(infosMatcher.hasMatch() == true)
     {
-        return "http://www.jeuxvideo.com/forums/0-" + forumNumber + "-0-1-0-1-0-respawn-irc.htm";
+        return "http://" + infosMatcher.captured(2) + "/forums/0-" + infosMatcher.captured(3) + "-0-1-0-1-0-respawn-irc.htm";
     }
     else
     {
@@ -360,9 +365,9 @@ QString parsingToolClass::getForumName(const QString& source)
     return forumName;
 }
 
-QString parsingToolClass::jvfLinkToJvcLink(const QString& source)
+QString parsingToolClass::jvfLinkToJvcLink(const QString& jvfTopicLink)
 {
-    QRegularExpressionMatch matchForJvfLink = expForJvfLink.match(source);
+    QRegularExpressionMatch matchForJvfLink = expForJvfLink.match(jvfTopicLink);
     QString forumNumber = matchForJvfLink.captured(1);
     QString topicNumber = matchForJvfLink.captured(2);
     QString nameOfTopic = matchForJvfLink.captured(3);
@@ -399,7 +404,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     }
 
     replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", true);
-    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", true);
+    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", false);
 
     thisMessage.replace("\n", "");
     thisMessage.replace("\r", "");

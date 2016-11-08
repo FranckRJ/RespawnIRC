@@ -42,8 +42,8 @@ void containerForTopicsInfosClass::setNewCookiesForInfo(QList<QNetworkCookie> ne
 {
     pseudoTypeOfSave = newTypeOfSave;
 
-    showTopicMessages.setNewCookies(newCookies, newPseudoOfUser);
-    showListOfTopic.setNewCookies(newCookies);
+    showTopicMessages.setNewCookies(newCookies, "www.jeuxvideo.com", newPseudoOfUser);
+    showListOfTopic.setNewCookies(newCookies, "www.jeuxvideo.com");
 }
 
 void containerForTopicsInfosClass::updateSettingsForInfo()

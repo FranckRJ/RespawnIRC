@@ -34,6 +34,7 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
     }
 
     topicLink = parsingToolClass::getFirstPageOfTopic(newTopicLink);
+    websiteOfTopic = parsingToolClass::getWebsite(topicLink);
 
     if(retrievesMessage == false)
     {
@@ -56,9 +57,10 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
     startGetMessage();
 }
 
-void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages)
+void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages)
 {
     currentCookieList = newCookies;
+    websiteOfCookies = newWebsiteOfCookies;
     pseudoOfUser = newPseudoOfUser;
 
     if(networkManager != nullptr)
@@ -67,7 +69,7 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
         {
             networkManager->clearAccessCache();
             networkManager->setCookieJar(new QNetworkCookieJar(this));
-            networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://www.jeuxvideo.com"));
+            networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + websiteOfCookies));
 
             if(updateMessages == true)
             {
@@ -154,7 +156,7 @@ void getTopicMessagesClass::getMessages()
 
         if(itsNewManager == true || needToSetCookies == true)
         {
-            setNewCookies(currentCookieList, pseudoOfUser, false);
+            setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
             needToSetCookies = false;
         }
 
@@ -291,7 +293,7 @@ void getTopicMessagesClass::analyzeMessages()
     {
         if(locationHeader.startsWith("/forums/") == true)
         {
-            topicLink = "http://www.jeuxvideo.com" + locationHeader;
+            topicLink = "http://" + websiteOfTopic + locationHeader;
             emit newLinkForTopic(topicLink);
             retrievesMessage = false;
             startGetMessage();
@@ -315,7 +317,7 @@ void getTopicMessagesClass::analyzeMessages()
         emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(listOfPageSource[firstValidePageNumber]), "", false);
     }
 
-    newTopicLink = parsingToolClass::getLastPageOfTopic(listOfPageSource[firstValidePageNumber]);
+    newTopicLink = parsingToolClass::getLastPageOfTopic(listOfPageSource[firstValidePageNumber], websiteOfTopic);
 
     if(newTopicLink.isEmpty() == true && topicLink != listOfPageUrl[firstValidePageNumber])
     {
@@ -410,7 +412,11 @@ void getTopicMessagesClass::analyzeMessages()
 
         if(listOfInput.isEmpty() == true)
         {
-            if(parsingToolClass::getTopicLocked(listOfPageSource[firstValidePageNumber]) == true)
+            if(websiteOfTopic == "www.forumjv.com")
+            {
+                listOfInput.append(QPair<QString, QString>("forumjv", "true"));
+            }
+            else if(parsingToolClass::getTopicLocked(listOfPageSource[firstValidePageNumber]) == true)
             {
                 listOfInput.append(QPair<QString, QString>("locked", "true"));
             }

@@ -20,7 +20,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     QPushButton* buttonValidate = new QPushButton("Valider", this);
     QPushButton* buttonHelp = new QPushButton("Aide pour se connecter", this);
 
-    rememberBox.setChecked(false);
+    rememberBox.setChecked(true);
     buttonValidate->setDefault(true);
 
     QHBoxLayout* bottomLayout = new QHBoxLayout;

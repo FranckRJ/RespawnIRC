@@ -24,7 +24,7 @@ public:
     explicit showListOfTopicClass(QString currentThemeName, QWidget* parent = 0);
     bool getLoadNeeded();
     void setForumLink(QString newForumLink);
-    void setNewCookies(QList<QNetworkCookie> newCookies);
+    void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies);
     void updateSettings();
     void setLoadNeeded(bool newVal);
 public slots:
@@ -39,12 +39,14 @@ signals:
 private:
     QTimer timerForGetList;
     QString forumLink;
+    QString websiteOfForum;
     QListView listViewOfTopic;
     QStandardItemModel modelForListView;
     autoTimeoutReplyClass timeoutForReply;
     QNetworkReply* reply = nullptr;
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> currentCookieList;
+    QString websiteOfCookies;
     QList<QString> listOfLink;
     modelInfoStruct baseModelInfo;
     QPixmap pinnedOnTagImage;

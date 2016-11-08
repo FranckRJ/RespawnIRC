@@ -128,8 +128,12 @@ void sendMessagesClass::setEnableSendButton(bool newVal)
 
 void sendMessagesClass::quoteThisMessage(QString messageToQuote)
 {
-    if(messageLine.text().isEmpty() == false)
+    if(messageLine.text().isEmpty() == false && messageLine.text().endsWith("\n\n") == false)
     {
+        if(messageLine.text().endsWith("\n") == false)
+        {
+            messageLine.insertText("\n");
+        }
         messageLine.insertText("\n");
     }
     messageLine.insertText(messageToQuote);
@@ -139,11 +143,18 @@ void sendMessagesClass::quoteThisMessage(QString messageToQuote)
 
 void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString> >& listOfInput)
 {
+    QString website = parsingToolClass::getWebsite(topicLink);
+
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
     }
 
+    if(website == "www.forumjv.com")
+    {
+        QMessageBox::warning(this, "Erreur", "Impossible de poster sur un topic ForumJV pour le moment.");
+        return;
+    }
     if(pseudoUsed.isEmpty() == true)
     {
         QMessageBox::warning(this, "Erreur", "Impossible de poster le message, vous n'êtes pas connecté.");
@@ -177,11 +188,11 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         cookieListForPostMsg = listOfCookies;
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://www.jeuxvideo.com"));
+        networkManager->cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://" + website));
 
         if(isInEdit == true)
         {
-            request = parsingToolClass::buildRequestWithThisUrl("http://www.jeuxvideo.com/forums/ajax_edit_message.php");
+            request = parsingToolClass::buildRequestWithThisUrl("http://" + website + "/forums/ajax_edit_message.php");
         }
         else
         {

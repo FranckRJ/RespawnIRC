@@ -34,7 +34,7 @@ public:
     explicit getTopicMessagesClass(QObject* parent = 0);
 public slots:
     void setNewTopic(QString newTopicLink, bool getFirstMessage);
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool updateMessages);
+    void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages);
     void settingsChanged(settingsForMessageParsingStruct newSettings);
     void startGetMessage();
     void getMessages();
@@ -55,9 +55,11 @@ private:
     QVector<autoTimeoutReplyClass*> listOfTimeoutForReplys;
     QVector<QNetworkReply*> listOfReplys;
     QList<QNetworkCookie> currentCookieList;
+    QString websiteOfCookies;
     QMap<long, QString> listOfEdit;
     QTimer* timerForGetMessage;
     QString topicLink;
+    QString websiteOfTopic;
     QString pseudoOfUser;
     settingsForMessageParsingStruct settingsForMessageParsing;
     bool needToGetFirstMessage;
