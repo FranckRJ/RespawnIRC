@@ -346,10 +346,10 @@ void showTopicMessagesClass::linkClicked(const QUrl& link)
 
     if(linkInString.startsWith("quote"))
     {
-        lastMessageQuoted.clear();
+        QString messageQuoted;
         linkInString.remove(0, linkInString.indexOf(':') + 1);
-        lastMessageQuoted = linkInString.mid(linkInString.indexOf(':') + 1);
-        getQuoteInfo(linkInString.left(linkInString.indexOf(':')));
+        messageQuoted = linkInString.mid(linkInString.indexOf(':') + 1);
+        getQuoteInfo(linkInString.left(linkInString.indexOf(':')), messageQuoted);
     }
     else if(linkInString.startsWith("blacklist"))
     {
@@ -419,7 +419,7 @@ bool showTopicMessagesClass::getEditInfo(long idOfMessageToEdit, bool useMessage
     return false;
 }
 
-void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
+void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted)
 {
     if(networkManager == nullptr)
     {
@@ -431,6 +431,7 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted)
     {
         QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://" + websiteOfTopic + "/forums/ajax_citation.php");
         QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo.list;
+        lastMessageQuoted = messageQuoted;
         replyForQuoteInfo = timeoutForQuoteInfo.resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
 
         if(replyForQuoteInfo->isOpen() == true)

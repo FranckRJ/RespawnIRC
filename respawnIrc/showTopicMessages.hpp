@@ -57,7 +57,7 @@ public slots:
     void setNewTopic(QString newTopic);
     void linkClicked(const QUrl& link);
     bool getEditInfo(long idOfMessageToEdit = 0, bool useMessageEdit = true);
-    void getQuoteInfo(QString idOfMessageQuoted);
+    void getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted);
     void deleteMessage(QString idOfMessageDeleted);
     void analyzeEditInfo();
     void analyzeQuoteInfo();
