@@ -293,18 +293,20 @@ void getTopicMessagesClass::analyzeMessages()
     {
         if(locationHeader.startsWith("/forums/") == true)
         {
-            topicLink = "http://" + websiteOfTopic + locationHeader;
-            emit newLinkForTopic(topicLink);
-            retrievesMessage = false;
-            startGetMessage();
-            return;
+            QString locationHeaderTopicLink = "http://" + websiteOfTopic + locationHeader;
+            if(parsingToolClass::checkIfTopicAreSame(topicLink, locationHeaderTopicLink) == true)
+            {
+                topicLink = locationHeaderTopicLink;
+                emit newLinkForTopic(topicLink);
+                retrievesMessage = false;
+                startGetMessage();
+                return;
+            }
         }
-        else
-        {
-            emit newMessagesAreAvailable(QList<messageStruct>(), listOfInput, ajaxInfo, topicLink, true);
-            retrievesMessage = false;
-            return;
-        }
+
+        emit newMessagesAreAvailable(QList<messageStruct>(), listOfInput, ajaxInfo, topicLink, true);
+        retrievesMessage = false;
+        return;
     }
 
     if(currentCookieList.isEmpty() == false)

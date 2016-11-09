@@ -41,7 +41,7 @@ namespace
     const QRegularExpression expForMessage("<div class=\"bloc-contenu\"><div class=\"txt-msg  text-[^-]*-forum \">((.*?)(?=<div class=\"info-edition-msg\">)|(.*?)(?=<div class=\"signature-msg)|(.*))", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEdit("<div class=\"info-edition-msg\">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForSignature("<div class=\"signature-msg[^\"]*\">(.*?)</div>", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForTopicLinkNumber("(http://([^/]*)/forums/[^-]*-([^-]*)-[^-]*-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)", QRegularExpression::OptimizeOnFirstUsageOption);
+    const QRegularExpression expForTopicLinkNumber("(http://([^/]*)/forums/[^-]*-([^-]*)-([^-]*)-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^.]*.htm)", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForForumName("<title>(.*?)- jeuxvideo.com</title>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForJvfLink("http://jvforum.fr/([^/]*)/([^-]*)-([^/]*)", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForSmiley("<img src=\"//image.jeuxvideo.com/smileys_img/([^\"]*)\" alt=\"[^\"]*\" data-def=\"SMILEYS\" data-code=\"([^\"]*)\" title=\"[^\"]*\" />", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -59,6 +59,23 @@ namespace
     const QRegularExpression expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForHtmlTag("<.+?>", QRegularExpression::OptimizeOnFirstUsageOption);
     const QRegularExpression expForWebsite("http://([^/]*)/", QRegularExpression::OptimizeOnFirstUsageOption);
+}
+
+bool parsingToolClass::checkIfTopicAreSame(const QString& firstTopic, const QString& secondTopic)
+{
+    QRegularExpressionMatch matcherForFirstTopic = expForTopicLinkNumber.match(firstTopic);
+    QRegularExpressionMatch matcherForSecondTopic = expForTopicLinkNumber.match(secondTopic);
+
+    if(matcherForFirstTopic.hasMatch() == true && matcherForSecondTopic.hasMatch() == true)
+    {
+        return matcherForFirstTopic.captured(2) == matcherForSecondTopic.captured(2) &&
+               matcherForFirstTopic.captured(3) == matcherForSecondTopic.captured(3) &&
+               matcherForFirstTopic.captured(4) == matcherForSecondTopic.captured(4);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
@@ -220,7 +237,7 @@ QString parsingToolClass::getFirstPageOfTopic(const QString& topicLink)
 
     if(matchForFirstPage.hasMatch() == true)
     {
-        return matchForFirstPage.captured(1) + "1" + matchForFirstPage.captured(5);
+        return matchForFirstPage.captured(1) + "1" + matchForFirstPage.captured(6);
     }
     else
     {
@@ -231,11 +248,11 @@ QString parsingToolClass::getFirstPageOfTopic(const QString& topicLink)
 QString parsingToolClass::getBeforeLastPageOfTopic(const QString& topicLink)
 {
     QRegularExpressionMatch matchForBeforeLastPage = expForTopicLinkNumber.match(topicLink);
-    QString pageNumber = matchForBeforeLastPage.captured(4);
+    QString pageNumber = matchForBeforeLastPage.captured(5);
 
     if(pageNumber.isEmpty() == false && pageNumber != "1")
     {
-        return matchForBeforeLastPage.captured(1) + QString::number(pageNumber.toInt() - 1) + matchForBeforeLastPage.captured(5);
+        return matchForBeforeLastPage.captured(1) + QString::number(pageNumber.toInt() - 1) + matchForBeforeLastPage.captured(6);
     }
     else
     {
