@@ -22,7 +22,7 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v2.8");
+const QString respawnIrcClass::currentVersionName("v2.8.1");
 
 namespace
 {
