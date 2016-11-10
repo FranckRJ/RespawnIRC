@@ -415,25 +415,12 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     {
         extraTableStyle += "background: " + styleToolClass::getColorInfo().tableBackgroundColor + ";color: " + styleToolClass::getColorInfo().tableTextColor + ";";
     }
-    if(infoForParsing.useNewLayout == false)
-    {
-        extraTableStyle += "margin-bottom: 5px;";
-    }
 
     replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", true);
     replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", false);
 
     thisMessage.replace("\n", "");
     thisMessage.replace("\r", "");
-
-    if(infoForParsing.useNewLayout == false)
-    {
-        replaceWithCapNumber(thisMessage, expForStickers, 0, "<p>", "</p>");
-        while(replaceWithCapNumber(thisMessage, QRegularExpression("(" + expForStickers.pattern() + ")\\s*</p>\\s*<p>\\s*(" + expForStickers.pattern() + ")"), 1, "", "", 4) == true)
-        {
-            //c'normal que c'est vide
-        }
-    }
 
     if(infoForParsing.stickerToSmiley == true)
     {
@@ -483,22 +470,30 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", false, false, false, 1);
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", false, true);
 
+    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<blockquote>");
     removeAllOverlyQuote(thisMessage, infoForParsing.nbMaxQuote);
 
-    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";" + extraTableStyle + "\"><tr><td>");
+    thisMessage.replace(QRegularExpression("(<br /> *){0,2}</p> *<p>( *<br />){0,2}"), "<br /><br />");
+    thisMessage.replace(QRegularExpression("<br /> *<(/)?p> *<br />"), "<br /><br />");
+    thisMessage.replace(QRegularExpression("(<br /> *){1,2}<(/)?p>"), "<br /><br />");
+    thisMessage.replace(QRegularExpression("<(/)?p>(<br /> *){1,2}"), "<br /><br />");
+    thisMessage.replace(QRegularExpression("<(/)?p>"), "<br /><br />");
+    thisMessage.replace(QRegularExpression("(<br /> *)*(<(/)?blockquote>)( *<br />)*"), "\\2");
+
+    thisMessage.replace("<blockquote>", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";" + extraTableStyle + "\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
 
-    if(infoForParsing.useNewLayout == false)
-    {
-        thisMessage.replace(QRegularExpression("</p> *<p>"), "<br /><br />");
-        thisMessage.replace("<p>", "");
-        thisMessage.replace("</p>", "");
-    }
-
     thisMessage.remove("</div>");
-    while(thisMessage.endsWith(' ') == true)
+    thisMessage = thisMessage.trimmed();
+    while(thisMessage.startsWith("<br />") == true)
     {
-        thisMessage.remove(thisMessage.size() - 1, 1);
+        thisMessage.remove(0, 6);
+        thisMessage = thisMessage.trimmed();
+    }
+    while(thisMessage.endsWith("<br />") == true)
+    {
+        thisMessage.remove(thisMessage.size() - 6, 6);
+        thisMessage = thisMessage.trimmed();
     }
 
     return thisMessage;
@@ -572,7 +567,7 @@ void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
     ++maxNumberQuote;
     while(match.hasMatch() == true)
     {
-        if(match.captured() == "<blockquote class=\"blockquote-jv\">")
+        if(match.captured() == "<blockquote>")
         {
             --maxNumberQuote;
         }
@@ -587,7 +582,7 @@ void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
             QRegularExpressionMatch secMatch = expForHtmlTag.match(source, match.capturedEnd());
             while(secMatch.hasMatch() == true)
             {
-                if(secMatch.captured() == "<blockquote class=\"blockquote-jv\">")
+                if(secMatch.captured() == "<blockquote>")
                 {
                     ++tmpNumberQuote;
                 }

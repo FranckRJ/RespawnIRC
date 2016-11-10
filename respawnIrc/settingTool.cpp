@@ -49,7 +49,6 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["cutLongTopicNameInTopicList"] = true;
     listOfDefaultBoolOption["downloadMissingStickers"] = true;
     listOfDefaultBoolOption["downloadNoelshackImages"] = true;
-    listOfDefaultBoolOption["useNewLayoutForMessageParsing"] = false;
     listOfDefaultBoolOption["expertMode"] = false;
     listOfDefaultBoolOption["warnOnFirstTime"] = true;
     listOfDefaultBoolOption["showSignatures"] = false;

@@ -171,18 +171,6 @@ QWidget* preferenceWindowClass::createWidgetForMessagesTab()
     mainLayout->addWidget(groupBoxMessageBehavior, 1, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
-    if(expertMode == true)
-    {
-        QGroupBox* groupBoxExpert = new QGroupBox("Expert", this);
-
-        QVBoxLayout* vboxExpert = new QVBoxLayout();
-        vboxExpert->addWidget(makeNewCheckBox("Utiliser le nouvel agencement pour les messages", "useNewLayoutForMessageParsing"));
-        vboxExpert->addStretch(1);
-        groupBoxExpert->setLayout(vboxExpert);
-
-        mainLayout->addWidget(groupBoxExpert, 2, 0, 1, 2);
-    }
-
     QVBoxLayout* realMainLayout = new QVBoxLayout();
     realMainLayout->addLayout(mainLayout);
     realMainLayout->addStretch(1);

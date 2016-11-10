@@ -56,7 +56,6 @@ struct infoForMessageParsingStruct
     bool betterQuote;
     int noelshackImageWidth;
     int noelshackImageHeight;
-    bool useNewLayout;
     QStringList* listOfStickersUsed = nullptr;
     QStringList* listOfNoelshackImageUsed = nullptr;
 };
