@@ -466,12 +466,17 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
         replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     }
 
-    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>", -1, "", false, false, false, 1);
-    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", false, false, false, 1);
+    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>", -1, "", false, false, true, 1);
+    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", false, false, true, 1);
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", false, true);
 
     thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<blockquote>");
     removeAllOverlyQuote(thisMessage, infoForParsing.nbMaxQuote);
+
+    thisMessage.replace("<ul class=\"liste-default-jv\">", "<br /><br /><ul>");
+    thisMessage.replace("<ol class=\"liste-default-jv\">", "<br /><br /><ol>");
+    thisMessage.replace("</ul>", "<ul><br /><br />");
+    thisMessage.replace("</ol>", "<ol><br /><br />");
 
     thisMessage.replace(QRegularExpression("(<br /> *){0,2}</p> *<p>( *<br />){0,2}"), "<br /><br />");
     thisMessage.replace(QRegularExpression("<br /> *<(/)?p> *<br />"), "<br /><br />");
@@ -479,6 +484,11 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     thisMessage.replace(QRegularExpression("<(/)?p>(<br /> *){1,2}"), "<br /><br />");
     thisMessage.replace(QRegularExpression("<(/)?p>"), "<br /><br />");
     thisMessage.replace(QRegularExpression("(<br /> *)*(<(/)?blockquote>)( *<br />)*"), "\\2");
+
+    thisMessage.replace("<br /><br /><ul>", "<ul>");
+    thisMessage.replace("<br /><br /><ol>", "<ol>");
+    thisMessage.replace("<ul><br /><br />", "</ul>");
+    thisMessage.replace("<ol><br /><br />", "</ol>");
 
     thisMessage.replace("<blockquote>", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";" + extraTableStyle + "\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
@@ -610,7 +620,7 @@ void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
 }
 
 bool parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber,
-                                            QString stringAfterAfter, bool replaceReturnByBr, bool makeLinkIfPossible, bool replacePByBr, int additionnalOffset)
+                                            QString stringAfterAfter, bool replaceReturnByBr, bool makeLinkIfPossible, bool removeFirstAndLastP, int additionnalOffset)
 {
     QRegularExpressionMatch match = exp.match(source);
     int offsetMatch = 0;
@@ -621,9 +631,20 @@ bool parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpre
     {
         newString = stringBefore;
         hasMatch = true;
-        if(replacePByBr == true)
+        if(removeFirstAndLastP == true)
         {
-            newString += match.captured(capNumber).replace("</p>", "<br /><br />");
+            QString tmpString = match.captured(capNumber).trimmed();
+            while(tmpString.startsWith("<p>") == true)
+            {
+                tmpString.remove(0, 3);
+                tmpString = tmpString.trimmed();
+            }
+            while(tmpString.endsWith("</p>") == true)
+            {
+                tmpString.remove(tmpString.size() - 4, 4);
+                tmpString = tmpString.trimmed();
+            }
+            newString += tmpString;
         }
         else
         {
@@ -633,9 +654,20 @@ bool parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpre
 
         if(secondCapNumber != -1)
         {
-            if(replacePByBr == true)
+            if(removeFirstAndLastP == true)
             {
-                newString += match.captured(secondCapNumber).replace("</p>", "<br /><br />");
+                QString tmpString = match.captured(secondCapNumber).trimmed();
+                while(tmpString.startsWith("<p>") == true)
+                {
+                    tmpString.remove(0, 3);
+                    tmpString = tmpString.trimmed();
+                }
+                while(tmpString.endsWith("</p>") == true)
+                {
+                    tmpString.remove(tmpString.size() - 4, 4);
+                    tmpString = tmpString.trimmed();
+                }
+                newString += tmpString;
             }
             else
             {

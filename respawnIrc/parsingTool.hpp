@@ -91,7 +91,7 @@ namespace parsingToolClass
     void removeAllOverlyQuote(QString& source, int maxNumberQuote);
     bool replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "",
-                                     bool replaceReturnByBr = false, bool makeLinkIfPossible = false, bool replacePByBr = false, int additionnalOffset = -1);
+                                     bool replaceReturnByBr = false, bool makeLinkIfPossible = false, bool removeFirstAndLastP = false, int additionnalOffset = -1);
 }
 
 #endif
