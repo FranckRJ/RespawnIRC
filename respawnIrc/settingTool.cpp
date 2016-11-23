@@ -383,3 +383,8 @@ QList<QNetworkCookie> settingToolClass::createCookieListWithThisQVariantList(QLi
 
     return newList;
 }
+
+void settingToolClass::forceSync()
+{
+    setting->sync();
+}

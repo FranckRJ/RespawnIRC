@@ -195,6 +195,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
 void mainWindowClass::doStuffBeforeQuit()
 {
     respawnIrc.doStuffBeforeQuit();
+    settingToolClass::forceSync();
 }
 
 void mainWindowClass::goToMp()

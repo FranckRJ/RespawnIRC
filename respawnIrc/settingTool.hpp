@@ -41,6 +41,7 @@ namespace settingToolClass
     QList<QVariant> createQVariantListWithThisList(QList<QNetworkCookie> list);
     QList<QString> createStringListWithThisQVariantList(QList<QVariant> list);
     QList<QNetworkCookie> createCookieListWithThisQVariantList(QList<QVariant> list);
+    void forceSync();
 }
 
 #endif
