@@ -21,12 +21,13 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 #include "styleTool.hpp"
+#include "configDependentVar.hpp"
 
 const QString respawnIrcClass::currentVersionName("v2.8.1");
 
 namespace
 {
-    QRegularExpression expForSmileyToCode("<img src=\"resources/smileys/(.*?)\\..*?\" />", QRegularExpression::OptimizeOnFirstUsageOption);
+    QRegularExpression expForSmileyToCode("<img src=\"resources/smileys/(.*?)\\..*?\" />", configDependentVar::regexpBaseOptions);
 }
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)

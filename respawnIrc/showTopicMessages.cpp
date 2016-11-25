@@ -11,6 +11,7 @@
 
 #include "showTopicMessages.hpp"
 #include "settingTool.hpp"
+#include "configDependentVar.hpp"
 
 QThread showTopicMessagesClass::threadForGetMessages;
 
@@ -20,7 +21,7 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
     getTopicMessages = new getTopicMessagesClass();
     getTopicMessages->moveToThread(&threadForGetMessages);
 
-    expForColorPseudo.setPatternOptions(QRegularExpression::CaseInsensitiveOption | QRegularExpression::OptimizeOnFirstUsageOption);
+    expForColorPseudo.setPatternOptions(QRegularExpression::CaseInsensitiveOption | configDependentVar::regexpBaseOptions);
     messagesBox.setReadOnly(true);
     messagesBox.setOpenExternalLinks(false);
     messagesBox.setOpenLinks(false);

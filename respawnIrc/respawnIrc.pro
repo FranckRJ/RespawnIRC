@@ -65,7 +65,8 @@ HEADERS += \
     addCookiesWindow.hpp \
     imageDownloadTool.hpp \
     webNavigator.hpp \
-    viewThemeInfos.hpp
+    viewThemeInfos.hpp \
+    configDependentVar.hpp
 
 RC_FILE = respawnIrc.rc
 

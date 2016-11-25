@@ -4,10 +4,11 @@
 #include "multiTypeTextBox.hpp"
 #include "settingTool.hpp"
 #include "styleTool.hpp"
+#include "configDependentVar.hpp"
 
 namespace
 {
-    QRegularExpression expForLineReturn("(?<!\\\\)&n", QRegularExpression::OptimizeOnFirstUsageOption);
+    QRegularExpression expForLineReturn("(?<!\\\\)&n", configDependentVar::regexpBaseOptions);
 }
 
 multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
