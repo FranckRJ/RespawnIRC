@@ -28,6 +28,9 @@ const QString respawnIrcClass::currentVersionName("v2.8.1");
 namespace
 {
     QRegularExpression expForSmileyToCode("<img src=\"resources/smileys/(.*?)\\..*?\" />", configDependentVar::regexpBaseOptions);
+    QRegularExpression expForNoelshackToLink("<a href=\"(http[^n]*noelshack.com[^\"]*)\"><img src=\"img/image.noelshack.com[^\"]*\".*?</a>", configDependentVar::regexpBaseOptions);
+    QRegularExpression expForStickerToCode("<img src=\"resources/stickers/(.*?)\\.png\"[^>]*>", configDependentVar::regexpBaseOptions);
+    QRegularExpression expForImageTag("<img[^>]*>", configDependentVar::regexpBaseOptions);
 }
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
@@ -914,93 +917,100 @@ void respawnIrcClass::updateImagesIfNeeded()
 
 void respawnIrcClass::clipboardChanged()
 {
-    QClipboard* clipboard = QApplication::clipboard();
-    const QMimeData* data = clipboard->mimeData();
-    QString dataInHtml = data->html();
-
-    if(dataInHtml.contains("<img src=\"resources/smileys/"))
+    if(QApplication::focusWidget() != nullptr)
     {
-        QTextDocument doc;
-        QMimeData* newData = new QMimeData();
-        //a changer, si possible
-        dataInHtml.replace("<img src=\"resources/smileys/1.gif\" />", ":)");
-        dataInHtml.replace("<img src=\"resources/smileys/2.gif\" />", ":question:");
-        dataInHtml.replace("<img src=\"resources/smileys/3.gif\" />", ":g)");
-        dataInHtml.replace("<img src=\"resources/smileys/4.gif\" />", ":d)");
-        dataInHtml.replace("<img src=\"resources/smileys/5.gif\" />", ":cd:");
-        dataInHtml.replace("<img src=\"resources/smileys/6.gif\" />", ":globe:");
-        dataInHtml.replace("<img src=\"resources/smileys/7.gif\" />", ":p)");
-        dataInHtml.replace("<img src=\"resources/smileys/8.gif\" />", ":malade:");
-        dataInHtml.replace("<img src=\"resources/smileys/9.gif\" />", ":pacg:");
-        dataInHtml.replace("<img src=\"resources/smileys/10.gif\" />", ":pacd:");
-        dataInHtml.replace("<img src=\"resources/smileys/11.gif\" />", ":noel:");
-        dataInHtml.replace("<img src=\"resources/smileys/12.gif\" />", ":o))");
-        dataInHtml.replace("<img src=\"resources/smileys/13.gif\" />", ":snif2:");
-        dataInHtml.replace("<img src=\"resources/smileys/14.gif\" />", ":-(");
-        dataInHtml.replace("<img src=\"resources/smileys/15.gif\" />", ":-((");
-        dataInHtml.replace("<img src=\"resources/smileys/16.gif\" />", ":mac:");
-        dataInHtml.replace("<img src=\"resources/smileys/17.gif\" />", ":gba:");
-        dataInHtml.replace("<img src=\"resources/smileys/18.gif\" />", ":hap:");
-        dataInHtml.replace("<img src=\"resources/smileys/19.gif\" />", ":nah:");
-        dataInHtml.replace("<img src=\"resources/smileys/20.gif\" />", ":snif:");
-        dataInHtml.replace("<img src=\"resources/smileys/21.gif\" />", ":mort:");
-        dataInHtml.replace("<img src=\"resources/smileys/22.gif\" />", ":ouch:");
-        dataInHtml.replace("<img src=\"resources/smileys/23.gif\" />", ":-)))");
-        dataInHtml.replace("<img src=\"resources/smileys/24.gif\" />", ":content:");
-        dataInHtml.replace("<img src=\"resources/smileys/25.gif\" />", ":nonnon:");
-        dataInHtml.replace("<img src=\"resources/smileys/26.gif\" />", ":cool:");
-        dataInHtml.replace("<img src=\"resources/smileys/27.gif\" />", ":sleep:");
-        dataInHtml.replace("<img src=\"resources/smileys/28.gif\" />", ":doute:");
-        dataInHtml.replace("<img src=\"resources/smileys/29.gif\" />", ":hello:");
-        dataInHtml.replace("<img src=\"resources/smileys/30.gif\" />", ":honte:");
-        dataInHtml.replace("<img src=\"resources/smileys/31.gif\" />", ":-p");
-        dataInHtml.replace("<img src=\"resources/smileys/32.gif\" />", ":lol:");
-        dataInHtml.replace("<img src=\"resources/smileys/33.gif\" />", ":non2:");
-        dataInHtml.replace("<img src=\"resources/smileys/34.gif\" />", ":monoeil:");
-        dataInHtml.replace("<img src=\"resources/smileys/35.gif\" />", ":non:");
-        dataInHtml.replace("<img src=\"resources/smileys/36.gif\" />", ":ok:");
-        dataInHtml.replace("<img src=\"resources/smileys/37.gif\" />", ":oui:");
-        dataInHtml.replace("<img src=\"resources/smileys/38.gif\" />", ":rechercher:");
-        dataInHtml.replace("<img src=\"resources/smileys/39.gif\" />", ":rire:");
-        dataInHtml.replace("<img src=\"resources/smileys/40.gif\" />", ":-D");
-        dataInHtml.replace("<img src=\"resources/smileys/41.gif\" />", ":rire2:");
-        dataInHtml.replace("<img src=\"resources/smileys/42.gif\" />", ":salut:");
-        dataInHtml.replace("<img src=\"resources/smileys/43.gif\" />", ":sarcastic:");
-        dataInHtml.replace("<img src=\"resources/smileys/44.gif\" />", ":up:");
-        dataInHtml.replace("<img src=\"resources/smileys/45.gif\" />", ":(");
-        dataInHtml.replace("<img src=\"resources/smileys/46.gif\" />", ":-)");
-        dataInHtml.replace("<img src=\"resources/smileys/47.gif\" />", ":peur:");
-        dataInHtml.replace("<img src=\"resources/smileys/48.gif\" />", ":bye:");
-        dataInHtml.replace("<img src=\"resources/smileys/49.gif\" />", ":dpdr:");
-        dataInHtml.replace("<img src=\"resources/smileys/50.gif\" />", ":fou:");
-        dataInHtml.replace("<img src=\"resources/smileys/51.gif\" />", ":gne:");
-        dataInHtml.replace("<img src=\"resources/smileys/52.gif\" />", ":dehors:");
-        dataInHtml.replace("<img src=\"resources/smileys/53.gif\" />", ":fier:");
-        dataInHtml.replace("<img src=\"resources/smileys/54.gif\" />", ":coeur:");
-        dataInHtml.replace("<img src=\"resources/smileys/55.gif\" />", ":rouge:");
-        dataInHtml.replace("<img src=\"resources/smileys/56.gif\" />", ":sors:");
-        dataInHtml.replace("<img src=\"resources/smileys/57.gif\" />", ":ouch:");
-        dataInHtml.replace("<img src=\"resources/smileys/58.gif\" />", ":merci:");
-        dataInHtml.replace("<img src=\"resources/smileys/59.gif\" />", ":svp:");
-        dataInHtml.replace("<img src=\"resources/smileys/60.gif\" />", ":ange:");
-        dataInHtml.replace("<img src=\"resources/smileys/61.gif\" />", ":diable:");
-        dataInHtml.replace("<img src=\"resources/smileys/62.gif\" />", ":gni:");
-        dataInHtml.replace("<img src=\"resources/smileys/63.gif\" />", ":spoiler:");
-        dataInHtml.replace("<img src=\"resources/smileys/64.gif\" />", ":hs:");
-        dataInHtml.replace("<img src=\"resources/smileys/65.gif\" />", ":desole:");
-        dataInHtml.replace("<img src=\"resources/smileys/66.gif\" />", ":fete:");
-        dataInHtml.replace("<img src=\"resources/smileys/67.gif\" />", ":sournois:");
-        dataInHtml.replace("<img src=\"resources/smileys/68.gif\" />", ":hum:");
-        dataInHtml.replace("<img src=\"resources/smileys/69.gif\" />", ":bravo:");
-        dataInHtml.replace("<img src=\"resources/smileys/70.gif\" />", ":banzai:");
-        dataInHtml.replace("<img src=\"resources/smileys/71.gif\" />", ":bave:");
-        dataInHtml.replace("<img src=\"resources/smileys/nyu.gif\" />", ":cute:");
-        // fin "à changer"
-        parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":");
-        doc.setHtml(dataInHtml);
-        newData->setHtml(dataInHtml);
-        newData->setText(doc.toPlainText());
-        clipboard->setMimeData(newData);
+        QClipboard* clipboard = QApplication::clipboard();
+        const QMimeData* data = clipboard->mimeData();
+        QString dataInHtml = data->html();
+
+        if(dataInHtml.contains("<img src=\"") && dataInHtml != lastClipboardDataChanged)
+        {
+            QTextDocument doc;
+            QMimeData* newData = new QMimeData();
+            //a changer, si possible
+            dataInHtml.replace("<img src=\"resources/smileys/1.gif\" />", ":)");
+            dataInHtml.replace("<img src=\"resources/smileys/2.gif\" />", ":question:");
+            dataInHtml.replace("<img src=\"resources/smileys/3.gif\" />", ":g)");
+            dataInHtml.replace("<img src=\"resources/smileys/4.gif\" />", ":d)");
+            dataInHtml.replace("<img src=\"resources/smileys/5.gif\" />", ":cd:");
+            dataInHtml.replace("<img src=\"resources/smileys/6.gif\" />", ":globe:");
+            dataInHtml.replace("<img src=\"resources/smileys/7.gif\" />", ":p)");
+            dataInHtml.replace("<img src=\"resources/smileys/8.gif\" />", ":malade:");
+            dataInHtml.replace("<img src=\"resources/smileys/9.gif\" />", ":pacg:");
+            dataInHtml.replace("<img src=\"resources/smileys/10.gif\" />", ":pacd:");
+            dataInHtml.replace("<img src=\"resources/smileys/11.gif\" />", ":noel:");
+            dataInHtml.replace("<img src=\"resources/smileys/12.gif\" />", ":o))");
+            dataInHtml.replace("<img src=\"resources/smileys/13.gif\" />", ":snif2:");
+            dataInHtml.replace("<img src=\"resources/smileys/14.gif\" />", ":-(");
+            dataInHtml.replace("<img src=\"resources/smileys/15.gif\" />", ":-((");
+            dataInHtml.replace("<img src=\"resources/smileys/16.gif\" />", ":mac:");
+            dataInHtml.replace("<img src=\"resources/smileys/17.gif\" />", ":gba:");
+            dataInHtml.replace("<img src=\"resources/smileys/18.gif\" />", ":hap:");
+            dataInHtml.replace("<img src=\"resources/smileys/19.gif\" />", ":nah:");
+            dataInHtml.replace("<img src=\"resources/smileys/20.gif\" />", ":snif:");
+            dataInHtml.replace("<img src=\"resources/smileys/21.gif\" />", ":mort:");
+            dataInHtml.replace("<img src=\"resources/smileys/22.gif\" />", ":ouch:");
+            dataInHtml.replace("<img src=\"resources/smileys/23.gif\" />", ":-)))");
+            dataInHtml.replace("<img src=\"resources/smileys/24.gif\" />", ":content:");
+            dataInHtml.replace("<img src=\"resources/smileys/25.gif\" />", ":nonnon:");
+            dataInHtml.replace("<img src=\"resources/smileys/26.gif\" />", ":cool:");
+            dataInHtml.replace("<img src=\"resources/smileys/27.gif\" />", ":sleep:");
+            dataInHtml.replace("<img src=\"resources/smileys/28.gif\" />", ":doute:");
+            dataInHtml.replace("<img src=\"resources/smileys/29.gif\" />", ":hello:");
+            dataInHtml.replace("<img src=\"resources/smileys/30.gif\" />", ":honte:");
+            dataInHtml.replace("<img src=\"resources/smileys/31.gif\" />", ":-p");
+            dataInHtml.replace("<img src=\"resources/smileys/32.gif\" />", ":lol:");
+            dataInHtml.replace("<img src=\"resources/smileys/33.gif\" />", ":non2:");
+            dataInHtml.replace("<img src=\"resources/smileys/34.gif\" />", ":monoeil:");
+            dataInHtml.replace("<img src=\"resources/smileys/35.gif\" />", ":non:");
+            dataInHtml.replace("<img src=\"resources/smileys/36.gif\" />", ":ok:");
+            dataInHtml.replace("<img src=\"resources/smileys/37.gif\" />", ":oui:");
+            dataInHtml.replace("<img src=\"resources/smileys/38.gif\" />", ":rechercher:");
+            dataInHtml.replace("<img src=\"resources/smileys/39.gif\" />", ":rire:");
+            dataInHtml.replace("<img src=\"resources/smileys/40.gif\" />", ":-D");
+            dataInHtml.replace("<img src=\"resources/smileys/41.gif\" />", ":rire2:");
+            dataInHtml.replace("<img src=\"resources/smileys/42.gif\" />", ":salut:");
+            dataInHtml.replace("<img src=\"resources/smileys/43.gif\" />", ":sarcastic:");
+            dataInHtml.replace("<img src=\"resources/smileys/44.gif\" />", ":up:");
+            dataInHtml.replace("<img src=\"resources/smileys/45.gif\" />", ":(");
+            dataInHtml.replace("<img src=\"resources/smileys/46.gif\" />", ":-)");
+            dataInHtml.replace("<img src=\"resources/smileys/47.gif\" />", ":peur:");
+            dataInHtml.replace("<img src=\"resources/smileys/48.gif\" />", ":bye:");
+            dataInHtml.replace("<img src=\"resources/smileys/49.gif\" />", ":dpdr:");
+            dataInHtml.replace("<img src=\"resources/smileys/50.gif\" />", ":fou:");
+            dataInHtml.replace("<img src=\"resources/smileys/51.gif\" />", ":gne:");
+            dataInHtml.replace("<img src=\"resources/smileys/52.gif\" />", ":dehors:");
+            dataInHtml.replace("<img src=\"resources/smileys/53.gif\" />", ":fier:");
+            dataInHtml.replace("<img src=\"resources/smileys/54.gif\" />", ":coeur:");
+            dataInHtml.replace("<img src=\"resources/smileys/55.gif\" />", ":rouge:");
+            dataInHtml.replace("<img src=\"resources/smileys/56.gif\" />", ":sors:");
+            dataInHtml.replace("<img src=\"resources/smileys/57.gif\" />", ":ouch:");
+            dataInHtml.replace("<img src=\"resources/smileys/58.gif\" />", ":merci:");
+            dataInHtml.replace("<img src=\"resources/smileys/59.gif\" />", ":svp:");
+            dataInHtml.replace("<img src=\"resources/smileys/60.gif\" />", ":ange:");
+            dataInHtml.replace("<img src=\"resources/smileys/61.gif\" />", ":diable:");
+            dataInHtml.replace("<img src=\"resources/smileys/62.gif\" />", ":gni:");
+            dataInHtml.replace("<img src=\"resources/smileys/63.gif\" />", ":spoiler:");
+            dataInHtml.replace("<img src=\"resources/smileys/64.gif\" />", ":hs:");
+            dataInHtml.replace("<img src=\"resources/smileys/65.gif\" />", ":desole:");
+            dataInHtml.replace("<img src=\"resources/smileys/66.gif\" />", ":fete:");
+            dataInHtml.replace("<img src=\"resources/smileys/67.gif\" />", ":sournois:");
+            dataInHtml.replace("<img src=\"resources/smileys/68.gif\" />", ":hum:");
+            dataInHtml.replace("<img src=\"resources/smileys/69.gif\" />", ":bravo:");
+            dataInHtml.replace("<img src=\"resources/smileys/70.gif\" />", ":banzai:");
+            dataInHtml.replace("<img src=\"resources/smileys/71.gif\" />", ":bave:");
+            dataInHtml.replace("<img src=\"resources/smileys/nyu.gif\" />", ":cute:");
+            // fin "à changer"
+            parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":");
+            parsingToolClass::replaceWithCapNumber(dataInHtml, expForNoelshackToLink, 1);
+            parsingToolClass::replaceWithCapNumber(dataInHtml, expForStickerToCode, 1, "[[sticker:p/", "]]");
+            dataInHtml.replace(expForImageTag, "");
+            lastClipboardDataChanged = dataInHtml;
+            doc.setHtml(dataInHtml);
+            newData->setHtml(dataInHtml);
+            newData->setText(doc.toPlainText());
+            clipboard->setMimeData(newData);
+        }
     }
 }
 

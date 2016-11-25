@@ -111,6 +111,7 @@ private:
     checkUpdateClass checkUpdate;
     imageDownloadToolClass imageDownloadTool;
     QString currentThemeName;
+    QString lastClipboardDataChanged;
     bool beepWhenWarn;
     bool warnUser;
     int typeOfImageRefresh;
