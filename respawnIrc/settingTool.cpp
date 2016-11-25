@@ -95,7 +95,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["numberOfPagesToLoad"].value = -1;
     listOfDefaultIntOption["numberOfPagesToLoad"].minValue = -1;
     listOfDefaultIntOption["numberOfPagesToLoad"].maxValue = 5;
-    listOfDefaultIntOption["updateTopicListTime"].value = 5000;
+    listOfDefaultIntOption["updateTopicListTime"].value = 8000;
     listOfDefaultIntOption["updateTopicListTime"].minValue = 500;
     listOfDefaultIntOption["updateTopicListTime"].maxValue = 60000;
     listOfDefaultIntOption["typeOfEdit"].value = 0;
