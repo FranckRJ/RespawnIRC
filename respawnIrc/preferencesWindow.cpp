@@ -85,7 +85,7 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     QGroupBox* groupBoxAdvanced = new QGroupBox("Avancé", this);
 
     QVBoxLayout* vboxAdvanced = new QVBoxLayout();
-    vboxAdvanced->addWidget(makeNewCheckBox("Charger les deux dernières pages", "loadTwoLastPage"));
+    vboxAdvanced->addLayout(makeNewComboBox("Type de chargement des pages :", "numberOfPageToLoadForOpti", {"Minimal", "Optimisé"}));
     vboxAdvanced->addWidget(makeNewCheckBox("Ignorer les erreurs réseau", "ignoreNetworkError"));
     vboxAdvanced->addLayout(makeNewSpinBox("Temps en secondes avant le timeout des requêtes", "timeoutInSecond"));
     vboxAdvanced->addLayout(makeNewSpinBox("Nombre d'erreurs avant avertissement", "numberOfErrorsBeforeWarning"));
@@ -106,7 +106,7 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
         QGroupBox* groupBoxExpert = new QGroupBox("Expert", this);
 
         QVBoxLayout* vboxExpert = new QVBoxLayout();
-        vboxExpert->addLayout(makeNewSpinBox("Nombre de pages à charger", "numberOfPagesToLoad"));
+        vboxExpert->addLayout(makeNewSpinBox("Nombre de messages avant début de l'optimisation", "numberOfMessagesForOptimizationStart"));
         vboxExpert->addStretch(1);
         groupBoxExpert->setLayout(vboxExpert);
 

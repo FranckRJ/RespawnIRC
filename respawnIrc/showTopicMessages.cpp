@@ -211,8 +211,8 @@ void showTopicMessagesClass::updateSettingInfo()
     timeoutForQuoteInfo.updateTimeoutTime();
     timeoutForDeleteInfo.updateTimeoutTime();
 
-    settingsForMessageParsing.loadTwoLastPage = settingToolClass::getThisBoolOption("loadTwoLastPage");
-    settingsForMessageParsing.numberOfPagesToLoad = settingToolClass::getThisIntOption("numberOfPagesToLoad").value;
+    settingsForMessageParsing.isInOptimizedMode = (settingToolClass::getThisIntOption("numberOfPageToLoadForOpti").value == 1 ? true : false);
+    settingsForMessageParsing.numberOfMessagesForOptimizationStart = settingToolClass::getThisIntOption("numberOfMessagesForOptimizationStart").value;
     settingsForMessageParsing.infoForMessageParsing.showStickers = settingToolClass::getThisBoolOption("showStickers");
     settingsForMessageParsing.infoForMessageParsing.stickersSize = settingToolClass::getThisIntOption("stickersSize").value;
     settingsForMessageParsing.timeoutTime = settingToolClass::getThisIntOption("timeoutInSecond").value;

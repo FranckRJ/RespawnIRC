@@ -28,7 +28,6 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["showTextDecorationButton"] = true;
     listOfDefaultBoolOption["showListOfTopic"] = true;
     listOfDefaultBoolOption["setMultilineEdit"] = true;
-    listOfDefaultBoolOption["loadTwoLastPage"] = true;
     listOfDefaultBoolOption["ignoreNetworkError"] = false;
     listOfDefaultBoolOption["searchForUpdateAtLaunch"] = true;
     listOfDefaultBoolOption["saveWindowGeometry"] = true;
@@ -92,9 +91,6 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].value = 5;
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].minValue = 1;
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].maxValue = 25;
-    listOfDefaultIntOption["numberOfPagesToLoad"].value = -1;
-    listOfDefaultIntOption["numberOfPagesToLoad"].minValue = -1;
-    listOfDefaultIntOption["numberOfPagesToLoad"].maxValue = 5;
     listOfDefaultIntOption["updateTopicListTime"].value = 10000;
     listOfDefaultIntOption["updateTopicListTime"].minValue = 3000;
     listOfDefaultIntOption["updateTopicListTime"].maxValue = 60000;
@@ -104,6 +100,12 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["topicNameMaxSizeInTopicList"].value = 35;
     listOfDefaultIntOption["topicNameMaxSizeInTopicList"].minValue = 10;
     listOfDefaultIntOption["topicNameMaxSizeInTopicList"].maxValue = 100;
+    listOfDefaultIntOption["numberOfPageToLoadForOpti"].value = 1;
+    listOfDefaultIntOption["numberOfPageToLoadForOpti"].minValue = 0;
+    listOfDefaultIntOption["numberOfPageToLoadForOpti"].maxValue = 1;
+    listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].value = 8;
+    listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].minValue = 1;
+    listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].maxValue = 15;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

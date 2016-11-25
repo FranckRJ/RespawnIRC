@@ -212,6 +212,24 @@ QString parsingToolClass::getErrorMessage(const QString& source)
     }
 }
 
+QString parsingToolClass::getNextPageOfTopic(const QString& source, const QString& website)
+{
+    int currentPage = 0;
+    currentPage = expForCurrentPage.match(source).captured(1).toInt();
+
+    QRegularExpressionMatchIterator matchIteratorForPgaeLink = expForPageLink.globalMatch(source);
+    while(matchIteratorForPgaeLink.hasNext())
+    {
+        QRegularExpressionMatch matchForPageLink = matchIteratorForPgaeLink.next();
+        if(matchForPageLink.captured(2).toInt() == currentPage + 1)
+        {
+            return "http://" + website + matchForPageLink.captured(1);
+        }
+    }
+
+    return "";
+}
+
 QString parsingToolClass::getLastPageOfTopic(const QString& source, const QString& website)
 {
     int currentPage = 0;

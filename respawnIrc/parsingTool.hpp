@@ -73,6 +73,7 @@ namespace parsingToolClass
     bool getTopicLocked(const QString& source);
     QString getCaptchaLink(const QString& source);
     QString getErrorMessage(const QString& source);
+    QString getNextPageOfTopic(const QString& source, const QString& website);
     QString getLastPageOfTopic(const QString& source, const QString& website);
     QString getFirstPageOfTopic(const QString& topicLink);
     QString getBeforeLastPageOfTopic(const QString& topicLink);

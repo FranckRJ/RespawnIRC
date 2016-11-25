@@ -26,6 +26,15 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
     idOfLastMessage = 0;
     needToGetMessages = false;
 
+    if(settingsForMessageParsing.isInOptimizedMode == true)
+    {
+        numberOfPagesToDownload = 2;
+    }
+    else
+    {
+        numberOfPagesToDownload = 1;
+    }
+
     if(newTopicLink.isEmpty() == true)
     {
         topicLink.clear();
@@ -87,10 +96,13 @@ void getTopicMessagesClass::settingsChanged(settingsForMessageParsingStruct newS
 {
     settingsForMessageParsing = newSettings;
 
-    numberOfPagesToDownload = (settingsForMessageParsing.loadTwoLastPage == true ? 2 : 1);
-    if(settingsForMessageParsing.numberOfPagesToLoad != -1)
+    if(settingsForMessageParsing.isInOptimizedMode == true)
     {
-        numberOfPagesToDownload = settingsForMessageParsing.numberOfPagesToLoad;
+        numberOfPagesToDownload = 2;
+    }
+    else
+    {
+        numberOfPagesToDownload = 1;
     }
 
     timerForGetMessage->setInterval(settingsForMessageParsing.timerTime);
@@ -319,7 +331,14 @@ void getTopicMessagesClass::analyzeMessages()
         emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(listOfPageSource[firstValidePageNumber]), "", false);
     }
 
-    newTopicLink = parsingToolClass::getLastPageOfTopic(listOfPageSource[firstValidePageNumber], websiteOfTopic);
+    if(firstTimeGetMessages == false)
+    {
+        newTopicLink = parsingToolClass::getNextPageOfTopic(listOfPageSource[firstValidePageNumber], websiteOfTopic);
+    }
+    else
+    {
+        newTopicLink = parsingToolClass::getLastPageOfTopic(listOfPageSource[firstValidePageNumber], websiteOfTopic);
+    }
 
     if(newTopicLink.isEmpty() == true && topicLink != listOfPageUrl[firstValidePageNumber])
     {
@@ -357,11 +376,19 @@ void getTopicMessagesClass::analyzeMessages()
 
     if(firstTimeGetMessages == false || newTopicLink.isEmpty() == true)
     {
+        int numberOfMessagesInLastPage = 0;
         QList<messageStruct> listOfEntireMessages;
 
         for(int i = listOfPageSource.size() - 1; i >= 0; --i)
         {
-            listOfEntireMessages.append(parsingToolClass::getListOfEntireMessagesWithoutMessagePars(listOfPageSource[i]));
+            QList<messageStruct> listForThisPage = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(listOfPageSource[i]);
+            numberOfMessagesInLastPage = listForThisPage.size();
+            listOfEntireMessages.append(listForThisPage);
+        }
+
+        if(settingsForMessageParsing.isInOptimizedMode == true)
+        {
+            numberOfPagesToDownload = (numberOfMessagesInLastPage >= settingsForMessageParsing.numberOfMessagesForOptimizationStart ? 1 : 2);
         }
 
         if(listOfEntireMessages.isEmpty() == true)

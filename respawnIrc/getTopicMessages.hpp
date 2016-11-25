@@ -19,10 +19,10 @@
 struct settingsForMessageParsingStruct
 {
     infoForMessageParsingStruct infoForMessageParsing;
-    bool loadTwoLastPage;
-    int numberOfPagesToLoad;
+    bool isInOptimizedMode;
     int timerTime;
     int timeoutTime;
+    int numberOfMessagesForOptimizationStart;
     bool downloadMissingStickers;
     bool downloadNoelshackImages;
 };
@@ -69,7 +69,7 @@ private:
     bool retrievesMessage = false;
     bool needToSetCookies = false;
     long idOfLastMessage = 0;
-    int numberOfPagesToDownload;
+    int numberOfPagesToDownload = 2;
 };
 
 #endif
