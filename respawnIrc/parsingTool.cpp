@@ -557,7 +557,7 @@ QNetworkRequest parsingToolClass::buildRequestWithThisUrl(QString url)
 {
     QNetworkRequest request;
     request.setUrl(QUrl(url));
-    request.setRawHeader("User-Agent", "RespawnIRC");
+    request.setRawHeader("User-Agent", "ResnapshotIRC");
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Cookie", "");
     request.setRawHeader("Connection", "Keep-Alive");
