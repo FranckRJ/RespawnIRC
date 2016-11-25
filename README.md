@@ -7,7 +7,7 @@ Pour plus d'infos, le site : http://pijon.fr/RespawnIRC/
 ## Compilation
 
 Il est fortement recommandé d'utiliser les sources de la dernière release (https://github.com/FranckRJ/RespawnIRC/releases/latest dans la partie download en bas) plutôt que les sources de la branche master pour compiler RespawnIRC.  
-Pour connaître les modifications à apporter au programme selon votre compilateur/version de Qt, référez-vous au wiki : https://github.com/FranckRJ/RespawnIRC/wiki/Compiler-avec-les-anciennes-versions-de-Qt-5  
+Pour connaître les modifications à apporter au programme selon votre compilateur/version de Qt, référez-vous au wiki : https://github.com/FranckRJ/RespawnIRC/wiki/Compiler-selon-sa-configuration  
 Depuis peu, pour compiler RespawnIRC vous devrez d'abord compiler Hunspell, pour ce faire référez-vous au wiki : https://github.com/FranckRJ/RespawnIRC/wiki/Compiler-Hunspell  
 Vous pouvez aussi utiliser une ancienne version qui ne nécessite pas de compiler Hunspell séparément comme la 2.6 ou toutes les versions antérieures à elle. Le dernier commit ne demandant pas de compilation séparée d'Hunspell est celui-ci : https://github.com/FranckRJ/RespawnIRC/archive/722daff9774610b4e9f6943a35253848eac9e4b2.zip
 
