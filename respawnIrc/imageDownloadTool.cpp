@@ -188,16 +188,20 @@ void imageDownloadToolClass::analyzeLatestImageDownloaded()
     {
         if(reply->isReadable() == true && (ruleIte.value().isInTmpDir == false || tmpDir.isValid() == true))
         {
-            QFile newImage;
-            QDir newDir;
-            QString basePath = (ruleIte.value().isInTmpDir == true ? tmpDir.path() : QCoreApplication::applicationDirPath());
-            QString pathFile = (ruleIte.value().takeOnlyFileNameForSave == true ? getOnlyLevelOfFilePath(listOfImagesUrlNeedDownload.front().linkOfImage) : listOfImagesUrlNeedDownload.front().linkOfImage);
-            QString imagePath = (basePath + ruleIte.value().directoryPath + convertUrlToFilePath(pathFile) + ruleIte.value().appendAfterName);
-            newDir.mkpath(removeLastLevelOfFilePath(imagePath));
-            newImage.setFileName(imagePath);
-            newImage.open(QIODevice::WriteOnly);
-            newImage.write(reply->readAll());
-            newImage.close();
+            QByteArray imageInBytes = reply->readAll();
+            if(imageInBytes.length() > 150)
+            {
+                QFile newImage;
+                QDir newDir;
+                QString basePath = (ruleIte.value().isInTmpDir == true ? tmpDir.path() : QCoreApplication::applicationDirPath());
+                QString pathFile = (ruleIte.value().takeOnlyFileNameForSave == true ? getOnlyLevelOfFilePath(listOfImagesUrlNeedDownload.front().linkOfImage) : listOfImagesUrlNeedDownload.front().linkOfImage);
+                QString imagePath = (basePath + ruleIte.value().directoryPath + convertUrlToFilePath(pathFile) + ruleIte.value().appendAfterName);
+                newDir.mkpath(removeLastLevelOfFilePath(imagePath));
+                newImage.setFileName(imagePath);
+                newImage.open(QIODevice::WriteOnly);
+                newImage.write(imageInBytes);
+                newImage.close();
+            }
             listOfImagesIte.value().append(convertUrlToFilePath(listOfImagesUrlNeedDownload.front().linkOfImage));
         }
     }
