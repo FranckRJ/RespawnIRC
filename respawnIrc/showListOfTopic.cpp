@@ -88,6 +88,8 @@ void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QStri
 
 void showListOfTopicClass::updateSettings()
 {
+    intSettingStruct updateTopicListTimeSetting = settingToolClass::getThisIntOption("updateTopicListTime");
+
     showNumberOfMessages = settingToolClass::getThisBoolOption("showNumberOfMessagesInTopicList");
     cutLongTopicName = settingToolClass::getThisBoolOption("cutLongTopicNameInTopicList");
     colorModoAndAdminTopic = settingToolClass::getThisBoolOption("colorModoAndAdminTopicInTopicList");
@@ -97,8 +99,14 @@ void showListOfTopicClass::updateSettings()
     showResolvedTagOnTopic = settingToolClass::getThisBoolOption("showResolvedTagOnTopicInTopicList");
     showNormalTagOnTopic = settingToolClass::getThisBoolOption("showNormalTagOnTopicInTopicList");
     useIconInsteadOfTag = settingToolClass::getThisBoolOption("useIconInsteadOfTagInTopicList");
-    timerForGetList.setInterval(settingToolClass::getThisIntOption("updateTopicListTime").value);
     topicNameMaxSize = settingToolClass::getThisIntOption("topicNameMaxSizeInTopicList").value;
+    timerForGetList.setInterval(updateTopicListTimeSetting.value);
+
+    if(updateTopicListTimeSetting.value < updateTopicListTimeSetting.minValue)
+    {
+        timerForGetList.setInterval(updateTopicListTimeSetting.minValue);
+    }
+
     setLoadNeeded(settingToolClass::getThisBoolOption("showListOfTopic"));
     timeoutForReply.updateTimeoutTime();
 }

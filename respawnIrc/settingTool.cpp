@@ -59,8 +59,8 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["showResolvedTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showNormalTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["useIconInsteadOfTagInTopicList"] = true;
-    listOfDefaultIntOption["updateTopicTime"].value = 3500;
-    listOfDefaultIntOption["updateTopicTime"].minValue = 250;
+    listOfDefaultIntOption["updateTopicTime"].value = 5000;
+    listOfDefaultIntOption["updateTopicTime"].minValue = 1500;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"].value = 10;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"].minValue = 1;
@@ -95,8 +95,8 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultIntOption["numberOfPagesToLoad"].value = -1;
     listOfDefaultIntOption["numberOfPagesToLoad"].minValue = -1;
     listOfDefaultIntOption["numberOfPagesToLoad"].maxValue = 5;
-    listOfDefaultIntOption["updateTopicListTime"].value = 8000;
-    listOfDefaultIntOption["updateTopicListTime"].minValue = 500;
+    listOfDefaultIntOption["updateTopicListTime"].value = 10000;
+    listOfDefaultIntOption["updateTopicListTime"].minValue = 3000;
     listOfDefaultIntOption["updateTopicListTime"].maxValue = 60000;
     listOfDefaultIntOption["typeOfEdit"].value = 0;
     listOfDefaultIntOption["typeOfEdit"].minValue = 0;

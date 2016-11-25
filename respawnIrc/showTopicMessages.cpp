@@ -186,6 +186,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
 
 void showTopicMessagesClass::updateSettingInfo()
 {
+    intSettingStruct updateTopicTimeSetting = settingToolClass::getThisIntOption("updateTopicTime");
     settingsForMessageParsingStruct settingsForMessageParsing;
 
     showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
@@ -212,7 +213,6 @@ void showTopicMessagesClass::updateSettingInfo()
 
     settingsForMessageParsing.loadTwoLastPage = settingToolClass::getThisBoolOption("loadTwoLastPage");
     settingsForMessageParsing.numberOfPagesToLoad = settingToolClass::getThisIntOption("numberOfPagesToLoad").value;
-    settingsForMessageParsing.timerTime = settingToolClass::getThisIntOption("updateTopicTime").value;
     settingsForMessageParsing.infoForMessageParsing.showStickers = settingToolClass::getThisBoolOption("showStickers");
     settingsForMessageParsing.infoForMessageParsing.stickersSize = settingToolClass::getThisIntOption("stickersSize").value;
     settingsForMessageParsing.timeoutTime = settingToolClass::getThisIntOption("timeoutInSecond").value;
@@ -223,6 +223,12 @@ void showTopicMessagesClass::updateSettingInfo()
     settingsForMessageParsing.downloadNoelshackImages = settingToolClass::getThisBoolOption("downloadNoelshackImages");
     settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingToolClass::getThisIntOption("noelshackImageWidth").value;
     settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingToolClass::getThisIntOption("noelshackImageHeight").value;
+    settingsForMessageParsing.timerTime = updateTopicTimeSetting.value;
+
+    if(settingsForMessageParsing.timerTime < updateTopicTimeSetting.minValue)
+    {
+        settingsForMessageParsing.timerTime = updateTopicTimeSetting.minValue;
+    }
 
     QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection, Q_ARG(settingsForMessageParsingStruct, settingsForMessageParsing));
 }
