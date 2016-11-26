@@ -24,7 +24,7 @@ showListOfTopicClass::showListOfTopicClass(QString currentThemeName, QWidget* pa
     listViewOfTopic.setEditTriggers(QAbstractItemView::NoEditTriggers);
     listViewOfTopic.setContextMenuPolicy(Qt::CustomContextMenu);
     timerForGetList.setTimerType(Qt::CoarseTimer);
-    timerForGetList.setInterval(5000);
+    timerForGetList.setInterval(15000);
     updateSettings();
     setNewTheme(currentThemeName);
 
