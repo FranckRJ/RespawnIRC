@@ -289,23 +289,18 @@ QString parsingToolClass::getNumberOfConnected(const QString& source)
     return expForNumberOfConnected.match(source).captured(1);
 }
 
-QString parsingToolClass::getNumberOfMp(const QString& source)
+int parsingToolClass::getNumberOfMp(const QString& source)
 {
     int numberOfMp = 0;
     QRegularExpressionMatch match = expForMpJvc.match(source);
 
     if(match.hasMatch() == true)
     {
-        numberOfMp = match.captured(1).toInt();
-    }
-
-    if(numberOfMp == 0)
-    {
-        return QString::number(numberOfMp) + " MP";
+        return numberOfMp = match.captured(1).toInt();
     }
     else
     {
-        return "<b>" + QString::number(numberOfMp) + " MP</b>";
+        return 0;
     }
 }
 

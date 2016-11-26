@@ -164,7 +164,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
             messagesBox.clear();
             firstMessageOfTopic.isFirstMessage = false;
             setMessageStatus("Erreur, topic invalide.");
-            setNumberOfConnectedAndMP("", "", true);
+            setNumberOfConnectedAndMP("", -1, true);
             QMessageBox::warning(this, "Erreur", "Le topic n'existe pas.");
             QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, ""), Q_ARG(bool, getFirstMessageOfTopic));
         }
@@ -848,13 +848,26 @@ void showTopicMessagesClass::setMessageStatus(QString newStatus)
     emit newMessageStatus();
 }
 
-void showTopicMessagesClass::setNumberOfConnectedAndMP(QString newNumberConnected, QString newNumberMP, bool forceSet)
+void showTopicMessagesClass::setNumberOfConnectedAndMP(QString newNumberConnected, int newNumberMP, bool forceSet)
 {
     QString newMessageToShow = newNumberConnected;
 
-    if(newNumberMP.isEmpty() == false)
+    if(newNumberMP >= 0)
     {
-        newMessageToShow += " - " + newNumberMP;
+        QString newNumberOfMPInString;
+
+        emit newMPAreAvailables(newNumberMP, pseudoOfUser);
+
+        if(newNumberMP == 0)
+        {
+            newNumberOfMPInString = QString::number(newNumberMP) + " MP";
+        }
+        else
+        {
+            newNumberOfMPInString = "<b>" + QString::number(newNumberMP) + " MP</b>";
+        }
+
+        newMessageToShow += " - " + newNumberOfMPInString;
     }
 
     numberOfConnected = newNumberConnected;

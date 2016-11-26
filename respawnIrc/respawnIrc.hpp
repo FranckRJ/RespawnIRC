@@ -81,6 +81,7 @@ public slots:
     void saveListOfIgnoredPseudo();
     void saveListOfColorPseudo();
     void warnUserForNewMessages();
+    void warnUserForNewMP(int newNumber, QString withThisPseudo);
     void currentTabChanged(int newIndex);
     void messageHaveToBePosted();
     void editLastMessage();
@@ -104,6 +105,7 @@ private:
     QList<QString> listOfIgnoredPseudo;
     QList<pseudoWithColorStruct> listOfColorPseudo;
     QList<accountStruct> listOfAccount;
+    QMap<QString, int> numberOfMPPerPseudos;
     QLabel messagesStatus;
     QLabel numberOfConnectedAndPseudoUsed;
     QString pseudoOfUser;
@@ -113,6 +115,7 @@ private:
     QString currentThemeName;
     QString lastClipboardDataChanged;
     bool beepWhenWarn;
+    bool beepForNewMP;
     bool warnUser;
     int typeOfImageRefresh;
 };

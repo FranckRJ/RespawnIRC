@@ -65,7 +65,7 @@ public slots:
     void analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
                          ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
     void setMessageStatus(QString newStatus);
-    void setNumberOfConnectedAndMP(QString newNumberConnected, QString newNumberMP, bool forceSet = false);
+    void setNumberOfConnectedAndMP(QString newNumberConnected, int newNumberMP, bool forceSet = false);
     void setTopicName(QString newTopicName);
     void setCookiesFromRequest(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser);
     void setUpdatedTopicLink(QString newTopicLink);
@@ -75,6 +75,7 @@ signals:
     void editThisMessage(long idOfMessageEdit, bool useMessageEdit);
     void newMessageStatus();
     void newNumberOfConnectedAndMP();
+    void newMPAreAvailables(int newNumber, QString withThisPseudo);
     void setEditInfo(long idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);

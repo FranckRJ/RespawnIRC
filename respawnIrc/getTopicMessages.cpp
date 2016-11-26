@@ -62,7 +62,7 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
             }
         }
     }
-    emit newNumberOfConnectedAndMP("", "", true);
+    emit newNumberOfConnectedAndMP("", -1, true);
     startGetMessage();
 }
 
@@ -328,7 +328,7 @@ void getTopicMessagesClass::analyzeMessages()
     }
     else
     {
-        emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(listOfPageSource[firstValidePageNumber]), "", false);
+        emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(listOfPageSource[firstValidePageNumber]), -1, false);
     }
 
     if(firstTimeGetMessages == false)

@@ -46,7 +46,7 @@ signals:
     void newNameForTopic(QString newName);
     void newCookiesHaveToBeSet(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser);
     void newMessageStatus(QString newStatus);
-    void newNumberOfConnectedAndMP(QString newNumberConnected, QString newNumberMP, bool forceSet);
+    void newNumberOfConnectedAndMP(QString newNumberConnected, int newNumberMP, bool forceSet);
     void newLinkForTopic(QString newTopicLink);
     void theseStickersAreUsed(QStringList listOfStickersUsed);
     void theseNoelshackImagesAreUsed(QStringList listOfNoelshackImagesUsed);

@@ -114,6 +114,7 @@ void respawnIrcClass::loadSettings()
     QList<QString> listOfPseudoForTopic;
 
     beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
+    beepForNewMP = settingToolClass::getThisBoolOption("beepForNewMP");
     warnUser = settingToolClass::getThisBoolOption("warnUser");
     typeOfImageRefresh = settingToolClass::getThisIntOption("typeOfImageRefresh").value;
 
@@ -435,6 +436,7 @@ void respawnIrcClass::addNewTabWithPseudo(QString useThisPseudo)
 
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMPAreAvailables, this, &respawnIrcClass::warnUserForNewMP);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopicMessages(), &showTopicMessagesClass::setEditInfo, &sendMessages, &sendMessagesClass::setInfoForEditMessage);
@@ -595,6 +597,11 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     if((boolIte = newBoolOptions.find("beepWhenWarn")) != newBoolOptions.end())
     {
         beepWhenWarn = boolIte.value();
+        newBoolOptions.erase(boolIte);
+    }
+    if((boolIte = newBoolOptions.find("beepForNewMP")) != newBoolOptions.end())
+    {
+        beepForNewMP = boolIte.value();
         newBoolOptions.erase(boolIte);
     }
     if((boolIte = newBoolOptions.find("warnUser")) != newBoolOptions.end())
@@ -822,6 +829,23 @@ void respawnIrcClass::warnUserForNewMessages()
                 tabList.setTabIcon(i, QIcon(alertImage));
             }
         }
+    }
+}
+
+void respawnIrcClass::warnUserForNewMP(int newNumber, QString withThisPseudo)
+{
+    QMap<QString, int>::iterator iteForMPNumber = numberOfMPPerPseudos.find(withThisPseudo.toLower());
+    int oldValueMPNumber = 0;
+
+    if(iteForMPNumber != numberOfMPPerPseudos.end())
+    {
+        oldValueMPNumber = iteForMPNumber.value();
+    }
+    numberOfMPPerPseudos[withThisPseudo.toLower()] = newNumber;
+
+    if(beepForNewMP == true && newNumber > oldValueMPNumber)
+    {
+        QSound::play(QCoreApplication::applicationDirPath() + "/resources/new_mp.wav");
     }
 }
 

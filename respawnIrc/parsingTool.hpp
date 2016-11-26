@@ -79,7 +79,7 @@ namespace parsingToolClass
     QString getBeforeLastPageOfTopic(const QString& topicLink);
     QString getNameOfTopic(const QString& source);
     QString getNumberOfConnected(const QString& source);
-    QString getNumberOfMp(const QString& source);
+    int getNumberOfMp(const QString& source);
     QList<messageStruct> getListOfEntireMessagesWithoutMessagePars(const QString& source);
     QList<topicStruct> getListOfTopic(const QString& source, const QString& website);
     QString getForumOfTopic(const QString& topicLink);
