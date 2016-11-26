@@ -107,7 +107,7 @@ void showListOfTopicClass::updateSettings()
         timerForGetList.setInterval(updateTopicListTimeSetting.minValue);
     }
 
-    setLoadNeeded(settingToolClass::getThisBoolOption("showListOfTopic"));
+    setLoadNeeded(settingToolClass::getThisBoolOption("showListOfTopic") == true && settingToolClass::getThisBoolOption("fastModeEnbled") == false);
     timeoutForReply.updateTimeoutTime();
 }
 

@@ -19,7 +19,7 @@ containerForTopicsInfosClass::containerForTopicsInfosClass(QList<QString>* newLi
 
     setLayout(layout);
 
-    if(settingToolClass::getThisBoolOption("showListOfTopic") == false)
+    if(settingToolClass::getThisBoolOption("showListOfTopic") == false || settingToolClass::getThisBoolOption("fastModeEnbled") == true)
     {
         showListOfTopic.setVisible(false);
     }

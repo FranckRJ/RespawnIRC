@@ -1,9 +1,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QGroupBox>
-#include <QSpinBox>
 #include <QLabel>
-#include <QComboBox>
 #include <QTabWidget>
 #include <QObject>
 
@@ -14,6 +12,12 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
 {
     setAttribute(Qt::WA_DeleteOnClose);
     expertMode = settingToolClass::getThisBoolOption("expertMode");
+
+    typeOfPageLoad = new QComboBox(this);
+    layoutTypeOfPageLoad = new QHBoxLayout();
+    showTopicListEnabled = new QCheckBox(this);
+    topicRefreshTimeNumber = new QSpinBox(this);
+    layoutTopicRefreshTimeNumber = new QHBoxLayout();
 
     QTabWidget* mainWidget = new QTabWidget(this);
 
@@ -38,6 +42,11 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     mainWidget->addTab(createWidgetForMessagesTab(), "Messages");
     mainWidget->addTab(createWidgetForTopicListTab(), "Liste des topics");
     mainWidget->addTab(createWidgetForImageTab(), "Image");
+
+    if(settingToolClass::getThisBoolOption("fastModeEnbled") == true)
+    {
+        valueOfFastModeCheckBoxChanged(true);
+    }
 
     setLayout(realMainLayout);
     setWindowTitle("Préférences");
@@ -76,7 +85,7 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     QVBoxLayout* vboxWindowLayout = new QVBoxLayout();
     vboxWindowLayout->addWidget(makeNewCheckBox("Sauvegarder la taille de la fenêtre", "saveWindowGeometry"));
     vboxWindowLayout->addWidget(makeNewCheckBox("Afficher les boutons de décoration de texte", "showTextDecorationButton"));
-    vboxWindowLayout->addWidget(makeNewCheckBox("Afficher la liste des topics", "showListOfTopic"));
+    vboxWindowLayout->addWidget(makeNewCheckBox("Afficher la liste des topics", "showListOfTopic", showTopicListEnabled));
     vboxWindowLayout->addWidget(makeNewCheckBox("Saisie du message en mode multiligne", "setMultilineEdit"));
     vboxWindowLayout->addLayout(makeNewSpinBox("Taille de la zone de saisie", "textBoxSize"));
     vboxWindowLayout->addStretch(1);
@@ -85,11 +94,12 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     QGroupBox* groupBoxAdvanced = new QGroupBox("Avancé", this);
 
     QVBoxLayout* vboxAdvanced = new QVBoxLayout();
-    vboxAdvanced->addLayout(makeNewComboBox("Type de chargement des pages :", "numberOfPageToLoadForOpti", {"Minimal", "Optimisé"}));
+    vboxAdvanced->addLayout(makeNewComboBox("Type de chargement des pages :", "numberOfPageToLoadForOpti", {"Minimal (une page)", "Optimisé (entre une et deux pages)"}, typeOfPageLoad, layoutTypeOfPageLoad));
+    vboxAdvanced->addWidget(makeFastModeCheckBox());
     vboxAdvanced->addWidget(makeNewCheckBox("Ignorer les erreurs réseau", "ignoreNetworkError"));
     vboxAdvanced->addLayout(makeNewSpinBox("Temps en secondes avant le timeout des requêtes", "timeoutInSecond"));
     vboxAdvanced->addLayout(makeNewSpinBox("Nombre d'erreurs avant avertissement", "numberOfErrorsBeforeWarning"));
-    vboxAdvanced->addLayout(makeNewSpinBox("Taux de rafraichissement des topics", "updateTopicTime"));
+    vboxAdvanced->addLayout(makeNewSpinBox("Taux de rafraichissement des topics", "updateTopicTime", topicRefreshTimeNumber, layoutTopicRefreshTimeNumber));
     vboxAdvanced->addLayout(makeNewSpinBox("Nombre maximal de quotes imbriquées", "maxNbOfQuotes"));
     vboxAdvanced->addStretch(1);
     groupBoxAdvanced->setLayout(vboxAdvanced);
@@ -273,60 +283,87 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     return mainTabWidget;
 }
 
-QCheckBox* preferenceWindowClass::makeNewCheckBox(QString messageInfo, QString boxNameValue)
+QCheckBox* preferenceWindowClass::makeNewCheckBox(QString messageInfo, QString boxNameValue, QCheckBox* useThisCheckBox)
 {
-    QCheckBox* tmp = new QCheckBox(messageInfo, this);
-    tmp->setObjectName(boxNameValue);
-    tmp->setChecked(settingToolClass::getThisBoolOption(boxNameValue));
+    if(useThisCheckBox == nullptr)
+    {
+        useThisCheckBox = new QCheckBox(messageInfo, this);
+    }
+    else
+    {
+        useThisCheckBox->setText(messageInfo);
+    }
+    useThisCheckBox->setObjectName(boxNameValue);
+    useThisCheckBox->setChecked(settingToolClass::getThisBoolOption(boxNameValue));
 
-    connect(tmp, &QCheckBox::toggled, this, &preferenceWindowClass::valueOfCheckboxChanged);
+    connect(useThisCheckBox, &QCheckBox::toggled, this, &preferenceWindowClass::valueOfCheckboxChanged);
 
-    return tmp;
+    return useThisCheckBox;
 }
 
-QHBoxLayout* preferenceWindowClass::makeNewSpinBox(QString messageInfo, QString boxNameValue)
+QHBoxLayout* preferenceWindowClass::makeNewSpinBox(QString messageInfo, QString boxNameValue, QSpinBox* useThisSpinBox, QHBoxLayout* useThisLayout)
 {
-    QHBoxLayout* hboxForSpinBox = new QHBoxLayout();
-    QSpinBox* newSpinBox = new QSpinBox(this);
+    if(useThisSpinBox == nullptr)
+    {
+        useThisSpinBox = new QSpinBox(this);
+    }
+    if(useThisLayout == nullptr)
+    {
+        useThisLayout = new QHBoxLayout();
+    }
     intSettingStruct infoForIntSetting = settingToolClass::getThisIntOption(boxNameValue);
     QLabel* newInfoForSpinBox = new QLabel(messageInfo +  " (entre " + QString::number(infoForIntSetting.minValue) + " et " + QString::number(infoForIntSetting.maxValue) + ") :", this);
 
-    newSpinBox->setObjectName(boxNameValue);
-    newSpinBox->setMinimum(infoForIntSetting.minValue);
-    newSpinBox->setMaximum(infoForIntSetting.maxValue);
-    newSpinBox->setValue(infoForIntSetting.value);
+    useThisSpinBox->setObjectName(boxNameValue);
+    useThisSpinBox->setMinimum(infoForIntSetting.minValue);
+    useThisSpinBox->setMaximum(infoForIntSetting.maxValue);
+    useThisSpinBox->setValue(infoForIntSetting.value);
 
-    hboxForSpinBox->addWidget(newInfoForSpinBox);
-    hboxForSpinBox->addWidget(newSpinBox, 1);
+    useThisLayout->addWidget(newInfoForSpinBox);
+    useThisLayout->addWidget(useThisSpinBox, 1);
 
-    connect(newSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
+    connect(useThisSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
 
-    return hboxForSpinBox;
+    return useThisLayout;
 }
 
-QHBoxLayout* preferenceWindowClass::makeNewComboBox(QString messageInfo, QString boxNameValue, QStringList listOfChoices)
+QHBoxLayout* preferenceWindowClass::makeNewComboBox(QString messageInfo, QString boxNameValue, QStringList listOfChoices, QComboBox* useThisComboBox, QHBoxLayout* useThisLayout)
 {
-    QHBoxLayout* hboxForComboBox = new QHBoxLayout();
-    QComboBox* newComboBox = new QComboBox(this);
+    if(useThisComboBox == nullptr)
+    {
+        useThisComboBox = new QComboBox(this);
+    }
+    if(useThisLayout == nullptr)
+    {
+        useThisLayout = new QHBoxLayout();
+    }
     QLabel* newInfoForComboBox = new QLabel(messageInfo, this);
 
-    newComboBox->setObjectName(boxNameValue);
-    newComboBox->addItems(listOfChoices);
-    newComboBox->setCurrentIndex(settingToolClass::getThisIntOption(boxNameValue).value);
+    useThisComboBox->setObjectName(boxNameValue);
+    useThisComboBox->addItems(listOfChoices);
+    useThisComboBox->setCurrentIndex(settingToolClass::getThisIntOption(boxNameValue).value);
 
-    hboxForComboBox->addWidget(newInfoForComboBox);
-    hboxForComboBox->addWidget(newComboBox, 1);
+    useThisLayout->addWidget(newInfoForComboBox);
+    useThisLayout->addWidget(useThisComboBox, 1);
 
-    connect(newComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
+    connect(useThisComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &preferenceWindowClass::valueOfIntBoxChanged);
 
-    return hboxForComboBox;
+    return useThisLayout;
+}
+
+QCheckBox* preferenceWindowClass::makeFastModeCheckBox()
+{
+    QCheckBox* newCheckBox = makeNewCheckBox("Activer le mode rapide", "fastModeEnbled");
+    connect(newCheckBox, &QCheckBox::toggled, this, &preferenceWindowClass::valueOfFastModeCheckBoxChanged);
+
+    return newCheckBox;
 }
 
 void preferenceWindowClass::valueOfCheckboxChanged(bool newVal)
 {
     QObject* senderObject = sender();
 
-    if(senderObject != nullptr)
+    if(senderObject != nullptr && updateValues == true)
     {
         emit setApplyButtonEnable(true);
         listOfBoolOptionChanged[senderObject->objectName()] = newVal;
@@ -337,11 +374,53 @@ void preferenceWindowClass::valueOfIntBoxChanged(int newVal)
 {
     QObject* senderObject = sender();
 
-    if(senderObject != nullptr)
+    if(senderObject != nullptr && updateValues == true)
     {
         emit setApplyButtonEnable(true);
         listOfIntOptionChanged[senderObject->objectName()] = newVal;
     }
+}
+
+void preferenceWindowClass::valueOfFastModeCheckBoxChanged(bool newVal)
+{
+    updateValues = false;
+    if(newVal == true)
+    {
+        for(int i = 0; i < layoutTypeOfPageLoad->count(); ++i)
+        {
+            layoutTypeOfPageLoad->itemAt(i)->widget()->setEnabled(false);
+        }
+        for(int i = 0; i < layoutTopicRefreshTimeNumber->count(); ++i)
+        {
+            layoutTopicRefreshTimeNumber->itemAt(i)->widget()->setEnabled(false);
+        }
+        typeOfPageLoad->setEnabled(false);
+        showTopicListEnabled->setEnabled(false);
+        topicRefreshTimeNumber->setEnabled(false);
+        typeOfPageLoad->setCurrentIndex(0);
+        showTopicListEnabled->setChecked(false);
+        topicRefreshTimeNumber->setMinimum(settingToolClass::fastModeSpeedRefresh);
+        topicRefreshTimeNumber->setValue(settingToolClass::fastModeSpeedRefresh);
+    }
+    else
+    {
+        typeOfPageLoad->setCurrentIndex(settingToolClass::getThisIntOption("numberOfPageToLoadForOpti").value);
+        showTopicListEnabled->setChecked(settingToolClass::getThisBoolOption("showListOfTopic"));
+        topicRefreshTimeNumber->setMinimum(settingToolClass::getThisIntOption("updateTopicTime").minValue);
+        topicRefreshTimeNumber->setValue(settingToolClass::getThisIntOption("updateTopicTime").value);
+        showTopicListEnabled->setEnabled(true);
+        typeOfPageLoad->setEnabled(true);
+        topicRefreshTimeNumber->setEnabled(true);
+        for(int i = 0; i < layoutTypeOfPageLoad->count(); ++i)
+        {
+            layoutTypeOfPageLoad->itemAt(i)->widget()->setEnabled(true);
+        }
+        for(int i = 0; i < layoutTopicRefreshTimeNumber->count(); ++i)
+        {
+            layoutTopicRefreshTimeNumber->itemAt(i)->widget()->setEnabled(true);
+        }
+    }
+    updateValues = true;
 }
 
 void preferenceWindowClass::applySettingsAndClose()

@@ -58,6 +58,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["showResolvedTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showNormalTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["useIconInsteadOfTagInTopicList"] = true;
+    listOfDefaultBoolOption["fastModeEnbled"] = false;
     listOfDefaultIntOption["updateTopicTime"].value = 7500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 1500;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;

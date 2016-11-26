@@ -186,7 +186,6 @@ void showTopicMessagesClass::setTopicToErrorMode()
 
 void showTopicMessagesClass::updateSettingInfo()
 {
-    intSettingStruct updateTopicTimeSetting = settingToolClass::getThisIntOption("updateTopicTime");
     settingsForMessageParsingStruct settingsForMessageParsing;
 
     showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
@@ -211,7 +210,6 @@ void showTopicMessagesClass::updateSettingInfo()
     timeoutForQuoteInfo.updateTimeoutTime();
     timeoutForDeleteInfo.updateTimeoutTime();
 
-    settingsForMessageParsing.isInOptimizedMode = (settingToolClass::getThisIntOption("numberOfPageToLoadForOpti").value == 1 ? true : false);
     settingsForMessageParsing.numberOfMessagesForOptimizationStart = settingToolClass::getThisIntOption("numberOfMessagesForOptimizationStart").value;
     settingsForMessageParsing.infoForMessageParsing.showStickers = settingToolClass::getThisBoolOption("showStickers");
     settingsForMessageParsing.infoForMessageParsing.stickersSize = settingToolClass::getThisIntOption("stickersSize").value;
@@ -223,11 +221,22 @@ void showTopicMessagesClass::updateSettingInfo()
     settingsForMessageParsing.downloadNoelshackImages = settingToolClass::getThisBoolOption("downloadNoelshackImages");
     settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingToolClass::getThisIntOption("noelshackImageWidth").value;
     settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingToolClass::getThisIntOption("noelshackImageHeight").value;
-    settingsForMessageParsing.timerTime = updateTopicTimeSetting.value;
-
-    if(settingsForMessageParsing.timerTime < updateTopicTimeSetting.minValue)
+    if(settingToolClass::getThisBoolOption("fastModeEnbled") == false)
     {
-        settingsForMessageParsing.timerTime = updateTopicTimeSetting.minValue;
+        intSettingStruct updateTopicTimeSetting = settingToolClass::getThisIntOption("updateTopicTime");
+
+        settingsForMessageParsing.timerTime = updateTopicTimeSetting.value;
+        settingsForMessageParsing.isInOptimizedMode = (settingToolClass::getThisIntOption("numberOfPageToLoadForOpti").value == 1 ? true : false);
+
+        if(settingsForMessageParsing.timerTime < updateTopicTimeSetting.minValue)
+        {
+            settingsForMessageParsing.timerTime = updateTopicTimeSetting.minValue;
+        }
+    }
+    else
+    {
+        settingsForMessageParsing.timerTime = settingToolClass::fastModeSpeedRefresh;
+        settingsForMessageParsing.isInOptimizedMode = false;
     }
 
     QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection, Q_ARG(settingsForMessageParsingStruct, settingsForMessageParsing));
