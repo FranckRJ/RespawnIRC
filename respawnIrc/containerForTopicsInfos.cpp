@@ -38,12 +38,29 @@ typeOfSaveForPseudo containerForTopicsInfosClass::getPseudoTypeOfSave()
     return pseudoTypeOfSave;
 }
 
+QString containerForTopicsInfosClass::getTopicLinkFirstPage()
+{
+    if(showTopicMessages.getTopicLinkFirstPage().isEmpty() == true)
+    {
+        return bufferForTopicLinkFirstPage;
+    }
+    else
+    {
+        return showTopicMessages.getTopicLinkFirstPage();
+    }
+}
+
 void containerForTopicsInfosClass::setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave)
 {
     pseudoTypeOfSave = newTypeOfSave;
 
     showTopicMessages.setNewCookies(newCookies, "www.jeuxvideo.com", newPseudoOfUser);
     showListOfTopic.setNewCookies(newCookies, "www.jeuxvideo.com");
+}
+
+void containerForTopicsInfosClass::setBufferForTopicLinkFirstPage(QString newLink)
+{
+    bufferForTopicLinkFirstPage = newLink;
 }
 
 void containerForTopicsInfosClass::updateSettingsForInfo()

@@ -78,9 +78,9 @@ void respawnIrcClass::doStuffBeforeQuit()
 
     for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
-        if(thisContainer->getShowTopicMessages().getTopicLinkFirstPage().isEmpty() == false)
+        if(thisContainer->getTopicLinkFirstPage().isEmpty() == false)
         {
-            listOfTopicLink.push_back(thisContainer->getShowTopicMessages().getTopicLinkFirstPage());
+            listOfTopicLink.push_back(thisContainer->getTopicLinkFirstPage());
 
             if(thisContainer->getPseudoTypeOfSave() == typeOfSaveForPseudo::REMEMBER)
             {
@@ -154,7 +154,7 @@ void respawnIrcClass::loadSettings()
     {
         addNewTabWithPseudo((i < listOfPseudoForTopic.size() ? listOfPseudoForTopic.at(i) : ""));
         tabList.setCurrentIndex(i);
-        setNewTopic(listOfTopicLink.at(i));
+        getCurrentWidget()->setBufferForTopicLinkFirstPage(listOfTopicLink.at(i));
         tabList.setCurrentIndex(0);
     }
 
@@ -276,10 +276,10 @@ void respawnIrcClass::useThisFavorite(int index)
 
 QString respawnIrcClass::addThisFavorite(int index)
 {
-    if(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage().isEmpty() == false && getCurrentWidget()->getShowTopicMessages().getTopicName().isEmpty() == false)
+    if(getCurrentWidget()->getTopicLinkFirstPage().isEmpty() == false && getCurrentWidget()->getShowTopicMessages().getTopicName().isEmpty() == false)
     {
-        vectorOfFavoriteLink[index] = getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage();
-        settingToolClass::saveThisOption("favoriteLink" + QString::number(index), getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage());
+        vectorOfFavoriteLink[index] = getCurrentWidget()->getTopicLinkFirstPage();
+        settingToolClass::saveThisOption("favoriteLink" + QString::number(index), getCurrentWidget()->getTopicLinkFirstPage());
         settingToolClass::saveThisOption("favoriteName" + QString::number(index), getCurrentWidget()->getShowTopicMessages().getTopicName());
 
         return getCurrentWidget()->getShowTopicMessages().getTopicName();
@@ -336,7 +336,7 @@ void respawnIrcClass::showAccountListWindow()
 
 void respawnIrcClass::showSelectTopic()
 {
-    selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage(), this);
+    selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(getCurrentWidget()->getTopicLinkFirstPage(), this);
     connect(mySelectTopicWindow, &selectTopicWindowClass::newTopicSelected, this, &respawnIrcClass::setNewTopic);
     mySelectTopicWindow->exec();
 }
@@ -488,14 +488,14 @@ void respawnIrcClass::updateTopic()
 
 void respawnIrcClass::reloadTopic()
 {
-    getCurrentWidget()->setNewTopicForInfo(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage());
+    getCurrentWidget()->setNewTopicForInfo(getCurrentWidget()->getTopicLinkFirstPage());
 }
 
 void respawnIrcClass::reloadAllTopic()
 {
     for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
-        thisContainer->setNewTopicForInfo(thisContainer->getShowTopicMessages().getTopicLinkFirstPage());
+        thisContainer->setNewTopicForInfo(thisContainer->getTopicLinkFirstPage());
     }
 }
 
@@ -513,9 +513,9 @@ void respawnIrcClass::goToCurrentTopic()
 
 void respawnIrcClass::goToCurrentForum()
 {
-    if(parsingToolClass::getForumOfTopic(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage()).isEmpty() == false)
+    if(parsingToolClass::getForumOfTopic(getCurrentWidget()->getTopicLinkFirstPage()).isEmpty() == false)
     {
-        QDesktopServices::openUrl(QUrl(parsingToolClass::getForumOfTopic(getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage())));
+        QDesktopServices::openUrl(QUrl(parsingToolClass::getForumOfTopic(getCurrentWidget()->getTopicLinkFirstPage())));
     }
     else
     {
@@ -734,7 +734,7 @@ void respawnIrcClass::setNewTheme(QString newThemeName)
     for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
         thisContainer->setNewThemeForInfo(currentThemeName);
-        thisContainer->setNewTopicForInfo(thisContainer->getShowTopicMessages().getTopicLinkFirstPage());
+        thisContainer->setNewTopicForInfo(thisContainer->getTopicLinkFirstPage());
 
         if(themeImgDir.isEmpty() == false)
         {
@@ -875,7 +875,7 @@ void respawnIrcClass::currentTabChanged(int newIndex)
 
 void respawnIrcClass::messageHaveToBePosted()
 {
-    sendMessages.postMessage(getCurrentWidget()->getShowTopicMessages().getPseudoUsed(), getCurrentWidget()->getShowTopicMessages().getTopicLinkFirstPage(),
+    sendMessages.postMessage(getCurrentWidget()->getShowTopicMessages().getPseudoUsed(), getCurrentWidget()->getTopicLinkFirstPage(),
                              getCurrentWidget()->getShowTopicMessages().getListOfCookies(), getCurrentWidget()->getShowTopicMessages().getListOfInput());
 }
 
