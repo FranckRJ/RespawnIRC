@@ -1,6 +1,7 @@
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionMatchIterator>
 #include <QUrl>
+#include <QtGlobal>
 
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
@@ -60,6 +61,44 @@ namespace
     const QRegularExpression expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForHtmlTag("<.+?>", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForWebsite("http://([^/]*)/", configDependentVar::regexpBaseOptions);
+    QString userAgentToUse = "RespatatouilleIRC";
+}
+
+void parsingToolClass::generateNewUserAgent() {
+    QStringList allStringForGeneration;
+    int lastMessageId = qrand() % 3;
+
+    allStringForGeneration.append("RespawnIRC");
+    allStringForGeneration.append("jeuxvideo.com");
+
+    if(lastMessageId == 0)
+    {
+        allStringForGeneration.append("laissez moi fonctionner");
+    }
+    else if(lastMessageId == 1)
+    {
+        allStringForGeneration.append("je suis gentil");
+    }
+    else
+    {
+        allStringForGeneration.append("fonctionne optimal");
+    }
+
+    userAgentToUse.clear();
+
+    while(allStringForGeneration.isEmpty() == false)
+    {
+        int currentString = qrand() % allStringForGeneration.size();
+        int currentChar = qrand() % allStringForGeneration.at(currentString).size();
+
+        userAgentToUse += allStringForGeneration.at(currentString).at(currentChar);
+        allStringForGeneration[currentString].remove(currentChar, 1);
+
+        if(allStringForGeneration.at(currentString).isEmpty() == true)
+        {
+            allStringForGeneration.removeAt(currentString);
+        }
+    }
 }
 
 bool parsingToolClass::checkIfTopicAreSame(const QString& firstTopic, const QString& secondTopic)
@@ -552,7 +591,7 @@ QNetworkRequest parsingToolClass::buildRequestWithThisUrl(QString url)
 {
     QNetworkRequest request;
     request.setUrl(QUrl(url));
-    request.setRawHeader("User-Agent", "RespoonIRC");
+    request.setRawHeader("User-Agent", userAgentToUse.toUtf8());
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Cookie", "");
     request.setRawHeader("Connection", "Keep-Alive");

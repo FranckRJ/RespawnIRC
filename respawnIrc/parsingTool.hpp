@@ -62,6 +62,7 @@ struct infoForMessageParsingStruct
 
 namespace parsingToolClass
 {
+    void generateNewUserAgent();
     bool checkIfTopicAreSame(const QString& firstTopic, const QString& secondTopic);
     ajaxInfoStruct getAjaxInfo(const QString& source);
     QString getMessageEditAndChangeSource(QString& source); //ici le & est important

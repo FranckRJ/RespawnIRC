@@ -4,6 +4,8 @@
 #include <QList>
 #include <QPair>
 #include <QString>
+#include <QTime>
+#include <QtGlobal>
 
 #include "mainWindow.hpp"
 #include "settingTool.hpp"
@@ -18,6 +20,9 @@ int main(int argc, char* argv[])
 
     QApplication app(argc, argv);
     QSettings setting(QCoreApplication::applicationDirPath() + "/config.ini", QSettings::IniFormat);
+
+    qsrand(QTime::currentTime().msecsSinceStartOfDay());
+    parsingToolClass::generateNewUserAgent();
 
     settingToolClass::setSettings(&setting);
     settingToolClass::initializeDefaultListsOption();
