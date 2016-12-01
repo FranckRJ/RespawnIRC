@@ -31,7 +31,7 @@ namespace
     const QRegularExpression expForMpJvc("<span[^c]*class=\"account-number-mp[^\"]*\".*?data-val=\"([^\"]*)\"", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEntireMessage("(<div class=\"bloc-message-forum \".*?)(<span id=\"post_[^\"]*\" class=\"bloc-message-forum-anchor\">|<div class=\"bloc-outils-plus-modo bloc-outils-bottom\">|<div class=\"bloc-pagi-default\">)", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEntireTopic("<li class=\"\" data-id=\"[^\"]*\">[^<]*<span class=\"topic-subject\">.*?</li>", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForTopicNameAndLink("<a class=\"lien-jv topic-title\" href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForTopicNameAndLink("<a class=\"lien-jv topic-title[^\"]*\" href=\"([^\"]*\" title=\"[^\"]*)\"[^>]*>", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicNumberMessage("<span class=\"topic-count\">[^0-9]*([0-9]*)", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicPseudoInfo("<span class=\"JvCare [^ ]* text-([^ ]*) topic-author", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicType("<img src=\"/img/forums/topic-(.*?).png\"", configDependentVar::regexpBaseOptions);
