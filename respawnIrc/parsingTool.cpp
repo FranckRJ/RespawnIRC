@@ -140,18 +140,14 @@ ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
     return newAjaxInfo;
 }
 
-QString parsingToolClass::getMessageEditAndChangeSource(QString& source)
+QString parsingToolClass::getMessageEdit(const QString& source)
 {
-    source.remove("\n");
-    source.replace("\\\"", "\"");
-    source.replace("\\/", "/");
-
-    return parsingAjaxMessages(expForMessageEdit.match(source).captured(1));
+    return specialCharToNormalChar(expForMessageEdit.match(source).captured(1));
 }
 
 QString parsingToolClass::getMessageQuote(const QString& source)
 {
-    QString message = parsingAjaxMessages(expForMessageQuote.match(source).captured(1));
+    QString message = specialCharToNormalChar(parsingAjaxMessages(expForMessageQuote.match(source).captured(1)));
     message.replace("\n", "\n>");
 
     return message;
@@ -565,11 +561,12 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
 QString parsingToolClass::parsingAjaxMessages(QString thisMessage)
 {
     thisMessage.remove("\n");
-    thisMessage.remove("\\r");
-    thisMessage.replace("\\\"", "\"");
-    thisMessage.replace("\\/", "/");
+    thisMessage.remove("\r");
+    thisMessage.replace(QRegularExpression("(?<!\\\\)\\\\r"), "");
+    thisMessage.replace(QRegularExpression("(?<!\\\\)\\\\\""), "\"");
+    thisMessage.replace(QRegularExpression("(?<!\\\\)\\\\/"), "/");
+    thisMessage.replace(QRegularExpression("(?<!\\\\)\\\\n"), "\n");
     thisMessage.replace("\\\\", "\\");
-    thisMessage.replace("\\n", "\n");
 
     QRegularExpressionMatchIterator matchIterator = expForUnicodeInText.globalMatch(thisMessage);
     int lenghtChanged = 0;
@@ -582,9 +579,12 @@ QString parsingToolClass::parsingAjaxMessages(QString thisMessage)
         lenghtChanged += 1;
     }
 
-    thisMessage.replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");
-
     return thisMessage;
+}
+
+QString parsingToolClass::specialCharToNormalChar(QString thisMessage)
+{
+    return thisMessage.replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");
 }
 
 QNetworkRequest parsingToolClass::buildRequestWithThisUrl(QString url)

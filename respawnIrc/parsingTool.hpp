@@ -65,7 +65,7 @@ namespace parsingToolClass
     void generateNewUserAgent();
     bool checkIfTopicAreSame(const QString& firstTopic, const QString& secondTopic);
     ajaxInfoStruct getAjaxInfo(const QString& source);
-    QString getMessageEditAndChangeSource(QString& source); //ici le & est important
+    QString getMessageEdit(const QString& source);
     QString getMessageQuote(const QString& source);
     QString getWebsite(const QString& topicLink);
     QString getVersionName(const QString& source);
@@ -88,6 +88,7 @@ namespace parsingToolClass
     QString jvfLinkToJvcLink(const QString& jvfTopicLink);
     QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers = true);
     QString parsingAjaxMessages(QString thisMessage);
+    QString specialCharToNormalChar(QString thisMessage);
     QNetworkRequest buildRequestWithThisUrl(QString url);
     QList<QString> getListOfThisCapNumber(const QString& source, const QRegularExpression& exp, int capNumber, bool globalMatch = true);
     void removeAllOverlyQuote(QString& source, int maxNumberQuote);

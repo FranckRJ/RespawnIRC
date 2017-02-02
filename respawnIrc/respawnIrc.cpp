@@ -1008,7 +1008,7 @@ void respawnIrcClass::clipboardChanged()
             dataInHtml.replace("<img src=\"resources/smileys/54.gif\" />", ":coeur:");
             dataInHtml.replace("<img src=\"resources/smileys/55.gif\" />", ":rouge:");
             dataInHtml.replace("<img src=\"resources/smileys/56.gif\" />", ":sors:");
-            dataInHtml.replace("<img src=\"resources/smileys/57.gif\" />", ":ouch:");
+            dataInHtml.replace("<img src=\"resources/smileys/57.gif\" />", ":ouch2:");
             dataInHtml.replace("<img src=\"resources/smileys/58.gif\" />", ":merci:");
             dataInHtml.replace("<img src=\"resources/smileys/59.gif\" />", ":svp:");
             dataInHtml.replace("<img src=\"resources/smileys/60.gif\" />", ":ange:");
