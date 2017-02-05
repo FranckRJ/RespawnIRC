@@ -168,7 +168,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
     if(listOfInput.isEmpty() == true)
     {
         QMessageBox::warning(this, "Erreur", "Impossible de poster le message, veuillez réessayer plus tard.\n"
-                                             "Si le problème persiste, le compte est sans doute invalide.");
+                                             "Si le problème persiste, redémarrez RespawnIRC ou supprimez le pseudo de la liste des comptes et ajoutez-le à nouveau.");
         return;
     }
     else
