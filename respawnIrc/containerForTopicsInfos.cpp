@@ -6,11 +6,11 @@
 #include "settingTool.hpp"
 
 containerForTopicsInfosClass::containerForTopicsInfosClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) :
-    QWidget(parent), showTopicMessages(newListOfIgnoredPseudo, newListOfColorPseudo, currentThemeName), showListOfTopic(currentThemeName)
+    QWidget(parent), showTopic(newListOfIgnoredPseudo, newListOfColorPseudo, currentThemeName), showForum(currentThemeName)
 {
     QSplitter* splitter = new QSplitter(this);
-    splitter->addWidget(&showTopicMessages);
-    splitter->addWidget(&showListOfTopic);
+    splitter->addWidget(&showTopic);
+    splitter->addWidget(&showForum);
     splitter->setStretchFactor(0, 1);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
@@ -21,16 +21,16 @@ containerForTopicsInfosClass::containerForTopicsInfosClass(QList<QString>* newLi
 
     if(settingToolClass::getThisBoolOption("showListOfTopic") == false || settingToolClass::getThisBoolOption("fastModeEnbled") == true)
     {
-        showListOfTopic.setVisible(false);
+        showForum.setVisible(false);
     }
 
-    connect(&showListOfTopic, &showListOfTopicClass::openThisTopic, this, &containerForTopicsInfosClass::topicNeedChanged);
-    connect(&showListOfTopic, &showListOfTopicClass::openThisTopicInNewTab, this, &containerForTopicsInfosClass::openThisTopicInNewTab);
+    connect(&showForum, &showForumClass::openThisTopic, this, &containerForTopicsInfosClass::topicNeedChanged);
+    connect(&showForum, &showForumClass::openThisTopicInNewTab, this, &containerForTopicsInfosClass::openThisTopicInNewTab);
 }
 
-showTopicMessagesClass& containerForTopicsInfosClass::getShowTopicMessages()
+showTopicClass& containerForTopicsInfosClass::getShowTopic()
 {
-    return showTopicMessages;
+    return showTopic;
 }
 
 typeOfSaveForPseudo containerForTopicsInfosClass::getPseudoTypeOfSave()
@@ -40,13 +40,13 @@ typeOfSaveForPseudo containerForTopicsInfosClass::getPseudoTypeOfSave()
 
 QString containerForTopicsInfosClass::getTopicLinkFirstPage()
 {
-    if(showTopicMessages.getTopicLinkFirstPage().isEmpty() == true)
+    if(showTopic.getTopicLinkFirstPage().isEmpty() == true)
     {
         return bufferForTopicLinkFirstPage;
     }
     else
     {
-        return showTopicMessages.getTopicLinkFirstPage();
+        return showTopic.getTopicLinkFirstPage();
     }
 }
 
@@ -54,8 +54,8 @@ void containerForTopicsInfosClass::setNewCookiesForInfo(QList<QNetworkCookie> ne
 {
     pseudoTypeOfSave = newTypeOfSave;
 
-    showTopicMessages.setNewCookies(newCookies, "www.jeuxvideo.com", newPseudoOfUser);
-    showListOfTopic.setNewCookies(newCookies, "www.jeuxvideo.com");
+    showTopic.setNewCookies(newCookies, "www.jeuxvideo.com", newPseudoOfUser);
+    showForum.setNewCookies(newCookies, "www.jeuxvideo.com");
 }
 
 void containerForTopicsInfosClass::setBufferForTopicLinkFirstPage(QString newLink)
@@ -65,20 +65,20 @@ void containerForTopicsInfosClass::setBufferForTopicLinkFirstPage(QString newLin
 
 void containerForTopicsInfosClass::updateSettingsForInfo()
 {
-    showTopicMessages.updateSettingInfo();
-    showListOfTopic.updateSettings();
+    showTopic.updateSettingInfo();
+    showForum.updateSettings();
 
-    showListOfTopic.setVisible(showListOfTopic.getLoadNeeded());
+    showForum.setVisible(showForum.getLoadNeeded());
 }
 
 void containerForTopicsInfosClass::setNewThemeForInfo(QString newThemeName)
 {
-    showTopicMessages.setNewTheme(newThemeName);
-    showListOfTopic.setNewTheme(newThemeName);
+    showTopic.setNewTheme(newThemeName);
+    showForum.setNewTheme(newThemeName);
 }
 
 void containerForTopicsInfosClass::setNewTopicForInfo(QString newTopic)
 {
-    showTopicMessages.setNewTopic(newTopic);
-    showListOfTopic.setForumLink(parsingToolClass::getForumOfTopic(newTopic));
+    showTopic.setNewTopic(newTopic);
+    showForum.setForumLink(parsingToolClass::getForumOfTopic(newTopic));
 }

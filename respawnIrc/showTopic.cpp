@@ -9,13 +9,13 @@
 #include <QMutableListIterator>
 #include <QTextCursor>
 
-#include "showTopicMessages.hpp"
+#include "showTopic.hpp"
 #include "settingTool.hpp"
 #include "configDependentVar.hpp"
 
-QThread showTopicMessagesClass::threadForGetMessages;
+QThread showTopicClass::threadForGetMessages;
 
-showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
+showTopicClass::showTopicClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
     networkManager = new QNetworkAccessManager(this);
     getTopicMessages = new getTopicMessagesClass();
@@ -41,75 +41,75 @@ showTopicMessagesClass::showTopicMessagesClass(QList<QString>* newListOfIgnoredP
 
     setLayout(layout);
 
-    connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicMessagesClass::linkClicked);
+    connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicClass::linkClicked);
 
-    connect(getTopicMessages, &getTopicMessagesClass::newMessagesAreAvailable, this, &showTopicMessagesClass::analyzeMessages);
-    connect(getTopicMessages, &getTopicMessagesClass::newMessageStatus, this, &showTopicMessagesClass::setMessageStatus);
-    connect(getTopicMessages, &getTopicMessagesClass::newNumberOfConnectedAndMP, this, &showTopicMessagesClass::setNumberOfConnectedAndMP);
-    connect(getTopicMessages, &getTopicMessagesClass::newNameForTopic, this, &showTopicMessagesClass::setTopicName);
-    connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicMessagesClass::setCookiesFromRequest);
-    connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicMessagesClass::downloadTheseStickersIfNeeded);
-    connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicMessagesClass::downloadTheseNoelshackImagesIfNeeded);
-    connect(getTopicMessages, &getTopicMessagesClass::newLinkForTopic, this, &showTopicMessagesClass::setUpdatedTopicLink);
+    connect(getTopicMessages, &getTopicMessagesClass::newMessagesAreAvailable, this, &showTopicClass::analyzeMessages);
+    connect(getTopicMessages, &getTopicMessagesClass::newMessageStatus, this, &showTopicClass::setMessageStatus);
+    connect(getTopicMessages, &getTopicMessagesClass::newNumberOfConnectedAndMP, this, &showTopicClass::setNumberOfConnectedAndMP);
+    connect(getTopicMessages, &getTopicMessagesClass::newNameForTopic, this, &showTopicClass::setTopicName);
+    connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicClass::setCookiesFromRequest);
+    connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicClass::downloadTheseStickersIfNeeded);
+    connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicClass::downloadTheseNoelshackImagesIfNeeded);
+    connect(getTopicMessages, &getTopicMessagesClass::newLinkForTopic, this, &showTopicClass::setUpdatedTopicLink);
 }
 
-showTopicMessagesClass::~showTopicMessagesClass()
+showTopicClass::~showTopicClass()
 {
     QMetaObject::invokeMethod(getTopicMessages, "deleteLater", Qt::QueuedConnection);
 }
 
-void showTopicMessagesClass::startThread()
+void showTopicClass::startThread()
 {
     threadForGetMessages.start();
 }
 
-void showTopicMessagesClass::stopThread()
+void showTopicClass::stopThread()
 {
     threadForGetMessages.quit();
     threadForGetMessages.wait();
 }
 
-void showTopicMessagesClass::startGetMessage()
+void showTopicClass::startGetMessage()
 {
     QMetaObject::invokeMethod(getTopicMessages, "startGetMessage", Qt::QueuedConnection);
 }
 
-const QList<QPair<QString, QString> >& showTopicMessagesClass::getListOfInput()
+const QList<QPair<QString, QString> >& showTopicClass::getListOfInput()
 {
     return listOfInput;
 }
 
-QString showTopicMessagesClass::getTopicLinkLastPage()
+QString showTopicClass::getTopicLinkLastPage()
 {
     return topicLinkLastPage;
 }
 
-QString showTopicMessagesClass::getTopicLinkFirstPage()
+QString showTopicClass::getTopicLinkFirstPage()
 {
     return topicLinkFirstPage;
 }
 
-QString showTopicMessagesClass::getTopicName()
+QString showTopicClass::getTopicName()
 {
     return topicName;
 }
 
-QString showTopicMessagesClass::getMessagesStatus()
+QString showTopicClass::getMessagesStatus()
 {
     return messagesStatus;
 }
 
-QString showTopicMessagesClass::getNumberOfConnectedAndMP()
+QString showTopicClass::getNumberOfConnectedAndMP()
 {
     return numberOfConnectedAndMP;
 }
 
-QString showTopicMessagesClass::getPseudoUsed()
+QString showTopicClass::getPseudoUsed()
 {
     return pseudoOfUser;
 }
 
-QString showTopicMessagesClass::getColorOfThisPseudo(QString pseudo)
+QString showTopicClass::getColorOfThisPseudo(QString pseudo)
 {
     for(const pseudoWithColorStruct& thisColor : *listOfColorPseudo)
     {
@@ -122,12 +122,12 @@ QString showTopicMessagesClass::getColorOfThisPseudo(QString pseudo)
     return "";
 }
 
-const QList<QNetworkCookie>& showTopicMessagesClass::getListOfCookies()
+const QList<QNetworkCookie>& showTopicClass::getListOfCookies()
 {
     return currentCookieList;
 }
 
-void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages)
+void showTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages)
 {
     currentCookieList = newCookies;
     websiteOfCookies = newWebsiteOfCookies;
@@ -152,7 +152,7 @@ void showTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QSt
                               Q_ARG(QList<QNetworkCookie>, newCookies), Q_ARG(QString, websiteOfCookies), Q_ARG(QString, pseudoOfUser), Q_ARG(bool, updateMessages));
 }
 
-void showTopicMessagesClass::setTopicToErrorMode()
+void showTopicClass::setTopicToErrorMode()
 {
     if(errorMode == false)
     {
@@ -184,7 +184,7 @@ void showTopicMessagesClass::setTopicToErrorMode()
     }
 }
 
-void showTopicMessagesClass::updateSettingInfo()
+void showTopicClass::updateSettingInfo()
 {
     settingsForMessageParsingStruct settingsForMessageParsing;
 
@@ -242,7 +242,7 @@ void showTopicMessagesClass::updateSettingInfo()
     QMetaObject::invokeMethod(getTopicMessages, "settingsChanged", Qt::QueuedConnection, Q_ARG(settingsForMessageParsingStruct, settingsForMessageParsing));
 }
 
-void showTopicMessagesClass::addSearchPath(QString newSearchPath)
+void showTopicClass::addSearchPath(QString newSearchPath)
 {
     QStringList currentSearchPaths = messagesBox.searchPaths();
 
@@ -253,12 +253,12 @@ void showTopicMessagesClass::addSearchPath(QString newSearchPath)
     }
 }
 
-void showTopicMessagesClass::relayoutDocumentHack()
+void showTopicClass::relayoutDocumentHack()
 {
     messagesBox.setLineWrapColumnOrWidth(messagesBox.lineWrapColumnOrWidth());
 }
 
-void showTopicMessagesClass::addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID)
+void showTopicClass::addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID)
 {
     messageInfoForEditStruct newInfos;
     int baseSizeOfDocument = messagesBox.document()->characterCount();
@@ -279,7 +279,7 @@ void showTopicMessagesClass::addMessageToTheEndOfMessagesBox(const QString& newM
     }
 }
 
-void showTopicMessagesClass::editThisMessageOfMessagesBox(QString newMessage, long messageID)
+void showTopicClass::editThisMessageOfMessagesBox(QString newMessage, long messageID)
 {
     QMutableListIterator<QPair<long, messageInfoForEditStruct> > ite(listOfInfosForEdit);
 
@@ -328,13 +328,13 @@ void showTopicMessagesClass::editThisMessageOfMessagesBox(QString newMessage, lo
     }
 }
 
-void showTopicMessagesClass::setNewTheme(QString newThemeName)
+void showTopicClass::setNewTheme(QString newThemeName)
 {
     baseModel = styleToolClass::getModel(newThemeName);
     baseModelInfo = styleToolClass::getModelInfo(newThemeName);
 }
 
-void showTopicMessagesClass::setNewTopic(QString newTopic)
+void showTopicClass::setNewTopic(QString newTopic)
 {
     messagesBox.clear();
     topicName.clear();
@@ -355,7 +355,7 @@ void showTopicMessagesClass::setNewTopic(QString newTopic)
     QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, newTopic), Q_ARG(bool, getFirstMessageOfTopic));
 }
 
-void showTopicMessagesClass::linkClicked(const QUrl& link)
+void showTopicClass::linkClicked(const QUrl& link)
 {
     QString linkInString = link.toDisplayString();
 
@@ -385,7 +385,7 @@ void showTopicMessagesClass::linkClicked(const QUrl& link)
     }
 }
 
-bool showTopicMessagesClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
+bool showTopicClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
 {
     if(networkManager == nullptr)
     {
@@ -418,7 +418,7 @@ bool showTopicMessagesClass::getEditInfo(long idOfMessageToEdit, bool useMessage
 
             if(replyForEditInfo->isOpen() == true)
             {
-                connect(replyForEditInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeEditInfo);
+                connect(replyForEditInfo, &QNetworkReply::finished, this, &showTopicClass::analyzeEditInfo);
             }
             else
             {
@@ -434,7 +434,7 @@ bool showTopicMessagesClass::getEditInfo(long idOfMessageToEdit, bool useMessage
     return false;
 }
 
-void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted)
+void showTopicClass::getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted)
 {
     if(networkManager == nullptr)
     {
@@ -451,7 +451,7 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted, QString mes
 
         if(replyForQuoteInfo->isOpen() == true)
         {
-            connect(replyForQuoteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeQuoteInfo);
+            connect(replyForQuoteInfo, &QNetworkReply::finished, this, &showTopicClass::analyzeQuoteInfo);
         }
         else
         {
@@ -466,7 +466,7 @@ void showTopicMessagesClass::getQuoteInfo(QString idOfMessageQuoted, QString mes
     }
 }
 
-void showTopicMessagesClass::deleteMessage(QString idOfMessageDeleted)
+void showTopicClass::deleteMessage(QString idOfMessageDeleted)
 {
     if(networkManager == nullptr)
     {
@@ -481,7 +481,7 @@ void showTopicMessagesClass::deleteMessage(QString idOfMessageDeleted)
 
         if(replyForDeleteInfo->isOpen() == true)
         {
-            connect(replyForDeleteInfo, &QNetworkReply::finished, this, &showTopicMessagesClass::analyzeDeleteInfo);
+            connect(replyForDeleteInfo, &QNetworkReply::finished, this, &showTopicClass::analyzeDeleteInfo);
         }
         else
         {
@@ -496,7 +496,7 @@ void showTopicMessagesClass::deleteMessage(QString idOfMessageDeleted)
     }
 }
 
-void showTopicMessagesClass::analyzeEditInfo()
+void showTopicClass::analyzeEditInfo()
 {
     QString message;
     QString dataToSend = oldAjaxInfo.list + "&action=post";
@@ -525,7 +525,7 @@ void showTopicMessagesClass::analyzeEditInfo()
     replyForEditInfo = nullptr;
 }
 
-void showTopicMessagesClass::analyzeQuoteInfo()
+void showTopicClass::analyzeQuoteInfo()
 {
     QString messageQuote;
     QString source;
@@ -546,7 +546,7 @@ void showTopicMessagesClass::analyzeQuoteInfo()
     emit quoteThisMessage(messageQuote);
 }
 
-void showTopicMessagesClass::analyzeDeleteInfo()
+void showTopicClass::analyzeDeleteInfo()
 {
     QString source;
 
@@ -568,7 +568,7 @@ void showTopicMessagesClass::analyzeDeleteInfo()
     }
 }
 
-void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
+void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
                                              ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty)
 {
     QString colorOfPseudo;
@@ -843,13 +843,13 @@ void showTopicMessagesClass::analyzeMessages(QList<messageStruct> listOfNewMessa
     emit downloadTheseAvatarsIfNeeded(listOfAvatarsUsed);
 }
 
-void showTopicMessagesClass::setMessageStatus(QString newStatus)
+void showTopicClass::setMessageStatus(QString newStatus)
 {
     messagesStatus = newStatus;
     emit newMessageStatus();
 }
 
-void showTopicMessagesClass::setNumberOfConnectedAndMP(QString newNumberConnected, int newNumberMP, bool forceSet)
+void showTopicClass::setNumberOfConnectedAndMP(QString newNumberConnected, int newNumberMP, bool forceSet)
 {
     QString newMessageToShow = newNumberConnected;
 
@@ -883,7 +883,7 @@ void showTopicMessagesClass::setNumberOfConnectedAndMP(QString newNumberConnecte
     }
 }
 
-void showTopicMessagesClass::setTopicName(QString newTopicName)
+void showTopicClass::setTopicName(QString newTopicName)
 {
     if(newTopicName.size() >= (topicNameMaxSize + 3))
     {
@@ -897,7 +897,7 @@ void showTopicMessagesClass::setTopicName(QString newTopicName)
     emit newNameForTopic(topicName);
 }
 
-void showTopicMessagesClass::setCookiesFromRequest(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser)
+void showTopicClass::setCookiesFromRequest(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser)
 {
     if(currentPseudoOfUser == pseudoOfUser)
     {
@@ -906,7 +906,7 @@ void showTopicMessagesClass::setCookiesFromRequest(QList<QNetworkCookie> newList
     }
 }
 
-void showTopicMessagesClass::setUpdatedTopicLink(QString newTopicLink)
+void showTopicClass::setUpdatedTopicLink(QString newTopicLink)
 {
     topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopicLink);
 }

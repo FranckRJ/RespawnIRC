@@ -7,11 +7,11 @@
 #include <QStandardItem>
 #include <QCoreApplication>
 
-#include "showListOfTopic.hpp"
+#include "showForum.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-showListOfTopicClass::showListOfTopicClass(QString currentThemeName, QWidget* parent) : QWidget(parent)
+showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
     pinnedOnTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-on.png");
     pinnedOffTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-off.png");
@@ -36,17 +36,17 @@ showListOfTopicClass::showListOfTopicClass(QString currentThemeName, QWidget* pa
 
     setLayout(layout);
 
-    connect(&listViewOfTopic, &QListView::customContextMenuRequested, this, &showListOfTopicClass::createContextMenu);
-    connect(&listViewOfTopic, &QListView::doubleClicked, this, &showListOfTopicClass::clickedOnLink);
-    connect(&timerForGetList, &QTimer::timeout, this, &showListOfTopicClass::startGetListOfTopic);
+    connect(&listViewOfTopic, &QListView::customContextMenuRequested, this, &showForumClass::createContextMenu);
+    connect(&listViewOfTopic, &QListView::doubleClicked, this, &showForumClass::clickedOnLink);
+    connect(&timerForGetList, &QTimer::timeout, this, &showForumClass::startGetListOfTopic);
 }
 
-bool showListOfTopicClass::getLoadNeeded()
+bool showForumClass::getLoadNeeded()
 {
     return loadNeeded;
 }
 
-void showListOfTopicClass::setForumLink(QString newForumLink)
+void showForumClass::setForumLink(QString newForumLink)
 {
     if(reply != nullptr)
     {
@@ -74,7 +74,7 @@ void showListOfTopicClass::setForumLink(QString newForumLink)
     }
 }
 
-void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies)
+void showForumClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies)
 {
     currentCookieList = newCookies;
     websiteOfCookies = newWebsiteOfCookies;
@@ -86,7 +86,7 @@ void showListOfTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QStri
     }
 }
 
-void showListOfTopicClass::updateSettings()
+void showForumClass::updateSettings()
 {
     intSettingStruct updateTopicListTimeSetting = settingToolClass::getThisIntOption("updateTopicListTime");
 
@@ -111,7 +111,7 @@ void showListOfTopicClass::updateSettings()
     timeoutForReply.updateTimeoutTime();
 }
 
-void showListOfTopicClass::setLoadNeeded(bool newVal)
+void showForumClass::setLoadNeeded(bool newVal)
 {
     if(newVal != loadNeeded)
     {
@@ -129,12 +129,12 @@ void showListOfTopicClass::setLoadNeeded(bool newVal)
     }
 }
 
-void showListOfTopicClass::setNewTheme(QString newThemeName)
+void showForumClass::setNewTheme(QString newThemeName)
 {
     baseModelInfo = styleToolClass::getModelInfo(newThemeName);
 }
 
-void showListOfTopicClass::startGetListOfTopic()
+void showForumClass::startGetListOfTopic()
 {
     bool itsNewManager = false;
 
@@ -158,7 +158,7 @@ void showListOfTopicClass::startGetListOfTopic()
 
             if(reply->isOpen() == true)
             {
-                connect(reply, &QNetworkReply::finished, this, &showListOfTopicClass::analyzeReply);
+                connect(reply, &QNetworkReply::finished, this, &showForumClass::analyzeReply);
             }
             else
             {
@@ -170,7 +170,7 @@ void showListOfTopicClass::startGetListOfTopic()
     }
 }
 
-void showListOfTopicClass::analyzeReply()
+void showForumClass::analyzeReply()
 {
     QString source;
     QString locationHeader;
@@ -340,7 +340,7 @@ void showListOfTopicClass::analyzeReply()
     reply = nullptr;
 }
 
-void showListOfTopicClass::clickedOnLink(QModelIndex index)
+void showForumClass::clickedOnLink(QModelIndex index)
 {
     if(index.row() >= 1)
     {
@@ -348,7 +348,7 @@ void showListOfTopicClass::clickedOnLink(QModelIndex index)
     }
 }
 
-void showListOfTopicClass::createContextMenu(const QPoint& thisPoint)
+void showForumClass::createContextMenu(const QPoint& thisPoint)
 {
     QList<QString> oldListOfTopicLink = listOfLink;
     QModelIndex indexSelected = listViewOfTopic.indexAt(thisPoint);

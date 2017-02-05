@@ -1,5 +1,5 @@
-#ifndef SHOWLISTOFTOPIC_HPP
-#define SHOWLISTOFTOPIC_HPP
+#ifndef SHOWFORUM_HPP
+#define SHOWFORUM_HPP
 
 #include <QWidget>
 #include <QTimer>
@@ -17,11 +17,11 @@
 #include "autoTimeoutReply.hpp"
 #include "styleTool.hpp"
 
-class showListOfTopicClass : public QWidget
+class showForumClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit showListOfTopicClass(QString currentThemeName, QWidget* parent = 0);
+    explicit showForumClass(QString currentThemeName, QWidget* parent = 0);
     bool getLoadNeeded();
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies);

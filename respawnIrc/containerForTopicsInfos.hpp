@@ -6,8 +6,8 @@
 #include <QString>
 #include <QNetworkCookie>
 
-#include "showTopicMessages.hpp"
-#include "showListOfTopic.hpp"
+#include "showTopic.hpp"
+#include "showForum.hpp"
 #include "colorPseudoListWindow.hpp"
 
 enum class typeOfSaveForPseudo { DONT_REMEMBER, DEFAULT, REMEMBER };
@@ -17,7 +17,7 @@ class containerForTopicsInfosClass : public QWidget
     Q_OBJECT
 public:
     explicit containerForTopicsInfosClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
-    showTopicMessagesClass& getShowTopicMessages();
+    showTopicClass& getShowTopic();
     typeOfSaveForPseudo getPseudoTypeOfSave();
     QString getTopicLinkFirstPage();
     void setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave);
@@ -30,8 +30,8 @@ signals:
     void topicNeedChanged(QString topicLink);
     void openThisTopicInNewTab(QString topicLink);
 private:
-    showTopicMessagesClass showTopicMessages;
-    showListOfTopicClass showListOfTopic;
+    showTopicClass showTopic;
+    showForumClass showForum;
     typeOfSaveForPseudo pseudoTypeOfSave = typeOfSaveForPseudo::DEFAULT;
     QString bufferForTopicLinkFirstPage;
 

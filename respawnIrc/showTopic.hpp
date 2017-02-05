@@ -1,5 +1,5 @@
-#ifndef SHOWTOPICMESSAGES_HPP
-#define SHOWTOPICMESSAGES_HPP
+#ifndef SHOWTOPIC_HPP
+#define SHOWTOPIC_HPP
 
 #include <QWidget>
 #include <QTextBrowser>
@@ -27,12 +27,12 @@ struct messageInfoForEditStruct
     int realPosition = 0;
 };
 
-class showTopicMessagesClass : public QWidget
+class showTopicClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit showTopicMessagesClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
-    ~showTopicMessagesClass();
+    explicit showTopicClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    ~showTopicClass();
     static void startThread();
     static void stopThread();
     void startGetMessage();

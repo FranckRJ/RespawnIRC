@@ -5,7 +5,6 @@ SOURCES += \
     connectWindow.cpp \
     parsingTool.cpp \
     selectTopicWindow.cpp \
-    showTopicMessages.cpp \
     ignoreListWindow.cpp \
     addPseudoWindow.cpp \
     settingTool.cpp \
@@ -13,7 +12,6 @@ SOURCES += \
     checkUpdate.cpp \
     accountListWindow.cpp \
     colorPseudoListWindow.cpp \
-    showListOfTopic.cpp \
     styleTool.cpp \
     selectThemeWindow.cpp \
     spellTextEdit.cpp \
@@ -28,7 +26,9 @@ SOURCES += \
     addCookiesWindow.cpp \
     imageDownloadTool.cpp \
     webNavigator.cpp \
-    viewThemeInfos.cpp
+    viewThemeInfos.cpp \
+    showForum.cpp \
+    showTopic.cpp
 
 QT += \
     network \
@@ -42,7 +42,6 @@ HEADERS += \
     connectWindow.hpp \
     parsingTool.hpp \
     selectTopicWindow.hpp \
-    showTopicMessages.hpp \
     ignoreListWindow.hpp \
     addPseudoWindow.hpp \
     settingTool.hpp \
@@ -50,7 +49,6 @@ HEADERS += \
     checkUpdate.hpp \
     colorPseudoListWindow.hpp \
     accountListWindow.hpp \
-    showListOfTopic.hpp \
     styleTool.hpp \
     selectThemeWindow.hpp \
     spellTextEdit.hpp \
@@ -66,7 +64,9 @@ HEADERS += \
     imageDownloadTool.hpp \
     webNavigator.hpp \
     viewThemeInfos.hpp \
-    configDependentVar.hpp
+    configDependentVar.hpp \
+    showForum.hpp \
+    showTopic.hpp
 
 RC_FILE = respawnIrc.rc
 
