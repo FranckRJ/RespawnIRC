@@ -59,7 +59,8 @@ namespace
     const QRegularExpression expForCodeLine("<code class=\"code-jv\">(.*?)</code>", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForAllJVCare("<span class=\"JvCare [^\"]*\">([^<]*)</span>", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForUnicodeInText("\\\\u([a-zA-Z0-9]{4})", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForHtmlTag("<.+?>", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForOverlyQuote("<(/)?blockquote>", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForOverlySpoils("(<span class=\"bloc-spoil-jv[^\"]*\">.*?<span class=\"contenu-spoil\">|</span></span>)", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForWebsite("http://([^/]*)/", configDependentVar::regexpBaseOptions);
     QString userAgentToUse = "RespatatouilleIRC";
 }
@@ -515,6 +516,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
         replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     }
 
+    removeAllOverlySpoils(thisMessage);
     replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>", -1, "", false, false, true, 1);
     replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", false, false, true, 1);
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", false, true);
@@ -626,7 +628,7 @@ QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, c
 
 void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
 {
-    QRegularExpressionMatch match = expForHtmlTag.match(source);
+    QRegularExpressionMatch match = expForOverlyQuote.match(source);
     ++maxNumberQuote;
     while(match.hasMatch() == true)
     {
@@ -642,7 +644,7 @@ void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
         if(maxNumberQuote <= 0)
         {
             int tmpNumberQuote = 0;
-            QRegularExpressionMatch secMatch = expForHtmlTag.match(source, match.capturedEnd());
+            QRegularExpressionMatch secMatch = expForOverlyQuote.match(source, match.capturedEnd());
             while(secMatch.hasMatch() == true)
             {
                 if(secMatch.captured() == "<blockquote>")
@@ -659,7 +661,7 @@ void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
                     break;
                 }
 
-                secMatch = expForHtmlTag.match(source, secMatch.capturedEnd());
+                secMatch = expForOverlyQuote.match(source, secMatch.capturedEnd());
             }
 
             if(secMatch.capturedStart() != -1)
@@ -668,7 +670,46 @@ void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
             }
         }
 
-        match = expForHtmlTag.match(source, match.capturedEnd());
+        match = expForOverlyQuote.match(source, match.capturedEnd());
+    }
+}
+
+void parsingToolClass::removeAllOverlySpoils(QString& source)
+{
+    QRegularExpressionMatch spoilOverlyMatcher = expForOverlySpoils.match(source);
+    int currentSpoilTagDeepness = 0;
+    int lastOffsetOfTag = 0;
+
+    while(spoilOverlyMatcher.hasMatch() == true)
+    {
+        bool itsEndingTag = (spoilOverlyMatcher.captured() == "</span></span>");
+
+        if(itsEndingTag == false)
+        {
+            ++currentSpoilTagDeepness;
+        }
+
+        if(currentSpoilTagDeepness > 1)
+        {
+            lastOffsetOfTag = spoilOverlyMatcher.capturedStart();
+            source.remove(spoilOverlyMatcher.capturedStart(), spoilOverlyMatcher.capturedLength());
+        }
+        else
+        {
+            lastOffsetOfTag = spoilOverlyMatcher.capturedEnd();
+        }
+
+        if(itsEndingTag == true)
+        {
+            --currentSpoilTagDeepness;
+
+            if(currentSpoilTagDeepness < 0)
+            {
+                currentSpoilTagDeepness = 0;
+            }
+        }
+
+        spoilOverlyMatcher = expForOverlySpoils.match(source, lastOffsetOfTag);
     }
 }
 

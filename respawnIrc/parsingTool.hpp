@@ -92,6 +92,7 @@ namespace parsingToolClass
     QNetworkRequest buildRequestWithThisUrl(QString url);
     QList<QString> getListOfThisCapNumber(const QString& source, const QRegularExpression& exp, int capNumber, bool globalMatch = true);
     void removeAllOverlyQuote(QString& source, int maxNumberQuote);
+    void removeAllOverlySpoils(QString& source);
     bool replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "",
                                      bool replaceReturnByBr = false, bool makeLinkIfPossible = false, bool removeFirstAndLastP = false, int additionnalOffset = -1);
