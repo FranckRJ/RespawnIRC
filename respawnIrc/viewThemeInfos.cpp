@@ -48,7 +48,7 @@ void viewThemeInfosClass::setThemeToShow(QString newThemeName)
     }
 }
 
-QString viewThemeInfosClass::boolToYesOrNo(bool boolToCheck)
+QString viewThemeInfosClass::boolToYesOrNo(bool boolToCheck) const
 {
     return (boolToCheck == true ? "<b>oui</b>" : "<i>non</i>");
 }

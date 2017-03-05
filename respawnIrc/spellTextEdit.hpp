@@ -20,20 +20,20 @@ public:
     ~spellTextEditClass();
     void doStuffBeforeQuit();
     void enableSpellChecking(bool newVal);
-    void searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos);
-    QStringList getWordPropositions(const QString word);
     bool setDic(const QString newSpellDic);
-    QString getWordUnderCursor(QPoint cursorPos);
-signals:
-    void addWord(QString word);
-protected:
+private:
+    void searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos) const;
+    QStringList getWordPropositions(const QString word) const;
+    QString getWordUnderCursor(QPoint cursorPos) const;
     void createActions();
-    void contextMenuEvent(QContextMenuEvent* event);
-    bool checkWord(QString word);
+    void contextMenuEvent(QContextMenuEvent* event) override;
+    bool checkWord(QString word) const;
 private slots:
     void correctWord();
     void addWordToUserDic();
     void ignoreWord();
+signals:
+    void addWord(QString word);
 private:
     QVector<QAction*> wordPropositionsActions;
     QString spellDic;

@@ -71,7 +71,40 @@ void spellTextEditClass::enableSpellChecking(bool newVal)
     spellCheckingIsEnabled = newVal;
 }
 
-void spellTextEditClass::searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos)
+bool spellTextEditClass::setDic(const QString newSpellDic)
+{
+    spellDic = newSpellDic;
+
+    if(spellChecker != nullptr)
+    {
+        delete spellChecker;
+    }
+
+    QFileInfo fileInfoForDic(QCoreApplication::applicationDirPath() + "/resources/" + spellDic + ".dic");
+    if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
+    {
+        spellChecker = nullptr;
+        codecUsed = QTextCodec::codecForName("UTF-8");
+        return false;
+    }
+    else
+    {
+        QFileInfo fileInfoForUserDic(QCoreApplication::applicationDirPath() + "/user_" + spellDic + ".dic");
+        spellChecker = new Hunspell((QCoreApplication::applicationDirPath() + "/resources/" + spellDic.toLatin1() + ".aff").toStdString().c_str(),
+                                    (QCoreApplication::applicationDirPath() + "/resources/" + spellDic.toLatin1() + ".dic").toStdString().c_str());
+
+        if(fileInfoForUserDic.exists() == true && fileInfoForUserDic.isReadable() == true)
+        {
+            spellChecker->add_dic(fileInfoForUserDic.filePath().toLatin1());
+        }
+
+        codecUsed = QTextCodec::codecForName(QString(spellChecker->get_dic_encoding()).toLatin1());
+    }
+
+    return true;
+}
+
+void spellTextEditClass::searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos) const
 {
     endPos = textBlock.indexOf(QRegExp("[^\\w'-]"), checkPos);
     beginPos = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), checkPos);
@@ -113,7 +146,7 @@ void spellTextEditClass::searchWordBoundaryPosition(QString textBlock, int check
     }
 }
 
-QStringList spellTextEditClass::getWordPropositions(const QString word)
+QStringList spellTextEditClass::getWordPropositions(const QString word) const
 {
     QStringList wordList;
     if(spellChecker != nullptr && codecUsed != nullptr)
@@ -141,42 +174,9 @@ QStringList spellTextEditClass::getWordPropositions(const QString word)
     return wordList;
 }
 
-bool spellTextEditClass::setDic(const QString newSpellDic)
+QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos) const
 {
-    spellDic = newSpellDic;
-
-    if(spellChecker != nullptr)
-    {
-        delete spellChecker;
-    }
-
-    QFileInfo fileInfoForDic(QCoreApplication::applicationDirPath() + "/resources/" + spellDic + ".dic");
-    if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
-    {
-        spellChecker = nullptr;
-        codecUsed = QTextCodec::codecForName("UTF-8");
-        return false;
-    }
-    else
-    {
-        QFileInfo fileInfoForUserDic(QCoreApplication::applicationDirPath() + "/user_" + spellDic + ".dic");
-        spellChecker = new Hunspell((QCoreApplication::applicationDirPath() + "/resources/" + spellDic.toLatin1() + ".aff").toStdString().c_str(),
-                                    (QCoreApplication::applicationDirPath() + "/resources/" + spellDic.toLatin1() + ".dic").toStdString().c_str());
-
-        if(fileInfoForUserDic.exists() == true && fileInfoForUserDic.isReadable() == true)
-        {
-            spellChecker->add_dic(fileInfoForUserDic.filePath().toLatin1());
-        }
-
-        codecUsed = QTextCodec::codecForName(QString(spellChecker->get_dic_encoding()).toLatin1());
-    }
-
-    return true;
-}
-
-QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos)
-{
-    QTextCursor cursor = cursorForPosition(cursorPos);
+    const QTextCursor cursor = cursorForPosition(cursorPos);
     QString textBlock = cursor.block().text();
 
     if(textBlock.isEmpty() == false)
@@ -245,7 +245,7 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
     }
 }
 
-bool spellTextEditClass::checkWord(QString word)
+bool spellTextEditClass::checkWord(QString word) const
 {
     if(spellChecker != nullptr && codecUsed != nullptr)
     {

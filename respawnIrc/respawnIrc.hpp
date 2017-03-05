@@ -94,7 +94,7 @@ public slots:
 signals:
     void themeChanged(QString newThemeName);
 protected:
-    void focusInEvent(QFocusEvent* event);
+    void focusInEvent(QFocusEvent* event) override;
 private:
     QHBoxLayout* buttonLayout;
     sendMessagesClass sendMessages;

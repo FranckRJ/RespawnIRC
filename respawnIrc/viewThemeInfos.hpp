@@ -11,7 +11,8 @@ class viewThemeInfosClass : public QWidget
 public:
     explicit viewThemeInfosClass(QWidget* parent = 0);
     void setThemeToShow(QString newThemeName);
-    QString boolToYesOrNo(bool boolToCheck);
+private:
+    QString boolToYesOrNo(bool boolToCheck) const;
 private:
     QLabel* informations;
 };
