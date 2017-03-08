@@ -8,7 +8,7 @@
 
 namespace
 {
-    QRegularExpression expForLineReturn("(?<!\\\\)&n", configDependentVar::regexpBaseOptions);
+    QRegularExpression expForLineReturn(R"rgx((?<!\\)&n)rgx", configDependentVar::regexpBaseOptions);
 }
 
 multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)

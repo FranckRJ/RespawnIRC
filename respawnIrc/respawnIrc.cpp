@@ -27,10 +27,10 @@ const QString respawnIrcClass::currentVersionName("v2.8.3");
 
 namespace
 {
-    QRegularExpression expForSmileyToCode("<img src=\"resources/smileys/(.*?)\\..*?\" />", configDependentVar::regexpBaseOptions);
-    QRegularExpression expForNoelshackToLink("<a href=\"(http[^n]*noelshack.com[^\"]*)\"><img src=\"img/image.noelshack.com[^\"]*\".*?</a>", configDependentVar::regexpBaseOptions);
-    QRegularExpression expForStickerToCode("<img src=\"resources/stickers/(.*?)\\.png\"[^>]*>", configDependentVar::regexpBaseOptions);
-    QRegularExpression expForImageTag("<img[^>]*>", configDependentVar::regexpBaseOptions);
+    QRegularExpression expForSmileyToCode(R"rgx(<img src="resources/smileys/(.*?)\..*?" />)rgx", configDependentVar::regexpBaseOptions);
+    QRegularExpression expForNoelshackToLink(R"rgx(<a href="(http[^n]*noelshack\.com[^"]*)"><img src="img/image\.noelshack\.com[^"]*".*?</a>)rgx", configDependentVar::regexpBaseOptions);
+    QRegularExpression expForStickerToCode(R"rgx(<img src="resources/stickers/(.*?)\.png"[^>]*>)rgx", configDependentVar::regexpBaseOptions);
+    QRegularExpression expForImageTag(R"rgx(<img[^>]*>)rgx", configDependentVar::regexpBaseOptions);
 }
 
 respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName)
