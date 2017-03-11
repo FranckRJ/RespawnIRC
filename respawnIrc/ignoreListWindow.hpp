@@ -13,8 +13,9 @@ class ignoreListWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit ignoreListWindowClass(QList<QString>* newListOfIgnoredPseudo, QWidget* parent);
+private:
     void updateList();
-public slots:
+private slots:
     void addPseudo();
     void editCurrentPseudo();
     void removeCurrentPseudo();

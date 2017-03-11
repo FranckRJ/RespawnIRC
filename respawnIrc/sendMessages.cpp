@@ -37,111 +37,7 @@ void sendMessagesClass::doStuffBeforeQuit()
     messageLine.doStuffBeforeQuit();
 }
 
-QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput)
-{
-    QString data;
-
-    for(const QPair<QString, QString>& thisInput : listOfInput)
-    {
-        data += thisInput.first + "=" + thisInput.second + "&";
-    }
-
-    data += "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text(), "shortcut"));
-
-    data += "&form_alias_rang=1";
-
-    return data;
-}
-
-void sendMessagesClass::clearMessageLine()
-{
-    messageLine.clear();
-}
-
-void sendMessagesClass::settingsChanged()
-{
-    messageLine.settingsChanged();
-    changeColorOnEdit = settingToolClass::getThisBoolOption("changeColorOnEdit");
-
-    if(changeColorOnEdit == true)
-    {
-        messageLine.setEditMode(isInEdit);
-    }
-    else
-    {
-        messageLine.setEditMode(false);
-    }
-}
-
-void sendMessagesClass::styleChanged()
-{
-    messageLine.styleChanged();
-    if(changeColorOnEdit == true)
-    {
-        messageLine.setEditMode(isInEdit);
-    }
-}
-
-multiTypeTextBoxClass* sendMessagesClass::getMessageLine()
-{
-    return &messageLine;
-}
-
-bool sendMessagesClass::getIsSending()
-{
-    return inSending;
-}
-
-bool sendMessagesClass::getIsInEdit()
-{
-    return isInEdit;
-}
-
-int sendMessagesClass::getNbOfMessagesSend()
-{
-    return nbOfMessagesSend;
-}
-
-void sendMessagesClass::setIsInEdit(bool newVal)
-{
-    isInEdit = newVal;
-
-    if(isInEdit == true)
-    {
-        sendButton.setText("Editer");
-    }
-    else
-    {
-        sendButton.setText("Envoyer");
-    }
-
-    if(changeColorOnEdit == true)
-    {
-        messageLine.setEditMode(newVal);
-    }
-}
-
-void sendMessagesClass::setEnableSendButton(bool newVal)
-{
-    sendButton.setEnabled(newVal);
-}
-
-void sendMessagesClass::quoteThisMessage(QString messageToQuote)
-{
-    if(messageLine.text().isEmpty() == false && messageLine.text().endsWith("\n\n") == false)
-    {
-        if(messageLine.text().endsWith("\n") == false)
-        {
-            messageLine.insertText("\n");
-        }
-        messageLine.insertText("\n");
-    }
-    messageLine.insertText(messageToQuote);
-    messageLine.insertText("\n\n");
-    messageLine.setFocus();
-}
-
-void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString> >& listOfInput)
+void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString>>& listOfInput)
 {
     QString website = parsingToolClass::getWebsite(topicLink);
 
@@ -228,6 +124,138 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
     }
 }
 
+void sendMessagesClass::clearMessageLine()
+{
+    messageLine.clear();
+}
+
+void sendMessagesClass::settingsChanged()
+{
+    messageLine.settingsChanged();
+    changeColorOnEdit = settingToolClass::getThisBoolOption("changeColorOnEdit");
+
+    if(changeColorOnEdit == true)
+    {
+        messageLine.setEditMode(isInEdit);
+    }
+    else
+    {
+        messageLine.setEditMode(false);
+    }
+}
+
+void sendMessagesClass::styleChanged()
+{
+    messageLine.styleChanged();
+    if(changeColorOnEdit == true)
+    {
+        messageLine.setEditMode(isInEdit);
+    }
+}
+
+multiTypeTextBoxClass* sendMessagesClass::getMessageLine()
+{
+    return &messageLine;
+}
+
+bool sendMessagesClass::getIsSending()
+{
+    return inSending;
+}
+
+bool sendMessagesClass::getIsInEdit()
+{
+    return isInEdit;
+}
+
+int sendMessagesClass::getNbOfMessagesSend()
+{
+    return nbOfMessagesSend;
+}
+
+void sendMessagesClass::setIsInEdit(bool newVal)
+{
+    isInEdit = newVal;
+
+    if(isInEdit == true)
+    {
+        sendButton.setText("Editer");
+    }
+    else
+    {
+        sendButton.setText("Envoyer");
+    }
+
+    if(changeColorOnEdit == true)
+    {
+        messageLine.setEditMode(newVal);
+    }
+}
+
+void sendMessagesClass::setEnableSendButton(bool newVal)
+{
+    sendButton.setEnabled(newVal);
+}
+
+void sendMessagesClass::setMultilineEdit(bool newVal)
+{
+    messageLine.setTextEditSelected(newVal);
+    messageLine.setFocus();
+}
+
+void sendMessagesClass::quoteThisMessage(QString messageToQuote)
+{
+    if(messageLine.text().isEmpty() == false && messageLine.text().endsWith("\n\n") == false)
+    {
+        if(messageLine.text().endsWith("\n") == false)
+        {
+            messageLine.insertText("\n");
+        }
+        messageLine.insertText("\n");
+    }
+    messageLine.insertText(messageToQuote);
+    messageLine.insertText("\n\n");
+    messageLine.setFocus();
+}
+
+void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit)
+{
+    if(messageEdit.isEmpty() == false)
+    {
+        if(useMessageEdit == true)
+        {
+            messageLine.clear();
+            messageLine.insertText(messageEdit);
+        }
+        dataForEditLastMessage = "id_message=" + QString::number(idOfMessageEdit) + "&" + infoToSend;
+        setIsInEdit(true);
+        idOfLastMessageEdit = idOfMessageEdit;
+    }
+    else
+    {
+        QMessageBox::warning(this, "Erreur", "Impossible d'éditer ce message.");
+        setIsInEdit(false);
+    }
+
+    sendButton.setEnabled(true);
+}
+
+QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString>>& listOfInput)
+{
+    QString data;
+
+    for(const QPair<QString, QString>& thisInput : listOfInput)
+    {
+        data += thisInput.first + "=" + thisInput.second + "&";
+    }
+
+    data += "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text(), "shortcut"));
+
+    data += "&form_alias_rang=1";
+
+    return data;
+}
+
 void sendMessagesClass::deleteReplyForSendMessage()
 {
     bool dontEraseEditMessage = false;
@@ -286,33 +314,5 @@ void sendMessagesClass::deleteReplyForSendMessage()
     }
 
     emit needToGetMessages();
-    messageLine.setFocus();
-}
-
-void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit)
-{
-    if(messageEdit.isEmpty() == false)
-    {
-        if(useMessageEdit == true)
-        {
-            messageLine.clear();
-            messageLine.insertText(messageEdit);
-        }
-        dataForEditLastMessage = "id_message=" + QString::number(idOfMessageEdit) + "&" + infoToSend;
-        setIsInEdit(true);
-        idOfLastMessageEdit = idOfMessageEdit;
-    }
-    else
-    {
-        QMessageBox::warning(this, "Erreur", "Impossible d'éditer ce message.");
-        setIsInEdit(false);
-    }
-
-    sendButton.setEnabled(true);
-}
-
-void sendMessagesClass::setMultilineEdit(bool newVal)
-{
-    messageLine.setTextEditSelected(newVal);
     messageLine.setFocus();
 }

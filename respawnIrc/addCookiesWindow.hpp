@@ -11,7 +11,7 @@ class addCookiesWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit addCookiesWindowClass(QWidget* parent);
-public slots:
+private slots:
     void valideCookies();
 signals:
     void newCookiesAvailable(QString helloCookie, QString connectCookie);

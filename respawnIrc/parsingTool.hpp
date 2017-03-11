@@ -70,7 +70,7 @@ namespace parsingToolClass
     QString getWebsite(const QString& topicLink);
     QString getVersionName(const QString& source);
     QString getVersionChangelog(const QString& source);
-    void getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput);
+    void getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString>>& listOfInput);
     bool getTopicLocked(const QString& source);
     QString getCaptchaLink(const QString& source);
     QString getErrorMessage(const QString& source);

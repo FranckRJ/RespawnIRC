@@ -29,7 +29,7 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
 
     setLayout(&layout);
 
-    connect(&lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnIsPressed);
+    connect(&lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnPressed);
     connect(&textEdit, &spellTextEditClass::addWord, highlighter, &highlighterClass::addWordToDic);
 }
 
@@ -53,48 +53,6 @@ QString multiTypeTextBoxClass::text()
     else
     {
         return lineEdit.text().replace(expForLineReturn, "\n").replace("\\&n", "&n");
-    }
-}
-
-void multiTypeTextBoxClass::moveCursor(QTextCursor::MoveOperation operation, int numberOfTime)
-{
-    if(textEditSelected == true)
-    {
-        for(int i = 0; i < numberOfTime; ++i)
-        {
-            textEdit.moveCursor(operation);
-        }
-    }
-    else
-    {
-        if(operation == QTextCursor::Left || operation == QTextCursor::Right)
-        {
-            if(operation == QTextCursor::Left)
-            {
-                numberOfTime = -numberOfTime;
-            }
-            lineEdit.setCursorPosition(lineEdit.cursorPosition() + numberOfTime);
-        }
-        else if(operation == QTextCursor::StartOfLine)
-        {
-            lineEdit.setCursorPosition(0);
-        }
-        else if(operation == QTextCursor::EndOfLine)
-        {
-            lineEdit.setCursorPosition(lineEdit.text().size());
-        }
-    }
-}
-
-QString multiTypeTextBoxClass::getSelectedText()
-{
-    if(textEditSelected == true)
-    {
-        return textEdit.textCursor().selectedText();
-    }
-    else
-    {
-        return lineEdit.selectedText();
     }
 }
 
@@ -125,6 +83,28 @@ void multiTypeTextBoxClass::setEditMode(bool newVal)
     {
         textEdit.setStyleSheet("");
         lineEdit.setStyleSheet("");
+    }
+}
+
+void multiTypeTextBoxClass::setTextEditSelected(bool newVal)
+{
+    clear();
+    layout.removeWidget(layout.itemAt(0)->widget());
+    textEditSelected = newVal;
+
+    if(textEditSelected == true)
+    {
+        lineEdit.setVisible(false);
+        layout.addWidget(&textEdit);
+        textEdit.setVisible(true);
+        setTabOrder(&lineEdit, &textEdit);
+    }
+    else
+    {
+        textEdit.setVisible(false);
+        layout.addWidget(&lineEdit);
+        lineEdit.setVisible(true);
+        setTabOrder(&textEdit, &lineEdit);
     }
 }
 
@@ -161,33 +141,6 @@ void multiTypeTextBoxClass::insertText(QString newText)
     {
         lineEdit.insert(newText.replace("&n", "\\&n").replace("\n", "&n"));
     }
-}
-
-void multiTypeTextBoxClass::setTextEditSelected(bool newVal)
-{
-    clear();
-    layout.removeWidget(layout.itemAt(0)->widget());
-    textEditSelected = newVal;
-
-    if(textEditSelected == true)
-    {
-        lineEdit.setVisible(false);
-        layout.addWidget(&textEdit);
-        textEdit.setVisible(true);
-        setTabOrder(&lineEdit, &textEdit);
-    }
-    else
-    {
-        textEdit.setVisible(false);
-        layout.addWidget(&lineEdit);
-        lineEdit.setVisible(true);
-        setTabOrder(&textEdit, &lineEdit);
-    }
-}
-
-void multiTypeTextBoxClass::returnIsPressed()
-{
-    emit returnPressed();
 }
 
 void multiTypeTextBoxClass::addBold()
@@ -254,4 +207,46 @@ void multiTypeTextBoxClass::addSpoil()
     insertText("<spoil>" + getSelectedText() + "</spoil>");
     moveCursor(QTextCursor::Left, 8);
     setFocus();
+}
+
+void multiTypeTextBoxClass::moveCursor(QTextCursor::MoveOperation operation, int numberOfTime)
+{
+    if(textEditSelected == true)
+    {
+        for(int i = 0; i < numberOfTime; ++i)
+        {
+            textEdit.moveCursor(operation);
+        }
+    }
+    else
+    {
+        if(operation == QTextCursor::Left || operation == QTextCursor::Right)
+        {
+            if(operation == QTextCursor::Left)
+            {
+                numberOfTime = -numberOfTime;
+            }
+            lineEdit.setCursorPosition(lineEdit.cursorPosition() + numberOfTime);
+        }
+        else if(operation == QTextCursor::StartOfLine)
+        {
+            lineEdit.setCursorPosition(0);
+        }
+        else if(operation == QTextCursor::EndOfLine)
+        {
+            lineEdit.setCursorPosition(lineEdit.text().size());
+        }
+    }
+}
+
+QString multiTypeTextBoxClass::getSelectedText()
+{
+    if(textEditSelected == true)
+    {
+        return textEdit.textCursor().selectedText();
+    }
+    else
+    {
+        return lineEdit.selectedText();
+    }
 }

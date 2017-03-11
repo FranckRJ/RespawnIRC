@@ -192,6 +192,64 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     respawnIrc.setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
 }
 
+void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
+{
+    QString keyPressed = QKeySequence(thisKey->key()).toString();
+    if(thisKey->modifiers().testFlag(Qt::ControlModifier) == true)
+    {
+        if(keyPressed == "&")
+        {
+            respawnIrc.selectThisTab(0);
+        }
+        else if(keyPressed == "\u00C9" || keyPressed == "É")
+        {
+            respawnIrc.selectThisTab(1);
+        }
+        else if(keyPressed == "\"")
+        {
+            respawnIrc.selectThisTab(2);
+        }
+        else if(keyPressed == "'")
+        {
+            respawnIrc.selectThisTab(3);
+        }
+        else if(keyPressed == "(")
+        {
+            respawnIrc.selectThisTab(4);
+        }
+        else if(keyPressed == "-")
+        {
+            respawnIrc.selectThisTab(5);
+        }
+        else if(keyPressed == "\u00C8" || keyPressed == "È")
+        {
+            respawnIrc.selectThisTab(6);
+        }
+        else if(keyPressed == "_")
+        {
+            respawnIrc.selectThisTab(7);
+        }
+        else if(keyPressed == "\u00C7" || keyPressed == "Ç")
+        {
+            respawnIrc.selectThisTab(8);
+        }
+        else if(keyPressed == "@")
+        {
+            respawnIrc.selectThisTab(9);
+        }
+        else if(keyPressed == "Enter" || keyPressed == "Return")
+        {
+            respawnIrc.messageHaveToBePosted();
+        }
+    }
+}
+
+void mainWindowClass::closeEvent(QCloseEvent* event)
+{
+    settingToolClass::saveThisOption("windowGeometry", saveGeometry());
+    QMainWindow::closeEvent(event);
+}
+
 void mainWindowClass::doStuffBeforeQuit()
 {
     respawnIrc.doStuffBeforeQuit();
@@ -259,67 +317,4 @@ void mainWindowClass::setNewTheme(QString newThemeName)
 {
     setStyleSheet(styleToolClass::getStyle(newThemeName));
     styleToolClass::getModelInfo(newThemeName);
-}
-
-void mainWindowClass::saveWindowGeometry(bool newVal)
-{
-    settingToolClass::saveThisOption("saveWindowGeometry", newVal);
-}
-
-void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
-{
-    QString keyPressed = QKeySequence(thisKey->key()).toString();
-    if(thisKey->modifiers().testFlag(Qt::ControlModifier) == true)
-    {
-        if(keyPressed == "&")
-        {
-            respawnIrc.selectThisTab(0);
-        }
-        else if(keyPressed == "\u00C9" || keyPressed == "É")
-        {
-            respawnIrc.selectThisTab(1);
-        }
-        else if(keyPressed == "\"")
-        {
-            respawnIrc.selectThisTab(2);
-        }
-        else if(keyPressed == "'")
-        {
-            respawnIrc.selectThisTab(3);
-        }
-        else if(keyPressed == "(")
-        {
-            respawnIrc.selectThisTab(4);
-        }
-        else if(keyPressed == "-")
-        {
-            respawnIrc.selectThisTab(5);
-        }
-        else if(keyPressed == "\u00C8" || keyPressed == "È")
-        {
-            respawnIrc.selectThisTab(6);
-        }
-        else if(keyPressed == "_")
-        {
-            respawnIrc.selectThisTab(7);
-        }
-        else if(keyPressed == "\u00C7" || keyPressed == "Ç")
-        {
-            respawnIrc.selectThisTab(8);
-        }
-        else if(keyPressed == "@")
-        {
-            respawnIrc.selectThisTab(9);
-        }
-        else if(keyPressed == "Enter" || keyPressed == "Return")
-        {
-            respawnIrc.messageHaveToBePosted();
-        }
-    }
-}
-
-void mainWindowClass::closeEvent(QCloseEvent* event)
-{
-    settingToolClass::saveThisOption("windowGeometry", saveGeometry());
-    QMainWindow::closeEvent(event);
 }

@@ -86,6 +86,11 @@ void showForumClass::setNewCookies(QList<QNetworkCookie> newCookies, QString new
     }
 }
 
+void showForumClass::setNewTheme(QString newThemeName)
+{
+    baseModelInfo = styleToolClass::getModelInfo(newThemeName);
+}
+
 void showForumClass::updateSettings()
 {
     intSettingStruct updateTopicListTimeSetting = settingToolClass::getThisIntOption("updateTopicListTime");
@@ -127,11 +132,6 @@ void showForumClass::setLoadNeeded(bool newVal)
             timerForGetList.start();
         }
     }
-}
-
-void showForumClass::setNewTheme(QString newThemeName)
-{
-    baseModelInfo = styleToolClass::getModelInfo(newThemeName);
 }
 
 void showForumClass::startGetListOfTopic()

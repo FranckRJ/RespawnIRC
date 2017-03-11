@@ -16,8 +16,9 @@ class selectThemeWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit selectThemeWindowClass(QString newCurrentThemeName, QWidget* parent);
+private:
     void loadListOfThemes();
-public slots:
+private slots:
     void selectThisTheme();
     void changeThemeInfos(const QModelIndex& selection);
 signals:

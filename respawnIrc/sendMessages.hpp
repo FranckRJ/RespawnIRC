@@ -18,7 +18,7 @@ class sendMessagesClass : public QWidget
 public:
     explicit sendMessagesClass(QWidget* parent = 0);
     void doStuffBeforeQuit();
-    QString buildDataWithThisListOfInput(const QList<QPair<QString, QString> >& listOfInput);
+    void postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString>>& listOfInput);
     void clearMessageLine();
     void settingsChanged();
     void styleChanged();
@@ -28,12 +28,14 @@ public:
     int getNbOfMessagesSend();
     void setIsInEdit(bool newVal);
     void setEnableSendButton(bool newVal);
+    void setMultilineEdit(bool newVal);
 public slots:
     void quoteThisMessage(QString messageToQuote);
-    void postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString> >& listOfInput);
-    void deleteReplyForSendMessage();
     void setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
-    void setMultilineEdit(bool newVal);
+private:
+    QString buildDataWithThisListOfInput(const QList<QPair<QString, QString>>& listOfInput);
+private slots:
+    void deleteReplyForSendMessage();
 signals:
     void needToPostMessage();
     void needToSetEditMessage(int idOfLastMessage, bool useMessageEdit);

@@ -11,8 +11,9 @@ class selectTopicWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit selectTopicWindowClass(QString currentTopic, QWidget* parent);
+private:
     QString transformLinkIfNeeded(QString link);
-public slots:
+private slots:
     void selectThisTopic();
 signals:
     void newTopicSelected(QString newTopic);

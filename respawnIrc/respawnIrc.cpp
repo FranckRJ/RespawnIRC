@@ -108,161 +108,11 @@ void respawnIrcClass::doStuffBeforeQuit()
     sendMessages.doStuffBeforeQuit();
 }
 
-void respawnIrcClass::loadSettings()
-{
-    QList<QString> listOfTopicLink;
-    QList<QString> listOfPseudoForTopic;
-
-    beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
-    beepForNewMP = settingToolClass::getThisBoolOption("beepForNewMP");
-    warnUser = settingToolClass::getThisBoolOption("warnUser");
-    typeOfImageRefresh = settingToolClass::getThisIntOption("typeOfImageRefresh").value;
-
-    for(int i = 0; i < 10; ++i)
-    {
-        vectorOfFavoriteLink.push_back(settingToolClass::getThisStringOption("favoriteLink" + QString::number(i)));
-    }
-
-    pseudoOfUser = settingToolClass::getThisStringOption("pseudo");
-    listOfAccount = settingToolClass::getListOfAccount();
-
-    if(listOfAccount.isEmpty() == true)
-    {
-        pseudoOfUser.clear();
-    }
-
-    for(int i = 0; i < listOfAccount.size(); ++i)
-    {
-        if(pseudoOfUser.toLower() == listOfAccount.at(i).pseudo.toLower())
-        {
-            setNewCookies(listOfAccount.at(i).listOfCookie, pseudoOfUser, false, false);
-            break;
-        }
-        else if(i == listOfAccount.size() - 1)
-        {
-            pseudoOfUser.clear();
-            settingToolClass::saveThisOption("pseudo", pseudoOfUser);
-        }
-    }
-
-    listOfIgnoredPseudo = settingToolClass::getListOfIgnoredPseudo();
-    listOfColorPseudo = settingToolClass::getListOfColorPseudo();
-    listOfTopicLink = settingToolClass::getListOfTopicLink();
-    listOfPseudoForTopic = settingToolClass::getListOfPseudoForTopic();
-
-    for(int i = 0; i < listOfTopicLink.size(); ++i)
-    {
-        addNewTabWithPseudo((i < listOfPseudoForTopic.size() ? listOfPseudoForTopic.at(i) : ""));
-        tabList.setCurrentIndex(i);
-        getCurrentWidget()->setBufferForTopicLinkFirstPage(listOfTopicLink.at(i));
-        tabList.setCurrentIndex(0);
-    }
-
-    if(listOfContainerForTopicsInfos.isEmpty() == true)
-    {
-        addNewTab();
-    }
-
-    messagesStatus.setText(getCurrentWidget()->getShowTopic().getMessagesStatus());
-    setNewNumberOfConnectedAndPseudoUsed();
-
-    if(settingToolClass::getThisBoolOption("showTextDecorationButton") == false)
-    {
-        setShowTextDecorationButton(false);
-    }
-
-    sendMessages.setMultilineEdit(settingToolClass::getThisBoolOption("setMultilineEdit"));
-
-    if(settingToolClass::getThisBoolOption("searchForUpdateAtLaunch") == true)
-    {
-        checkUpdate.startDownloadOfLatestUpdatePage();
-    }
-}
-
-containerForTopicsInfosClass* respawnIrcClass::getCurrentWidget()
-{
-    return listOfContainerForTopicsInfos.at(tabList.currentIndex());
-}
-
-multiTypeTextBoxClass* respawnIrcClass::getMessageLine()
-{
-    return sendMessages.getMessageLine();
-}
-
-void respawnIrcClass::addButtonToButtonLayout()
-{
-    QPushButton* buttonBold = new QPushButton("B", this);
-    QPushButton* buttonItalic = new QPushButton("I", this);
-    QPushButton* buttonUnderline = new QPushButton("U", this);
-    QPushButton* buttonStrike = new QPushButton("S", this);
-    QPushButton* buttonUList = new QPushButton("*", this);
-    QPushButton* buttonOList = new QPushButton("#", this);
-    QPushButton* buttonQuote = new QPushButton("\" \"", this);
-    QPushButton* buttonCode = new QPushButton("< >", this);
-    QPushButton* buttonSpoil = new QPushButton("spoil", this);
-    buttonBold->setMaximumWidth(buttonBold->fontMetrics().boundingRect(buttonBold->text()).width() + 10);
-    buttonBold->setMaximumHeight(20);
-    buttonBold->setObjectName("boldButton");
-    buttonItalic->setMaximumWidth(buttonItalic->fontMetrics().boundingRect(buttonItalic->text()).width() + 10);
-    buttonItalic->setMaximumHeight(20);
-    buttonItalic->setObjectName("italicButton");
-    buttonUnderline->setMaximumWidth(buttonUnderline->fontMetrics().boundingRect(buttonUnderline->text()).width() + 10);
-    buttonUnderline->setMaximumHeight(20);
-    buttonUnderline->setObjectName("underlineButton");
-    buttonStrike->setMaximumWidth(buttonStrike->fontMetrics().boundingRect(buttonStrike->text()).width() + 10);
-    buttonStrike->setMaximumHeight(20);
-    buttonStrike->setObjectName("strikeButton");
-    buttonUList->setMaximumWidth(buttonUList->fontMetrics().boundingRect(buttonUList->text()).width() + 10);
-    buttonUList->setMaximumHeight(20);
-    buttonUList->setObjectName("ulistButton");
-    buttonOList->setMaximumWidth(buttonOList->fontMetrics().boundingRect(buttonOList->text()).width() + 10);
-    buttonOList->setMaximumHeight(20);
-    buttonOList->setObjectName("olistButton");
-    buttonQuote->setMaximumWidth(buttonQuote->fontMetrics().boundingRect(buttonQuote->text()).width() + 10);
-    buttonQuote->setMaximumHeight(20);
-    buttonQuote->setObjectName("quoteButton");
-    buttonCode->setMaximumWidth(buttonCode->fontMetrics().boundingRect(buttonCode->text()).width() + 10);
-    buttonCode->setMaximumHeight(20);
-    buttonCode->setObjectName("codeButton");
-    buttonSpoil->setMaximumWidth(buttonSpoil->fontMetrics().boundingRect(buttonSpoil->text()).width() + 10);
-    buttonSpoil->setMaximumHeight(20);
-    buttonSpoil->setObjectName("spoilButton");
-
-    buttonLayout = new QHBoxLayout();
-    buttonLayout->addWidget(buttonBold);
-    buttonLayout->addWidget(buttonItalic);
-    buttonLayout->addWidget(buttonUnderline);
-    buttonLayout->addWidget(buttonStrike);
-    buttonLayout->addWidget(buttonUList);
-    buttonLayout->addWidget(buttonOList);
-    buttonLayout->addWidget(buttonQuote);
-    buttonLayout->addWidget(buttonCode);
-    buttonLayout->addWidget(buttonSpoil);
-
-    connect(buttonBold, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addBold);
-    connect(buttonItalic, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addItalic);
-    connect(buttonUnderline, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
-    connect(buttonStrike, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addStrike);
-    connect(buttonUList, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addUList);
-    connect(buttonOList, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addOListe);
-    connect(buttonQuote, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addQuote);
-    connect(buttonCode, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addCode);
-    connect(buttonSpoil, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addSpoil);
-}
-
 void respawnIrcClass::selectThisTab(int number)
 {
     if(listOfContainerForTopicsInfos.size() > number)
     {
         tabList.setCurrentIndex(number);
-    }
-}
-
-void respawnIrcClass::setButtonInButtonLayoutVisible(bool visible)
-{
-    for(int i = 0; i < buttonLayout->count(); ++i)
-    {
-        buttonLayout->itemAt(i)->widget()->setVisible(visible);
     }
 }
 
@@ -297,12 +147,9 @@ void respawnIrcClass::delThisFavorite(int index)
     settingToolClass::saveThisOption("favoriteName" + QString::number(index), "");
 }
 
-void respawnIrcClass::updateSettingInfoForList()
+multiTypeTextBoxClass* respawnIrcClass::getMessageLine()
 {
-    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
-    {
-        thisContainer->updateSettingsForInfo();
-    }
+    return sendMessages.getMessageLine();
 }
 
 void respawnIrcClass::showWebNavigator()
@@ -392,90 +239,6 @@ void respawnIrcClass::addNewTab()
     addNewTabWithPseudo("");
 }
 
-void respawnIrcClass::addNewTabWithPseudo(QString useThisPseudo)
-{
-    QString themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
-    listOfContainerForTopicsInfos.push_back(new containerForTopicsInfosClass(&listOfIgnoredPseudo, &listOfColorPseudo, currentThemeName, this));
-
-    if(useThisPseudo.isEmpty() == false)
-    {
-        if(useThisPseudo != ".")
-        {
-            bool pseudoFound = false;
-
-            for(int j = 0; j < listOfAccount.size(); ++j)
-            {
-                if(listOfAccount.at(j).pseudo.toLower() == useThisPseudo.toLower())
-                {
-                    pseudoFound = true;
-                    listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo, typeOfSaveForPseudo::REMEMBER);
-                    break;
-                }
-            }
-
-            if(pseudoFound == false)
-            {
-                listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT);
-            }
-        }
-        else
-        {
-            listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
-        }
-    }
-    else if(pseudoOfUser.isEmpty() == false)
-    {
-        listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT);
-    }
-
-    listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(imageDownloadTool.getPathOfTmpDir());
-    if(themeImgDir.isEmpty() == false)
-    {
-        listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(themeImgDir);
-    }
-
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newMPAreAvailables, this, &respawnIrcClass::warnUserForNewMP);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::setEditInfo, &sendMessages, &sendMessagesClass::setInfoForEditMessage);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::quoteThisMessage, &sendMessages, &sendMessagesClass::quoteThisMessage);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::downloadTheseStickersIfNeeded, this, &respawnIrcClass::downloadStickersIfNeeded);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::downloadTheseNoelshackImagesIfNeeded, this, &respawnIrcClass::downloadNoelshackImagesIfNeeded);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::downloadTheseAvatarsIfNeeded, this, &respawnIrcClass::downloadAvatarsIfNeeded);
-    connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
-    connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
-    tabList.addTab(listOfContainerForTopicsInfos.back(), "Onglet " + QString::number(listOfContainerForTopicsInfos.size()));
-    tabList.setCurrentIndex(listOfContainerForTopicsInfos.size() - 1);
-}
-
-
-void respawnIrcClass::addNewTabWithTopic(QString newTopicLink)
-{
-    addNewTab();
-    setNewTopic(newTopicLink);
-}
-
-void respawnIrcClass::removeTab(int index)
-{
-    if(listOfContainerForTopicsInfos.size() > 1)
-    {
-        tabList.removeTab(index);
-        listOfContainerForTopicsInfos.takeAt(index)->deleteLater();
-        currentTabChanged(-1);
-    }
-}
-
-void respawnIrcClass::tabHasMoved(int indexFrom, int indexTo)
-{
-    listOfContainerForTopicsInfos.move(indexFrom, indexTo);
-    currentTabChanged(-1);
-}
-
 void respawnIrcClass::checkForUpdate()
 {
     checkUpdate.startDownloadOfLatestUpdatePage(true);
@@ -539,6 +302,389 @@ void respawnIrcClass::disconnectFromCurrentTab()
 {
     getCurrentWidget()->setNewCookiesForInfo(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
     setNewNumberOfConnectedAndPseudoUsed();
+}
+
+void respawnIrcClass::setNewTheme(QString newThemeName)
+{
+    QString themeImgDir;
+
+    currentThemeName = newThemeName;
+    themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
+    styleToolClass::loadThemeFont(currentThemeName);
+
+    emit themeChanged(currentThemeName);
+
+    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
+    {
+        thisContainer->setNewThemeForInfo(currentThemeName);
+        thisContainer->setNewTopicForInfo(thisContainer->getTopicLinkFirstPage());
+
+        if(themeImgDir.isEmpty() == false)
+        {
+            thisContainer->getShowTopic().addSearchPath(themeImgDir);
+        }
+    }
+
+    sendMessages.styleChanged();
+
+    settingToolClass::saveThisOption("themeUsed", currentThemeName);
+}
+
+void respawnIrcClass::reloadTheme()
+{
+    setNewTheme(currentThemeName);
+}
+
+void respawnIrcClass::messageHaveToBePosted()
+{
+    sendMessages.postMessage(getCurrentWidget()->getShowTopic().getPseudoUsed(), getCurrentWidget()->getTopicLinkFirstPage(),
+                             getCurrentWidget()->getShowTopic().getListOfCookies(), getCurrentWidget()->getShowTopic().getListOfInput());
+}
+
+void respawnIrcClass::editLastMessage()
+{
+    setEditMessage(0, true);
+}
+
+void respawnIrcClass::clipboardChanged()
+{
+    if(QApplication::focusWidget() != nullptr)
+    {
+        QClipboard* clipboard = QApplication::clipboard();
+        const QMimeData* data = clipboard->mimeData();
+        QString dataInHtml = data->html();
+
+        if(dataInHtml.contains("<img src=\"") && dataInHtml != lastClipboardDataChanged)
+        {
+            QTextDocument doc;
+            QMimeData* newData = new QMimeData();
+            //à changer, si possible
+            dataInHtml.replace("<img src=\"resources/smileys/1.gif\" />", ":)");
+            dataInHtml.replace("<img src=\"resources/smileys/2.gif\" />", ":question:");
+            dataInHtml.replace("<img src=\"resources/smileys/3.gif\" />", ":g)");
+            dataInHtml.replace("<img src=\"resources/smileys/4.gif\" />", ":d)");
+            dataInHtml.replace("<img src=\"resources/smileys/5.gif\" />", ":cd:");
+            dataInHtml.replace("<img src=\"resources/smileys/6.gif\" />", ":globe:");
+            dataInHtml.replace("<img src=\"resources/smileys/7.gif\" />", ":p)");
+            dataInHtml.replace("<img src=\"resources/smileys/8.gif\" />", ":malade:");
+            dataInHtml.replace("<img src=\"resources/smileys/9.gif\" />", ":pacg:");
+            dataInHtml.replace("<img src=\"resources/smileys/10.gif\" />", ":pacd:");
+            dataInHtml.replace("<img src=\"resources/smileys/11.gif\" />", ":noel:");
+            dataInHtml.replace("<img src=\"resources/smileys/12.gif\" />", ":o))");
+            dataInHtml.replace("<img src=\"resources/smileys/13.gif\" />", ":snif2:");
+            dataInHtml.replace("<img src=\"resources/smileys/14.gif\" />", ":-(");
+            dataInHtml.replace("<img src=\"resources/smileys/15.gif\" />", ":-((");
+            dataInHtml.replace("<img src=\"resources/smileys/16.gif\" />", ":mac:");
+            dataInHtml.replace("<img src=\"resources/smileys/17.gif\" />", ":gba:");
+            dataInHtml.replace("<img src=\"resources/smileys/18.gif\" />", ":hap:");
+            dataInHtml.replace("<img src=\"resources/smileys/19.gif\" />", ":nah:");
+            dataInHtml.replace("<img src=\"resources/smileys/20.gif\" />", ":snif:");
+            dataInHtml.replace("<img src=\"resources/smileys/21.gif\" />", ":mort:");
+            dataInHtml.replace("<img src=\"resources/smileys/22.gif\" />", ":ouch:");
+            dataInHtml.replace("<img src=\"resources/smileys/23.gif\" />", ":-)))");
+            dataInHtml.replace("<img src=\"resources/smileys/24.gif\" />", ":content:");
+            dataInHtml.replace("<img src=\"resources/smileys/25.gif\" />", ":nonnon:");
+            dataInHtml.replace("<img src=\"resources/smileys/26.gif\" />", ":cool:");
+            dataInHtml.replace("<img src=\"resources/smileys/27.gif\" />", ":sleep:");
+            dataInHtml.replace("<img src=\"resources/smileys/28.gif\" />", ":doute:");
+            dataInHtml.replace("<img src=\"resources/smileys/29.gif\" />", ":hello:");
+            dataInHtml.replace("<img src=\"resources/smileys/30.gif\" />", ":honte:");
+            dataInHtml.replace("<img src=\"resources/smileys/31.gif\" />", ":-p");
+            dataInHtml.replace("<img src=\"resources/smileys/32.gif\" />", ":lol:");
+            dataInHtml.replace("<img src=\"resources/smileys/33.gif\" />", ":non2:");
+            dataInHtml.replace("<img src=\"resources/smileys/34.gif\" />", ":monoeil:");
+            dataInHtml.replace("<img src=\"resources/smileys/35.gif\" />", ":non:");
+            dataInHtml.replace("<img src=\"resources/smileys/36.gif\" />", ":ok:");
+            dataInHtml.replace("<img src=\"resources/smileys/37.gif\" />", ":oui:");
+            dataInHtml.replace("<img src=\"resources/smileys/38.gif\" />", ":rechercher:");
+            dataInHtml.replace("<img src=\"resources/smileys/39.gif\" />", ":rire:");
+            dataInHtml.replace("<img src=\"resources/smileys/40.gif\" />", ":-D");
+            dataInHtml.replace("<img src=\"resources/smileys/41.gif\" />", ":rire2:");
+            dataInHtml.replace("<img src=\"resources/smileys/42.gif\" />", ":salut:");
+            dataInHtml.replace("<img src=\"resources/smileys/43.gif\" />", ":sarcastic:");
+            dataInHtml.replace("<img src=\"resources/smileys/44.gif\" />", ":up:");
+            dataInHtml.replace("<img src=\"resources/smileys/45.gif\" />", ":(");
+            dataInHtml.replace("<img src=\"resources/smileys/46.gif\" />", ":-)");
+            dataInHtml.replace("<img src=\"resources/smileys/47.gif\" />", ":peur:");
+            dataInHtml.replace("<img src=\"resources/smileys/48.gif\" />", ":bye:");
+            dataInHtml.replace("<img src=\"resources/smileys/49.gif\" />", ":dpdr:");
+            dataInHtml.replace("<img src=\"resources/smileys/50.gif\" />", ":fou:");
+            dataInHtml.replace("<img src=\"resources/smileys/51.gif\" />", ":gne:");
+            dataInHtml.replace("<img src=\"resources/smileys/52.gif\" />", ":dehors:");
+            dataInHtml.replace("<img src=\"resources/smileys/53.gif\" />", ":fier:");
+            dataInHtml.replace("<img src=\"resources/smileys/54.gif\" />", ":coeur:");
+            dataInHtml.replace("<img src=\"resources/smileys/55.gif\" />", ":rouge:");
+            dataInHtml.replace("<img src=\"resources/smileys/56.gif\" />", ":sors:");
+            dataInHtml.replace("<img src=\"resources/smileys/57.gif\" />", ":ouch2:");
+            dataInHtml.replace("<img src=\"resources/smileys/58.gif\" />", ":merci:");
+            dataInHtml.replace("<img src=\"resources/smileys/59.gif\" />", ":svp:");
+            dataInHtml.replace("<img src=\"resources/smileys/60.gif\" />", ":ange:");
+            dataInHtml.replace("<img src=\"resources/smileys/61.gif\" />", ":diable:");
+            dataInHtml.replace("<img src=\"resources/smileys/62.gif\" />", ":gni:");
+            dataInHtml.replace("<img src=\"resources/smileys/63.gif\" />", ":spoiler:");
+            dataInHtml.replace("<img src=\"resources/smileys/64.gif\" />", ":hs:");
+            dataInHtml.replace("<img src=\"resources/smileys/65.gif\" />", ":desole:");
+            dataInHtml.replace("<img src=\"resources/smileys/66.gif\" />", ":fete:");
+            dataInHtml.replace("<img src=\"resources/smileys/67.gif\" />", ":sournois:");
+            dataInHtml.replace("<img src=\"resources/smileys/68.gif\" />", ":hum:");
+            dataInHtml.replace("<img src=\"resources/smileys/69.gif\" />", ":bravo:");
+            dataInHtml.replace("<img src=\"resources/smileys/70.gif\" />", ":banzai:");
+            dataInHtml.replace("<img src=\"resources/smileys/71.gif\" />", ":bave:");
+            dataInHtml.replace("<img src=\"resources/smileys/nyu.gif\" />", ":cute:");
+            //fin "à changer"
+            parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":");
+            parsingToolClass::replaceWithCapNumber(dataInHtml, expForNoelshackToLink, 1);
+            parsingToolClass::replaceWithCapNumber(dataInHtml, expForStickerToCode, 1, "[[sticker:p/", "]]");
+            dataInHtml.replace(expForImageTag, "");
+            lastClipboardDataChanged = dataInHtml;
+            doc.setHtml(dataInHtml);
+            newData->setHtml(dataInHtml);
+            newData->setText(doc.toPlainText());
+            clipboard->setMimeData(newData);
+        }
+    }
+}
+
+void respawnIrcClass::loadSettings()
+{
+    QList<QString> listOfTopicLink;
+    QList<QString> listOfPseudoForTopic;
+
+    beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
+    beepForNewMP = settingToolClass::getThisBoolOption("beepForNewMP");
+    warnUser = settingToolClass::getThisBoolOption("warnUser");
+    typeOfImageRefresh = settingToolClass::getThisIntOption("typeOfImageRefresh").value;
+
+    for(int i = 0; i < 10; ++i)
+    {
+        vectorOfFavoriteLink.push_back(settingToolClass::getThisStringOption("favoriteLink" + QString::number(i)));
+    }
+
+    pseudoOfUser = settingToolClass::getThisStringOption("pseudo");
+    listOfAccount = settingToolClass::getListOfAccount();
+
+    if(listOfAccount.isEmpty() == true)
+    {
+        pseudoOfUser.clear();
+    }
+
+    for(int i = 0; i < listOfAccount.size(); ++i)
+    {
+        if(pseudoOfUser.toLower() == listOfAccount.at(i).pseudo.toLower())
+        {
+            setNewCookies(listOfAccount.at(i).listOfCookie, pseudoOfUser, false, false);
+            break;
+        }
+        else if(i == listOfAccount.size() - 1)
+        {
+            pseudoOfUser.clear();
+            settingToolClass::saveThisOption("pseudo", pseudoOfUser);
+        }
+    }
+
+    listOfIgnoredPseudo = settingToolClass::getListOfIgnoredPseudo();
+    listOfColorPseudo = settingToolClass::getListOfColorPseudo();
+    listOfTopicLink = settingToolClass::getListOfTopicLink();
+    listOfPseudoForTopic = settingToolClass::getListOfPseudoForTopic();
+
+    for(int i = 0; i < listOfTopicLink.size(); ++i)
+    {
+        addNewTabWithPseudo((i < listOfPseudoForTopic.size() ? listOfPseudoForTopic.at(i) : ""));
+        tabList.setCurrentIndex(i);
+        getCurrentWidget()->setBufferForTopicLinkFirstPage(listOfTopicLink.at(i));
+        tabList.setCurrentIndex(0);
+    }
+
+    if(listOfContainerForTopicsInfos.isEmpty() == true)
+    {
+        addNewTab();
+    }
+
+    messagesStatus.setText(getCurrentWidget()->getShowTopic().getMessagesStatus());
+    setNewNumberOfConnectedAndPseudoUsed();
+
+    if(settingToolClass::getThisBoolOption("showTextDecorationButton") == false)
+    {
+        setShowTextDecorationButton(false);
+    }
+
+    sendMessages.setMultilineEdit(settingToolClass::getThisBoolOption("setMultilineEdit"));
+
+    if(settingToolClass::getThisBoolOption("searchForUpdateAtLaunch") == true)
+    {
+        checkUpdate.startDownloadOfLatestUpdatePage();
+    }
+}
+
+containerForTopicsInfosClass* respawnIrcClass::getCurrentWidget()
+{
+    return listOfContainerForTopicsInfos.at(tabList.currentIndex());
+}
+
+void respawnIrcClass::addButtonToButtonLayout()
+{
+    QPushButton* buttonBold = new QPushButton("B", this);
+    QPushButton* buttonItalic = new QPushButton("I", this);
+    QPushButton* buttonUnderline = new QPushButton("U", this);
+    QPushButton* buttonStrike = new QPushButton("S", this);
+    QPushButton* buttonUList = new QPushButton("*", this);
+    QPushButton* buttonOList = new QPushButton("#", this);
+    QPushButton* buttonQuote = new QPushButton("\" \"", this);
+    QPushButton* buttonCode = new QPushButton("< >", this);
+    QPushButton* buttonSpoil = new QPushButton("spoil", this);
+    buttonBold->setMaximumWidth(buttonBold->fontMetrics().boundingRect(buttonBold->text()).width() + 10);
+    buttonBold->setMaximumHeight(20);
+    buttonBold->setObjectName("boldButton");
+    buttonItalic->setMaximumWidth(buttonItalic->fontMetrics().boundingRect(buttonItalic->text()).width() + 10);
+    buttonItalic->setMaximumHeight(20);
+    buttonItalic->setObjectName("italicButton");
+    buttonUnderline->setMaximumWidth(buttonUnderline->fontMetrics().boundingRect(buttonUnderline->text()).width() + 10);
+    buttonUnderline->setMaximumHeight(20);
+    buttonUnderline->setObjectName("underlineButton");
+    buttonStrike->setMaximumWidth(buttonStrike->fontMetrics().boundingRect(buttonStrike->text()).width() + 10);
+    buttonStrike->setMaximumHeight(20);
+    buttonStrike->setObjectName("strikeButton");
+    buttonUList->setMaximumWidth(buttonUList->fontMetrics().boundingRect(buttonUList->text()).width() + 10);
+    buttonUList->setMaximumHeight(20);
+    buttonUList->setObjectName("ulistButton");
+    buttonOList->setMaximumWidth(buttonOList->fontMetrics().boundingRect(buttonOList->text()).width() + 10);
+    buttonOList->setMaximumHeight(20);
+    buttonOList->setObjectName("olistButton");
+    buttonQuote->setMaximumWidth(buttonQuote->fontMetrics().boundingRect(buttonQuote->text()).width() + 10);
+    buttonQuote->setMaximumHeight(20);
+    buttonQuote->setObjectName("quoteButton");
+    buttonCode->setMaximumWidth(buttonCode->fontMetrics().boundingRect(buttonCode->text()).width() + 10);
+    buttonCode->setMaximumHeight(20);
+    buttonCode->setObjectName("codeButton");
+    buttonSpoil->setMaximumWidth(buttonSpoil->fontMetrics().boundingRect(buttonSpoil->text()).width() + 10);
+    buttonSpoil->setMaximumHeight(20);
+    buttonSpoil->setObjectName("spoilButton");
+
+    buttonLayout = new QHBoxLayout();
+    buttonLayout->addWidget(buttonBold);
+    buttonLayout->addWidget(buttonItalic);
+    buttonLayout->addWidget(buttonUnderline);
+    buttonLayout->addWidget(buttonStrike);
+    buttonLayout->addWidget(buttonUList);
+    buttonLayout->addWidget(buttonOList);
+    buttonLayout->addWidget(buttonQuote);
+    buttonLayout->addWidget(buttonCode);
+    buttonLayout->addWidget(buttonSpoil);
+
+    connect(buttonBold, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addBold);
+    connect(buttonItalic, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addItalic);
+    connect(buttonUnderline, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
+    connect(buttonStrike, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addStrike);
+    connect(buttonUList, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addUList);
+    connect(buttonOList, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addOListe);
+    connect(buttonQuote, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addQuote);
+    connect(buttonCode, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addCode);
+    connect(buttonSpoil, &QPushButton::clicked, getMessageLine(), &multiTypeTextBoxClass::addSpoil);
+}
+
+void respawnIrcClass::setShowTextDecorationButton(bool newVal)
+{
+    for(int i = 0; i < buttonLayout->count(); ++i)
+    {
+        buttonLayout->itemAt(i)->widget()->setVisible(newVal);
+    }
+}
+
+void respawnIrcClass::updateSettingInfoForList()
+{
+    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
+    {
+        thisContainer->updateSettingsForInfo();
+    }
+}
+
+void respawnIrcClass::focusInEvent(QFocusEvent* event)
+{
+    (void)event;
+    sendMessages.setFocus();
+}
+
+void respawnIrcClass::addNewTabWithPseudo(QString useThisPseudo)
+{
+    QString themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
+    listOfContainerForTopicsInfos.push_back(new containerForTopicsInfosClass(&listOfIgnoredPseudo, &listOfColorPseudo, currentThemeName, this));
+
+    if(useThisPseudo.isEmpty() == false)
+    {
+        if(useThisPseudo != ".")
+        {
+            bool pseudoFound = false;
+
+            for(int j = 0; j < listOfAccount.size(); ++j)
+            {
+                if(listOfAccount.at(j).pseudo.toLower() == useThisPseudo.toLower())
+                {
+                    pseudoFound = true;
+                    listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(listOfAccount.at(j).listOfCookie, listOfAccount.at(j).pseudo, typeOfSaveForPseudo::REMEMBER);
+                    break;
+                }
+            }
+
+            if(pseudoFound == false)
+            {
+                listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT);
+            }
+        }
+        else
+        {
+            listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
+        }
+    }
+    else if(pseudoOfUser.isEmpty() == false)
+    {
+        listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT);
+    }
+
+    listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(imageDownloadTool.getPathOfTmpDir());
+    if(themeImgDir.isEmpty() == false)
+    {
+        listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(themeImgDir);
+    }
+
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newMPAreAvailables, this, &respawnIrcClass::warnUserForNewMP);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newNameForTopic, this, &respawnIrcClass::setNewTopicName);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::setEditInfo, &sendMessages, &sendMessagesClass::setInfoForEditMessage);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::quoteThisMessage, &sendMessages, &sendMessagesClass::quoteThisMessage);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::downloadTheseStickersIfNeeded, this, &respawnIrcClass::downloadStickersIfNeeded);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::downloadTheseNoelshackImagesIfNeeded, this, &respawnIrcClass::downloadNoelshackImagesIfNeeded);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::downloadTheseAvatarsIfNeeded, this, &respawnIrcClass::downloadAvatarsIfNeeded);
+    connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::openThisTopicInNewTab, this, &respawnIrcClass::addNewTabWithTopic);
+    connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::topicNeedChanged, this, &respawnIrcClass::setNewTopic);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
+    tabList.addTab(listOfContainerForTopicsInfos.back(), "Onglet " + QString::number(listOfContainerForTopicsInfos.size()));
+    tabList.setCurrentIndex(listOfContainerForTopicsInfos.size() - 1);
+}
+
+void respawnIrcClass::addNewTabWithTopic(QString newTopicLink)
+{
+    addNewTab();
+    setNewTopic(newTopicLink);
+}
+
+void respawnIrcClass::removeTab(int index)
+{
+    if(listOfContainerForTopicsInfos.size() > 1)
+    {
+        tabList.removeTab(index);
+        listOfContainerForTopicsInfos.takeAt(index)->deleteLater();
+        currentTabChanged(-1);
+    }
+}
+
+void respawnIrcClass::tabHasMoved(int indexFrom, int indexTo)
+{
+    listOfContainerForTopicsInfos.move(indexFrom, indexTo);
+    currentTabChanged(-1);
 }
 
 void respawnIrcClass::disconnectFromThisPseudo(QString thisPseudo)
@@ -657,11 +803,6 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     }
 }
 
-void respawnIrcClass::setShowTextDecorationButton(bool newVal)
-{
-    setButtonInButtonLayoutVisible(newVal);
-}
-
 void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo)
 {
     if(newCookies.isEmpty() == false)
@@ -719,37 +860,6 @@ void respawnIrcClass::setNewCookiesForPseudo()
 void respawnIrcClass::setNewTopic(QString newTopic)
 {
     getCurrentWidget()->setNewTopicForInfo(newTopic);
-}
-
-void respawnIrcClass::setNewTheme(QString newThemeName)
-{
-    QString themeImgDir;
-
-    currentThemeName = newThemeName;
-    themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
-    styleToolClass::loadThemeFont(currentThemeName);
-
-    emit themeChanged(currentThemeName);
-
-    for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
-    {
-        thisContainer->setNewThemeForInfo(currentThemeName);
-        thisContainer->setNewTopicForInfo(thisContainer->getTopicLinkFirstPage());
-
-        if(themeImgDir.isEmpty() == false)
-        {
-            thisContainer->getShowTopic().addSearchPath(themeImgDir);
-        }
-    }
-
-    sendMessages.styleChanged();
-
-    settingToolClass::saveThisOption("themeUsed", currentThemeName);
-}
-
-void respawnIrcClass::reloadTheme()
-{
-    setNewTheme(currentThemeName);
 }
 
 void respawnIrcClass::setNewMessageStatus()
@@ -873,18 +983,6 @@ void respawnIrcClass::currentTabChanged(int newIndex)
     tabList.setTabIcon(newIndex, QIcon());
 }
 
-void respawnIrcClass::messageHaveToBePosted()
-{
-    sendMessages.postMessage(getCurrentWidget()->getShowTopic().getPseudoUsed(), getCurrentWidget()->getTopicLinkFirstPage(),
-                             getCurrentWidget()->getShowTopic().getListOfCookies(), getCurrentWidget()->getShowTopic().getListOfInput());
-}
-
-void respawnIrcClass::editLastMessage()
-{
-    setEditMessage(0, true);
-}
-
-
 void respawnIrcClass::setEditMessage(long idOfMessageToEdit, bool useMessageEdit)
 {
     if(sendMessages.getIsSending() == false)
@@ -937,109 +1035,4 @@ void respawnIrcClass::updateImagesIfNeeded()
             getCurrentWidget()->getShowTopic().relayoutDocumentHack();
         }
     }
-}
-
-void respawnIrcClass::clipboardChanged()
-{
-    if(QApplication::focusWidget() != nullptr)
-    {
-        QClipboard* clipboard = QApplication::clipboard();
-        const QMimeData* data = clipboard->mimeData();
-        QString dataInHtml = data->html();
-
-        if(dataInHtml.contains("<img src=\"") && dataInHtml != lastClipboardDataChanged)
-        {
-            QTextDocument doc;
-            QMimeData* newData = new QMimeData();
-            //a changer, si possible
-            dataInHtml.replace("<img src=\"resources/smileys/1.gif\" />", ":)");
-            dataInHtml.replace("<img src=\"resources/smileys/2.gif\" />", ":question:");
-            dataInHtml.replace("<img src=\"resources/smileys/3.gif\" />", ":g)");
-            dataInHtml.replace("<img src=\"resources/smileys/4.gif\" />", ":d)");
-            dataInHtml.replace("<img src=\"resources/smileys/5.gif\" />", ":cd:");
-            dataInHtml.replace("<img src=\"resources/smileys/6.gif\" />", ":globe:");
-            dataInHtml.replace("<img src=\"resources/smileys/7.gif\" />", ":p)");
-            dataInHtml.replace("<img src=\"resources/smileys/8.gif\" />", ":malade:");
-            dataInHtml.replace("<img src=\"resources/smileys/9.gif\" />", ":pacg:");
-            dataInHtml.replace("<img src=\"resources/smileys/10.gif\" />", ":pacd:");
-            dataInHtml.replace("<img src=\"resources/smileys/11.gif\" />", ":noel:");
-            dataInHtml.replace("<img src=\"resources/smileys/12.gif\" />", ":o))");
-            dataInHtml.replace("<img src=\"resources/smileys/13.gif\" />", ":snif2:");
-            dataInHtml.replace("<img src=\"resources/smileys/14.gif\" />", ":-(");
-            dataInHtml.replace("<img src=\"resources/smileys/15.gif\" />", ":-((");
-            dataInHtml.replace("<img src=\"resources/smileys/16.gif\" />", ":mac:");
-            dataInHtml.replace("<img src=\"resources/smileys/17.gif\" />", ":gba:");
-            dataInHtml.replace("<img src=\"resources/smileys/18.gif\" />", ":hap:");
-            dataInHtml.replace("<img src=\"resources/smileys/19.gif\" />", ":nah:");
-            dataInHtml.replace("<img src=\"resources/smileys/20.gif\" />", ":snif:");
-            dataInHtml.replace("<img src=\"resources/smileys/21.gif\" />", ":mort:");
-            dataInHtml.replace("<img src=\"resources/smileys/22.gif\" />", ":ouch:");
-            dataInHtml.replace("<img src=\"resources/smileys/23.gif\" />", ":-)))");
-            dataInHtml.replace("<img src=\"resources/smileys/24.gif\" />", ":content:");
-            dataInHtml.replace("<img src=\"resources/smileys/25.gif\" />", ":nonnon:");
-            dataInHtml.replace("<img src=\"resources/smileys/26.gif\" />", ":cool:");
-            dataInHtml.replace("<img src=\"resources/smileys/27.gif\" />", ":sleep:");
-            dataInHtml.replace("<img src=\"resources/smileys/28.gif\" />", ":doute:");
-            dataInHtml.replace("<img src=\"resources/smileys/29.gif\" />", ":hello:");
-            dataInHtml.replace("<img src=\"resources/smileys/30.gif\" />", ":honte:");
-            dataInHtml.replace("<img src=\"resources/smileys/31.gif\" />", ":-p");
-            dataInHtml.replace("<img src=\"resources/smileys/32.gif\" />", ":lol:");
-            dataInHtml.replace("<img src=\"resources/smileys/33.gif\" />", ":non2:");
-            dataInHtml.replace("<img src=\"resources/smileys/34.gif\" />", ":monoeil:");
-            dataInHtml.replace("<img src=\"resources/smileys/35.gif\" />", ":non:");
-            dataInHtml.replace("<img src=\"resources/smileys/36.gif\" />", ":ok:");
-            dataInHtml.replace("<img src=\"resources/smileys/37.gif\" />", ":oui:");
-            dataInHtml.replace("<img src=\"resources/smileys/38.gif\" />", ":rechercher:");
-            dataInHtml.replace("<img src=\"resources/smileys/39.gif\" />", ":rire:");
-            dataInHtml.replace("<img src=\"resources/smileys/40.gif\" />", ":-D");
-            dataInHtml.replace("<img src=\"resources/smileys/41.gif\" />", ":rire2:");
-            dataInHtml.replace("<img src=\"resources/smileys/42.gif\" />", ":salut:");
-            dataInHtml.replace("<img src=\"resources/smileys/43.gif\" />", ":sarcastic:");
-            dataInHtml.replace("<img src=\"resources/smileys/44.gif\" />", ":up:");
-            dataInHtml.replace("<img src=\"resources/smileys/45.gif\" />", ":(");
-            dataInHtml.replace("<img src=\"resources/smileys/46.gif\" />", ":-)");
-            dataInHtml.replace("<img src=\"resources/smileys/47.gif\" />", ":peur:");
-            dataInHtml.replace("<img src=\"resources/smileys/48.gif\" />", ":bye:");
-            dataInHtml.replace("<img src=\"resources/smileys/49.gif\" />", ":dpdr:");
-            dataInHtml.replace("<img src=\"resources/smileys/50.gif\" />", ":fou:");
-            dataInHtml.replace("<img src=\"resources/smileys/51.gif\" />", ":gne:");
-            dataInHtml.replace("<img src=\"resources/smileys/52.gif\" />", ":dehors:");
-            dataInHtml.replace("<img src=\"resources/smileys/53.gif\" />", ":fier:");
-            dataInHtml.replace("<img src=\"resources/smileys/54.gif\" />", ":coeur:");
-            dataInHtml.replace("<img src=\"resources/smileys/55.gif\" />", ":rouge:");
-            dataInHtml.replace("<img src=\"resources/smileys/56.gif\" />", ":sors:");
-            dataInHtml.replace("<img src=\"resources/smileys/57.gif\" />", ":ouch2:");
-            dataInHtml.replace("<img src=\"resources/smileys/58.gif\" />", ":merci:");
-            dataInHtml.replace("<img src=\"resources/smileys/59.gif\" />", ":svp:");
-            dataInHtml.replace("<img src=\"resources/smileys/60.gif\" />", ":ange:");
-            dataInHtml.replace("<img src=\"resources/smileys/61.gif\" />", ":diable:");
-            dataInHtml.replace("<img src=\"resources/smileys/62.gif\" />", ":gni:");
-            dataInHtml.replace("<img src=\"resources/smileys/63.gif\" />", ":spoiler:");
-            dataInHtml.replace("<img src=\"resources/smileys/64.gif\" />", ":hs:");
-            dataInHtml.replace("<img src=\"resources/smileys/65.gif\" />", ":desole:");
-            dataInHtml.replace("<img src=\"resources/smileys/66.gif\" />", ":fete:");
-            dataInHtml.replace("<img src=\"resources/smileys/67.gif\" />", ":sournois:");
-            dataInHtml.replace("<img src=\"resources/smileys/68.gif\" />", ":hum:");
-            dataInHtml.replace("<img src=\"resources/smileys/69.gif\" />", ":bravo:");
-            dataInHtml.replace("<img src=\"resources/smileys/70.gif\" />", ":banzai:");
-            dataInHtml.replace("<img src=\"resources/smileys/71.gif\" />", ":bave:");
-            dataInHtml.replace("<img src=\"resources/smileys/nyu.gif\" />", ":cute:");
-            // fin "à changer"
-            parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":");
-            parsingToolClass::replaceWithCapNumber(dataInHtml, expForNoelshackToLink, 1);
-            parsingToolClass::replaceWithCapNumber(dataInHtml, expForStickerToCode, 1, "[[sticker:p/", "]]");
-            dataInHtml.replace(expForImageTag, "");
-            lastClipboardDataChanged = dataInHtml;
-            doc.setHtml(dataInHtml);
-            newData->setHtml(dataInHtml);
-            newData->setText(doc.toPlainText());
-            clipboard->setMimeData(newData);
-        }
-    }
-}
-
-void respawnIrcClass::focusInEvent(QFocusEvent* event)
-{
-    (void)event;
-    sendMessages.setFocus();
 }

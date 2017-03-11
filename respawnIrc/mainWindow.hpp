@@ -15,17 +15,16 @@ class mainWindowClass : public QMainWindow
     Q_OBJECT
 public:
     explicit mainWindowClass();
-public slots:
+private:
+    void keyPressEvent(QKeyEvent* thisKey) override;
+    void closeEvent(QCloseEvent* event) override;
+private slots:
     void doStuffBeforeQuit();
     void goToMp();
     void useFavoriteClicked();
     void addFavoriteClicked();
     void delFavoriteClicked();
     void setNewTheme(QString newThemeName);
-    void saveWindowGeometry(bool newVal);
-protected:
-    void keyPressEvent(QKeyEvent* thisKey);
-    void closeEvent(QCloseEvent* event);
 private:
     respawnIrcClass respawnIrc;
     QVector<QAction*> vectorOfUseFavorite;

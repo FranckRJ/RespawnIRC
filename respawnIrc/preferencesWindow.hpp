@@ -16,6 +16,7 @@ class preferenceWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit preferenceWindowClass(QWidget* parent);
+private:
     QWidget* createWidgetForMainTab();
     QWidget* createWidgetForMessagesTab();
     QWidget* createWidgetForTopicListTab();
@@ -24,7 +25,7 @@ public:
     QHBoxLayout* makeNewSpinBox(QString messageInfo, QString boxNameValue, QSpinBox* useThisSpinBox = nullptr, QHBoxLayout* useThisLayout = nullptr);
     QHBoxLayout* makeNewComboBox(QString messageInfo, QString boxNameValue, QStringList listOfChoices, QComboBox* useThisCombokBox = nullptr, QHBoxLayout* useThisLayout = nullptr);
     QCheckBox* makeFastModeCheckBox();
-public slots:
+private slots:
     void valueOfCheckboxChanged(bool newVal);
     void valueOfIntBoxChanged(int newVal);
     void valueOfFastModeCheckBoxChanged(bool newVal);

@@ -18,16 +18,13 @@ public:
     void doStuffBeforeQuit();
     void clear();
     QString text();
-    void moveCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);
-    QString getSelectedText();
     void setFocus();
     void setEditMode(bool newVal);
+    void setTextEditSelected(bool newVal);
     void styleChanged();
     void settingsChanged();
 public slots:
     void insertText(QString newText);
-    void setTextEditSelected(bool newVal);
-    void returnIsPressed();
     void addBold();
     void addItalic();
     void addUnderLine();
@@ -37,6 +34,9 @@ public slots:
     void addQuote();
     void addCode();
     void addSpoil();
+private:
+    void moveCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);
+    QString getSelectedText();
 signals:
     void returnPressed();
 private:

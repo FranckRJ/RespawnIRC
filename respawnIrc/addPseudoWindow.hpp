@@ -11,8 +11,9 @@ class addPseudoWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit addPseudoWindowClass(QWidget* parent, QString currentPseudo = "");
+private:
     bool pseudoIsValide(QString pseudo);
-public slots:
+private slots:
     void setPseudo();
 signals:
     void newPseudoSet(QString newPseudo);

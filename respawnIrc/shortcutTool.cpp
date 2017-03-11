@@ -9,14 +9,14 @@
 
 namespace
 {
-    QMap<QString, QList<QPair<QString, QString> > > listOfShortcutRules;
+    QMap<QString, QList<QPair<QString, QString>>> listOfShortcutRules;
 }
 
 void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew)
 {
     QFile thisFile(QCoreApplication::applicationDirPath() + "/resources/" + ruleName + ".txt");
 
-    QMap<QString, QList<QPair<QString, QString> > >::iterator rulesIte = listOfShortcutRules.insert(ruleName, QList<QPair<QString, QString> >());
+    QMap<QString, QList<QPair<QString, QString>>>::iterator rulesIte = listOfShortcutRules.insert(ruleName, QList<QPair<QString, QString>>());
 
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
@@ -45,11 +45,11 @@ void shortcutToolClass::transformMessage(QString* thisMessage, QString ruleName)
 
 QString shortcutToolClass::transformMessage(QString thisMessage, QString ruleName)
 {
-    QMap<QString, QList<QPair<QString, QString> > >::iterator rulesIte = listOfShortcutRules.find(ruleName);
+    QMap<QString, QList<QPair<QString, QString>>>::iterator rulesIte = listOfShortcutRules.find(ruleName);
 
     if(rulesIte != listOfShortcutRules.end())
     {
-        QList<QPair<QString, QString> >::const_iterator itShortcut = rulesIte.value().constBegin();
+        QList<QPair<QString, QString>>::const_iterator itShortcut = rulesIte.value().constBegin();
         while(itShortcut != rulesIte.value().constEnd())
         {
             thisMessage.replace(itShortcut->first, itShortcut->second);

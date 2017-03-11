@@ -13,8 +13,9 @@ class selectStickerWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit selectStickerWindowClass(QWidget* parent);
+private:
     void loadListOfStickers();
-public slots:
+private slots:
     void linkClicked(const QUrl& link);
     void createContextMenu(const QPoint& thisPoint);
     void scrollBarSizeChanged();

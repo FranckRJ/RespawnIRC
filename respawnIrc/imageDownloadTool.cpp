@@ -54,6 +54,47 @@ void imageDownloadToolClass::addRule(QString ruleName, QString directoryPath, bo
     }
 }
 
+void imageDownloadToolClass::checkAndStartDownloadMissingImages(QStringList listOfImagesUrlToCheck, QString ruleName)
+{
+    QMap<QString, imageDownloadRuleStruct>::iterator ruleIte = listOfRulesForImage.find(ruleName);
+
+    if(ruleIte == listOfRulesForImage.end())
+    {
+        return;
+    }
+    if(ruleIte.value().isInTmpDir == true && tmpDir.isValid() == false)
+    {
+        return;
+    }
+
+    for(QString& thisImageUrl : listOfImagesUrlToCheck)
+    {
+        thisImageUrl = ruleIte.value().baseUrl + thisImageUrl;
+
+        if(checkIfImageUrlExist(thisImageUrl, ruleIte.value(), ruleName) == false)
+        {
+            infoForDownloadImageStruct newImageToDownload;
+
+            newImageToDownload.linkOfImage = thisImageUrl;
+            newImageToDownload.ruleForImage = ruleName;
+
+            listOfImagesUrlNeedDownload.push_back(newImageToDownload);
+        }
+    }
+
+    startDownloadMissingImages();
+}
+
+QString imageDownloadToolClass::getPathOfTmpDir()
+{
+    return tmpDir.path();
+}
+
+int imageDownloadToolClass::getNumberOfDownloadRemaining()
+{
+    return listOfImagesUrlNeedDownload.size();
+}
+
 bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, imageDownloadRuleStruct thisRule, QString ruleName)
 {
     QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingsImageForRules.find(ruleName);
@@ -89,37 +130,6 @@ bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, imageDownloa
     }
 
     return false;
-}
-
-void imageDownloadToolClass::checkAndStartDownloadMissingImages(QStringList listOfImagesUrlToCheck, QString ruleName)
-{
-    QMap<QString, imageDownloadRuleStruct>::iterator ruleIte = listOfRulesForImage.find(ruleName);
-
-    if(ruleIte == listOfRulesForImage.end())
-    {
-        return;
-    }
-    if(ruleIte.value().isInTmpDir == true && tmpDir.isValid() == false)
-    {
-        return;
-    }
-
-    for(QString& thisImageUrl : listOfImagesUrlToCheck)
-    {
-        thisImageUrl = ruleIte.value().baseUrl + thisImageUrl;
-
-        if(checkIfImageUrlExist(thisImageUrl, ruleIte.value(), ruleName) == false)
-        {
-            infoForDownloadImageStruct newImageToDownload;
-
-            newImageToDownload.linkOfImage = thisImageUrl;
-            newImageToDownload.ruleForImage = ruleName;
-
-            listOfImagesUrlNeedDownload.push_back(newImageToDownload);
-        }
-    }
-
-    startDownloadMissingImages();
 }
 
 void imageDownloadToolClass::startDownloadMissingImages()
@@ -167,16 +177,6 @@ QString imageDownloadToolClass::removeLastLevelOfFilePath(QString thisPath)
 QString imageDownloadToolClass::getOnlyLevelOfFilePath(QString thisPath)
 {
     return thisPath.right(thisPath.size() - thisPath.lastIndexOf("/") - 1);
-}
-
-QString imageDownloadToolClass::getPathOfTmpDir()
-{
-    return tmpDir.path();
-}
-
-int imageDownloadToolClass::getNumberOfDownloadRemaining()
-{
-    return listOfImagesUrlNeedDownload.size();
 }
 
 void imageDownloadToolClass::analyzeLatestImageDownloaded()

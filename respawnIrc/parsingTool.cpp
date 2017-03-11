@@ -171,7 +171,7 @@ QString parsingToolClass::getVersionChangelog(const QString& source)
     return changelog;
 }
 
-void parsingToolClass::getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString> >& listOfInput)
+void parsingToolClass::getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString>>& listOfInput)
 {
     QString formSource;
 

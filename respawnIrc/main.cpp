@@ -34,9 +34,9 @@ int main(int argc, char* argv[])
     qRegisterMetaType<settingsForMessageParsingStruct>("settingsForMessageParsingStruct");
     qRegisterMetaType<ajaxInfoStruct>("ajaxInfoStruct");
     qRegisterMetaType<messageStruct>("messageStruct");
-    qRegisterMetaType<QList<messageStruct> >("QList<messageStruct>");
-    qRegisterMetaType<QPair<QString,QString> > ("QPair<QString,QString>");
-    qRegisterMetaType<QList<QPair<QString,QString> > >("QList<QPair<QString,QString> >");
+    qRegisterMetaType<QList<messageStruct>>("QList<messageStruct>");
+    qRegisterMetaType<QPair<QString,QString>> ("QPair<QString,QString>");
+    qRegisterMetaType<QList<QPair<QString,QString>>>("QList<QPair<QString,QString>>");
 
     mainWindowClass mainWindow;
     mainWindow.show();

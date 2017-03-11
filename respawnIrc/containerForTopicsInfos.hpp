@@ -23,7 +23,6 @@ public:
     void setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave);
     void setBufferForTopicLinkFirstPage(QString newLink);
     void updateSettingsForInfo();
-public slots:
     void setNewThemeForInfo(QString newThemeName);
     void setNewTopicForInfo(QString newTopic);
 signals:

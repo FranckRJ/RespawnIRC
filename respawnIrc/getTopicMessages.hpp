@@ -37,11 +37,13 @@ public slots:
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages);
     void settingsChanged(settingsForMessageParsingStruct newSettings);
     void startGetMessage();
+private:
+    void analyzeMessages();
+private slots:
     void getMessages();
     void loadForThisPageFinish();
-    void analyzeMessages();
 signals:
-    void newMessagesAreAvailable(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
+    void newMessagesAreAvailable(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString>> newListOfInput,
                                  ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
     void newNameForTopic(QString newName);
     void newCookiesHaveToBeSet(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser);

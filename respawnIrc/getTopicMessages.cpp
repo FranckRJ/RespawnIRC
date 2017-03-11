@@ -133,116 +133,12 @@ void getTopicMessagesClass::startGetMessage()
     }
 }
 
-void getTopicMessagesClass::getMessages()
-{
-    bool itsNewManager = false;
-
-    if(networkManager == nullptr)
-    {
-        itsNewManager = true;
-        networkManager = new QNetworkAccessManager(this);
-    }
-
-    if(retrievesMessage == false)
-    {
-        QString currentPageToLoad;
-        bool errorWhenTryToGetMessages = false;
-
-        for(QNetworkReply*& thisReply : listOfReplys)
-        {
-            if(thisReply != nullptr)
-            {
-                thisReply->deleteLater();
-                thisReply = nullptr;
-            }
-        }
-
-        for(autoTimeoutReplyClass*& autoTimeout : listOfTimeoutForReplys)
-        {
-            if(autoTimeout != nullptr)
-            {
-                autoTimeout->deleteLater();
-                autoTimeout = nullptr;
-            }
-        }
-
-        if(itsNewManager == true || needToSetCookies == true)
-        {
-            setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
-            needToSetCookies = false;
-        }
-
-        retrievesMessage = true;
-        currentPageToLoad = topicLink;
-        linkHasChanged = false;
-        emit newMessageStatus("Récupération des messages en cours...");
-        listOfReplys.fill(nullptr, numberOfPagesToDownload);
-        listOfTimeoutForReplys.fill(nullptr, listOfReplys.size());
-
-        for(int i = 0; i < listOfReplys.size(); ++i)
-        {
-            if(currentPageToLoad.isEmpty() == false)
-            {
-                QNetworkRequest requestForThisPage = parsingToolClass::buildRequestWithThisUrl(currentPageToLoad);
-
-                listOfTimeoutForReplys[i] = new autoTimeoutReplyClass(settingsForMessageParsing.timeoutTime, this);
-                listOfReplys[i] = listOfTimeoutForReplys[i]->resetReply(networkManager->get(requestForThisPage));
-
-                if(listOfReplys[i]->isOpen() == true)
-                {
-                    connect(listOfReplys[i], &QNetworkReply::finished, this, &getTopicMessagesClass::loadForThisPageFinish);
-                }
-                else
-                {
-                    errorWhenTryToGetMessages = true;
-                    break;
-                }
-
-                currentPageToLoad = parsingToolClass::getBeforeLastPageOfTopic(currentPageToLoad);
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        if(errorWhenTryToGetMessages == true)
-        {
-            analyzeMessages();
-            networkManager->deleteLater();
-            networkManager = nullptr;
-        }
-    }
-}
-
-
-void getTopicMessagesClass::loadForThisPageFinish()
-{
-    bool allIsFinished = true;
-
-    for(QNetworkReply*& thisReply : listOfReplys)
-    {
-        if(thisReply != nullptr)
-        {
-            if(thisReply->isFinished() == false)
-            {
-                allIsFinished = false;
-            }
-        }
-    }
-
-    if(allIsFinished == true)
-    {
-        analyzeMessages();
-    }
-}
-
 void getTopicMessagesClass::analyzeMessages()
 {
     QString newTopicLink;
     ajaxInfoStruct ajaxInfo;
     QList<messageStruct> listOfNewMessages;
-    QList<QPair<QString, QString> > listOfInput;
+    QList<QPair<QString, QString>> listOfInput;
     QStringList tmpListOfStickersUsed;
     QStringList tmpListOfNoelshackImagesUsed;
     QVector<QString> listOfPageSource;
@@ -466,5 +362,109 @@ void getTopicMessagesClass::analyzeMessages()
     else if(needToGetMessages == true)
     {
         startGetMessage();
+    }
+}
+
+void getTopicMessagesClass::getMessages()
+{
+    bool itsNewManager = false;
+
+    if(networkManager == nullptr)
+    {
+        itsNewManager = true;
+        networkManager = new QNetworkAccessManager(this);
+    }
+
+    if(retrievesMessage == false)
+    {
+        QString currentPageToLoad;
+        bool errorWhenTryToGetMessages = false;
+
+        for(QNetworkReply*& thisReply : listOfReplys)
+        {
+            if(thisReply != nullptr)
+            {
+                thisReply->deleteLater();
+                thisReply = nullptr;
+            }
+        }
+
+        for(autoTimeoutReplyClass*& autoTimeout : listOfTimeoutForReplys)
+        {
+            if(autoTimeout != nullptr)
+            {
+                autoTimeout->deleteLater();
+                autoTimeout = nullptr;
+            }
+        }
+
+        if(itsNewManager == true || needToSetCookies == true)
+        {
+            setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
+            needToSetCookies = false;
+        }
+
+        retrievesMessage = true;
+        currentPageToLoad = topicLink;
+        linkHasChanged = false;
+        emit newMessageStatus("Récupération des messages en cours...");
+        listOfReplys.fill(nullptr, numberOfPagesToDownload);
+        listOfTimeoutForReplys.fill(nullptr, listOfReplys.size());
+
+        for(int i = 0; i < listOfReplys.size(); ++i)
+        {
+            if(currentPageToLoad.isEmpty() == false)
+            {
+                QNetworkRequest requestForThisPage = parsingToolClass::buildRequestWithThisUrl(currentPageToLoad);
+
+                listOfTimeoutForReplys[i] = new autoTimeoutReplyClass(settingsForMessageParsing.timeoutTime, this);
+                listOfReplys[i] = listOfTimeoutForReplys[i]->resetReply(networkManager->get(requestForThisPage));
+
+                if(listOfReplys[i]->isOpen() == true)
+                {
+                    connect(listOfReplys[i], &QNetworkReply::finished, this, &getTopicMessagesClass::loadForThisPageFinish);
+                }
+                else
+                {
+                    errorWhenTryToGetMessages = true;
+                    break;
+                }
+
+                currentPageToLoad = parsingToolClass::getBeforeLastPageOfTopic(currentPageToLoad);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        if(errorWhenTryToGetMessages == true)
+        {
+            analyzeMessages();
+            networkManager->deleteLater();
+            networkManager = nullptr;
+        }
+    }
+}
+
+
+void getTopicMessagesClass::loadForThisPageFinish()
+{
+    bool allIsFinished = true;
+
+    for(QNetworkReply*& thisReply : listOfReplys)
+    {
+        if(thisReply != nullptr)
+        {
+            if(thisReply->isFinished() == false)
+            {
+                allIsFinished = false;
+            }
+        }
+    }
+
+    if(allIsFinished == true)
+    {
+        analyzeMessages();
     }
 }

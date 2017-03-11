@@ -33,15 +33,16 @@ public:
     explicit imageDownloadToolClass(QObject* parent = 0);
     void addRule(QString ruleName, QString directoryPath, bool isInTmpDir = false, bool alwaysCheckBeforeDL = false,
                  QString baseUrl = "", QString appendAfetName = "", bool takeOnlyFileNameForSave = false);
-    bool checkIfImageUrlExist(QString imageUrl, imageDownloadRuleStruct thisRule, QString ruleName);
     void checkAndStartDownloadMissingImages(QStringList listOfImagesUrlToCheck, QString ruleName);
+    QString getPathOfTmpDir();
+    int getNumberOfDownloadRemaining();
+private:
+    bool checkIfImageUrlExist(QString imageUrl, imageDownloadRuleStruct thisRule, QString ruleName);
     void startDownloadMissingImages();
     QString convertUrlToFilePath(QString thisUrl);
     QString removeLastLevelOfFilePath(QString thisPath);
     QString getOnlyLevelOfFilePath(QString thisPath);
-    QString getPathOfTmpDir();
-    int getNumberOfDownloadRemaining();
-public slots:
+private slots:
     void analyzeLatestImageDownloaded();
 signals:
     void oneDownloadFinished();

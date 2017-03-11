@@ -19,8 +19,8 @@ public:
     void styleChanged();
 public slots:
     void addWordToDic(QString word);
-protected:
-    void highlightBlock(const QString& text);
+private:
+    void highlightBlock(const QString& text) override;
     void spellCheck(const QString& text);
     bool checkWord(QString word);
 private:

@@ -36,33 +36,34 @@ public:
     static void startThread();
     static void stopThread();
     void startGetMessage();
-    const QList<QPair<QString, QString> >& getListOfInput();
+    const QList<QPair<QString, QString>>& getListOfInput();
     QString getTopicLinkLastPage();
     QString getTopicLinkFirstPage();
     QString getTopicName();
     QString getMessagesStatus();
     QString getNumberOfConnectedAndMP();
     QString getPseudoUsed();
-    QString getColorOfThisPseudo(QString pseudo);
     const QList<QNetworkCookie>& getListOfCookies();
+    bool getEditInfo(long idOfMessageToEdit = 0, bool useMessageEdit = true);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages = true);
-    void setTopicToErrorMode();
+    void setNewTheme(QString newThemeName);
+    void setNewTopic(QString newTopic);
     void updateSettingInfo();
     void addSearchPath(QString newSearchPath);
     void relayoutDocumentHack();
+private:
     void addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID);
     void editThisMessageOfMessagesBox(QString newMessage, long messageID);
-public slots:
-    void setNewTheme(QString newThemeName);
-    void setNewTopic(QString newTopic);
-    void linkClicked(const QUrl& link);
-    bool getEditInfo(long idOfMessageToEdit = 0, bool useMessageEdit = true);
+    QString getColorOfThisPseudo(QString pseudo);
     void getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted);
     void deleteMessage(QString idOfMessageDeleted);
+    void setTopicToErrorMode();
+private slots:
+    void linkClicked(const QUrl& link);
     void analyzeEditInfo();
     void analyzeQuoteInfo();
     void analyzeDeleteInfo();
-    void analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString> > newListOfInput,
+    void analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString>> newListOfInput,
                          ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
     void setMessageStatus(QString newStatus);
     void setNumberOfConnectedAndMP(QString newNumberConnected, int newNumberMP, bool forceSet = false);
@@ -99,10 +100,10 @@ private:
     QNetworkReply* replyForQuoteInfo = nullptr;
     QNetworkReply* replyForDeleteInfo = nullptr;
     QNetworkAccessManager* networkManager;
-    QList<QPair<QString, QString> > listOfInput;
+    QList<QPair<QString, QString>> listOfInput;
     QList<QString>* listOfIgnoredPseudo;
     QList<pseudoWithColorStruct>* listOfColorPseudo;
-    QList<QPair<long, messageInfoForEditStruct> > listOfInfosForEdit;
+    QList<QPair<long, messageInfoForEditStruct>> listOfInfosForEdit;
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;
     QString topicLinkFirstPage;

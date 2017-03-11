@@ -25,10 +25,11 @@ public:
     bool getLoadNeeded();
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies);
-    void updateSettings();
-    void setLoadNeeded(bool newVal);
-public slots:
     void setNewTheme(QString newThemeName);
+    void updateSettings();
+private:
+    void setLoadNeeded(bool newVal);
+private slots:
     void startGetListOfTopic();
     void analyzeReply();
     void clickedOnLink(QModelIndex index);
