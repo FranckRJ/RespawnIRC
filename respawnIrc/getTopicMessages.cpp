@@ -258,8 +258,6 @@ void getTopicMessagesClass::analyzeMessages()
             {
                 messageStruct tmpMsg = tmpList.first();
 
-                idOfLastMessage = tmpMsg.idOfMessage;
-
                 tmpMsg.isFirstMessage = true;
                 tmpMsg.isAnEdit = false;
                 tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, settingsForMessageParsing.infoForMessageParsing);

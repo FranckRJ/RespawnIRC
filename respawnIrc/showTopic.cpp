@@ -578,6 +578,7 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
     bool errorHappen = false;
     bool firstTimeAddMessages = false;
     bool needToScrollDown = messagesBox.verticalScrollBar()->value() >= messagesBox.verticalScrollBar()->maximum();
+    bool newMessagesAreAvailable = false;
 
     if(parsingToolClass::getFirstPageOfTopic(fromThisTopic) != topicLinkFirstPage)
     {
@@ -625,6 +626,12 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
 
         if(listOfNewMessages.isEmpty() == false && getFirstMessageOfTopic == true && firstMessageOfTopic.isFirstMessage == true)
         {
+            //si le premier message récupéré est le premier message du topic,
+            //on le supprime pour mettre à la place le 1er message du topic récupéré précédement (car pas exactement formaté pareil)
+            if(listOfNewMessages.first().idOfMessage == firstMessageOfTopic.idOfMessage)
+            {
+                listOfNewMessages.pop_front();
+            }
             listOfNewMessages.push_front(firstMessageOfTopic);
             firstMessageOfTopic.isFirstMessage = false;
             appendHrAtEndOfFirstMessage = true;
@@ -788,9 +795,14 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
         {
             if(warnWhenEdit == true || currentMessage.isAnEdit == false)
             {
-                emit newMessagesAvailable();
+                newMessagesAreAvailable = true;
             }
         }
+    }
+
+    if(newMessagesAreAvailable == true)
+    {
+        emit newMessagesAvailable();
     }
 
     if(needToScrollDown == true)
