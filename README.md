@@ -2,7 +2,7 @@
 
 JVIrc-like pour respawn.
 
-Pour plus d'infos, le site : http://pijon.fr/RespawnIRC/
+Pour plus d'infos, le site : https://pijon.fr/RespawnIRC/
 
 ## Compilation
 
