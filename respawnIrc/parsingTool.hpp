@@ -1,6 +1,7 @@
 #ifndef PARSINGTOOL_HPP
 #define PARSINGTOOL_HPP
 
+#include <functional>
 #include <QString>
 #include <QList>
 #include <QPair>
@@ -93,9 +94,9 @@ namespace parsingToolClass
     QList<QString> getListOfThisCapNumber(const QString& source, const QRegularExpression& exp, int capNumber, bool globalMatch = true);
     void removeAllOverlyQuote(QString& source, int maxNumberQuote);
     void removeAllOverlySpoils(QString& source);
-    bool replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore = "",
+    void replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore = "",
                                      QString stringAfter = "", int secondCapNumber = -1, QString stringAfterAfter = "",
-                                     bool replaceReturnByBr = false, bool makeLinkIfPossible = false, bool removeFirstAndLastP = false, int additionnalOffset = -1);
+                                     std::function<QString(QString)> capModificator = nullptr);
 }
 
 #endif

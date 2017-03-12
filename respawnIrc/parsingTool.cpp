@@ -63,6 +63,31 @@ namespace
     const QRegularExpression expForOverlySpoils(R"rgx((<span class="bloc-spoil-jv[^"]*">.*?<span class="contenu-spoil">|</span></span>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForWebsite(R"rgx(http://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
     QString userAgentToUse = "RespatatouilleIRC";
+
+    QString stringModificatorRemoveFirstAndLastP(QString baseMessage)
+    {
+        baseMessage = baseMessage.trimmed();
+        while(baseMessage.startsWith("<p>") == true)
+        {
+            baseMessage.remove(0, 3);
+            baseMessage = baseMessage.trimmed();
+        }
+        while(baseMessage.endsWith("</p>") == true)
+        {
+            baseMessage.remove(baseMessage.size() - 4, 4);
+            baseMessage = baseMessage.trimmed();
+        }
+        return baseMessage;
+    }
+
+    QString stringModificatorMakeLinkIfPossible(QString baseMessage)
+    {
+        if((baseMessage.startsWith("http://") || baseMessage.startsWith("https://")) && baseMessage.contains(" ") == false)
+        {
+            baseMessage = "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"" + baseMessage + "\">" + baseMessage + "</a>";
+        }
+        return baseMessage;
+    }
 }
 
 void parsingToolClass::generateNewUserAgent() {
@@ -466,8 +491,8 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
         extraTableStyle += "background: " + styleToolClass::getColorInfo().tableBackgroundColor + ";color: " + styleToolClass::getColorInfo().tableTextColor + ";";
     }
 
-    replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", true);
-    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "", false);
+    replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", [](QString baseString)->QString{return baseString.replace("\n", "<br />");});
+    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "");
 
     thisMessage.replace("\n", "");
     thisMessage.replace("\r", "");
@@ -518,9 +543,9 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     }
 
     removeAllOverlySpoils(thisMessage);
-    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>", -1, "", false, false, true, 1);
-    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", false, false, true, 1);
-    replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", false, true);
+    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
+    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
+    replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", std::bind(stringModificatorMakeLinkIfPossible, std::placeholders::_1));
 
     thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<blockquote>");
     removeAllOverlyQuote(thisMessage, infoForParsing.nbMaxQuote);
@@ -714,32 +739,18 @@ void parsingToolClass::removeAllOverlySpoils(QString& source)
     }
 }
 
-bool parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber,
-                                            QString stringAfterAfter, bool replaceReturnByBr, bool makeLinkIfPossible, bool removeFirstAndLastP, int additionnalOffset)
+void parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber,
+                                            QString stringAfterAfter, std::function<QString(QString)> capModificator)
 {
     QRegularExpressionMatch match = exp.match(source);
-    int offsetMatch = 0;
-    bool hasMatch = false;
     QString newString;
 
     while(match.hasMatch())
     {
         newString = stringBefore;
-        hasMatch = true;
-        if(removeFirstAndLastP == true)
+        if(capModificator != nullptr)
         {
-            QString tmpString = match.captured(capNumber).trimmed();
-            while(tmpString.startsWith("<p>") == true)
-            {
-                tmpString.remove(0, 3);
-                tmpString = tmpString.trimmed();
-            }
-            while(tmpString.endsWith("</p>") == true)
-            {
-                tmpString.remove(tmpString.size() - 4, 4);
-                tmpString = tmpString.trimmed();
-            }
-            newString += tmpString;
+            newString += capModificator(match.captured(capNumber));
         }
         else
         {
@@ -749,20 +760,9 @@ bool parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpre
 
         if(secondCapNumber != -1)
         {
-            if(removeFirstAndLastP == true)
+            if(capModificator != nullptr)
             {
-                QString tmpString = match.captured(secondCapNumber).trimmed();
-                while(tmpString.startsWith("<p>") == true)
-                {
-                    tmpString.remove(0, 3);
-                    tmpString = tmpString.trimmed();
-                }
-                while(tmpString.endsWith("</p>") == true)
-                {
-                    tmpString.remove(tmpString.size() - 4, 4);
-                    tmpString = tmpString.trimmed();
-                }
-                newString += tmpString;
+                newString += capModificator(match.captured(secondCapNumber));
             }
             else
             {
@@ -771,21 +771,7 @@ bool parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpre
             newString += stringAfterAfter;
         }
 
-        if(replaceReturnByBr == true)
-        {
-            newString.replace("\n", "<br />");
-        }
-
-        if(makeLinkIfPossible == true &&
-                (newString.startsWith("http://") || newString.startsWith("https://")) && newString.contains(" ") == false)
-        {
-            newString = "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"" + newString + "\">" + newString + "</a>";
-        }
-
         source.replace(match.capturedStart(0), match.capturedLength(0), newString);
-        offsetMatch = match.capturedStart(0) + (additionnalOffset == -1 ? newString.size() : additionnalOffset);
-        match = exp.match(source, offsetMatch);
+        match = exp.match(source, match.capturedStart(0) + newString.size());
     }
-
-    return hasMatch;
 }
