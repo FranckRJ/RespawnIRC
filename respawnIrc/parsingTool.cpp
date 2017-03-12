@@ -472,6 +472,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     thisMessage.replace("\n", "");
     thisMessage.replace("\r", "");
 
+    shortcutToolClass::transformMessage(&thisMessage, "noLangageSticker");
     if(infoForParsing.stickerToSmiley == true)
     {
         shortcutToolClass::transformMessage(&thisMessage, "stickerToSmiley");

@@ -27,7 +27,8 @@ int main(int argc, char* argv[])
     settingToolClass::setSettings(&setting);
     settingToolClass::initializeDefaultListsOption();
     shortcutToolClass::loadShortcutRule("shortcut");
-    shortcutToolClass::loadShortcutRule("stickerToSmiley", "<img class=\"img-stickers\" src=\"http://jv.stkr.fr/p/", "\"/>", "<img src=\"resources/smileys/", "\"/>");
+    shortcutToolClass::loadShortcutRule("noLangageSticker", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/)rgx", R"rgx("/>)rgx", "<img class=\"img-stickers\" src=\"http://jv.stkr.fr/p/", "\"/>", true);
+    shortcutToolClass::loadShortcutRule("stickerToSmiley", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/)rgx", R"rgx("/>)rgx", "<img src=\"resources/smileys/", "\"/>", true);
     styleToolClass::getModelInfo("");
 
     qRegisterMetaType<infoForMessageParsingStruct>("infoForMessageParsingStruct");
@@ -35,8 +36,8 @@ int main(int argc, char* argv[])
     qRegisterMetaType<ajaxInfoStruct>("ajaxInfoStruct");
     qRegisterMetaType<messageStruct>("messageStruct");
     qRegisterMetaType<QList<messageStruct>>("QList<messageStruct>");
-    qRegisterMetaType<QPair<QString,QString>> ("QPair<QString,QString>");
-    qRegisterMetaType<QList<QPair<QString,QString>>>("QList<QPair<QString,QString>>");
+    qRegisterMetaType<QPair<QString, QString>> ("QPair<QString, QString>");
+    qRegisterMetaType<QList<QPair<QString, QString>>>("QList<QPair<QString, QString>>");
 
     mainWindowClass mainWindow;
     mainWindow.show();

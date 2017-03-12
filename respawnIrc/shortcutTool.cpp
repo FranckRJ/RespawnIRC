@@ -1,22 +1,23 @@
 #include <QFile>
 #include <QMap>
-#include <QList>
-#include <QPair>
 #include <QTextStream>
 #include <QCoreApplication>
 
 #include "shortcutTool.hpp"
+#include "configDependentVar.hpp"
 
 namespace
 {
-    QMap<QString, QList<QPair<QString, QString>>> listOfShortcutRules;
+    QMap<QString, shortcutRuleStruct> listOfShortcutRules;
 }
 
-void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew)
+void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew, bool useRegex)
 {
     QFile thisFile(QCoreApplication::applicationDirPath() + "/resources/" + ruleName + ".txt");
 
-    QMap<QString, QList<QPair<QString, QString>>>::iterator rulesIte = listOfShortcutRules.insert(ruleName, QList<QPair<QString, QString>>());
+    QMap<QString, shortcutRuleStruct>::iterator rulesIte = listOfShortcutRules.insert(ruleName, shortcutRuleStruct());
+
+    rulesIte.value().needToUseRegex = useRegex;
 
     if(thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
@@ -29,7 +30,19 @@ void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, Q
 
             if(index > 0 && index < (thisLine.size() - 1))
             {
-                rulesIte.value().push_back(QPair<QString, QString>(beforeBase + thisLine.left(index) + afterBase, beforeNew + thisLine.right(thisLine.size() - index - 1) + afterNew));
+                shortcutInfosStruct newShortcutInfos;
+
+                if(rulesIte.value().needToUseRegex == false)
+                {
+                    newShortcutInfos.base = beforeBase + thisLine.left(index) + afterBase;
+                }
+                else
+                {
+                    newShortcutInfos.regexBase = QRegularExpression(beforeBase + thisLine.left(index) + afterBase, configDependentVar::regexpBaseOptions);
+                }
+
+                newShortcutInfos.replacement = beforeNew + thisLine.right(thisLine.size() - index - 1) + afterNew;
+                rulesIte.value().listOfShortcuts.push_back(newShortcutInfos);
             }
         }
     }
@@ -45,14 +58,21 @@ void shortcutToolClass::transformMessage(QString* thisMessage, QString ruleName)
 
 QString shortcutToolClass::transformMessage(QString thisMessage, QString ruleName)
 {
-    QMap<QString, QList<QPair<QString, QString>>>::iterator rulesIte = listOfShortcutRules.find(ruleName);
+    QMap<QString, shortcutRuleStruct>::iterator rulesIte = listOfShortcutRules.find(ruleName);
 
     if(rulesIte != listOfShortcutRules.end())
     {
-        QList<QPair<QString, QString>>::const_iterator itShortcut = rulesIte.value().constBegin();
-        while(itShortcut != rulesIte.value().constEnd())
+        QList<shortcutInfosStruct>::const_iterator itShortcut = rulesIte.value().listOfShortcuts.constBegin();
+        while(itShortcut != rulesIte.value().listOfShortcuts.constEnd())
         {
-            thisMessage.replace(itShortcut->first, itShortcut->second);
+            if(rulesIte->needToUseRegex == false)
+            {
+                thisMessage.replace(itShortcut->base, itShortcut->replacement);
+            }
+            else
+            {
+                thisMessage.replace(itShortcut->regexBase, itShortcut->replacement);
+            }
             ++itShortcut;
         }
     }
