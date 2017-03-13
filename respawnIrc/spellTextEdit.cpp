@@ -106,8 +106,8 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
 
 void spellTextEditClass::searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos) const
 {
-    endPos = textBlock.indexOf(QRegExp("[^\\w'-]"), checkPos);
-    beginPos = textBlock.lastIndexOf(QRegExp("[^\\w'-]"), checkPos);
+    endPos = textBlock.indexOf(QRegExp(R"rgx([^\w'-])rgx"), checkPos);
+    beginPos = textBlock.lastIndexOf(QRegExp(R"rgx([^\w'-])rgx"), checkPos);
 
     if(endPos == -1)
     {

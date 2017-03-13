@@ -104,7 +104,7 @@ void highlighterClass::spellCheck(const QString& text)
         QString simplifiedText = text.simplified();
         if(simplifiedText.isEmpty() == false)
         {
-            QStringList checkList = simplifiedText.split(QRegExp("[^\\w'-]+"), QString::SkipEmptyParts);
+            QStringList checkList = simplifiedText.split(QRegExp(R"rgx([^\w'-]+)rgx"), QString::SkipEmptyParts);
             for(QString thisString : checkList)
             {
                 while(thisString.startsWith('\'') == true || thisString.startsWith('-') == true)
@@ -122,10 +122,10 @@ void highlighterClass::spellCheck(const QString& text)
                     {
                         int wordCount;
                         int index = -1;
-                        wordCount = text.count(QRegExp("\\b" + thisString + "\\b"));
+                        wordCount = text.count(QRegExp(R"rgx(\b)rgx" + thisString + R"rgx(\b)rgx"));
                         for(int j = 0; j < wordCount; ++j)
                         {
-                            index = text.indexOf(QRegExp("\\b" + thisString + "\\b"), index + 1);
+                            index = text.indexOf(QRegExp(R"rgx(\b)rgx" + thisString + R"rgx(\b)rgx"), index + 1);
                             if(index >= 0)
                             {
                                 setFormat(index, thisString.size(), spellCheckFormat);

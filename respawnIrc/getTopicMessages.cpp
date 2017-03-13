@@ -220,7 +220,7 @@ void getTopicMessagesClass::analyzeMessages()
     if(currentCookieList.isEmpty() == false)
     {
         emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(listOfPageSource[firstValidePageNumber]),
-                                       parsingToolClass::getNumberOfMp(listOfPageSource[firstValidePageNumber]), false);
+                                       parsingToolClass::getNumberOfMp(listOfPageSource[firstValidePageNumber], pseudoOfUser), false);
     }
     else
     {

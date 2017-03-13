@@ -7,6 +7,7 @@
 
 #include "connectWindow.hpp"
 #include "addCookiesWindow.hpp"
+#include "addPseudoWindow.hpp"
 #include "parsingTool.hpp"
 
 connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
@@ -114,7 +115,7 @@ void connectWindowClass::addCookiesManually(QString newHelloCookie, QString newC
 
 void connectWindowClass::valideConnect()
 {
-    if(pseudoLine.text().isEmpty() == false && cookieList.size() >= 2)
+    if(addPseudoWindowClass::pseudoIsValide(pseudoLine.text()) == true && cookieList.size() >= 2)
     {
         emit newCookiesAvailable(cookieList, pseudoLine.text(), rememberBox.isChecked(), rememberBox.isChecked());
         close();
@@ -122,7 +123,14 @@ void connectWindowClass::valideConnect()
     }
     else
     {
-        QMessageBox::warning(this, "Erreur", "Le pseudo n'est pas entré ou vous n'êtes pas connecté.");
+        if(cookieList.size() < 2)
+        {
+            QMessageBox::warning(this, "Erreur", "Vous ne vous êtes pas connecté.");
+        }
+        else
+        {
+            QMessageBox::warning(this, "Erreur", "Le pseudo n'est pas entré ou n'est pas valide.");
+        }
     }
 }
 
