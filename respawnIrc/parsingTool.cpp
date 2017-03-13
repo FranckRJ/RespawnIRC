@@ -29,8 +29,7 @@ namespace
     const QRegularExpression expForPageLink(R"rgx(<span><a href="([^"]*)" class="lien-jv">([^<]*)</a></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNameOfTopic(R"rgx(<span id="bloc-title-forum">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNumberOfConnected(R"rgx(<span class="nb-connect-fofo">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForAccountRelatedNotif(R"rgx(<span class="account-pseudo" [^>]*>(.*?)</span>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForMpJvc(R"rgx(<span[^c]*class="account-number-mp[^"]*".*?data-val="([^"]*)")rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForMpJvc(R"rgx(<div class=".*?account-mp.*?">[^<]*<span[^c]*class="account-number-mp[^"]*".*?data-val="([^"]*)")rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEntireMessage(R"rgx((<div class="bloc-message-forum ".*?)(<span id="post_[^"]*" class="bloc-message-forum-anchor">|<div class="bloc-outils-plus-modo bloc-outils-bottom">|<div class="bloc-pagi-default">))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEntireTopic(R"rgx(<li class="" data-id="[^"]*">[^<]*<span class="topic-subject">.*?</li>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForTopicNameAndLink(R"rgx(<a class="lien-jv topic-title[^"]*" href="([^"]*" title="[^"]*)"[^>]*>)rgx", configDependentVar::regexpBaseOptions);
@@ -351,26 +350,9 @@ QString parsingToolClass::getNumberOfConnected(const QString& source)
     return expForNumberOfConnected.match(source).captured(1);
 }
 
-int parsingToolClass::getNumberOfMp(const QString& source, const QString& pseudoOfUser)
+int parsingToolClass::getNumberOfMp(const QString& source)
 {
-    QRegularExpressionMatch matchAccountRelatedNotif = expForAccountRelatedNotif.match(source);
-    QRegularExpressionMatch matchMpNumber;
-    int offsetOfMatchMP = 0;
-
-    while(matchAccountRelatedNotif.hasMatch() == true)
-    {
-        if(matchAccountRelatedNotif.captured(1).trimmed().toLower() == pseudoOfUser.toLower())
-        {
-            offsetOfMatchMP = matchAccountRelatedNotif.capturedEnd();
-            break;
-        }
-        else
-        {
-            matchAccountRelatedNotif = expForAccountRelatedNotif.match(source, matchAccountRelatedNotif.capturedEnd());
-        }
-    }
-
-    matchMpNumber = expForMpJvc.match(source, offsetOfMatchMP);
+    QRegularExpressionMatch matchMpNumber = expForMpJvc.match(source);
 
     if(matchMpNumber.hasMatch() == true)
     {
