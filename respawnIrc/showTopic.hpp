@@ -12,11 +12,10 @@
 #include <QUrl>
 #include <QStringList>
 #include <QNetworkAccessManager>
-#include <QNetworkReply>
 
 #include "colorPseudoListWindow.hpp"
 #include "getTopicMessages.hpp"
-#include "autoTimeoutReply.hpp"
+#include "messageActions.hpp"
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
 
@@ -55,14 +54,9 @@ private:
     void addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID);
     void editThisMessageOfMessagesBox(QString newMessage, long messageID);
     QString getColorOfThisPseudo(QString pseudo);
-    void getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted);
-    void deleteMessage(QString idOfMessageDeleted);
     void setTopicToErrorMode();
 private slots:
     void linkClicked(const QUrl& link);
-    void analyzeEditInfo();
-    void analyzeQuoteInfo();
-    void analyzeDeleteInfo();
     void analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString>> newListOfInput,
                          ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
     void setMessageStatus(QString newStatus);
@@ -90,16 +84,9 @@ private:
     QTextBrowser messagesBox;
     QString baseModel;
     getTopicMessagesClass* getTopicMessages;
+    messageActionsClass* messageActions;
     modelInfoStruct baseModelInfo;
-    QList<QNetworkCookie> currentCookieList;
     QString websiteOfCookies;
-    autoTimeoutReplyClass timeoutForEditInfo;
-    autoTimeoutReplyClass timeoutForQuoteInfo;
-    autoTimeoutReplyClass timeoutForDeleteInfo;
-    QNetworkReply* replyForEditInfo = nullptr;
-    QNetworkReply* replyForQuoteInfo = nullptr;
-    QNetworkReply* replyForDeleteInfo = nullptr;
-    QNetworkAccessManager* networkManager;
     QList<QPair<QString, QString>> listOfInput;
     QList<QString>* listOfIgnoredPseudo;
     QList<pseudoWithColorStruct>* listOfColorPseudo;
@@ -108,12 +95,8 @@ private:
     QString numberOfConnectedAndMP;
     QString topicLinkFirstPage;
     QString topicLinkLastPage;
-    QString websiteOfTopic;
     QString topicName;
     QString pseudoOfUser;
-    ajaxInfoStruct ajaxInfo;
-    ajaxInfoStruct oldAjaxInfo;
-    QString lastMessageQuoted;
     QString lastDate;
     QString numberOfConnected;
     messageStruct firstMessageOfTopic;
@@ -127,7 +110,6 @@ private:
     bool ignoreNetworkError;
     bool firstTimeGetMessages = true;
     bool errorMode = false;
-    bool oldUseMessageEdit = false;
     bool needToGetMessages = false;
     bool colorModoAndAdminPseudo;
     bool colorPEMT;
@@ -136,7 +118,6 @@ private:
     bool warnWhenEdit;
     bool warnOnFirstTime;
     long idOfLastMessageOfUser = 0;
-    long oldIdOfLastMessageOfUser = 0;
     int realTypeOfEdit;
     int currentTypeOfEdit;
     int currentErrorStreak = 0;

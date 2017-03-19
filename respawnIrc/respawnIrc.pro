@@ -28,7 +28,8 @@ SOURCES += \
     webNavigator.cpp \
     viewThemeInfos.cpp \
     showForum.cpp \
-    showTopic.cpp
+    showTopic.cpp \
+    messageActions.cpp
 
 QT += \
     network \
@@ -66,7 +67,8 @@ HEADERS += \
     viewThemeInfos.hpp \
     configDependentVar.hpp \
     showForum.hpp \
-    showTopic.hpp
+    showTopic.hpp \
+    messageActions.hpp
 
 RC_FILE = respawnIrc.rc
 

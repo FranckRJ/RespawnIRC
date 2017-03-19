@@ -17,8 +17,8 @@ QThread showTopicClass::threadForGetMessages;
 
 showTopicClass::showTopicClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
-    networkManager = new QNetworkAccessManager(this);
     getTopicMessages = new getTopicMessagesClass();
+    messageActions = new messageActionsClass(this);
     getTopicMessages->moveToThread(&threadForGetMessages);
 
     expForColorPseudo.setPatternOptions(QRegularExpression::CaseInsensitiveOption | configDependentVar::regexpBaseOptions);
@@ -51,6 +51,8 @@ showTopicClass::showTopicClass(QList<QString>* newListOfIgnoredPseudo, QList<pse
     connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicClass::downloadTheseStickersIfNeeded);
     connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicClass::downloadTheseNoelshackImagesIfNeeded);
     connect(getTopicMessages, &getTopicMessagesClass::newLinkForTopic, this, &showTopicClass::setUpdatedTopicLink);
+    connect(messageActions, &messageActionsClass::quoteThisMessage, this, &showTopicClass::quoteThisMessage);
+    connect(messageActions, &messageActionsClass::setEditInfo, this, &showTopicClass::setEditInfo);
 }
 
 showTopicClass::~showTopicClass()
@@ -111,53 +113,25 @@ QString showTopicClass::getPseudoUsed()
 
 const QList<QNetworkCookie>& showTopicClass::getListOfCookies()
 {
-    return currentCookieList;
+    return messageActions->getCookieList();
 }
 
 bool showTopicClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
 {
-    if(networkManager == nullptr)
+    if(pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
     {
-        networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
-    }
+        long idOfMessageToUse;
 
-    if(ajaxInfo.list.isEmpty() == false && pseudoOfUser.isEmpty() == false && idOfLastMessageOfUser != 0)
-    {
-        if(replyForEditInfo == nullptr)
+        if(idOfMessageToEdit == 0)
         {
-            QString urlToGet;
-            QNetworkRequest requestForEditInfo;
-
-            if(idOfMessageToEdit == 0)
-            {
-                oldIdOfLastMessageOfUser = idOfLastMessageOfUser;
-            }
-            else
-            {
-                oldIdOfLastMessageOfUser = idOfMessageToEdit;
-            }
-
-            urlToGet = "http://" + websiteOfTopic + "/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfLastMessageOfUser) + "&" + ajaxInfo.list + "&action=get";
-            requestForEditInfo = parsingToolClass::buildRequestWithThisUrl(urlToGet);
-            oldAjaxInfo = ajaxInfo;
-            ajaxInfo.list.clear();
-            oldUseMessageEdit = useMessageEdit;
-            replyForEditInfo = timeoutForEditInfo.resetReply(networkManager->get(requestForEditInfo));
-
-            if(replyForEditInfo->isOpen() == true)
-            {
-                connect(replyForEditInfo, &QNetworkReply::finished, this, &showTopicClass::analyzeEditInfo);
-            }
-            else
-            {
-                analyzeEditInfo();
-                networkManager->deleteLater();
-                networkManager = nullptr;
-            }
-
-            return true;
+            idOfMessageToUse = idOfLastMessageOfUser;
         }
+        else
+        {
+            idOfMessageToUse = idOfMessageToEdit;
+        }
+
+        return messageActions->getEditInfo(idOfMessageToUse, useMessageEdit);
     }
 
     return false;
@@ -165,7 +139,6 @@ bool showTopicClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
 
 void showTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages)
 {
-    currentCookieList = newCookies;
     websiteOfCookies = newWebsiteOfCookies;
     pseudoOfUser = newPseudoOfUser;
     expForColorPseudo.setPattern("");
@@ -175,14 +148,8 @@ void showTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QString new
         expForColorPseudo.setPattern(newPseudoOfUser + "(?![^<>]*(>|</a>))");
     }
     listOfInput.clear();
-
-    if(networkManager != nullptr)
-    {
-        networkManager->clearAccessCache();
-        networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + websiteOfCookies));
-        currentErrorStreak = 0;
-    }
+    currentErrorStreak = 0;
+    messageActions->setNewCookies(newCookies, newWebsiteOfCookies);
 
     QMetaObject::invokeMethod(getTopicMessages, "setNewCookies", Qt::QueuedConnection,
                               Q_ARG(QList<QNetworkCookie>, newCookies), Q_ARG(QString, websiteOfCookies), Q_ARG(QString, pseudoOfUser), Q_ARG(bool, updateMessages));
@@ -204,14 +171,12 @@ void showTopicClass::setNewTopic(QString newTopic)
     firstMessageOfTopic.isFirstMessage = false;
     topicLinkLastPage = newTopic;
     topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopic);
-    websiteOfTopic = parsingToolClass::getWebsite(topicLinkLastPage);
     firstTimeGetMessages = true;
     errorMode = false;
     currentErrorStreak = 0;
     idOfLastMessageOfUser = 0;
-    oldIdOfLastMessageOfUser = 0;
     needToGetMessages = false;
-    oldUseMessageEdit = false;
+    messageActions->setNewTopic(newTopic);
     QMetaObject::invokeMethod(getTopicMessages, "setNewTopic", Qt::QueuedConnection, Q_ARG(QString, newTopic), Q_ARG(bool, getFirstMessageOfTopic));
 }
 
@@ -237,9 +202,7 @@ void showTopicClass::updateSettingInfo()
     warnOnFirstTime = settingToolClass::getThisBoolOption("warnOnFirstTime");
     realTypeOfEdit = settingToolClass::getThisIntOption("typeOfEdit").value;
 
-    timeoutForEditInfo.updateTimeoutTime();
-    timeoutForQuoteInfo.updateTimeoutTime();
-    timeoutForDeleteInfo.updateTimeoutTime();
+    messageActions->updateSettingInfo();
 
     settingsForMessageParsing.numberOfMessagesForOptimizationStart = settingToolClass::getThisIntOption("numberOfMessagesForOptimizationStart").value;
     settingsForMessageParsing.infoForMessageParsing.showStickers = settingToolClass::getThisBoolOption("showStickers");
@@ -372,68 +335,6 @@ QString showTopicClass::getColorOfThisPseudo(QString pseudo)
     return "";
 }
 
-void showTopicClass::getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted)
-{
-    if(networkManager == nullptr)
-    {
-        networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
-    }
-
-    if(ajaxInfo.list.isEmpty() == false && replyForQuoteInfo == nullptr)
-    {
-        QNetworkRequest requestForQuoteInfo = parsingToolClass::buildRequestWithThisUrl("http://" + websiteOfTopic + "/forums/ajax_citation.php");
-        QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo.list;
-        lastMessageQuoted = messageQuoted;
-        replyForQuoteInfo = timeoutForQuoteInfo.resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
-
-        if(replyForQuoteInfo->isOpen() == true)
-        {
-            connect(replyForQuoteInfo, &QNetworkReply::finished, this, &showTopicClass::analyzeQuoteInfo);
-        }
-        else
-        {
-            analyzeQuoteInfo();
-            networkManager->deleteLater();
-            networkManager = nullptr;
-        }
-    }
-    else
-    {
-        QMessageBox::warning(this, "Erreur", "Erreur, impossible de citer ce message, réessayez.");
-    }
-}
-
-void showTopicClass::deleteMessage(QString idOfMessageDeleted)
-{
-    if(networkManager == nullptr)
-    {
-        networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
-    }
-
-    if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)
-    {
-        QNetworkRequest requestForDeleteInfo = parsingToolClass::buildRequestWithThisUrl("http://" + websiteOfTopic + "/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
-        replyForDeleteInfo = timeoutForDeleteInfo.resetReply(networkManager->get(requestForDeleteInfo));
-
-        if(replyForDeleteInfo->isOpen() == true)
-        {
-            connect(replyForDeleteInfo, &QNetworkReply::finished, this, &showTopicClass::analyzeDeleteInfo);
-        }
-        else
-        {
-            analyzeDeleteInfo();
-            networkManager->deleteLater();
-            networkManager = nullptr;
-        }
-    }
-    else
-    {
-        QMessageBox::warning(this, "Erreur", "Erreur, impossible de supprimer ce message, réessayez.");
-    }
-}
-
 void showTopicClass::setTopicToErrorMode()
 {
     if(errorMode == false)
@@ -475,7 +376,7 @@ void showTopicClass::linkClicked(const QUrl& link)
         QString messageQuoted;
         linkInString.remove(0, linkInString.indexOf(':') + 1);
         messageQuoted = linkInString.mid(linkInString.indexOf(':') + 1);
-        getQuoteInfo(linkInString.left(linkInString.indexOf(':')), messageQuoted);
+        messageActions->getQuoteInfo(linkInString.left(linkInString.indexOf(':')), messageQuoted);
     }
     else if(linkInString.startsWith("blacklist"))
     {
@@ -488,83 +389,11 @@ void showTopicClass::linkClicked(const QUrl& link)
     else if(linkInString.startsWith("delete"))
     {
         linkInString.remove(0, linkInString.indexOf(':') + 1);
-        deleteMessage(linkInString);
+        messageActions->deleteMessage(linkInString);
     }
     else
     {
         QDesktopServices::openUrl(link);
-    }
-}
-
-void showTopicClass::analyzeEditInfo()
-{
-    QString message;
-    QString dataToSend = oldAjaxInfo.list + "&action=post";
-    QList<QPair<QString, QString>> listOfEditInput;
-    QString source;
-
-    timeoutForEditInfo.resetReply();
-
-    if(replyForEditInfo->isReadable())
-    {
-        source = replyForEditInfo->readAll();
-    }
-    replyForEditInfo->deleteLater();
-
-    source = parsingToolClass::parsingAjaxMessages(source);
-    message = parsingToolClass::getMessageEdit(source);
-    parsingToolClass::getListOfHiddenInputFromThisForm(source, "form-post-topic", listOfEditInput);
-
-    for(const QPair<QString, QString>& thisInput : listOfEditInput)
-    {
-        dataToSend += "&" + thisInput.first + "=" + thisInput.second;
-    }
-
-    emit setEditInfo(oldIdOfLastMessageOfUser, message, dataToSend, oldUseMessageEdit);
-
-    replyForEditInfo = nullptr;
-}
-
-void showTopicClass::analyzeQuoteInfo()
-{
-    QString messageQuote;
-    QString source;
-
-    timeoutForQuoteInfo.resetReply();
-
-    if(replyForQuoteInfo->isReadable())
-    {
-        source = replyForQuoteInfo->readAll();
-    }
-    replyForQuoteInfo->deleteLater();
-
-    messageQuote = parsingToolClass::getMessageQuote(source);
-
-    messageQuote = ">" + QUrl::fromPercentEncoding(lastMessageQuoted.toUtf8()) + "\n>" + messageQuote;
-    replyForQuoteInfo = nullptr;
-
-    emit quoteThisMessage(messageQuote);
-}
-
-void showTopicClass::analyzeDeleteInfo()
-{
-    QString source;
-
-    timeoutForDeleteInfo.resetReply();
-
-    if(replyForDeleteInfo->isReadable())
-    {
-        source = replyForDeleteInfo->readAll();
-    }
-    replyForDeleteInfo->deleteLater();
-
-    replyForDeleteInfo = nullptr;
-
-    if(source.startsWith("{\"erreur\":[]}") == false)
-    {
-        source.remove(0, source.indexOf("[") + 2);
-        source.remove(source.lastIndexOf("]") - 1, 3);
-        QMessageBox::warning(this, "Erreur", source);
     }
 }
 
@@ -818,7 +647,7 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
 
     if(pseudoOfUser.isEmpty() == false)
     {
-        ajaxInfo = newAjaxInfo;
+        messageActions->setNewAjaxInfo(newAjaxInfo);
         listOfInput = newListOfInput;
 
         if(listOfInput.isEmpty() == true)
