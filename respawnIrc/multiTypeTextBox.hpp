@@ -17,7 +17,7 @@ public:
     explicit multiTypeTextBoxClass(QWidget* parent = 0);
     void doStuffBeforeQuit();
     void clear();
-    QString text();
+    QString text() const;
     void setFocus();
     void setEditMode(bool newVal);
     void setTextEditSelected(bool newVal);
@@ -36,7 +36,7 @@ public slots:
     void addSpoil();
 private:
     void moveCursor(QTextCursor::MoveOperation operation, int numberOfTime = 1);
-    QString getSelectedText();
+    QString getSelectedText() const;
 signals:
     void returnPressed();
 private:

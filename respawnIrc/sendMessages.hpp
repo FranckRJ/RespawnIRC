@@ -23,9 +23,9 @@ public:
     void settingsChanged();
     void styleChanged();
     multiTypeTextBoxClass* getMessageLine();
-    bool getIsSending();
-    bool getIsInEdit();
-    int getNbOfMessagesSend();
+    bool getIsSending() const;
+    bool getIsInEdit() const;
+    int getNbOfMessagesSend() const;
     void setIsInEdit(bool newVal);
     void setEnableSendButton(bool newVal);
     void setMultilineEdit(bool newVal);
@@ -33,7 +33,7 @@ public slots:
     void quoteThisMessage(QString messageToQuote);
     void setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
 private:
-    QString buildDataWithThisListOfInput(const QList<QPair<QString, QString>>& listOfInput);
+    QString buildDataWithThisListOfInput(const QList<QPair<QString, QString>>& listOfInput) const;
 private slots:
     void deleteReplyForSendMessage();
 signals:

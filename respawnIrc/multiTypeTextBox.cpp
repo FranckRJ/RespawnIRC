@@ -44,7 +44,7 @@ void multiTypeTextBoxClass::clear()
     lineEdit.clear();
 }
 
-QString multiTypeTextBoxClass::text()
+QString multiTypeTextBoxClass::text() const
 {
     if(textEditSelected == true)
     {
@@ -239,7 +239,7 @@ void multiTypeTextBoxClass::moveCursor(QTextCursor::MoveOperation operation, int
     }
 }
 
-QString multiTypeTextBoxClass::getSelectedText()
+QString multiTypeTextBoxClass::getSelectedText() const
 {
     if(textEditSelected == true)
     {

@@ -76,42 +76,42 @@ void showTopicClass::startGetMessage()
     QMetaObject::invokeMethod(getTopicMessages, "startGetMessage", Qt::QueuedConnection);
 }
 
-const QList<QPair<QString, QString>>& showTopicClass::getListOfInput()
+const QList<QPair<QString, QString>>& showTopicClass::getListOfInput() const
 {
     return listOfInput;
 }
 
-QString showTopicClass::getTopicLinkLastPage()
+QString showTopicClass::getTopicLinkLastPage() const
 {
     return topicLinkLastPage;
 }
 
-QString showTopicClass::getTopicLinkFirstPage()
+QString showTopicClass::getTopicLinkFirstPage() const
 {
     return topicLinkFirstPage;
 }
 
-QString showTopicClass::getTopicName()
+QString showTopicClass::getTopicName() const
 {
     return topicName;
 }
 
-QString showTopicClass::getMessagesStatus()
+QString showTopicClass::getMessagesStatus() const
 {
     return messagesStatus;
 }
 
-QString showTopicClass::getNumberOfConnectedAndMP()
+QString showTopicClass::getNumberOfConnectedAndMP() const
 {
     return numberOfConnectedAndMP;
 }
 
-QString showTopicClass::getPseudoUsed()
+QString showTopicClass::getPseudoUsed() const
 {
     return pseudoOfUser;
 }
 
-const QList<QNetworkCookie>& showTopicClass::getListOfCookies()
+const QList<QNetworkCookie>& showTopicClass::getListOfCookies() const
 {
     return messageActions->getCookieList();
 }

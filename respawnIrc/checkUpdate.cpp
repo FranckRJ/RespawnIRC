@@ -38,7 +38,7 @@ void checkUpdateClass::startDownloadOfLatestUpdatePage(bool showMessageWhenNoUpd
     }
 }
 
-bool checkUpdateClass::itsANewerVersion(QString newVersionName)
+bool checkUpdateClass::itsANewerVersion(QString newVersionName) const
 {
     QStringList currentVersionNumbers = versionName.right(versionName.size() - 1).split(".", QString::SkipEmptyParts);
     QStringList newVersionNumbers = newVersionName.right(newVersionName.size() - 1).split(".", QString::SkipEmptyParts);

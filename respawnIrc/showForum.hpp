@@ -12,7 +12,6 @@
 #include <QModelIndex>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QPixmap>
 
 #include "autoTimeoutReply.hpp"
 #include "styleTool.hpp"
@@ -22,7 +21,7 @@ class showForumClass : public QWidget
     Q_OBJECT
 public:
     explicit showForumClass(QString currentThemeName, QWidget* parent = 0);
-    bool getLoadNeeded();
+    bool getLoadNeeded() const;
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies);
     void setNewTheme(QString newThemeName);
@@ -50,12 +49,6 @@ private:
     QString websiteOfCookies;
     QList<QString> listOfLink;
     modelInfoStruct baseModelInfo;
-    QPixmap pinnedOnTagImage;
-    QPixmap pinnedOffTagImage;
-    QPixmap hotTagImage;
-    QPixmap lockTagImage;
-    QPixmap resolvedTagImage;
-    QPixmap normalTagImage;
     bool showNumberOfMessages;
     bool cutLongTopicName;
     bool colorModoAndAdminTopic;

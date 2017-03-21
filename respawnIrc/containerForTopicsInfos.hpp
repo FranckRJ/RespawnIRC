@@ -18,8 +18,8 @@ class containerForTopicsInfosClass : public QWidget
 public:
     explicit containerForTopicsInfosClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
     showTopicClass& getShowTopic();
-    typeOfSaveForPseudo getPseudoTypeOfSave();
-    QString getTopicLinkFirstPage();
+    typeOfSaveForPseudo getPseudoTypeOfSave() const;
+    QString getTopicLinkFirstPage() const;
     void setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave);
     void setBufferForTopicLinkFirstPage(QString newLink);
     void updateSettingsForInfo();

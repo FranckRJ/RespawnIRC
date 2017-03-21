@@ -6,19 +6,55 @@
 #include <QDesktopServices>
 #include <QStandardItem>
 #include <QCoreApplication>
+#include <QPixmap>
+#include <QScopedPointer>
 
 #include "showForum.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
+namespace
+{
+    QScopedPointer<QPixmap> pinnedOnTagImage;
+    QScopedPointer<QPixmap> pinnedOffTagImage;
+    QScopedPointer<QPixmap> hotTagImage;
+    QScopedPointer<QPixmap> lockTagImage;
+    QScopedPointer<QPixmap> resolvedTagImage;
+    QScopedPointer<QPixmap> normalTagImage;
+}
+
 showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
-    pinnedOnTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-on.png");
-    pinnedOffTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-off.png");
-    hotTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier2.png");
-    lockTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-lock.png");
-    resolvedTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-resolu.png");
-    normalTagImage.load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier1.png");
+    if(pinnedOnTagImage.isNull() == true)
+    {
+        pinnedOnTagImage.reset(new QPixmap);
+        pinnedOnTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-on.png");
+    }
+    if(pinnedOffTagImage.isNull() == true)
+    {
+        pinnedOffTagImage.reset(new QPixmap);
+        pinnedOffTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-off.png");
+    }
+    if(hotTagImage.isNull() == true)
+    {
+        hotTagImage.reset(new QPixmap);
+        hotTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier2.png");
+    }
+    if(lockTagImage.isNull() == true)
+    {
+        lockTagImage.reset(new QPixmap);
+        lockTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-lock.png");
+    }
+    if(resolvedTagImage.isNull() == true)
+    {
+        resolvedTagImage.reset(new QPixmap);
+        resolvedTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-resolu.png");
+    }
+    if(normalTagImage.isNull() == true)
+    {
+        normalTagImage.reset(new QPixmap);
+        normalTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier1.png");
+    }
 
     listViewOfTopic.setModel(&modelForListView);
     listViewOfTopic.setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -41,7 +77,7 @@ showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWid
     connect(&timerForGetList, &QTimer::timeout, this, &showForumClass::startGetListOfTopic);
 }
 
-bool showForumClass::getLoadNeeded()
+bool showForumClass::getLoadNeeded() const
 {
     return loadNeeded;
 }
@@ -240,7 +276,7 @@ void showForumClass::analyzeReply()
                     {
                         if(useIconInsteadOfTag == true)
                         {
-                            newItemToAppend->setIcon(QIcon(pinnedOnTagImage));
+                            newItemToAppend->setIcon(QIcon(*pinnedOnTagImage));
                         }
                         else
                         {
@@ -251,7 +287,7 @@ void showForumClass::analyzeReply()
                     {
                         if(useIconInsteadOfTag == true)
                         {
-                            newItemToAppend->setIcon(QIcon(pinnedOffTagImage));
+                            newItemToAppend->setIcon(QIcon(*pinnedOffTagImage));
                         }
                         else
                         {
@@ -266,7 +302,7 @@ void showForumClass::analyzeReply()
                 {
                     if(useIconInsteadOfTag == true)
                     {
-                        newItemToAppend->setIcon(QIcon(hotTagImage));
+                        newItemToAppend->setIcon(QIcon(*hotTagImage));
                     }
                     else
                     {
@@ -280,7 +316,7 @@ void showForumClass::analyzeReply()
                 {
                     if(useIconInsteadOfTag == true)
                     {
-                        newItemToAppend->setIcon(QIcon(lockTagImage));
+                        newItemToAppend->setIcon(QIcon(*lockTagImage));
                     }
                     else
                     {
@@ -294,7 +330,7 @@ void showForumClass::analyzeReply()
                 {
                     if(useIconInsteadOfTag == true)
                     {
-                        newItemToAppend->setIcon(QIcon(resolvedTagImage));
+                        newItemToAppend->setIcon(QIcon(*resolvedTagImage));
                     }
                     else
                     {
@@ -308,7 +344,7 @@ void showForumClass::analyzeReply()
                 {
                     if(useIconInsteadOfTag == true)
                     {
-                        newItemToAppend->setIcon(QIcon(normalTagImage));
+                        newItemToAppend->setIcon(QIcon(*normalTagImage));
                     }
                     else
                     {

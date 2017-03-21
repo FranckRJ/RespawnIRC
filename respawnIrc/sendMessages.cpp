@@ -158,17 +158,17 @@ multiTypeTextBoxClass* sendMessagesClass::getMessageLine()
     return &messageLine;
 }
 
-bool sendMessagesClass::getIsSending()
+bool sendMessagesClass::getIsSending() const
 {
     return inSending;
 }
 
-bool sendMessagesClass::getIsInEdit()
+bool sendMessagesClass::getIsInEdit() const
 {
     return isInEdit;
 }
 
-int sendMessagesClass::getNbOfMessagesSend()
+int sendMessagesClass::getNbOfMessagesSend() const
 {
     return nbOfMessagesSend;
 }
@@ -240,7 +240,7 @@ void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messa
     sendButton.setEnabled(true);
 }
 
-QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString>>& listOfInput)
+QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString>>& listOfInput) const
 {
     QString data;
 

@@ -35,7 +35,7 @@ selectTopicWindowClass::selectTopicWindowClass(QString currentTopic, QWidget* pa
     connect(buttonCancel, &QPushButton::clicked, this, &selectTopicWindowClass::close);
 }
 
-QString selectTopicWindowClass::transformLinkIfNeeded(QString link)
+QString selectTopicWindowClass::transformLinkIfNeeded(QString link) const
 {
     if(link.startsWith("https://") == true)
     {

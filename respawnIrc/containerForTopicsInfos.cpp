@@ -33,12 +33,12 @@ showTopicClass& containerForTopicsInfosClass::getShowTopic()
     return showTopic;
 }
 
-typeOfSaveForPseudo containerForTopicsInfosClass::getPseudoTypeOfSave()
+typeOfSaveForPseudo containerForTopicsInfosClass::getPseudoTypeOfSave() const
 {
     return pseudoTypeOfSave;
 }
 
-QString containerForTopicsInfosClass::getTopicLinkFirstPage()
+QString containerForTopicsInfosClass::getTopicLinkFirstPage() const
 {
     if(showTopic.getTopicLinkFirstPage().isEmpty() == true)
     {

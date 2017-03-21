@@ -12,7 +12,7 @@ class selectTopicWindowClass : public QDialog
 public:
     explicit selectTopicWindowClass(QString currentTopic, QWidget* parent);
 private:
-    QString transformLinkIfNeeded(QString link);
+    QString transformLinkIfNeeded(QString link) const;
 private slots:
     void selectThisTopic();
 signals:

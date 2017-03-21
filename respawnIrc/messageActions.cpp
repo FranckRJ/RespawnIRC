@@ -42,7 +42,7 @@ void messageActionsClass::setNewCookies(QList<QNetworkCookie> newCookies, QStrin
     }
 }
 
-const QList<QNetworkCookie>& messageActionsClass::getCookieList()
+const QList<QNetworkCookie>& messageActionsClass::getCookieList() const
 {
     return currentCookieList;
 }
