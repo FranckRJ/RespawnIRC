@@ -60,6 +60,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultBoolOption["useIconInsteadOfTagInTopicList"] = true;
     listOfDefaultBoolOption["fastModeEnbled"] = false;
     listOfDefaultBoolOption["beepForNewMP"] = false;
+    listOfDefaultBoolOption["hideUglyImages"] = false;
     listOfDefaultIntOption["updateTopicTime"].value = 7500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 2000;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;

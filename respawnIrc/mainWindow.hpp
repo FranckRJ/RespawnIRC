@@ -21,6 +21,7 @@ private:
 private slots:
     void doStuffBeforeQuit();
     void goToMp();
+    void reloadShortcuts();
     void useFavoriteClicked();
     void addFavoriteClicked();
     void delFavoriteClicked();

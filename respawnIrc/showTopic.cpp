@@ -215,6 +215,7 @@ void showTopicClass::updateSettingInfo()
     settingsForMessageParsing.downloadNoelshackImages = settingToolClass::getThisBoolOption("downloadNoelshackImages");
     settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingToolClass::getThisIntOption("noelshackImageWidth").value;
     settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingToolClass::getThisIntOption("noelshackImageHeight").value;
+    settingsForMessageParsing.infoForMessageParsing.hideUglyImages = settingToolClass::getThisBoolOption("hideUglyImages");
     if(settingToolClass::getThisBoolOption("fastModeEnbled") == false)
     {
         intSettingStruct updateTopicTimeSetting = settingToolClass::getThisIntOption("updateTopicTime");

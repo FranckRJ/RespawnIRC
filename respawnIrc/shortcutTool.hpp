@@ -20,6 +20,7 @@ struct shortcutRuleStruct
 
 namespace shortcutToolClass
 {
+    void initializeAllShortcutsRules();
     void loadShortcutRule(QString ruleName, QString beforeBase = "", QString afterBase = "", QString beforeNew = "", QString afterNew = "", bool useRegex = false);
     void transformMessage(QString* thisMessage, QString ruleName);
     QString transformMessage(QString thisMessage, QString ruleName);

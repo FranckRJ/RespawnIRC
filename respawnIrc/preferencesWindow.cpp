@@ -264,6 +264,7 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
 
     QVBoxLayout* vboxNoelshack = new QVBoxLayout();
     vboxNoelshack->addWidget(makeNewCheckBox("Afficher les miniatures noelshack", "downloadNoelshackImages"));
+    vboxNoelshack->addWidget(makeNewCheckBox("Cacher les images nuisibles", "hideUglyImages"));
     vboxNoelshack->addLayout(makeNewSpinBox("Largeur des miniatures noelshack", "noelshackImageWidth"));
     vboxNoelshack->addLayout(makeNewSpinBox("Hauteur des miniatures noelshack", "noelshackImageHeight"));
     vboxNoelshack->addStretch(1);

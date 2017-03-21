@@ -11,6 +11,7 @@
 #include "mainWindow.hpp"
 #include "settingTool.hpp"
 #include "styleTool.hpp"
+#include "shortcutTool.hpp"
 
 mainWindowClass::mainWindowClass() : respawnIrc(this)
 {
@@ -72,6 +73,8 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QMenu* menuSetting = menuBar->addMenu("&Configuration");
     QAction* actionShowListOfIgnoredPseudo = menuSetting->addAction("Gérer les ignorés");
     QAction* actionShowListOfColorPseudo = menuSetting->addAction("Gérer la couleur des pseudos");
+    menuSetting->addSeparator();
+    QAction* actionReloadShortcuts = menuSetting->addAction("Recharger les raccourcis");
     menuSetting->addSeparator();
     QAction* actionShowPreferences = menuSetting->addAction("Préférences...");
     actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
@@ -179,6 +182,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     connect(actionGoToForum, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentForum);
     connect(actionShowListOfIgnoredPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showIgnoreListWindow);
     connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
+    connect(actionReloadShortcuts, &QAction::triggered, this, &mainWindowClass::reloadShortcuts);
     connect(actionShowPreferences, &QAction::triggered, &respawnIrc, &respawnIrcClass::showPreferences);
     connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
     connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
@@ -259,6 +263,11 @@ void mainWindowClass::doStuffBeforeQuit()
 void mainWindowClass::goToMp()
 {
     QDesktopServices::openUrl(QUrl("http://www.jeuxvideo.com/messages-prives/boite-reception.php"));
+}
+
+void mainWindowClass::reloadShortcuts()
+{
+    shortcutToolClass::initializeAllShortcutsRules();
 }
 
 void mainWindowClass::useFavoriteClicked()

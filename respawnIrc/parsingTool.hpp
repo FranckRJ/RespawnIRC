@@ -51,6 +51,7 @@ struct ajaxInfoStruct
 struct infoForMessageParsingStruct
 {
     bool showStickers;
+    bool hideUglyImages;
     bool stickerToSmiley;
     int stickersSize;
     int nbMaxQuote;

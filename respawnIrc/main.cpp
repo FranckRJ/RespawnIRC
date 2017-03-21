@@ -26,9 +26,7 @@ int main(int argc, char* argv[])
 
     settingToolClass::setSettings(&setting);
     settingToolClass::initializeDefaultListsOption();
-    shortcutToolClass::loadShortcutRule("shortcut");
-    shortcutToolClass::loadShortcutRule("noLangageSticker", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/)rgx", R"rgx("/>)rgx", "<img class=\"img-stickers\" src=\"http://jv.stkr.fr/p/", "\"/>", true);
-    shortcutToolClass::loadShortcutRule("stickerToSmiley", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/)rgx", R"rgx("/>)rgx", "<img src=\"resources/smileys/", "\"/>", true);
+    shortcutToolClass::initializeAllShortcutsRules();
     styleToolClass::getModelInfo("");
 
     qRegisterMetaType<infoForMessageParsingStruct>("infoForMessageParsingStruct");

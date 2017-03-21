@@ -61,6 +61,7 @@ namespace
     const QRegularExpression expForUnicodeInText(R"rgx(\\u([a-zA-Z0-9]{4}))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForOverlyQuote(R"rgx(<(/)?blockquote>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForOverlySpoils(R"rgx((<span class="bloc-spoil-jv[^"]*">.*?<span class="contenu-spoil">|</span></span>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForUglyImage(R"rgx(issou|risit|jesus|picsart|chancla)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForWebsite(R"rgx(http://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
     QString userAgentToUse = "RespatatouilleIRC";
 
@@ -85,6 +86,16 @@ namespace
         if((baseMessage.startsWith("http://") || baseMessage.startsWith("https://")) && baseMessage.contains(" ") == false)
         {
             baseMessage = "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"" + baseMessage + "\">" + baseMessage + "</a>";
+        }
+        return baseMessage;
+    }
+
+    QString stringModificatorHideUglyImages(QString baseMessage)
+    {
+        QRegularExpressionMatch matcherForUglyImage = expForUglyImage.match(baseMessage);
+        if(matcherForUglyImage.hasMatch() == true)
+        {
+            return "";
         }
         return baseMessage;
     }
@@ -521,6 +532,11 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     replaceWithCapNumber(thisMessage, expForJvcLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
+
+    if(infoForParsing.hideUglyImages == true)
+    {
+        replaceWithCapNumber(thisMessage, expForNoelshack, 0, "", "", -1, "", std::bind(stringModificatorHideUglyImages, std::placeholders::_1));
+    }
 
     if(infoForParsing.listOfNoelshackImageUsed != nullptr)
     {
