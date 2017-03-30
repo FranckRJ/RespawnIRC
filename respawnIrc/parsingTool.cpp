@@ -62,6 +62,7 @@ namespace
     const QRegularExpression expForOverlyQuote(R"rgx(<(/)?blockquote>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForOverlySpoils(R"rgx((<span class="bloc-spoil-jv[^"]*">.*?<span class="contenu-spoil">|</span></span>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForUglyImage(R"rgx(issou|risit|jesus|picsart|chancla)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForAd(R"rgx(<ins[^>]*></ins>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForWebsite(R"rgx(http://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
     QString userAgentToUse = "RespatatouilleIRC";
 
@@ -501,6 +502,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
         extraTableStyle += "background: " + styleToolClass::getColorInfo().tableBackgroundColor + ";color: " + styleToolClass::getColorInfo().tableTextColor + ";";
     }
 
+    thisMessage.remove(expForAd);
     replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", [](QString baseString)->QString{return baseString.replace("\n", "<br />");});
     replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "");
 
@@ -570,12 +572,12 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     thisMessage.replace("</ul>", "<ul><br /><br />");
     thisMessage.replace("</ol>", "<ol><br /><br />");
 
-    thisMessage.replace(QRegularExpression("(<br /> *){0,2}</p> *<p>( *<br />){0,2}"), "<br /><br />");
-    thisMessage.replace(QRegularExpression("<br /> *<(/)?p> *<br />"), "<br /><br />");
-    thisMessage.replace(QRegularExpression("(<br /> *){1,2}<(/)?p>"), "<br /><br />");
-    thisMessage.replace(QRegularExpression("<(/)?p>(<br /> *){1,2}"), "<br /><br />");
-    thisMessage.replace(QRegularExpression("<(/)?p>"), "<br /><br />");
-    thisMessage.replace(QRegularExpression("(<br /> *)*(<(/)?blockquote>)( *<br />)*"), "\\2");
+    thisMessage.replace(QRegularExpression(R"rgx((<br /> *){0,2}</p> *<p>( *<br />){0,2})rgx"), "<br /><br />");
+    thisMessage.replace(QRegularExpression(R"rgx(<br /> *<(/)?p> *<br />)rgx"), "<br /><br />");
+    thisMessage.replace(QRegularExpression(R"rgx((<br /> *){1,2}<(/)?p>)rgx"), "<br /><br />");
+    thisMessage.replace(QRegularExpression(R"rgx(<(/)?p>(<br /> *){1,2})rgx"), "<br /><br />");
+    thisMessage.replace(QRegularExpression(R"rgx(<(/)?p>)rgx"), "<br /><br />");
+    thisMessage.replace(QRegularExpression(R"rgx((<br /> *)*(<(/)?blockquote>)( *<br />)*)rgx"), "\\2");
 
     thisMessage.replace("<br /><br /><ul>", "<ul>");
     thisMessage.replace("<br /><br /><ol>", "<ol>");
