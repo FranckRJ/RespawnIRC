@@ -6,6 +6,7 @@
 #include <QString>
 #include <QListView>
 #include <QList>
+#include <QStandardItem>
 #include <QStandardItemModel>
 #include <QNetworkCookie>
 #include <QPoint>
@@ -15,6 +16,7 @@
 
 #include "autoTimeoutReply.hpp"
 #include "styleTool.hpp"
+#include "parsingTool.hpp"
 
 class showForumClass : public QWidget
 {
@@ -27,6 +29,7 @@ public:
     void setNewTheme(QString newThemeName);
     void updateSettings();
 private:
+    void setInfosOfItemDependingOnTopic(const topicStruct& thisTopic, QStandardItem* toThisItem);
     void setLoadNeeded(bool newVal);
 private slots:
     void startGetListOfTopic();

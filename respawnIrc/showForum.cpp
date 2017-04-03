@@ -4,13 +4,11 @@
 #include <QMenu>
 #include <QAction>
 #include <QDesktopServices>
-#include <QStandardItem>
 #include <QCoreApplication>
 #include <QPixmap>
 #include <QScopedPointer>
 
 #include "showForum.hpp"
-#include "parsingTool.hpp"
 #include "settingTool.hpp"
 
 namespace
@@ -152,6 +150,123 @@ void showForumClass::updateSettings()
     timeoutForReply.updateTimeoutTime();
 }
 
+void showForumClass::setInfosOfItemDependingOnTopic(const topicStruct& forThisTopic, QStandardItem* toThisItem)
+{
+    QString currentTopicName = forThisTopic.name;
+
+    if(cutLongTopicName == true)
+    {
+        if(currentTopicName.size() >= (topicNameMaxSize + 3))
+        {
+            currentTopicName = currentTopicName.left(topicNameMaxSize) + "...";
+        }
+    }
+
+    if(showNumberOfMessages == true)
+    {
+        currentTopicName.append(" (" + forThisTopic.numberOfMessage + ")");
+    }
+
+    if(forThisTopic.topicType.startsWith("marque") == true)
+    {
+        if(showPinnedTagOnTopic == true)
+        {
+            if(forThisTopic.topicType == "marque-on")
+            {
+                if(useIconInsteadOfTag == true)
+                {
+                    toThisItem->setIcon(QIcon(*pinnedOnTagImage));
+                }
+                else
+                {
+                    currentTopicName = "[EO] " + currentTopicName;
+                }
+            }
+            else if(forThisTopic.topicType == "marque-off")
+            {
+                if(useIconInsteadOfTag == true)
+                {
+                    toThisItem->setIcon(QIcon(*pinnedOffTagImage));
+                }
+                else
+                {
+                    currentTopicName = "[EF] " + currentTopicName;
+                }
+            }
+        }
+    }
+    else if(forThisTopic.topicType == "dossier2")
+    {
+        if(showHotTagOnTopic == true)
+        {
+            if(useIconInsteadOfTag == true)
+            {
+                toThisItem->setIcon(QIcon(*hotTagImage));
+            }
+            else
+            {
+                currentTopicName = "[M] " + currentTopicName;
+            }
+        }
+    }
+    else if(forThisTopic.topicType == "lock")
+    {
+        if(showLockTagOnTopic == true)
+        {
+            if(useIconInsteadOfTag == true)
+            {
+                toThisItem->setIcon(QIcon(*lockTagImage));
+            }
+            else
+            {
+                currentTopicName = "[F] " + currentTopicName;
+            }
+        }
+    }
+    else if(forThisTopic.topicType == "resolu")
+    {
+        if(showResolvedTagOnTopic == true)
+        {
+            if(useIconInsteadOfTag == true)
+            {
+                toThisItem->setIcon(QIcon(*resolvedTagImage));
+            }
+            else
+            {
+                currentTopicName = "[R] " + currentTopicName;
+            }
+        }
+    }
+    else
+    {
+        if(showNormalTagOnTopic == true)
+        {
+            if(useIconInsteadOfTag == true)
+            {
+                toThisItem->setIcon(QIcon(*normalTagImage));
+            }
+            else
+            {
+                currentTopicName = "[N] " + currentTopicName;
+            }
+        }
+    }
+
+    toThisItem->setText(currentTopicName);
+
+    if(colorModoAndAdminTopic == true)
+    {
+        if(forThisTopic.pseudoInfo.pseudoType == "modo")
+        {
+            toThisItem->setForeground(QBrush(QColor(baseModelInfo.modoPseudoColor)));
+        }
+        else if(forThisTopic.pseudoInfo.pseudoType == "admin" || forThisTopic.pseudoInfo.pseudoType == "staff")
+        {
+            toThisItem->setForeground(QBrush(QColor(baseModelInfo.adminPseudoColor)));
+        }
+    }
+}
+
 void showForumClass::setLoadNeeded(bool newVal)
 {
     if(newVal != loadNeeded)
@@ -250,122 +365,9 @@ void showForumClass::analyzeReply()
 
         for(const topicStruct& thisTopic : listOfTopic)
         {
-            QString currentTopicName = thisTopic.name;
-
-            if(cutLongTopicName == true)
-            {
-                if(currentTopicName.size() >= (topicNameMaxSize + 3))
-                {
-                    currentTopicName = currentTopicName.left(topicNameMaxSize) + "...";
-                }
-            }
-
-            if(showNumberOfMessages == true)
-            {
-                currentTopicName.append(" (" + thisTopic.numberOfMessage + ")");
-            }
-
             newItemToAppend = new QStandardItem();
             newItemToAppend->setEditable(false);
-
-            if(thisTopic.topicType.startsWith("marque") == true)
-            {
-                if(showPinnedTagOnTopic == true)
-                {
-                    if(thisTopic.topicType == "marque-on")
-                    {
-                        if(useIconInsteadOfTag == true)
-                        {
-                            newItemToAppend->setIcon(QIcon(*pinnedOnTagImage));
-                        }
-                        else
-                        {
-                            currentTopicName = "[EO] " + currentTopicName;
-                        }
-                    }
-                    else if(thisTopic.topicType == "marque-off")
-                    {
-                        if(useIconInsteadOfTag == true)
-                        {
-                            newItemToAppend->setIcon(QIcon(*pinnedOffTagImage));
-                        }
-                        else
-                        {
-                            currentTopicName = "[EF] " + currentTopicName;
-                        }
-                    }
-                }
-            }
-            else if(thisTopic.topicType == "dossier2")
-            {
-                if(showHotTagOnTopic == true)
-                {
-                    if(useIconInsteadOfTag == true)
-                    {
-                        newItemToAppend->setIcon(QIcon(*hotTagImage));
-                    }
-                    else
-                    {
-                        currentTopicName = "[M] " + currentTopicName;
-                    }
-                }
-            }
-            else if(thisTopic.topicType == "lock")
-            {
-                if(showLockTagOnTopic == true)
-                {
-                    if(useIconInsteadOfTag == true)
-                    {
-                        newItemToAppend->setIcon(QIcon(*lockTagImage));
-                    }
-                    else
-                    {
-                        currentTopicName = "[F] " + currentTopicName;
-                    }
-                }
-            }
-            else if(thisTopic.topicType == "resolu")
-            {
-                if(showResolvedTagOnTopic == true)
-                {
-                    if(useIconInsteadOfTag == true)
-                    {
-                        newItemToAppend->setIcon(QIcon(*resolvedTagImage));
-                    }
-                    else
-                    {
-                        currentTopicName = "[R] " + currentTopicName;
-                    }
-                }
-            }
-            else
-            {
-                if(showNormalTagOnTopic == true)
-                {
-                    if(useIconInsteadOfTag == true)
-                    {
-                        newItemToAppend->setIcon(QIcon(*normalTagImage));
-                    }
-                    else
-                    {
-                        currentTopicName = "[N] " + currentTopicName;
-                    }
-                }
-            }
-
-            newItemToAppend->setText(currentTopicName);
-
-            if(colorModoAndAdminTopic == true)
-            {
-                if(thisTopic.pseudoInfo.pseudoType == "modo")
-                {
-                    newItemToAppend->setForeground(QBrush(QColor(baseModelInfo.modoPseudoColor)));
-                }
-                else if(thisTopic.pseudoInfo.pseudoType == "admin" || thisTopic.pseudoInfo.pseudoType == "staff")
-                {
-                    newItemToAppend->setForeground(QBrush(QColor(baseModelInfo.adminPseudoColor)));
-                }
-            }
+            setInfosOfItemDependingOnTopic(thisTopic, newItemToAppend);
 
             modelForListView.appendRow(newItemToAppend);
 
