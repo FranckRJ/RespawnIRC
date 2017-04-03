@@ -30,7 +30,7 @@ class showTopicClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit showTopicClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    explicit showTopicClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
     ~showTopicClass();
     static void startThread();
     static void stopThread();
@@ -88,8 +88,8 @@ private:
     modelInfoStruct baseModelInfo;
     QString websiteOfCookies;
     QList<QPair<QString, QString>> listOfInput;
-    QList<QString>* listOfIgnoredPseudo;
-    QList<pseudoWithColorStruct>* listOfColorPseudo;
+    const QList<QString>* listOfIgnoredPseudo;
+    const QList<pseudoWithColorStruct>* listOfColorPseudo;
     QList<QPair<long, messageInfoForEditStruct>> listOfInfosForEdit;
     QString messagesStatus = "Rien.";
     QString numberOfConnectedAndMP;

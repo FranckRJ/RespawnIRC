@@ -6,21 +6,18 @@
 #include <QString>
 #include <QMap>
 #include <QList>
-#include <QTabWidget>
 #include <QNetworkCookie>
 #include <QVector>
-#include <QPixmap>
 #include <QStringList>
 #include <QFocusEvent>
 #include <QHBoxLayout>
 
-#include "containerForTopicsInfos.hpp"
 #include "sendMessages.hpp"
 #include "colorPseudoListWindow.hpp"
 #include "accountListWindow.hpp"
 #include "multiTypeTextBox.hpp"
 #include "checkUpdate.hpp"
-#include "imageDownloadTool.hpp"
+#include "tabViewTopicInfos.hpp"
 
 class respawnIrcClass : public QWidget
 {
@@ -28,14 +25,14 @@ class respawnIrcClass : public QWidget
 public:
     explicit respawnIrcClass(QWidget* parent = 0);
     void doStuffBeforeQuit();
-    void selectThisTab(int number);
     void useThisFavorite(int index);
     QString addThisFavorite(int index);
     void delThisFavorite(int index);
+    tabViewTopicInfosClass* getTabView();
     multiTypeTextBoxClass* getMessageLine();
 public slots:
     void showWebNavigator();
-    void showWebNavigatorAtPM();
+    void showWebNavigatorAtMP();
     void showConnect();
     void showAccountListWindow();
     void showSelectSticker();
@@ -45,11 +42,7 @@ public slots:
     void showIgnoreListWindow();
     void showColorPseudoListWindow();
     void showAbout();
-    void addNewTab();
     void checkForUpdate();
-    void updateTopic();
-    void reloadTopic();
-    void reloadAllTopic();
     void goToCurrentTopic();
     void goToCurrentForum();
     void disconnectFromAllTabs();
@@ -61,37 +54,25 @@ public slots:
     void clipboardChanged();
 private:
     void loadSettings();
-    containerForTopicsInfosClass* getCurrentWidget();
     void addButtonToButtonLayout();
     void setShowTextDecorationButton(bool newVal);
-    void updateSettingInfoForList();
     void focusInEvent(QFocusEvent* event) override;
-    void addNewTabWithPseudo(QString useThisPseudo);
 private slots:
-    void addNewTabWithTopic(QString newTopicLink);
-    void removeTab(int index);
-    void tabHasMoved(int indexFrom, int indexTo);
     void disconnectFromThisPseudo(QString thisPseudo);
     void addThisPeudoToBlacklist(QString pseudoToAdd);
     void setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<QString, int> newIntOptions);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
     void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);
-    void setNewCookiesForPseudo();
-    void setNewTopic(QString newTopic);
+    void setNewCookiesForPseudo(QString pseudo, const QList<QNetworkCookie>&  cookiesForPseudo);
     void setNewMessageStatus();
     void setNewNumberOfConnectedAndPseudoUsed();
-    void setNewTopicName(QString topicName);
     void saveListOfAccount();
     void saveListOfIgnoredPseudo();
     void saveListOfColorPseudo();
     void warnUserForNewMessages();
     void warnUserForNewMP(int newNumber, QString withThisPseudo);
-    void currentTabChanged(int newIndex);
+    void tabOfTabViewChanged();
     void setEditMessage(long idOfMessageToEdit = 0, bool useMessageEdit = true);
-    void downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck);
-    void downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck);
-    void downloadAvatarsIfNeeded(QStringList listOfAvatarsNeedToBeCheck);
-    void updateImagesIfNeeded();
 signals:
     void themeChanged(QString newThemeName);
 public:
@@ -99,10 +80,9 @@ public:
 private:
     QHBoxLayout* buttonLayout;
     sendMessagesClass sendMessages;
-    QTabWidget tabList;
+    tabViewTopicInfosClass tabViewTopicInfos;
     QVector<QString> vectorOfFavoriteLink;
     QList<QNetworkCookie> currentCookieList;
-    QList<containerForTopicsInfosClass*> listOfContainerForTopicsInfos;
     QList<QString> listOfIgnoredPseudo;
     QList<pseudoWithColorStruct> listOfColorPseudo;
     QList<accountStruct> listOfAccount;
@@ -110,15 +90,12 @@ private:
     QLabel messagesStatus;
     QLabel numberOfConnectedAndPseudoUsed;
     QString pseudoOfUser;
-    QPixmap alertImage;
     checkUpdateClass checkUpdate;
-    imageDownloadToolClass imageDownloadTool;
     QString currentThemeName;
     QString lastClipboardDataChanged;
     bool beepWhenWarn;
     bool beepForNewMP;
     bool warnUser;
-    int typeOfImageRefresh;
 };
 
 #endif

@@ -5,7 +5,7 @@
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 
-containerForTopicsInfosClass::containerForTopicsInfosClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) :
+containerForTopicsInfosClass::containerForTopicsInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) :
     QWidget(parent), showTopic(newListOfIgnoredPseudo, newListOfColorPseudo, currentThemeName), showForum(currentThemeName)
 {
     QSplitter* splitter = new QSplitter(this);
@@ -26,6 +26,11 @@ containerForTopicsInfosClass::containerForTopicsInfosClass(QList<QString>* newLi
 
     connect(&showForum, &showForumClass::openThisTopic, this, &containerForTopicsInfosClass::topicNeedChanged);
     connect(&showForum, &showForumClass::openThisTopicInNewTab, this, &containerForTopicsInfosClass::openThisTopicInNewTab);
+}
+
+const showTopicClass& containerForTopicsInfosClass::getConstShowTopic() const
+{
+    return showTopic;
 }
 
 showTopicClass& containerForTopicsInfosClass::getShowTopic()

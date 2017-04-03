@@ -16,7 +16,8 @@ class containerForTopicsInfosClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit containerForTopicsInfosClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    explicit containerForTopicsInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    const showTopicClass& getConstShowTopic() const;
     showTopicClass& getShowTopic();
     typeOfSaveForPseudo getPseudoTypeOfSave() const;
     QString getTopicLinkFirstPage() const;

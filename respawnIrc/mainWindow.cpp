@@ -26,7 +26,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionTabAddTab = menuFile->addAction("Ajouter un onglet");
     menuFile->addSeparator();
     QAction* actionOpenWebNavigator = menuFile->addAction("Ouvrir RespawnIRC Navigator");
-    QAction* actionOpenWebNavigatorAtPM = menuFile->addAction("Accéder aux MP via RespawnIRC Navigator");
+    QAction* actionOpenWebNavigatorAtMP = menuFile->addAction("Accéder aux MP via RespawnIRC Navigator");
     menuFile->addSeparator();
     QAction* actionGoToMp = menuFile->addAction("Accéder à la boîte de réception");
     QAction* actionCheckUpdate = menuFile->addAction("Chercher une mise à jour");
@@ -36,7 +36,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     actionShowAccountList->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
     actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
     actionOpenWebNavigator->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
-    actionOpenWebNavigatorAtPM->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_M));
+    actionOpenWebNavigatorAtMP->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_M));
     actionGoToMp->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
     actionCheckUpdate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_U));
     actionQuit->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
@@ -158,15 +158,15 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     connect(actionShowAccountList, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAccountListWindow);
     connect(actionDisconnectFromCurrentTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromCurrentTab);
     connect(actionDisconnectFromAllTabs, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromAllTabs);
-    connect(actionTabAddTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::addNewTab);
+    connect(actionTabAddTab, &QAction::triggered, respawnIrc.getTabView(), &tabViewTopicInfosClass::addNewTab);
     connect(actionOpenWebNavigator, &QAction::triggered, &respawnIrc, &respawnIrcClass::showWebNavigator);
-    connect(actionOpenWebNavigatorAtPM, &QAction::triggered, &respawnIrc, &respawnIrcClass::showWebNavigatorAtPM);
+    connect(actionOpenWebNavigatorAtMP, &QAction::triggered, &respawnIrc, &respawnIrcClass::showWebNavigatorAtMP);
     connect(actionGoToMp, &QAction::triggered, this, &mainWindowClass::goToMp);
     connect(actionCheckUpdate, &QAction::triggered, &respawnIrc, &respawnIrcClass::checkForUpdate);
     connect(actionSelectTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTopic);
-    connect(actionUpdateTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::updateTopic);
-    connect(actionReloadTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTopic);
-    connect(actionReloadAllTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadAllTopic);
+    connect(actionUpdateTopic, &QAction::triggered, respawnIrc.getTabView(), &tabViewTopicInfosClass::updateCurrentTopic);
+    connect(actionReloadTopic, &QAction::triggered, respawnIrc.getTabView(), &tabViewTopicInfosClass::reloadCurrentTopic);
+    connect(actionReloadAllTopic, &QAction::triggered, respawnIrc.getTabView(), &tabViewTopicInfosClass::reloadAllTopic);
     connect(actionSelectSticker, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectSticker);
     connect(actionAddBold, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addBold);
     connect(actionAddItalic, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addItalic);
@@ -203,43 +203,43 @@ void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
     {
         if(keyPressed == "&")
         {
-            respawnIrc.selectThisTab(0);
+            respawnIrc.getTabView()->selectThisTab(0);
         }
         else if(keyPressed == "\u00C9" || keyPressed == "É")
         {
-            respawnIrc.selectThisTab(1);
+            respawnIrc.getTabView()->selectThisTab(1);
         }
         else if(keyPressed == "\"")
         {
-            respawnIrc.selectThisTab(2);
+            respawnIrc.getTabView()->selectThisTab(2);
         }
         else if(keyPressed == "'")
         {
-            respawnIrc.selectThisTab(3);
+            respawnIrc.getTabView()->selectThisTab(3);
         }
         else if(keyPressed == "(")
         {
-            respawnIrc.selectThisTab(4);
+            respawnIrc.getTabView()->selectThisTab(4);
         }
         else if(keyPressed == "-")
         {
-            respawnIrc.selectThisTab(5);
+            respawnIrc.getTabView()->selectThisTab(5);
         }
         else if(keyPressed == "\u00C8" || keyPressed == "È")
         {
-            respawnIrc.selectThisTab(6);
+            respawnIrc.getTabView()->selectThisTab(6);
         }
         else if(keyPressed == "_")
         {
-            respawnIrc.selectThisTab(7);
+            respawnIrc.getTabView()->selectThisTab(7);
         }
         else if(keyPressed == "\u00C7" || keyPressed == "Ç")
         {
-            respawnIrc.selectThisTab(8);
+            respawnIrc.getTabView()->selectThisTab(8);
         }
         else if(keyPressed == "@")
         {
-            respawnIrc.selectThisTab(9);
+            respawnIrc.getTabView()->selectThisTab(9);
         }
         else if(keyPressed == "Enter" || keyPressed == "Return")
         {

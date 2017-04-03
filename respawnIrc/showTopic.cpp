@@ -15,7 +15,7 @@
 
 QThread showTopicClass::threadForGetMessages;
 
-showTopicClass::showTopicClass(QList<QString>* newListOfIgnoredPseudo, QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
+showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
     getTopicMessages = new getTopicMessagesClass();
     messageActions = new messageActionsClass(this);

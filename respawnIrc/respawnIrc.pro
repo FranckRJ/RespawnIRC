@@ -29,7 +29,8 @@ SOURCES += \
     viewThemeInfos.cpp \
     showForum.cpp \
     showTopic.cpp \
-    messageActions.cpp
+    messageActions.cpp \
+    tabViewTopicInfos.cpp
 
 QT += \
     network \
@@ -68,7 +69,8 @@ HEADERS += \
     configDependentVar.hpp \
     showForum.hpp \
     showTopic.hpp \
-    messageActions.hpp
+    messageActions.hpp \
+    tabViewTopicInfos.hpp
 
 RC_FILE = respawnIrc.rc
 

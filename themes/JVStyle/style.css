@@ -22,13 +22,13 @@ QMenuBar::item:selected
 {
     background: #003E5D;
 }
-respawnIrcClass > QTabWidget:pane
+QTabWidget#tabListForTopics:pane
 {
 	border: 0px;
 }
 
 /* Tabs des topics */
-respawnIrcClass > QTabWidget > QTabBar::tab
+QTabWidget#tabListForTopics > QTabBar::tab
 {
     padding: 5px;
     color: white;
@@ -37,13 +37,13 @@ respawnIrcClass > QTabWidget > QTabBar::tab
     border-bottom-style: solid;
     border-bottom-color: #003E5D;
 }
-respawnIrcClass > QTabWidget > QTabBar::tab:selected
+QTabWidget#tabListForTopics > QTabBar::tab:selected
 {
     color: #FF6600;
     background-color: white;
     border-bottom-color: #FF6600;
 }
-respawnIrcClass > QTabWidget > QTabBar::tab:hover:!selected
+QTabWidget#tabListForTopics > QTabBar::tab:hover:!selected
 {
     color: #FF6600;
     background-color: white;
