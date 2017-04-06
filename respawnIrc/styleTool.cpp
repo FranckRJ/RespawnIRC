@@ -15,7 +15,7 @@ namespace
     QList<QString> listOfFontsAlreadyLoaded;
 }
 
-QString styleToolClass::getStyle(QString themeName)
+QString styleTool::getStyle(QString themeName)
 {
     QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/style.css");
     if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
@@ -29,7 +29,7 @@ QString styleToolClass::getStyle(QString themeName)
     }
 }
 
-QString styleToolClass::getModel(QString themeName)
+QString styleTool::getModel(QString themeName)
 {
     QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/model.txt");
     if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
@@ -46,7 +46,7 @@ QString styleToolClass::getModel(QString themeName)
     }
 }
 
-modelInfoStruct styleToolClass::getModelInfo(QString themeName)
+modelInfoStruct styleTool::getModelInfo(QString themeName)
 {
     QStringList listOfInfos;
     QVector<QString> listOfLine;
@@ -126,12 +126,12 @@ modelInfoStruct styleToolClass::getModelInfo(QString themeName)
     return modelInfo;
 }
 
-const colorInfoForMessageAndOtherStruct& styleToolClass::getColorInfo()
+const colorInfoForMessageAndOtherStruct& styleTool::getColorInfo()
 {
     return colorInfoForMessageAndOther;
 }
 
-QString styleToolClass::getImagePathOfThemeIfExist(QString themeName)
+QString styleTool::getImagePathOfThemeIfExist(QString themeName)
 {
     QDir imgDir(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/img/");
 
@@ -143,7 +143,7 @@ QString styleToolClass::getImagePathOfThemeIfExist(QString themeName)
     return "";
 }
 
-void styleToolClass::loadThemeFont(QString themeName)
+void styleTool::loadThemeFont(QString themeName)
 {
     QDir fontDir(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/fonts/");
     QStringList listOfFontsInDir;

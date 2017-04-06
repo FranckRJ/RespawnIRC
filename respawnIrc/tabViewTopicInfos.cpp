@@ -64,13 +64,13 @@ void tabViewTopicInfosClass::doStuffBeforeQuit()
         }
     }
 
-    settingToolClass::saveListOfTopicLink(listOfTopicLink);
-    settingToolClass::saveListOfPseudoForTopic(listOfPseudoForTopic);
+    settingTool::saveListOfTopicLink(listOfTopicLink);
+    settingTool::saveListOfPseudoForTopic(listOfPseudoForTopic);
 }
 
 void tabViewTopicInfosClass::updateSettings()
 {
-    typeOfImageRefresh = settingToolClass::getThisIntOption("typeOfImageRefresh").value;
+    typeOfImageRefresh = settingTool::getThisIntOption("typeOfImageRefresh").value;
 }
 
 void tabViewTopicInfosClass::updateSettingInfoForList()
@@ -86,7 +86,7 @@ void tabViewTopicInfosClass::setNewTheme(QString newThemeName)
     QString themeImgDir;
 
     currentThemeName = newThemeName;
-    themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
+    themeImgDir = styleTool::getImagePathOfThemeIfExist(currentThemeName);
 
     for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
@@ -134,7 +134,7 @@ void tabViewTopicInfosClass::selectThisTab(int number)
 
 void tabViewTopicInfosClass::addNewTabWithPseudo(QString useThisPseudo)
 {
-    QString themeImgDir = styleToolClass::getImagePathOfThemeIfExist(currentThemeName);
+    QString themeImgDir = styleTool::getImagePathOfThemeIfExist(currentThemeName);
     listOfContainerForTopicsInfos.push_back(new containerForTopicsInfosClass(listOfIgnoredPseudo, listOfColorPseudo, currentThemeName, this));
 
     if(useThisPseudo.isEmpty() == false)

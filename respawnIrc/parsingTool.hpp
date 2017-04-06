@@ -62,7 +62,7 @@ struct infoForMessageParsingStruct
     QStringList* listOfNoelshackImageUsed = nullptr;
 };
 
-namespace parsingToolClass
+namespace parsingTool
 {
     void generateNewUserAgent();
     bool checkIfTopicAreSame(const QString& firstTopic, const QString& secondTopic);

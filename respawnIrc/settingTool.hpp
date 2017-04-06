@@ -18,7 +18,7 @@ struct intSettingStruct
     int value;
 };
 
-namespace settingToolClass
+namespace settingTool
 {
     void setSettings(QSettings* newSetting);
     void initializeDefaultListsOption();

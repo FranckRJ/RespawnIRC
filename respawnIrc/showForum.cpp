@@ -91,7 +91,7 @@ void showForumClass::setForumLink(QString newForumLink)
     }
 
     forumLink = newForumLink;
-    websiteOfForum = parsingToolClass::getWebsite(forumLink);
+    websiteOfForum = parsingTool::getWebsite(forumLink);
 
     modelForListView.clear();
     if(newForumLink.isEmpty() == false)
@@ -122,23 +122,23 @@ void showForumClass::setNewCookies(QList<QNetworkCookie> newCookies, QString new
 
 void showForumClass::setNewTheme(QString newThemeName)
 {
-    baseModelInfo = styleToolClass::getModelInfo(newThemeName);
+    baseModelInfo = styleTool::getModelInfo(newThemeName);
 }
 
 void showForumClass::updateSettings()
 {
-    intSettingStruct updateTopicListTimeSetting = settingToolClass::getThisIntOption("updateTopicListTime");
+    intSettingStruct updateTopicListTimeSetting = settingTool::getThisIntOption("updateTopicListTime");
 
-    showNumberOfMessages = settingToolClass::getThisBoolOption("showNumberOfMessagesInTopicList");
-    cutLongTopicName = settingToolClass::getThisBoolOption("cutLongTopicNameInTopicList");
-    colorModoAndAdminTopic = settingToolClass::getThisBoolOption("colorModoAndAdminTopicInTopicList");
-    showPinnedTagOnTopic = settingToolClass::getThisBoolOption("showPinnedTagOnTopicInTopicList");
-    showHotTagOnTopic = settingToolClass::getThisBoolOption("showHotTagOnTopicInTopicList");
-    showLockTagOnTopic = settingToolClass::getThisBoolOption("showLockTagOnTopicInTopicList");
-    showResolvedTagOnTopic = settingToolClass::getThisBoolOption("showResolvedTagOnTopicInTopicList");
-    showNormalTagOnTopic = settingToolClass::getThisBoolOption("showNormalTagOnTopicInTopicList");
-    useIconInsteadOfTag = settingToolClass::getThisBoolOption("useIconInsteadOfTagInTopicList");
-    topicNameMaxSize = settingToolClass::getThisIntOption("topicNameMaxSizeInTopicList").value;
+    showNumberOfMessages = settingTool::getThisBoolOption("showNumberOfMessagesInTopicList");
+    cutLongTopicName = settingTool::getThisBoolOption("cutLongTopicNameInTopicList");
+    colorModoAndAdminTopic = settingTool::getThisBoolOption("colorModoAndAdminTopicInTopicList");
+    showPinnedTagOnTopic = settingTool::getThisBoolOption("showPinnedTagOnTopicInTopicList");
+    showHotTagOnTopic = settingTool::getThisBoolOption("showHotTagOnTopicInTopicList");
+    showLockTagOnTopic = settingTool::getThisBoolOption("showLockTagOnTopicInTopicList");
+    showResolvedTagOnTopic = settingTool::getThisBoolOption("showResolvedTagOnTopicInTopicList");
+    showNormalTagOnTopic = settingTool::getThisBoolOption("showNormalTagOnTopicInTopicList");
+    useIconInsteadOfTag = settingTool::getThisBoolOption("useIconInsteadOfTagInTopicList");
+    topicNameMaxSize = settingTool::getThisIntOption("topicNameMaxSizeInTopicList").value;
     timerForGetList.setInterval(updateTopicListTimeSetting.value);
 
     if(updateTopicListTimeSetting.value < updateTopicListTimeSetting.minValue)
@@ -146,7 +146,7 @@ void showForumClass::updateSettings()
         timerForGetList.setInterval(updateTopicListTimeSetting.minValue);
     }
 
-    setLoadNeeded(settingToolClass::getThisBoolOption("showListOfTopic") == true && settingToolClass::getThisBoolOption("fastModeEnbled") == false);
+    setLoadNeeded(settingTool::getThisBoolOption("showListOfTopic") == true && settingTool::getThisBoolOption("fastModeEnbled") == false);
     timeoutForReply.updateTimeoutTime();
 }
 
@@ -307,7 +307,7 @@ void showForumClass::startGetListOfTopic()
 
         if(forumLink.isEmpty() == false)
         {
-            QNetworkRequest request = parsingToolClass::buildRequestWithThisUrl(forumLink);
+            QNetworkRequest request = parsingTool::buildRequestWithThisUrl(forumLink);
             reply = timeoutForReply.resetReply(networkManager->get(request));
 
             if(reply->isOpen() == true)
@@ -350,14 +350,14 @@ void showForumClass::analyzeReply()
     }
     else
     {
-        QList<topicStruct> listOfTopic = parsingToolClass::getListOfTopic(source, websiteOfForum);
+        QList<topicStruct> listOfTopic = parsingTool::getListOfTopic(source, websiteOfForum);
         QStandardItem* newItemToAppend;
         QFont tmpFont;
 
         modelForListView.clear();
         listOfLink.clear();
 
-        newItemToAppend = new QStandardItem(parsingToolClass::getForumName(source));
+        newItemToAppend = new QStandardItem(parsingTool::getForumName(source));
         tmpFont = newItemToAppend->font();
         tmpFont.setBold(true);
         newItemToAppend->setFont(tmpFont);

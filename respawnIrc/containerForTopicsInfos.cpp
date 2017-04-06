@@ -19,7 +19,7 @@ containerForTopicsInfosClass::containerForTopicsInfosClass(const QList<QString>*
 
     setLayout(layout);
 
-    if(settingToolClass::getThisBoolOption("showListOfTopic") == false || settingToolClass::getThisBoolOption("fastModeEnbled") == true)
+    if(settingTool::getThisBoolOption("showListOfTopic") == false || settingTool::getThisBoolOption("fastModeEnbled") == true)
     {
         showForum.setVisible(false);
     }
@@ -85,5 +85,5 @@ void containerForTopicsInfosClass::setNewThemeForInfo(QString newThemeName)
 void containerForTopicsInfosClass::setNewTopicForInfo(QString newTopic)
 {
     showTopic.setNewTopic(newTopic);
-    showForum.setForumLink(parsingToolClass::getForumOfTopic(newTopic));
+    showForum.setForumLink(parsingTool::getForumOfTopic(newTopic));
 }

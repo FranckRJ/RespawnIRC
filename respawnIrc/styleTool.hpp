@@ -32,7 +32,7 @@ struct colorInfoForMessageAndOtherStruct
     QString editMessageColor;
 };
 
-namespace styleToolClass
+namespace styleTool
 {
     QString getStyle(QString themeName);
     QString getModel(QString themeName);

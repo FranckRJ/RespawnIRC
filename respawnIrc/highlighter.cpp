@@ -10,7 +10,7 @@
 
 highlighterClass::highlighterClass(QTextDocument* parent) : QSyntaxHighlighter(parent)
 {
-    spellCheckFormat.setUnderlineColor(QColor(styleToolClass::getColorInfo().underlineColor));
+    spellCheckFormat.setUnderlineColor(QColor(styleTool::getColorInfo().underlineColor));
     spellCheckFormat.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
     setDic("");
 }
@@ -77,7 +77,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
 
 void highlighterClass::styleChanged()
 {
-    spellCheckFormat.setUnderlineColor(QColor(styleToolClass::getColorInfo().underlineColor));
+    spellCheckFormat.setUnderlineColor(QColor(styleTool::getColorInfo().underlineColor));
     rehighlight();
 }
 

@@ -33,7 +33,7 @@ void autoTimeoutReplyClass::updateTimeoutTime(int newTimeoutTimeInSeconds)
 {
     if(newTimeoutTimeInSeconds == 0)
     {
-        timerForTimeout->setInterval(settingToolClass::getThisIntOption("timeoutInSecond").value * 1000);
+        timerForTimeout->setInterval(settingTool::getThisIntOption("timeoutInSecond").value * 1000);
     }
     else
     {

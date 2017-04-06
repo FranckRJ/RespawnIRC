@@ -85,7 +85,7 @@ manageShortcutWindowClass::manageShortcutWindowClass(QWidget* parent) : QDialog(
 
 void manageShortcutWindowClass::initializeShortcutsModel()
 {
-    const QList<shortcutInfosStruct>* listOfShortcuts = shortcutToolClass::getListOfShortcutsForRule("shortcut");
+    const QList<shortcutInfosStruct>* listOfShortcuts = shortcutTool::getListOfShortcutsForRule("shortcut");
 
     shortcutsItemModel->clear();
     shortcutsItemModel->setHorizontalHeaderLabels(QStringList({"Base", "Remplacement"}));
@@ -120,7 +120,7 @@ void manageShortcutWindowClass::updateShortcutRuleAndPreview()
         newShortcutRule.listOfShortcuts.push_back(newShortcutInfo);
     }
 
-    shortcutToolClass::setThisShortcutRule("tmp_shortcut", newShortcutRule);
+    shortcutTool::setThisShortcutRule("tmp_shortcut", newShortcutRule);
     textInTextZoneChanged();
 }
 
@@ -195,7 +195,7 @@ void manageShortcutWindowClass::moveDownShortcut()
 void manageShortcutWindowClass::textInTextZoneChanged()
 {
     int oldScrollValue = previewZone->verticalScrollBar()->value();
-    previewZone->setText(shortcutToolClass::transformMessage(textZone->toPlainText(), "tmp_shortcut"));
+    previewZone->setText(shortcutTool::transformMessage(textZone->toPlainText(), "tmp_shortcut"));
     previewZone->verticalScrollBar()->setValue(oldScrollValue);
 }
 
@@ -214,6 +214,6 @@ void manageShortcutWindowClass::validateShortcuts()
         }
     }
 
-    shortcutToolClass::initializeAllShortcutsRules();
+    shortcutTool::initializeAllShortcutsRules();
     close();
 }

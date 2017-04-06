@@ -18,7 +18,7 @@ struct shortcutRuleStruct
     bool needToUseRegex = false;
 };
 
-namespace shortcutToolClass
+namespace shortcutTool
 {
     void initializeAllShortcutsRules();
     void loadShortcutRule(QString ruleName, QString beforeBase = "", QString afterBase = "", QString beforeNew = "", QString afterNew = "", bool useRegex = false);

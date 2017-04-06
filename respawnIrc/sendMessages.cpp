@@ -16,7 +16,7 @@ sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
     sendButton.setText("Envoyer");
     sendButton.setAutoDefault(true);
 
-    changeColorOnEdit = settingToolClass::getThisBoolOption("changeColorOnEdit");
+    changeColorOnEdit = settingTool::getThisBoolOption("changeColorOnEdit");
     networkManager = new QNetworkAccessManager(this);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
@@ -32,14 +32,14 @@ sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 
 void sendMessagesClass::doStuffBeforeQuit()
 {
-    settingToolClass::saveThisOption("nbOfMessagesSend",
-                                     settingToolClass::getThisIntOption("nbOfMessagesSend").value + nbOfMessagesSend);
+    settingTool::saveThisOption("nbOfMessagesSend",
+                                     settingTool::getThisIntOption("nbOfMessagesSend").value + nbOfMessagesSend);
     messageLine.doStuffBeforeQuit();
 }
 
 void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString>>& listOfInput)
 {
-    QString website = parsingToolClass::getWebsite(topicLink);
+    QString website = parsingTool::getWebsite(topicLink);
 
     if(networkManager == nullptr)
     {
@@ -88,11 +88,11 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
 
         if(isInEdit == true)
         {
-            request = parsingToolClass::buildRequestWithThisUrl("http://" + website + "/forums/ajax_edit_message.php");
+            request = parsingTool::buildRequestWithThisUrl("http://" + website + "/forums/ajax_edit_message.php");
         }
         else
         {
-            request = parsingToolClass::buildRequestWithThisUrl(topicLink);
+            request = parsingTool::buildRequestWithThisUrl(topicLink);
         }
 
         sendButton.setEnabled(false);
@@ -104,7 +104,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         }
         else
         {
-            data = "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text(), "shortcut"));
+            data = "message_topic=" + QUrl::toPercentEncoding(shortcutTool::transformMessage(messageLine.text(), "shortcut"));
             data += "&" + dataForEditLastMessage;
         }
 
@@ -132,7 +132,7 @@ void sendMessagesClass::clearMessageLine()
 void sendMessagesClass::settingsChanged()
 {
     messageLine.settingsChanged();
-    changeColorOnEdit = settingToolClass::getThisBoolOption("changeColorOnEdit");
+    changeColorOnEdit = settingTool::getThisBoolOption("changeColorOnEdit");
 
     if(changeColorOnEdit == true)
     {
@@ -249,7 +249,7 @@ QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QStrin
         data += thisInput.first + "=" + thisInput.second + "&";
     }
 
-    data += "message_topic=" + QUrl::toPercentEncoding(shortcutToolClass::transformMessage(messageLine.text(), "shortcut"));
+    data += "message_topic=" + QUrl::toPercentEncoding(shortcutTool::transformMessage(messageLine.text(), "shortcut"));
 
     data += "&form_alias_rang=1";
 
@@ -296,7 +296,7 @@ void sendMessagesClass::deleteReplyForSendMessage()
     }
     else
     {
-        QMessageBox::warning(this, "Erreur", parsingToolClass::getErrorMessage(source));
+        QMessageBox::warning(this, "Erreur", parsingTool::getErrorMessage(source));
         dontEraseEditMessage = true;
     }
 

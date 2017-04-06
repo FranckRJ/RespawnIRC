@@ -42,8 +42,8 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
         return;
     }
 
-    topicLink = parsingToolClass::getFirstPageOfTopic(newTopicLink);
-    websiteOfTopic = parsingToolClass::getWebsite(topicLink);
+    topicLink = parsingTool::getFirstPageOfTopic(newTopicLink);
+    websiteOfTopic = parsingTool::getWebsite(topicLink);
 
     if(retrievesMessage == false)
     {
@@ -202,7 +202,7 @@ void getTopicMessagesClass::analyzeMessages()
         if(locationHeader.startsWith("/forums/") == true)
         {
             QString locationHeaderTopicLink = "http://" + websiteOfTopic + locationHeader;
-            if(parsingToolClass::checkIfTopicAreSame(topicLink, locationHeaderTopicLink) == true)
+            if(parsingTool::checkIfTopicAreSame(topicLink, locationHeaderTopicLink) == true)
             {
                 topicLink = locationHeaderTopicLink;
                 emit newLinkForTopic(topicLink);
@@ -219,21 +219,21 @@ void getTopicMessagesClass::analyzeMessages()
 
     if(currentCookieList.isEmpty() == false)
     {
-        emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(listOfPageSource[firstValidePageNumber]),
-                                       parsingToolClass::getNumberOfMp(listOfPageSource[firstValidePageNumber]), false);
+        emit newNumberOfConnectedAndMP(parsingTool::getNumberOfConnected(listOfPageSource[firstValidePageNumber]),
+                                       parsingTool::getNumberOfMp(listOfPageSource[firstValidePageNumber]), false);
     }
     else
     {
-        emit newNumberOfConnectedAndMP(parsingToolClass::getNumberOfConnected(listOfPageSource[firstValidePageNumber]), -1, false);
+        emit newNumberOfConnectedAndMP(parsingTool::getNumberOfConnected(listOfPageSource[firstValidePageNumber]), -1, false);
     }
 
     if(firstTimeGetMessages == false)
     {
-        newTopicLink = parsingToolClass::getNextPageOfTopic(listOfPageSource[firstValidePageNumber], websiteOfTopic);
+        newTopicLink = parsingTool::getNextPageOfTopic(listOfPageSource[firstValidePageNumber], websiteOfTopic);
     }
     else
     {
-        newTopicLink = parsingToolClass::getLastPageOfTopic(listOfPageSource[firstValidePageNumber], websiteOfTopic);
+        newTopicLink = parsingTool::getLastPageOfTopic(listOfPageSource[firstValidePageNumber], websiteOfTopic);
     }
 
     if(newTopicLink.isEmpty() == true && topicLink != listOfPageUrl[firstValidePageNumber])
@@ -243,7 +243,7 @@ void getTopicMessagesClass::analyzeMessages()
 
     if(firstTimeGetMessages == true)
     {
-        QString topicName = parsingToolClass::getNameOfTopic(listOfPageSource[firstValidePageNumber]);
+        QString topicName = parsingTool::getNameOfTopic(listOfPageSource[firstValidePageNumber]);
 
         if(topicName.isEmpty() == false)
         {
@@ -252,7 +252,7 @@ void getTopicMessagesClass::analyzeMessages()
 
         if(needToGetFirstMessage == true)
         {
-            QList<messageStruct> tmpList = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(listOfPageSource[0]);
+            QList<messageStruct> tmpList = parsingTool::getListOfEntireMessagesWithoutMessagePars(listOfPageSource[0]);
 
             if(tmpList.isEmpty() == false)
             {
@@ -260,8 +260,8 @@ void getTopicMessagesClass::analyzeMessages()
 
                 tmpMsg.isFirstMessage = true;
                 tmpMsg.isAnEdit = false;
-                tmpMsg.message = parsingToolClass::parsingMessages(tmpMsg.message, settingsForMessageParsing.infoForMessageParsing);
-                tmpMsg.signature = parsingToolClass::parsingMessages(tmpMsg.signature, settingsForMessageParsing.infoForMessageParsing, false);
+                tmpMsg.message = parsingTool::parsingMessages(tmpMsg.message, settingsForMessageParsing.infoForMessageParsing);
+                tmpMsg.signature = parsingTool::parsingMessages(tmpMsg.signature, settingsForMessageParsing.infoForMessageParsing, false);
 
                 listOfNewMessages.push_front(tmpMsg);
             }
@@ -275,7 +275,7 @@ void getTopicMessagesClass::analyzeMessages()
 
         for(int i = listOfPageSource.size() - 1; i >= 0; --i)
         {
-            QList<messageStruct> listForThisPage = parsingToolClass::getListOfEntireMessagesWithoutMessagePars(listOfPageSource[i]);
+            QList<messageStruct> listForThisPage = parsingTool::getListOfEntireMessagesWithoutMessagePars(listOfPageSource[i]);
             numberOfMessagesInLastPage = listForThisPage.size();
             listOfEntireMessages.append(listForThisPage);
         }
@@ -314,8 +314,8 @@ void getTopicMessagesClass::analyzeMessages()
                     idOfLastMessage = currentMessage.idOfMessage;
                 }
 
-                currentMessage.message = parsingToolClass::parsingMessages(currentMessage.message, settingsForMessageParsing.infoForMessageParsing);
-                currentMessage.signature = parsingToolClass::parsingMessages(currentMessage.signature, settingsForMessageParsing.infoForMessageParsing, false);
+                currentMessage.message = parsingTool::parsingMessages(currentMessage.message, settingsForMessageParsing.infoForMessageParsing);
+                currentMessage.signature = parsingTool::parsingMessages(currentMessage.signature, settingsForMessageParsing.infoForMessageParsing, false);
                 listOfNewMessages.push_back(currentMessage);
 
                 listOfEdit[currentMessage.idOfMessage] = currentMessage.lastTimeEdit;
@@ -330,8 +330,8 @@ void getTopicMessagesClass::analyzeMessages()
 
     if(currentCookieList.isEmpty() == false && needToSetCookies == false)
     {
-        ajaxInfo = parsingToolClass::getAjaxInfo(listOfPageSource[firstValidePageNumber]);
-        parsingToolClass::getListOfHiddenInputFromThisForm(listOfPageSource[firstValidePageNumber], "form-post-topic", listOfInput);
+        ajaxInfo = parsingTool::getAjaxInfo(listOfPageSource[firstValidePageNumber]);
+        parsingTool::getListOfHiddenInputFromThisForm(listOfPageSource[firstValidePageNumber], "form-post-topic", listOfInput);
 
         if(listOfInput.isEmpty() == true)
         {
@@ -339,7 +339,7 @@ void getTopicMessagesClass::analyzeMessages()
             {
                 listOfInput.append(QPair<QString, QString>("forumjv", "true"));
             }
-            else if(parsingToolClass::getTopicLocked(listOfPageSource[firstValidePageNumber]) == true)
+            else if(parsingTool::getTopicLocked(listOfPageSource[firstValidePageNumber]) == true)
             {
                 listOfInput.append(QPair<QString, QString>("locked", "true"));
             }
@@ -413,7 +413,7 @@ void getTopicMessagesClass::getMessages()
         {
             if(currentPageToLoad.isEmpty() == false)
             {
-                QNetworkRequest requestForThisPage = parsingToolClass::buildRequestWithThisUrl(currentPageToLoad);
+                QNetworkRequest requestForThisPage = parsingTool::buildRequestWithThisUrl(currentPageToLoad);
 
                 listOfTimeoutForReplys[i] = new autoTimeoutReplyClass(settingsForMessageParsing.timeoutTime, this);
                 listOfReplys[i] = listOfTimeoutForReplys[i]->resetReply(networkManager->get(requestForThisPage));
@@ -428,7 +428,7 @@ void getTopicMessagesClass::getMessages()
                     break;
                 }
 
-                currentPageToLoad = parsingToolClass::getBeforeLastPageOfTopic(currentPageToLoad);
+                currentPageToLoad = parsingTool::getBeforeLastPageOfTopic(currentPageToLoad);
             }
             else
             {

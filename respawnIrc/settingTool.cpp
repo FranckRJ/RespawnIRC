@@ -13,12 +13,12 @@ namespace
     QMap<QString, QByteArray> listOfDefaultByteOption;
 }
 
-void settingToolClass::setSettings(QSettings* newSetting)
+void settingTool::setSettings(QSettings* newSetting)
 {
     setting = newSetting;
 }
 
-void settingToolClass::initializeDefaultListsOption()
+void settingTool::initializeDefaultListsOption()
 {
     listOfDefaultBoolOption["showQuoteButton"] = true;
     listOfDefaultBoolOption["disableSelfQuoteButton"] = false;
@@ -121,7 +121,7 @@ void settingToolClass::initializeDefaultListsOption()
     listOfDefaultByteOption["windowGeometry"] = "";
 }
 
-bool settingToolClass::getThisBoolOption(QString optionName)
+bool settingTool::getThisBoolOption(QString optionName)
 {
     QMap<QString, bool>::iterator iteForList = listOfDefaultBoolOption.find(optionName);
 
@@ -136,7 +136,7 @@ bool settingToolClass::getThisBoolOption(QString optionName)
     }
 }
 
-intSettingStruct settingToolClass::getThisIntOption(QString optionName)
+intSettingStruct settingTool::getThisIntOption(QString optionName)
 {
     QMap<QString, intSettingStruct>::iterator iteForList = listOfDefaultIntOption.find(optionName);
     intSettingStruct tmpIntSetting;
@@ -157,7 +157,7 @@ intSettingStruct settingToolClass::getThisIntOption(QString optionName)
     }
 }
 
-QString settingToolClass::getThisStringOption(QString optionName)
+QString settingTool::getThisStringOption(QString optionName)
 {
     QMap<QString, QString>::iterator iteForList = listOfDefaultStringOption.find(optionName);
 
@@ -172,7 +172,7 @@ QString settingToolClass::getThisStringOption(QString optionName)
     }
 }
 
-QByteArray settingToolClass::getThisByteOption(QString optionName)
+QByteArray settingTool::getThisByteOption(QString optionName)
 {
     QMap<QString, QByteArray>::iterator iteForList = listOfDefaultByteOption.find(optionName);
 
@@ -187,7 +187,7 @@ QByteArray settingToolClass::getThisByteOption(QString optionName)
     }
 }
 
-QList<accountStruct> settingToolClass::getListOfAccount()
+QList<accountStruct> settingTool::getListOfAccount()
 {
     QList<accountStruct> listOfAccount;
     QList<QNetworkCookie> listOfHelloCookie = createCookieListWithThisQVariantList(setting->value("listOfHelloCookie", QList<QVariant>()).toList());
@@ -210,7 +210,7 @@ QList<accountStruct> settingToolClass::getListOfAccount()
     return listOfAccount;
 }
 
-QList<QString> settingToolClass::getListOfPseudoForTopic()
+QList<QString> settingTool::getListOfPseudoForTopic()
 {
     QList<QString> listOfPseudoForTopic;
 
@@ -222,7 +222,7 @@ QList<QString> settingToolClass::getListOfPseudoForTopic()
     return listOfPseudoForTopic;
 }
 
-QList<QString> settingToolClass::getListOfIgnoredPseudo()
+QList<QString> settingTool::getListOfIgnoredPseudo()
 {
     QList<QString> listOfIgnoredPseudo;
 
@@ -234,7 +234,7 @@ QList<QString> settingToolClass::getListOfIgnoredPseudo()
     return listOfIgnoredPseudo;
 }
 
-QList<pseudoWithColorStruct> settingToolClass::getListOfColorPseudo()
+QList<pseudoWithColorStruct> settingTool::getListOfColorPseudo()
 {
     QList<pseudoWithColorStruct> listOfColorPseudo;
     QList<QString> listOfPseudo = createStringListWithThisQVariantList(setting->value("listOfPseudoForColor", QList<QVariant>()).toList());
@@ -257,7 +257,7 @@ QList<pseudoWithColorStruct> settingToolClass::getListOfColorPseudo()
     return listOfColorPseudo;
 }
 
-QList<QString> settingToolClass::getListOfTopicLink()
+QList<QString> settingTool::getListOfTopicLink()
 {
     QList<QString> listOfTopicLink;
 
@@ -269,12 +269,12 @@ QList<QString> settingToolClass::getListOfTopicLink()
     return listOfTopicLink;
 }
 
-void settingToolClass::saveThisOption(QString optionName, QVariant value)
+void settingTool::saveThisOption(QString optionName, QVariant value)
 {
     setting->setValue(optionName, value);
 }
 
-void settingToolClass::saveListOfAccount(QList<accountStruct>& newListOfAccount)
+void settingTool::saveListOfAccount(QList<accountStruct>& newListOfAccount)
 {
     QList<QNetworkCookie> listOfHelloCookie;
     QList<QNetworkCookie> listOfConnectCookie;
@@ -302,17 +302,17 @@ void settingToolClass::saveListOfAccount(QList<accountStruct>& newListOfAccount)
     setting->setValue("listOfPseudo", createQVariantListWithThisList(listOfPseudo));
 }
 
-void settingToolClass::saveListOfPseudoForTopic(QList<QString>& newList)
+void settingTool::saveListOfPseudoForTopic(QList<QString>& newList)
 {
     setting->setValue("listOfPseudoForTopic", createQVariantListWithThisList(newList, false));
 }
 
-void settingToolClass::saveListOfIgnoredPseudo(QList<QString>& newList)
+void settingTool::saveListOfIgnoredPseudo(QList<QString>& newList)
 {
     setting->setValue("listOfIgnoredPseudo", createQVariantListWithThisList(newList));
 }
 
-void settingToolClass::saveListOfColorPseudo(QList<pseudoWithColorStruct>& newListOfColorPseudo)
+void settingTool::saveListOfColorPseudo(QList<pseudoWithColorStruct>& newListOfColorPseudo)
 {
     QList<QString> pseudoList;
     QList<QString> redList;
@@ -333,12 +333,12 @@ void settingToolClass::saveListOfColorPseudo(QList<pseudoWithColorStruct>& newLi
     setting->setValue("listOfBlueForColor", createQVariantListWithThisList(blueList));
 }
 
-void settingToolClass::saveListOfTopicLink(QList<QString>& newList)
+void settingTool::saveListOfTopicLink(QList<QString>& newList)
 {
     setting->setValue("listOfTopicLink", createQVariantListWithThisList(newList));
 }
 
-QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString)
+QList<QVariant> settingTool::createQVariantListWithThisList(QList<QString> list, bool deleteEmptyString)
 {
     QList<QVariant> newList;
 
@@ -353,7 +353,7 @@ QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QString> 
     return newList;
 }
 
-QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QNetworkCookie> list)
+QList<QVariant> settingTool::createQVariantListWithThisList(QList<QNetworkCookie> list)
 {
     QList<QVariant> newList;
 
@@ -365,7 +365,7 @@ QList<QVariant> settingToolClass::createQVariantListWithThisList(QList<QNetworkC
     return newList;
 }
 
-QList<QString> settingToolClass::createStringListWithThisQVariantList(QList<QVariant> list)
+QList<QString> settingTool::createStringListWithThisQVariantList(QList<QVariant> list)
 {
     QList<QString> newList;
 
@@ -377,7 +377,7 @@ QList<QString> settingToolClass::createStringListWithThisQVariantList(QList<QVar
     return newList;
 }
 
-QList<QNetworkCookie> settingToolClass::createCookieListWithThisQVariantList(QList<QVariant> list)
+QList<QNetworkCookie> settingTool::createCookieListWithThisQVariantList(QList<QVariant> list)
 {
     QList<QNetworkCookie> newList;
 
@@ -389,7 +389,7 @@ QList<QNetworkCookie> settingToolClass::createCookieListWithThisQVariantList(QLi
     return newList;
 }
 
-void settingToolClass::forceSync()
+void settingTool::forceSync()
 {
     setting->sync();
 }

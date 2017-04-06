@@ -91,8 +91,8 @@ QString respawnIrcClass::addThisFavorite(int index)
     if(tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab().isEmpty() == false && tabViewTopicInfos.getTopicNameOfCurrentTab().isEmpty() == false)
     {
         vectorOfFavoriteLink[index] = tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab();
-        settingToolClass::saveThisOption("favoriteLink" + QString::number(index), tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab());
-        settingToolClass::saveThisOption("favoriteName" + QString::number(index), tabViewTopicInfos.getTopicNameOfCurrentTab());
+        settingTool::saveThisOption("favoriteLink" + QString::number(index), tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab());
+        settingTool::saveThisOption("favoriteName" + QString::number(index), tabViewTopicInfos.getTopicNameOfCurrentTab());
 
         return tabViewTopicInfos.getTopicNameOfCurrentTab();
     }
@@ -105,8 +105,8 @@ QString respawnIrcClass::addThisFavorite(int index)
 void respawnIrcClass::delThisFavorite(int index)
 {
     vectorOfFavoriteLink[index].clear();
-    settingToolClass::saveThisOption("favoriteLink" + QString::number(index), "");
-    settingToolClass::saveThisOption("favoriteName" + QString::number(index), "");
+    settingTool::saveThisOption("favoriteLink" + QString::number(index), "");
+    settingTool::saveThisOption("favoriteName" + QString::number(index), "");
 }
 
 tabViewTopicInfosClass* respawnIrcClass::getTabView()
@@ -201,10 +201,10 @@ void respawnIrcClass::showAbout()
     QString versionName = currentVersionName;
     versionName.remove(0, 1);
     QMessageBox::information(this, "A propos de RespawnIRC", "<b>RespawnIRC version " + versionName + ".</b><br /><br />" +
-                           "Ce logiciel à été developpé à l'aide de Qt 5 ainsi que de Hunspell <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://hunspell.github.io/\">http://hunspell.github.io/</a>.<br />" +
-                           "Lien du dépôt github : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"https://github.com/FranckRJ/RespawnIRC\">https://github.com/FranckRJ/RespawnIRC</a><br />" +
-                           "Lien du site : <a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://franckrj.github.io/RespawnIRC/\">http://franckrj.github.io/RespawnIRC/</a><br /><br />"
-                           "Nombre de messages que vous avez posté depuis la version 2.2 : <b>" + QString::number(settingToolClass::getThisIntOption("nbOfMessagesSend").value + sendMessages.getNbOfMessagesSend()) + "</b>");
+                           "Ce logiciel à été developpé à l'aide de Qt 5 ainsi que de Hunspell <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://hunspell.github.io/\">http://hunspell.github.io/</a>.<br />" +
+                           "Lien du dépôt github : <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"https://github.com/FranckRJ/RespawnIRC\">https://github.com/FranckRJ/RespawnIRC</a><br />" +
+                           "Lien du site : <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://franckrj.github.io/RespawnIRC/\">http://franckrj.github.io/RespawnIRC/</a><br /><br />"
+                           "Nombre de messages que vous avez posté depuis la version 2.2 : <b>" + QString::number(settingTool::getThisIntOption("nbOfMessagesSend").value + sendMessages.getNbOfMessagesSend()) + "</b>");
 }
 
 void respawnIrcClass::checkForUpdate()
@@ -226,9 +226,9 @@ void respawnIrcClass::goToCurrentTopic()
 
 void respawnIrcClass::goToCurrentForum()
 {
-    if(parsingToolClass::getForumOfTopic(tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab()).isEmpty() == false)
+    if(parsingTool::getForumOfTopic(tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab()).isEmpty() == false)
     {
-        QDesktopServices::openUrl(QUrl(parsingToolClass::getForumOfTopic(tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab())));
+        QDesktopServices::openUrl(QUrl(parsingTool::getForumOfTopic(tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab())));
     }
     else
     {
@@ -241,7 +241,7 @@ void respawnIrcClass::disconnectFromAllTabs()
     currentCookieList = QList<QNetworkCookie>();
     pseudoOfUser = "";
     tabViewTopicInfos.setNewCookies(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::REMEMBER);
-    settingToolClass::saveThisOption("pseudo", pseudoOfUser);
+    settingTool::saveThisOption("pseudo", pseudoOfUser);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
@@ -255,13 +255,13 @@ void respawnIrcClass::setNewTheme(QString newThemeName)
 {
     currentThemeName = newThemeName;
     tabViewTopicInfos.setNewTheme(currentThemeName);
-    styleToolClass::loadThemeFont(currentThemeName);
+    styleTool::loadThemeFont(currentThemeName);
 
     emit themeChanged(currentThemeName);
 
     sendMessages.styleChanged();
 
-    settingToolClass::saveThisOption("themeUsed", currentThemeName);
+    settingTool::saveThisOption("themeUsed", currentThemeName);
 }
 
 void respawnIrcClass::reloadTheme()
@@ -366,9 +366,9 @@ void respawnIrcClass::clipboardChanged()
             dataInHtml.replace("<img src=\"resources/smileys/71.gif\" />", ":bave:");
             dataInHtml.replace("<img src=\"resources/smileys/nyu.gif\" />", ":cute:");
             //fin "à changer"
-            parsingToolClass::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":");
-            parsingToolClass::replaceWithCapNumber(dataInHtml, expForNoelshackToLink, 1);
-            parsingToolClass::replaceWithCapNumber(dataInHtml, expForStickerToCode, 1, "[[sticker:p/", "]]");
+            parsingTool::replaceWithCapNumber(dataInHtml, expForSmileyToCode, 1, ":", ":");
+            parsingTool::replaceWithCapNumber(dataInHtml, expForNoelshackToLink, 1);
+            parsingTool::replaceWithCapNumber(dataInHtml, expForStickerToCode, 1, "[[sticker:p/", "]]");
             dataInHtml.replace(expForImageTag, "");
             lastClipboardDataChanged = dataInHtml;
             doc.setHtml(dataInHtml);
@@ -384,17 +384,17 @@ void respawnIrcClass::loadSettings()
     QList<QString> listOfTopicLink;
     QList<QString> listOfPseudoForTopic;
 
-    beepWhenWarn = settingToolClass::getThisBoolOption("beepWhenWarn");
-    beepForNewMP = settingToolClass::getThisBoolOption("beepForNewMP");
-    warnUser = settingToolClass::getThisBoolOption("warnUser");
+    beepWhenWarn = settingTool::getThisBoolOption("beepWhenWarn");
+    beepForNewMP = settingTool::getThisBoolOption("beepForNewMP");
+    warnUser = settingTool::getThisBoolOption("warnUser");
 
     for(int i = 0; i < 10; ++i)
     {
-        vectorOfFavoriteLink.push_back(settingToolClass::getThisStringOption("favoriteLink" + QString::number(i)));
+        vectorOfFavoriteLink.push_back(settingTool::getThisStringOption("favoriteLink" + QString::number(i)));
     }
 
-    pseudoOfUser = settingToolClass::getThisStringOption("pseudo");
-    listOfAccount = settingToolClass::getListOfAccount();
+    pseudoOfUser = settingTool::getThisStringOption("pseudo");
+    listOfAccount = settingTool::getListOfAccount();
 
     if(listOfAccount.isEmpty() == true)
     {
@@ -411,14 +411,14 @@ void respawnIrcClass::loadSettings()
         else if(i == listOfAccount.size() - 1)
         {
             pseudoOfUser.clear();
-            settingToolClass::saveThisOption("pseudo", pseudoOfUser);
+            settingTool::saveThisOption("pseudo", pseudoOfUser);
         }
     }
 
-    listOfIgnoredPseudo = settingToolClass::getListOfIgnoredPseudo();
-    listOfColorPseudo = settingToolClass::getListOfColorPseudo();
-    listOfTopicLink = settingToolClass::getListOfTopicLink();
-    listOfPseudoForTopic = settingToolClass::getListOfPseudoForTopic();
+    listOfIgnoredPseudo = settingTool::getListOfIgnoredPseudo();
+    listOfColorPseudo = settingTool::getListOfColorPseudo();
+    listOfTopicLink = settingTool::getListOfTopicLink();
+    listOfPseudoForTopic = settingTool::getListOfPseudoForTopic();
 
     for(int i = 0; i < listOfTopicLink.size(); ++i)
     {
@@ -436,14 +436,14 @@ void respawnIrcClass::loadSettings()
     messagesStatus.setText(tabViewTopicInfos.getMessageStatusOfCurrentTab());
     setNewNumberOfConnectedAndPseudoUsed();
 
-    if(settingToolClass::getThisBoolOption("showTextDecorationButton") == false)
+    if(settingTool::getThisBoolOption("showTextDecorationButton") == false)
     {
         setShowTextDecorationButton(false);
     }
 
-    sendMessages.setMultilineEdit(settingToolClass::getThisBoolOption("setMultilineEdit"));
+    sendMessages.setMultilineEdit(settingTool::getThisBoolOption("setMultilineEdit"));
 
-    if(settingToolClass::getThisBoolOption("searchForUpdateAtLaunch") == true)
+    if(settingTool::getThisBoolOption("searchForUpdateAtLaunch") == true)
     {
         checkUpdate.startDownloadOfLatestUpdatePage();
     }
@@ -554,11 +554,11 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
 
     for(boolIte = newBoolOptions.begin(); boolIte != newBoolOptions.end(); ++boolIte)
     {
-        settingToolClass::saveThisOption(boolIte.key(), boolIte.value());
+        settingTool::saveThisOption(boolIte.key(), boolIte.value());
     }
     for(intIte = newIntOptions.begin(); intIte != newIntOptions.end(); ++intIte)
     {
-        settingToolClass::saveThisOption(intIte.key(), intIte.value());
+        settingTool::saveThisOption(intIte.key(), intIte.value());
     }
 
     if((boolIte = newBoolOptions.find("showTextDecorationButton")) != newBoolOptions.end())
@@ -646,12 +646,12 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
         if(saveAccountList == true)
         {
             accountListWindowClass::addAcountToThisList(currentCookieList, pseudoOfUser, &listOfAccount);
-            settingToolClass::saveListOfAccount(listOfAccount);
+            settingTool::saveListOfAccount(listOfAccount);
         }
 
         if(savePseudo == true)
         {
-            settingToolClass::saveThisOption("pseudo", pseudoOfUser);
+            settingTool::saveThisOption("pseudo", pseudoOfUser);
         }
     }
 }
@@ -703,17 +703,17 @@ void respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed()
 
 void respawnIrcClass::saveListOfAccount()
 {
-    settingToolClass::saveListOfAccount(listOfAccount);
+    settingTool::saveListOfAccount(listOfAccount);
 }
 
 void respawnIrcClass::saveListOfIgnoredPseudo()
 {
-    settingToolClass::saveListOfIgnoredPseudo(listOfIgnoredPseudo);
+    settingTool::saveListOfIgnoredPseudo(listOfIgnoredPseudo);
 }
 
 void respawnIrcClass::saveListOfColorPseudo()
 {
-    settingToolClass::saveListOfColorPseudo(listOfColorPseudo);
+    settingTool::saveListOfColorPseudo(listOfColorPseudo);
 }
 
 void respawnIrcClass::warnUserForNewMessages()

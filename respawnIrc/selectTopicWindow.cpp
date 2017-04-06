@@ -73,7 +73,7 @@ void selectTopicWindowClass::selectThisTopic()
     {
         if(newLink.startsWith("http://jvforum.fr/") == true)
         {
-            emit newTopicSelected(parsingToolClass::jvfLinkToJvcLink(newLink));
+            emit newTopicSelected(parsingTool::jvfLinkToJvcLink(newLink));
         }
         else
         {

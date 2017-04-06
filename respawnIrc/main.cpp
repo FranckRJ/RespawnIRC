@@ -22,12 +22,12 @@ int main(int argc, char* argv[])
     QSettings setting(QCoreApplication::applicationDirPath() + "/config.ini", QSettings::IniFormat);
 
     qsrand(QTime::currentTime().msecsSinceStartOfDay());
-    parsingToolClass::generateNewUserAgent();
+    parsingTool::generateNewUserAgent();
 
-    settingToolClass::setSettings(&setting);
-    settingToolClass::initializeDefaultListsOption();
-    shortcutToolClass::initializeAllShortcutsRules();
-    styleToolClass::getModelInfo("");
+    settingTool::setSettings(&setting);
+    settingTool::initializeDefaultListsOption();
+    shortcutTool::initializeAllShortcutsRules();
+    styleTool::getModelInfo("");
 
     qRegisterMetaType<infoForMessageParsingStruct>("infoForMessageParsingStruct");
     qRegisterMetaType<settingsForMessageParsingStruct>("settingsForMessageParsingStruct");

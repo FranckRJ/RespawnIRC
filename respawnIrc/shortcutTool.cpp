@@ -11,7 +11,7 @@ namespace
     QMap<QString, shortcutRuleStruct> listOfShortcutRules;
 }
 
-void shortcutToolClass::initializeAllShortcutsRules()
+void shortcutTool::initializeAllShortcutsRules()
 {
     listOfShortcutRules.clear();
     loadShortcutRule("shortcut");
@@ -19,7 +19,7 @@ void shortcutToolClass::initializeAllShortcutsRules()
     loadShortcutRule("stickerToSmiley", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/)rgx", R"rgx("/>)rgx", "<img src=\"resources/smileys/", "\"/>", true);
 }
 
-void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew, bool useRegex)
+void shortcutTool::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew, bool useRegex)
 {
     QFile thisFile(QCoreApplication::applicationDirPath() + "/resources/" + ruleName + ".txt");
 
@@ -56,12 +56,12 @@ void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, Q
     }
 }
 
-void shortcutToolClass::setThisShortcutRule(QString ruleName, const shortcutRuleStruct& newShortcutRule)
+void shortcutTool::setThisShortcutRule(QString ruleName, const shortcutRuleStruct& newShortcutRule)
 {
     listOfShortcutRules.insert(ruleName, newShortcutRule);
 }
 
-void shortcutToolClass::transformMessage(QString* thisMessage, QString ruleName)
+void shortcutTool::transformMessage(QString* thisMessage, QString ruleName)
 {
     if(thisMessage != nullptr)
     {
@@ -69,7 +69,7 @@ void shortcutToolClass::transformMessage(QString* thisMessage, QString ruleName)
     }
 }
 
-QString shortcutToolClass::transformMessage(QString thisMessage, QString ruleName)
+QString shortcutTool::transformMessage(QString thisMessage, QString ruleName)
 {
     QMap<QString, shortcutRuleStruct>::iterator rulesIte = listOfShortcutRules.find(ruleName);
 
@@ -94,7 +94,7 @@ QString shortcutToolClass::transformMessage(QString thisMessage, QString ruleNam
 }
 
 
-const QList<shortcutInfosStruct>* shortcutToolClass::getListOfShortcutsForRule(QString ruleName)
+const QList<shortcutInfosStruct>* shortcutTool::getListOfShortcutsForRule(QString ruleName)
 {
     QMap<QString, shortcutRuleStruct>::iterator rulesIte = listOfShortcutRules.find(ruleName);
 

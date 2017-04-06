@@ -92,7 +92,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
         QFont thisFont;
         QString nameForUseAndDel;
         QString nameForAdd;
-        QString nameOfTopic = settingToolClass::getThisStringOption("favoriteName" + QString::number(i));
+        QString nameOfTopic = settingTool::getThisStringOption("favoriteName" + QString::number(i));
 
         if(nameOfTopic.isEmpty() == false)
         {
@@ -144,14 +144,14 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     setCentralWidget(&respawnIrc);
     setWindowTitle("RespawnIRC " + respawnIrcClass::currentVersionName);
 
-    if(settingToolClass::getThisBoolOption("saveWindowGeometry") == false ||
-            settingToolClass::getThisByteOption("windowGeometry").isEmpty() == true)
+    if(settingTool::getThisBoolOption("saveWindowGeometry") == false ||
+            settingTool::getThisByteOption("windowGeometry").isEmpty() == true)
     {
         resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     }
     else
     {
-        restoreGeometry(settingToolClass::getThisByteOption("windowGeometry"));
+        restoreGeometry(settingTool::getThisByteOption("windowGeometry"));
     }
     respawnIrc.setFocus();
 
@@ -195,7 +195,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     connect(&respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
     connect(QApplication::instance(), &QApplication::aboutToQuit, this, &mainWindowClass::doStuffBeforeQuit);
 
-    respawnIrc.setNewTheme(settingToolClass::getThisStringOption("themeUsed"));
+    respawnIrc.setNewTheme(settingTool::getThisStringOption("themeUsed"));
 }
 
 void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
@@ -252,14 +252,14 @@ void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
 
 void mainWindowClass::closeEvent(QCloseEvent* event)
 {
-    settingToolClass::saveThisOption("windowGeometry", saveGeometry());
+    settingTool::saveThisOption("windowGeometry", saveGeometry());
     QMainWindow::closeEvent(event);
 }
 
 void mainWindowClass::doStuffBeforeQuit()
 {
     respawnIrc.doStuffBeforeQuit();
-    settingToolClass::forceSync();
+    settingTool::forceSync();
 }
 
 void mainWindowClass::goToMp()
@@ -269,7 +269,7 @@ void mainWindowClass::goToMp()
 
 void mainWindowClass::reloadShortcuts()
 {
-    shortcutToolClass::initializeAllShortcutsRules();
+    shortcutTool::initializeAllShortcutsRules();
 }
 
 void mainWindowClass::useFavoriteClicked()
@@ -326,6 +326,6 @@ void mainWindowClass::delFavoriteClicked()
 
 void mainWindowClass::setNewTheme(QString newThemeName)
 {
-    setStyleSheet(styleToolClass::getStyle(newThemeName));
-    styleToolClass::getModelInfo(newThemeName);
+    setStyleSheet(styleTool::getStyle(newThemeName));
+    styleTool::getModelInfo(newThemeName);
 }

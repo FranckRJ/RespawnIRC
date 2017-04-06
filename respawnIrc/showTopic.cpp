@@ -157,8 +157,8 @@ void showTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QString new
 
 void showTopicClass::setNewTheme(QString newThemeName)
 {
-    baseModel = styleToolClass::getModel(newThemeName);
-    baseModelInfo = styleToolClass::getModelInfo(newThemeName);
+    baseModel = styleTool::getModel(newThemeName);
+    baseModelInfo = styleTool::getModelInfo(newThemeName);
 }
 
 void showTopicClass::setNewTopic(QString newTopic)
@@ -170,7 +170,7 @@ void showTopicClass::setNewTopic(QString newTopic)
     currentTypeOfEdit = realTypeOfEdit;
     firstMessageOfTopic.isFirstMessage = false;
     topicLinkLastPage = newTopic;
-    topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopic);
+    topicLinkFirstPage = parsingTool::getFirstPageOfTopic(newTopic);
     firstTimeGetMessages = true;
     errorMode = false;
     currentErrorStreak = 0;
@@ -184,44 +184,44 @@ void showTopicClass::updateSettingInfo()
 {
     settingsForMessageParsingStruct settingsForMessageParsing;
 
-    showQuoteButton = settingToolClass::getThisBoolOption("showQuoteButton");
-    disableSelfQuoteButton = settingToolClass::getThisBoolOption("disableSelfQuoteButton");
-    showBlacklistButton = settingToolClass::getThisBoolOption("showBlacklistButton");
-    showEditButton = settingToolClass::getThisBoolOption("showEditButton");
-    showDeleteButton = settingToolClass::getThisBoolOption("showDeleteButton");
-    showSignatures = settingToolClass::getThisBoolOption("showSignatures");
-    showAvatars = settingToolClass::getThisBoolOption("showAvatars");
-    ignoreNetworkError = settingToolClass::getThisBoolOption("ignoreNetworkError");
-    colorModoAndAdminPseudo = settingToolClass::getThisBoolOption("colorModoAndAdminPseudo");
-    colorPEMT = settingToolClass::getThisBoolOption("colorPEMT");
-    colorUserPseudoInMessages = settingToolClass::getThisBoolOption("colorUserPseudoInMessages");
-    numberOfMessageShowedFirstTime = settingToolClass::getThisIntOption("numberOfMessageShowedFirstTime").value;
-    getFirstMessageOfTopic = settingToolClass::getThisBoolOption("getFirstMessageOfTopic");
-    warnWhenEdit = settingToolClass::getThisBoolOption("warnWhenEdit");
-    numberOfErrorsBeforeWarning = settingToolClass::getThisIntOption("numberOfErrorsBeforeWarning").value;
-    warnOnFirstTime = settingToolClass::getThisBoolOption("warnOnFirstTime");
-    realTypeOfEdit = settingToolClass::getThisIntOption("typeOfEdit").value;
+    showQuoteButton = settingTool::getThisBoolOption("showQuoteButton");
+    disableSelfQuoteButton = settingTool::getThisBoolOption("disableSelfQuoteButton");
+    showBlacklistButton = settingTool::getThisBoolOption("showBlacklistButton");
+    showEditButton = settingTool::getThisBoolOption("showEditButton");
+    showDeleteButton = settingTool::getThisBoolOption("showDeleteButton");
+    showSignatures = settingTool::getThisBoolOption("showSignatures");
+    showAvatars = settingTool::getThisBoolOption("showAvatars");
+    ignoreNetworkError = settingTool::getThisBoolOption("ignoreNetworkError");
+    colorModoAndAdminPseudo = settingTool::getThisBoolOption("colorModoAndAdminPseudo");
+    colorPEMT = settingTool::getThisBoolOption("colorPEMT");
+    colorUserPseudoInMessages = settingTool::getThisBoolOption("colorUserPseudoInMessages");
+    numberOfMessageShowedFirstTime = settingTool::getThisIntOption("numberOfMessageShowedFirstTime").value;
+    getFirstMessageOfTopic = settingTool::getThisBoolOption("getFirstMessageOfTopic");
+    warnWhenEdit = settingTool::getThisBoolOption("warnWhenEdit");
+    numberOfErrorsBeforeWarning = settingTool::getThisIntOption("numberOfErrorsBeforeWarning").value;
+    warnOnFirstTime = settingTool::getThisBoolOption("warnOnFirstTime");
+    realTypeOfEdit = settingTool::getThisIntOption("typeOfEdit").value;
 
     messageActions->updateSettingInfo();
 
-    settingsForMessageParsing.numberOfMessagesForOptimizationStart = settingToolClass::getThisIntOption("numberOfMessagesForOptimizationStart").value;
-    settingsForMessageParsing.infoForMessageParsing.showStickers = settingToolClass::getThisBoolOption("showStickers");
-    settingsForMessageParsing.infoForMessageParsing.stickersSize = settingToolClass::getThisIntOption("stickersSize").value;
-    settingsForMessageParsing.timeoutTime = settingToolClass::getThisIntOption("timeoutInSecond").value;
-    settingsForMessageParsing.infoForMessageParsing.nbMaxQuote = settingToolClass::getThisIntOption("maxNbOfQuotes").value;
-    settingsForMessageParsing.infoForMessageParsing.stickerToSmiley = settingToolClass::getThisBoolOption("stickersToSmiley");
-    settingsForMessageParsing.infoForMessageParsing.betterQuote = settingToolClass::getThisBoolOption("betterQuote");
-    settingsForMessageParsing.downloadMissingStickers = settingToolClass::getThisBoolOption("downloadMissingStickers");
-    settingsForMessageParsing.downloadNoelshackImages = settingToolClass::getThisBoolOption("downloadNoelshackImages");
-    settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingToolClass::getThisIntOption("noelshackImageWidth").value;
-    settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingToolClass::getThisIntOption("noelshackImageHeight").value;
-    settingsForMessageParsing.infoForMessageParsing.hideUglyImages = settingToolClass::getThisBoolOption("hideUglyImages");
-    if(settingToolClass::getThisBoolOption("fastModeEnbled") == false)
+    settingsForMessageParsing.numberOfMessagesForOptimizationStart = settingTool::getThisIntOption("numberOfMessagesForOptimizationStart").value;
+    settingsForMessageParsing.infoForMessageParsing.showStickers = settingTool::getThisBoolOption("showStickers");
+    settingsForMessageParsing.infoForMessageParsing.stickersSize = settingTool::getThisIntOption("stickersSize").value;
+    settingsForMessageParsing.timeoutTime = settingTool::getThisIntOption("timeoutInSecond").value;
+    settingsForMessageParsing.infoForMessageParsing.nbMaxQuote = settingTool::getThisIntOption("maxNbOfQuotes").value;
+    settingsForMessageParsing.infoForMessageParsing.stickerToSmiley = settingTool::getThisBoolOption("stickersToSmiley");
+    settingsForMessageParsing.infoForMessageParsing.betterQuote = settingTool::getThisBoolOption("betterQuote");
+    settingsForMessageParsing.downloadMissingStickers = settingTool::getThisBoolOption("downloadMissingStickers");
+    settingsForMessageParsing.downloadNoelshackImages = settingTool::getThisBoolOption("downloadNoelshackImages");
+    settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingTool::getThisIntOption("noelshackImageWidth").value;
+    settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingTool::getThisIntOption("noelshackImageHeight").value;
+    settingsForMessageParsing.infoForMessageParsing.hideUglyImages = settingTool::getThisBoolOption("hideUglyImages");
+    if(settingTool::getThisBoolOption("fastModeEnbled") == false)
     {
-        intSettingStruct updateTopicTimeSetting = settingToolClass::getThisIntOption("updateTopicTime");
+        intSettingStruct updateTopicTimeSetting = settingTool::getThisIntOption("updateTopicTime");
 
         settingsForMessageParsing.timerTime = updateTopicTimeSetting.value;
-        settingsForMessageParsing.isInOptimizedMode = (settingToolClass::getThisIntOption("numberOfPageToLoadForOpti").value == 1 ? true : false);
+        settingsForMessageParsing.isInOptimizedMode = (settingTool::getThisIntOption("numberOfPageToLoadForOpti").value == 1 ? true : false);
 
         if(settingsForMessageParsing.timerTime < updateTopicTimeSetting.minValue)
         {
@@ -230,7 +230,7 @@ void showTopicClass::updateSettingInfo()
     }
     else
     {
-        settingsForMessageParsing.timerTime = settingToolClass::fastModeSpeedRefresh;
+        settingsForMessageParsing.timerTime = settingTool::fastModeSpeedRefresh;
         settingsForMessageParsing.isInOptimizedMode = false;
     }
 
@@ -410,7 +410,7 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
     bool needToScrollDown = messagesBox.verticalScrollBar()->value() >= messagesBox.verticalScrollBar()->maximum();
     bool newMessagesAreAvailable = false;
 
-    if(parsingToolClass::getFirstPageOfTopic(fromThisTopic) != topicLinkFirstPage)
+    if(parsingTool::getFirstPageOfTopic(fromThisTopic) != topicLinkFirstPage)
     {
         startGetMessage();
         return;
@@ -574,7 +574,7 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
 
         if(colorUserPseudoInMessages == true && pseudoOfUser.isEmpty() == false)
         {
-            parsingToolClass::replaceWithCapNumber(currentMessage.message, expForColorPseudo, 0,
+            parsingTool::replaceWithCapNumber(currentMessage.message, expForColorPseudo, 0,
                                                    "<span style=\"color: " + baseModelInfo.userPseudoColor + ";\">", "</span>");
         }
 
@@ -750,5 +750,5 @@ void showTopicClass::setCookiesFromRequest(QList<QNetworkCookie> newListOfCookie
 
 void showTopicClass::setUpdatedTopicLink(QString newTopicLink)
 {
-    topicLinkFirstPage = parsingToolClass::getFirstPageOfTopic(newTopicLink);
+    topicLinkFirstPage = parsingTool::getFirstPageOfTopic(newTopicLink);
 }

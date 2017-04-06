@@ -143,7 +143,7 @@ void imageDownloadToolClass::startDownloadMissingImages()
 
         if(reply == nullptr)
         {
-            reply = networkManager->get(parsingToolClass::buildRequestWithThisUrl(listOfImagesUrlNeedDownload.front().linkOfImage));
+            reply = networkManager->get(parsingTool::buildRequestWithThisUrl(listOfImagesUrlNeedDownload.front().linkOfImage));
 
             if(reply->isOpen() == true)
             {

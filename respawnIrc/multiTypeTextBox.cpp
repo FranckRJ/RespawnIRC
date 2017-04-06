@@ -74,7 +74,7 @@ void multiTypeTextBoxClass::setEditMode(bool newVal)
 {
     if(newVal == true)
     {
-        QString newStyle = "#sendMessageText, #sendMessageLine { color: " + styleToolClass::getColorInfo().editMessageColor + "; }";
+        QString newStyle = "#sendMessageText, #sendMessageLine { color: " + styleTool::getColorInfo().editMessageColor + "; }";
 
         textEdit.setStyleSheet(newStyle);
         lineEdit.setStyleSheet(newStyle);
@@ -115,7 +115,7 @@ void multiTypeTextBoxClass::styleChanged()
 
 void multiTypeTextBoxClass::settingsChanged()
 {
-    bool useSpellChecker = settingToolClass::getThisBoolOption("useSpellChecker");
+    bool useSpellChecker = settingTool::getThisBoolOption("useSpellChecker");
 
     if(useSpellChecker == true && dicAreLoaded == false)
     {
@@ -126,7 +126,7 @@ void multiTypeTextBoxClass::settingsChanged()
 
     highlighter->enableSpellChecking(useSpellChecker);
     textEdit.enableSpellChecking(useSpellChecker);
-    textEdit.setFixedHeight(settingToolClass::getThisIntOption("textBoxSize").value);
+    textEdit.setFixedHeight(settingTool::getThisIntOption("textBoxSize").value);
 }
 
 void multiTypeTextBoxClass::insertText(QString newText)

@@ -11,7 +11,7 @@
 preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    expertMode = settingToolClass::getThisBoolOption("expertMode");
+    expertMode = settingTool::getThisBoolOption("expertMode");
 
     typeOfPageLoad = new QComboBox(this);
     layoutTypeOfPageLoad = new QHBoxLayout();
@@ -43,7 +43,7 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     mainWidget->addTab(createWidgetForTopicListTab(), "Liste des topics");
     mainWidget->addTab(createWidgetForImageTab(), "Image");
 
-    if(settingToolClass::getThisBoolOption("fastModeEnbled") == true)
+    if(settingTool::getThisBoolOption("fastModeEnbled") == true)
     {
         valueOfFastModeCheckBoxChanged(true);
     }
@@ -296,7 +296,7 @@ QCheckBox* preferenceWindowClass::makeNewCheckBox(QString messageInfo, QString b
         useThisCheckBox->setText(messageInfo);
     }
     useThisCheckBox->setObjectName(boxNameValue);
-    useThisCheckBox->setChecked(settingToolClass::getThisBoolOption(boxNameValue));
+    useThisCheckBox->setChecked(settingTool::getThisBoolOption(boxNameValue));
 
     connect(useThisCheckBox, &QCheckBox::toggled, this, &preferenceWindowClass::valueOfCheckboxChanged);
 
@@ -313,7 +313,7 @@ QHBoxLayout* preferenceWindowClass::makeNewSpinBox(QString messageInfo, QString 
     {
         useThisLayout = new QHBoxLayout();
     }
-    intSettingStruct infoForIntSetting = settingToolClass::getThisIntOption(boxNameValue);
+    intSettingStruct infoForIntSetting = settingTool::getThisIntOption(boxNameValue);
     QLabel* newInfoForSpinBox = new QLabel(messageInfo +  " (entre " + QString::number(infoForIntSetting.minValue) + " et " + QString::number(infoForIntSetting.maxValue) + ") :", this);
 
     useThisSpinBox->setObjectName(boxNameValue);
@@ -343,7 +343,7 @@ QHBoxLayout* preferenceWindowClass::makeNewComboBox(QString messageInfo, QString
 
     useThisComboBox->setObjectName(boxNameValue);
     useThisComboBox->addItems(listOfChoices);
-    useThisComboBox->setCurrentIndex(settingToolClass::getThisIntOption(boxNameValue).value);
+    useThisComboBox->setCurrentIndex(settingTool::getThisIntOption(boxNameValue).value);
 
     useThisLayout->addWidget(newInfoForComboBox);
     useThisLayout->addWidget(useThisComboBox, 1);
@@ -401,15 +401,15 @@ void preferenceWindowClass::valueOfFastModeCheckBoxChanged(bool newVal)
         topicRefreshTimeNumber->setEnabled(false);
         typeOfPageLoad->setCurrentIndex(0);
         showTopicListEnabled->setChecked(false);
-        topicRefreshTimeNumber->setMinimum(settingToolClass::fastModeSpeedRefresh);
-        topicRefreshTimeNumber->setValue(settingToolClass::fastModeSpeedRefresh);
+        topicRefreshTimeNumber->setMinimum(settingTool::fastModeSpeedRefresh);
+        topicRefreshTimeNumber->setValue(settingTool::fastModeSpeedRefresh);
     }
     else
     {
-        typeOfPageLoad->setCurrentIndex(settingToolClass::getThisIntOption("numberOfPageToLoadForOpti").value);
-        showTopicListEnabled->setChecked(settingToolClass::getThisBoolOption("showListOfTopic"));
-        topicRefreshTimeNumber->setMinimum(settingToolClass::getThisIntOption("updateTopicTime").minValue);
-        topicRefreshTimeNumber->setValue(settingToolClass::getThisIntOption("updateTopicTime").value);
+        typeOfPageLoad->setCurrentIndex(settingTool::getThisIntOption("numberOfPageToLoadForOpti").value);
+        showTopicListEnabled->setChecked(settingTool::getThisBoolOption("showListOfTopic"));
+        topicRefreshTimeNumber->setMinimum(settingTool::getThisIntOption("updateTopicTime").minValue);
+        topicRefreshTimeNumber->setValue(settingTool::getThisIntOption("updateTopicTime").value);
         showTopicListEnabled->setEnabled(true);
         typeOfPageLoad->setEnabled(true);
         topicRefreshTimeNumber->setEnabled(true);

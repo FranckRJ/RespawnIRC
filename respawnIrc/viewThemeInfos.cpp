@@ -19,7 +19,7 @@ void viewThemeInfosClass::setThemeToShow(QString newThemeName)
 {
     if(newThemeName.isEmpty() == false)
     {
-        QString modelTheme = styleToolClass::getModel(newThemeName);
+        QString modelTheme = styleTool::getModel(newThemeName);
 
         bool hasButtonQuote = modelTheme.contains("<%BUTTON_QUOTE%>");
         bool hasButtonBlacklist = modelTheme.contains("<%BUTTON_BLACKLIST%>");

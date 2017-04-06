@@ -86,7 +86,7 @@ namespace
     {
         if((baseMessage.startsWith("http://") || baseMessage.startsWith("https://")) && baseMessage.contains(" ") == false)
         {
-            baseMessage = "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"" + baseMessage + "\">" + baseMessage + "</a>";
+            baseMessage = "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"" + baseMessage + "\">" + baseMessage + "</a>";
         }
         return baseMessage;
     }
@@ -102,7 +102,7 @@ namespace
     }
 }
 
-void parsingToolClass::generateNewUserAgent() {
+void parsingTool::generateNewUserAgent() {
     QStringList allStringForGeneration;
     int lastMessageId = qrand() % 3;
 
@@ -139,7 +139,7 @@ void parsingToolClass::generateNewUserAgent() {
     }
 }
 
-bool parsingToolClass::checkIfTopicAreSame(const QString& firstTopic, const QString& secondTopic)
+bool parsingTool::checkIfTopicAreSame(const QString& firstTopic, const QString& secondTopic)
 {
     QRegularExpressionMatch matcherForFirstTopic = expForTopicLinkNumber.match(firstTopic);
     QRegularExpressionMatch matcherForSecondTopic = expForTopicLinkNumber.match(secondTopic);
@@ -156,7 +156,7 @@ bool parsingToolClass::checkIfTopicAreSame(const QString& firstTopic, const QStr
     }
 }
 
-ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
+ajaxInfoStruct parsingTool::getAjaxInfo(const QString& source)
 {
     ajaxInfoStruct newAjaxInfo;
 
@@ -178,12 +178,12 @@ ajaxInfoStruct parsingToolClass::getAjaxInfo(const QString& source)
     return newAjaxInfo;
 }
 
-QString parsingToolClass::getMessageEdit(const QString& source)
+QString parsingTool::getMessageEdit(const QString& source)
 {
     return specialCharToNormalChar(expForMessageEdit.match(source).captured(1));
 }
 
-QString parsingToolClass::getMessageQuote(const QString& source)
+QString parsingTool::getMessageQuote(const QString& source)
 {
     QString message = specialCharToNormalChar(parsingAjaxMessages(expForMessageQuote.match(source).captured(1)));
     message.replace("\n", "\n>");
@@ -191,24 +191,24 @@ QString parsingToolClass::getMessageQuote(const QString& source)
     return message;
 }
 
-QString parsingToolClass::getWebsite(const QString& topicLink)
+QString parsingTool::getWebsite(const QString& topicLink)
 {
     return expForWebsite.match(topicLink).captured(1);
 }
 
-QString parsingToolClass::getVersionName(const QString& source)
+QString parsingTool::getVersionName(const QString& source)
 {
     return expForVersionName.match(source).captured(1);
 }
 
-QString parsingToolClass::getVersionChangelog(const QString& source)
+QString parsingTool::getVersionChangelog(const QString& source)
 {
     QString changelog = expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--").replace("   --", "---").replace("\\\\", "\\");
-    replaceWithCapNumber(changelog, expForNormalLink, 0, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 0, "</a>");
+    replaceWithCapNumber(changelog, expForNormalLink, 0, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 0, "</a>");
     return changelog;
 }
 
-void parsingToolClass::getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString>>& listOfInput)
+void parsingTool::getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString>>& listOfInput)
 {
     QString formSource;
 
@@ -261,17 +261,17 @@ void parsingToolClass::getListOfHiddenInputFromThisForm(const QString& source, Q
     }
 }
 
-bool parsingToolClass::getTopicLocked(const QString& source)
+bool parsingTool::getTopicLocked(const QString& source)
 {
     return expForTopicLocked.match(source).hasMatch();
 }
 
-QString parsingToolClass::getCaptchaLink(const QString& source)
+QString parsingTool::getCaptchaLink(const QString& source)
 {
     return expForCaptcha.match(source).captured(1);
 }
 
-QString parsingToolClass::getErrorMessage(const QString& source)
+QString parsingTool::getErrorMessage(const QString& source)
 {
     QRegularExpressionMatch match = expForError.match(source);
 
@@ -285,7 +285,7 @@ QString parsingToolClass::getErrorMessage(const QString& source)
     }
 }
 
-QString parsingToolClass::getNextPageOfTopic(const QString& source, const QString& website)
+QString parsingTool::getNextPageOfTopic(const QString& source, const QString& website)
 {
     int currentPage = 0;
     currentPage = expForCurrentPage.match(source).captured(1).toInt();
@@ -303,7 +303,7 @@ QString parsingToolClass::getNextPageOfTopic(const QString& source, const QStrin
     return "";
 }
 
-QString parsingToolClass::getLastPageOfTopic(const QString& source, const QString& website)
+QString parsingTool::getLastPageOfTopic(const QString& source, const QString& website)
 {
     int currentPage = 0;
     QString lastPage;
@@ -323,7 +323,7 @@ QString parsingToolClass::getLastPageOfTopic(const QString& source, const QStrin
     return lastPage;
 }
 
-QString parsingToolClass::getFirstPageOfTopic(const QString& topicLink)
+QString parsingTool::getFirstPageOfTopic(const QString& topicLink)
 {
     QRegularExpressionMatch matchForFirstPage = expForTopicLinkNumber.match(topicLink);
 
@@ -337,7 +337,7 @@ QString parsingToolClass::getFirstPageOfTopic(const QString& topicLink)
     }
 }
 
-QString parsingToolClass::getBeforeLastPageOfTopic(const QString& topicLink)
+QString parsingTool::getBeforeLastPageOfTopic(const QString& topicLink)
 {
     QRegularExpressionMatch matchForBeforeLastPage = expForTopicLinkNumber.match(topicLink);
     QString pageNumber = matchForBeforeLastPage.captured(5);
@@ -352,17 +352,17 @@ QString parsingToolClass::getBeforeLastPageOfTopic(const QString& topicLink)
     }
 }
 
-QString parsingToolClass::getNameOfTopic(const QString& source)
+QString parsingTool::getNameOfTopic(const QString& source)
 {
     return expForNameOfTopic.match(source).captured(1).replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");
 }
 
-QString parsingToolClass::getNumberOfConnected(const QString& source)
+QString parsingTool::getNumberOfConnected(const QString& source)
 {
     return expForNumberOfConnected.match(source).captured(1);
 }
 
-int parsingToolClass::getNumberOfMp(const QString& source)
+int parsingTool::getNumberOfMp(const QString& source)
 {
     QRegularExpressionMatch matchMpNumber = expForMpJvc.match(source);
 
@@ -376,7 +376,7 @@ int parsingToolClass::getNumberOfMp(const QString& source)
     }
 }
 
-QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars(const QString& source)
+QList<messageStruct> parsingTool::getListOfEntireMessagesWithoutMessagePars(const QString& source)
 {
     QList<QString> listOfEntireMessage;
     QList<messageStruct> listOfMessages;
@@ -418,7 +418,7 @@ QList<messageStruct> parsingToolClass::getListOfEntireMessagesWithoutMessagePars
     return listOfMessages;
 }
 
-QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source, const QString& website)
+QList<topicStruct> parsingTool::getListOfTopic(const QString& source, const QString& website)
 {
     QList<topicStruct> listOfTopic;
     QList<QString> listOfEntireTopic;
@@ -442,7 +442,7 @@ QList<topicStruct> parsingToolClass::getListOfTopic(const QString& source, const
     return listOfTopic;
 }
 
-QString parsingToolClass::getForumOfTopic(const QString& topicLink)
+QString parsingTool::getForumOfTopic(const QString& topicLink)
 {
     QRegularExpressionMatch infosMatcher = expForTopicLinkNumber.match(topicLink);
 
@@ -456,7 +456,7 @@ QString parsingToolClass::getForumOfTopic(const QString& topicLink)
     }
 }
 
-QString parsingToolClass::getForumName(const QString& source)
+QString parsingTool::getForumName(const QString& source)
 {
     QString forumName = expForForumName.match(source).captured(1);
 
@@ -468,7 +468,7 @@ QString parsingToolClass::getForumName(const QString& source)
     return forumName;
 }
 
-QString parsingToolClass::jvfLinkToJvcLink(const QString& jvfTopicLink)
+QString parsingTool::jvfLinkToJvcLink(const QString& jvfTopicLink)
 {
     QRegularExpressionMatch matchForJvfLink = expForJvfLink.match(jvfTopicLink);
     QString forumNumber = matchForJvfLink.captured(1);
@@ -493,13 +493,13 @@ QString parsingToolClass::jvfLinkToJvcLink(const QString& jvfTopicLink)
     }
 }
 
-QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers)
+QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers)
 {
     QString extraTableStyle;
 
     if(infoForParsing.betterQuote == true)
     {
-        extraTableStyle += "background: " + styleToolClass::getColorInfo().tableBackgroundColor + ";color: " + styleToolClass::getColorInfo().tableTextColor + ";";
+        extraTableStyle += "background: " + styleTool::getColorInfo().tableBackgroundColor + ";color: " + styleTool::getColorInfo().tableTextColor + ";";
     }
 
     thisMessage.remove(expForAd);
@@ -509,15 +509,15 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     thisMessage.replace("\n", "");
     thisMessage.replace("\r", "");
 
-    shortcutToolClass::transformMessage(&thisMessage, "noLangageSticker");
+    shortcutTool::transformMessage(&thisMessage, "noLangageSticker");
     if(infoForParsing.stickerToSmiley == true)
     {
-        shortcutToolClass::transformMessage(&thisMessage, "stickerToSmiley");
+        shortcutTool::transformMessage(&thisMessage, "stickerToSmiley");
     }
 
     if(infoForParsing.showStickers == false)
     {
-        replaceWithCapNumber(thisMessage, expForStickers, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
+        replaceWithCapNumber(thisMessage, expForStickers, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     }
     else
     {
@@ -530,10 +530,10 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     }
 
     replaceWithCapNumber(thisMessage, expForSmiley, 1, "<img src=\"resources/smileys/", "\" />");
-    replaceWithCapNumber(thisMessage, expForYoutubeVideo, 2, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"http://youtu.be/", "\">http://youtu.be/", 2, "</a>");
-    replaceWithCapNumber(thisMessage, expForJvcLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
-    replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
-    replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
+    replaceWithCapNumber(thisMessage, expForYoutubeVideo, 2, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://youtu.be/", "\">http://youtu.be/", 2, "</a>");
+    replaceWithCapNumber(thisMessage, expForJvcLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
+    replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
+    replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
 
     if(infoForParsing.hideUglyImages == true)
     {
@@ -556,12 +556,12 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     }
     else
     {
-        replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a style=\"color: " + styleToolClass::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
+        replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     }
 
     removeAllOverlySpoils(thisMessage);
-    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
-    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleToolClass::getColorInfo().spoilColor + "; background-color: " + styleToolClass::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
+    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleTool::getColorInfo().spoilColor + "; background-color: " + styleTool::getColorInfo().spoilColor + ";\">", "</span>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
+    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleTool::getColorInfo().spoilColor + "; background-color: " + styleTool::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", std::bind(stringModificatorMakeLinkIfPossible, std::placeholders::_1));
 
     thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<blockquote>");
@@ -584,7 +584,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     thisMessage.replace("<ul><br /><br />", "</ul>");
     thisMessage.replace("<ol><br /><br />", "</ol>");
 
-    thisMessage.replace("<blockquote>", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;border-color: " + styleToolClass::getColorInfo().tableBorderColor + ";" + extraTableStyle + "\"><tr><td>");
+    thisMessage.replace("<blockquote>", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;border-color: " + styleTool::getColorInfo().tableBorderColor + ";" + extraTableStyle + "\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
 
     thisMessage.remove("</div>");
@@ -603,7 +603,7 @@ QString parsingToolClass::parsingMessages(QString thisMessage, infoForMessagePar
     return thisMessage;
 }
 
-QString parsingToolClass::parsingAjaxMessages(QString thisMessage)
+QString parsingTool::parsingAjaxMessages(QString thisMessage)
 {
     thisMessage.remove("\n");
     thisMessage.remove("\r");
@@ -627,12 +627,12 @@ QString parsingToolClass::parsingAjaxMessages(QString thisMessage)
     return thisMessage;
 }
 
-QString parsingToolClass::specialCharToNormalChar(QString thisMessage)
+QString parsingTool::specialCharToNormalChar(QString thisMessage)
 {
     return thisMessage.replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");
 }
 
-QNetworkRequest parsingToolClass::buildRequestWithThisUrl(QString url)
+QNetworkRequest parsingTool::buildRequestWithThisUrl(QString url)
 {
     QNetworkRequest request;
     request.setUrl(QUrl(url));
@@ -644,7 +644,7 @@ QNetworkRequest parsingToolClass::buildRequestWithThisUrl(QString url)
     return request;
 }
 
-QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, const QRegularExpression& exp, int capNumber, bool globalMatch)
+QList<QString> parsingTool::getListOfThisCapNumber(const QString& source, const QRegularExpression& exp, int capNumber, bool globalMatch)
 {
     QList<QString> listOfString;
     if(globalMatch == true)
@@ -669,7 +669,7 @@ QList<QString> parsingToolClass::getListOfThisCapNumber(const QString& source, c
     return listOfString;
 }
 
-void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
+void parsingTool::removeAllOverlyQuote(QString& source, int maxNumberQuote)
 {
     QRegularExpressionMatch match = expForOverlyQuote.match(source);
     ++maxNumberQuote;
@@ -717,7 +717,7 @@ void parsingToolClass::removeAllOverlyQuote(QString& source, int maxNumberQuote)
     }
 }
 
-void parsingToolClass::removeAllOverlySpoils(QString& source)
+void parsingTool::removeAllOverlySpoils(QString& source)
 {
     QRegularExpressionMatch spoilOverlyMatcher = expForOverlySpoils.match(source);
     int currentSpoilTagDeepness = 0;
@@ -756,7 +756,7 @@ void parsingToolClass::removeAllOverlySpoils(QString& source)
     }
 }
 
-void parsingToolClass::replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber,
+void parsingTool::replaceWithCapNumber(QString& source, const QRegularExpression& exp, int capNumber, QString stringBefore, QString stringAfter, int secondCapNumber,
                                             QString stringAfterAfter, std::function<QString(QString)> capModificator)
 {
     QRegularExpressionMatch match = exp.match(source);
