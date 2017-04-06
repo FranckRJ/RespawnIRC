@@ -74,6 +74,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     QAction* actionShowListOfIgnoredPseudo = menuSetting->addAction("Gérer les ignorés");
     QAction* actionShowListOfColorPseudo = menuSetting->addAction("Gérer la couleur des pseudos");
     menuSetting->addSeparator();
+    QAction* actionManageShortcuts = menuSetting->addAction("Gérer les raccourcis");
     QAction* actionReloadShortcuts = menuSetting->addAction("Recharger les raccourcis");
     menuSetting->addSeparator();
     QAction* actionShowPreferences = menuSetting->addAction("Préférences...");
@@ -182,6 +183,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     connect(actionGoToForum, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentForum);
     connect(actionShowListOfIgnoredPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showIgnoreListWindow);
     connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
+    connect(actionManageShortcuts, &QAction::triggered, &respawnIrc, &respawnIrcClass::showManageShortcutWindow);
     connect(actionReloadShortcuts, &QAction::triggered, this, &mainWindowClass::reloadShortcuts);
     connect(actionShowPreferences, &QAction::triggered, &respawnIrc, &respawnIrcClass::showPreferences);
     connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);

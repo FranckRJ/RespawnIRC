@@ -18,6 +18,7 @@
 #include "selectStickerWindow.hpp"
 #include "preferencesWindow.hpp"
 #include "ignoreListWindow.hpp"
+#include "manageShortcutWindow.hpp"
 #include "parsingTool.hpp"
 #include "settingTool.hpp"
 #include "styleTool.hpp"
@@ -187,6 +188,12 @@ void respawnIrcClass::showColorPseudoListWindow()
     colorPseudoListWindowClass* myColorPseudoListWindow = new colorPseudoListWindowClass(&listOfColorPseudo, this);
     connect(myColorPseudoListWindow, &colorPseudoListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfColorPseudo);
     myColorPseudoListWindow->exec();
+}
+
+void respawnIrcClass::showManageShortcutWindow()
+{
+    manageShortcutWindowClass* myManageShortcutWindow = new manageShortcutWindowClass(this);
+    myManageShortcutWindow->exec();
 }
 
 void respawnIrcClass::showAbout()

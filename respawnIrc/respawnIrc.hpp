@@ -41,6 +41,7 @@ public slots:
     void showPreferences();
     void showIgnoreListWindow();
     void showColorPseudoListWindow();
+    void showManageShortcutWindow();
     void showAbout();
     void checkForUpdate();
     void goToCurrentTopic();

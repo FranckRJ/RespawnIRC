@@ -13,6 +13,7 @@ namespace
 
 void shortcutToolClass::initializeAllShortcutsRules()
 {
+    listOfShortcutRules.clear();
     loadShortcutRule("shortcut");
     loadShortcutRule("noLangageSticker", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/)rgx", R"rgx("/>)rgx", "<img class=\"img-stickers\" src=\"http://jv.stkr.fr/p/", "\"/>", true);
     loadShortcutRule("stickerToSmiley", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/)rgx", R"rgx("/>)rgx", "<img src=\"resources/smileys/", "\"/>", true);
@@ -35,7 +36,7 @@ void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, Q
             QString thisLine = textStream.readLine();
             int index = thisLine.indexOf(' ');
 
-            if(index > 0 && index < (thisLine.size() - 1))
+            if(index > 0 && index < thisLine.size())
             {
                 shortcutInfosStruct newShortcutInfos;
 
@@ -53,6 +54,11 @@ void shortcutToolClass::loadShortcutRule(QString ruleName, QString beforeBase, Q
             }
         }
     }
+}
+
+void shortcutToolClass::setThisShortcutRule(QString ruleName, const shortcutRuleStruct& newShortcutRule)
+{
+    listOfShortcutRules.insert(ruleName, newShortcutRule);
 }
 
 void shortcutToolClass::transformMessage(QString* thisMessage, QString ruleName)
@@ -85,4 +91,17 @@ QString shortcutToolClass::transformMessage(QString thisMessage, QString ruleNam
     }
 
     return thisMessage;
+}
+
+
+const QList<shortcutInfosStruct>* shortcutToolClass::getListOfShortcutsForRule(QString ruleName)
+{
+    QMap<QString, shortcutRuleStruct>::iterator rulesIte = listOfShortcutRules.find(ruleName);
+
+    if(rulesIte != listOfShortcutRules.end())
+    {
+        return &rulesIte.value().listOfShortcuts;
+    }
+
+    return nullptr;
 }

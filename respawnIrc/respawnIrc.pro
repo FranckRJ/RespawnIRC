@@ -30,7 +30,9 @@ SOURCES += \
     showForum.cpp \
     showTopic.cpp \
     messageActions.cpp \
-    tabViewTopicInfos.cpp
+    tabViewTopicInfos.cpp \
+    manageShortcutWindow.cpp \
+    addShortcutWindow.cpp
 
 QT += \
     network \
@@ -70,7 +72,9 @@ HEADERS += \
     showForum.hpp \
     showTopic.hpp \
     messageActions.hpp \
-    tabViewTopicInfos.hpp
+    tabViewTopicInfos.hpp \
+    manageShortcutWindow.hpp \
+    addShortcutWindow.hpp
 
 RC_FILE = respawnIrc.rc
 

@@ -29,7 +29,7 @@ public:
     void setNewTheme(QString newThemeName);
     void updateSettings();
 private:
-    void setInfosOfItemDependingOnTopic(const topicStruct& thisTopic, QStandardItem* toThisItem);
+    QStandardItem* createItemDependingOnTopic(const topicStruct& thisTopic);
     void setLoadNeeded(bool newVal);
 private slots:
     void startGetListOfTopic();

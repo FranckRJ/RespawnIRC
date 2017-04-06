@@ -18,7 +18,7 @@ class tabViewTopicInfosClass : public QWidget
 {
     Q_OBJECT
 public:
-    tabViewTopicInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo,
+    explicit tabViewTopicInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo,
                            const QList<accountStruct>* newListOfAccount, QWidget* parent = 0);
     void doStuffBeforeQuit();
     void updateSettings();

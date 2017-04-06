@@ -150,8 +150,9 @@ void showForumClass::updateSettings()
     timeoutForReply.updateTimeoutTime();
 }
 
-void showForumClass::setInfosOfItemDependingOnTopic(const topicStruct& forThisTopic, QStandardItem* toThisItem)
+QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& forThisTopic)
 {
+    QStandardItem* newItem = new QStandardItem();
     QString currentTopicName = forThisTopic.name;
 
     if(cutLongTopicName == true)
@@ -175,7 +176,7 @@ void showForumClass::setInfosOfItemDependingOnTopic(const topicStruct& forThisTo
             {
                 if(useIconInsteadOfTag == true)
                 {
-                    toThisItem->setIcon(QIcon(*pinnedOnTagImage));
+                    newItem->setIcon(QIcon(*pinnedOnTagImage));
                 }
                 else
                 {
@@ -186,7 +187,7 @@ void showForumClass::setInfosOfItemDependingOnTopic(const topicStruct& forThisTo
             {
                 if(useIconInsteadOfTag == true)
                 {
-                    toThisItem->setIcon(QIcon(*pinnedOffTagImage));
+                    newItem->setIcon(QIcon(*pinnedOffTagImage));
                 }
                 else
                 {
@@ -201,7 +202,7 @@ void showForumClass::setInfosOfItemDependingOnTopic(const topicStruct& forThisTo
         {
             if(useIconInsteadOfTag == true)
             {
-                toThisItem->setIcon(QIcon(*hotTagImage));
+                newItem->setIcon(QIcon(*hotTagImage));
             }
             else
             {
@@ -215,7 +216,7 @@ void showForumClass::setInfosOfItemDependingOnTopic(const topicStruct& forThisTo
         {
             if(useIconInsteadOfTag == true)
             {
-                toThisItem->setIcon(QIcon(*lockTagImage));
+                newItem->setIcon(QIcon(*lockTagImage));
             }
             else
             {
@@ -229,7 +230,7 @@ void showForumClass::setInfosOfItemDependingOnTopic(const topicStruct& forThisTo
         {
             if(useIconInsteadOfTag == true)
             {
-                toThisItem->setIcon(QIcon(*resolvedTagImage));
+                newItem->setIcon(QIcon(*resolvedTagImage));
             }
             else
             {
@@ -243,7 +244,7 @@ void showForumClass::setInfosOfItemDependingOnTopic(const topicStruct& forThisTo
         {
             if(useIconInsteadOfTag == true)
             {
-                toThisItem->setIcon(QIcon(*normalTagImage));
+                newItem->setIcon(QIcon(*normalTagImage));
             }
             else
             {
@@ -252,19 +253,21 @@ void showForumClass::setInfosOfItemDependingOnTopic(const topicStruct& forThisTo
         }
     }
 
-    toThisItem->setText(currentTopicName);
+    newItem->setText(currentTopicName);
 
     if(colorModoAndAdminTopic == true)
     {
         if(forThisTopic.pseudoInfo.pseudoType == "modo")
         {
-            toThisItem->setForeground(QBrush(QColor(baseModelInfo.modoPseudoColor)));
+            newItem->setForeground(QBrush(QColor(baseModelInfo.modoPseudoColor)));
         }
         else if(forThisTopic.pseudoInfo.pseudoType == "admin" || forThisTopic.pseudoInfo.pseudoType == "staff")
         {
-            toThisItem->setForeground(QBrush(QColor(baseModelInfo.adminPseudoColor)));
+            newItem->setForeground(QBrush(QColor(baseModelInfo.adminPseudoColor)));
         }
     }
+
+    return newItem;
 }
 
 void showForumClass::setLoadNeeded(bool newVal)
@@ -355,7 +358,6 @@ void showForumClass::analyzeReply()
         listOfLink.clear();
 
         newItemToAppend = new QStandardItem(parsingToolClass::getForumName(source));
-        newItemToAppend->setEditable(false);
         tmpFont = newItemToAppend->font();
         tmpFont.setBold(true);
         newItemToAppend->setFont(tmpFont);
@@ -365,12 +367,7 @@ void showForumClass::analyzeReply()
 
         for(const topicStruct& thisTopic : listOfTopic)
         {
-            newItemToAppend = new QStandardItem();
-            newItemToAppend->setEditable(false);
-            setInfosOfItemDependingOnTopic(thisTopic, newItemToAppend);
-
-            modelForListView.appendRow(newItemToAppend);
-
+            modelForListView.appendRow(createItemDependingOnTopic(thisTopic));
             listOfLink.append(thisTopic.link);
         }
     }
