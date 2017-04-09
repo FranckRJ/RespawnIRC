@@ -5,12 +5,12 @@ QMainWindow
 	background-position: left bottom;
 }
 
-QTextBrowser, QTabWidget#tabListForTopics QListView, QTextEdit#sendMessageText, QLineEdit#sendMessageLine, QTabWidget#tabListForTopics::pane
+QTextBrowser, QListView#listOfTopics, QTextEdit#sendMessageText, QLineEdit#sendMessageLine, QTabWidget#tabListForTopics::pane
 {
-    border: none;
+	border: none;
 }
 
-QTabWidget#tabListForTopics QListView
+QListView#listOfTopics
 {
 	border: 5px solid white;
 	border-bottom: 0px;
@@ -63,7 +63,7 @@ QPushButton#spoilButton
 
 QPushButton#boldButton, QPushButton#italicButton, QPushButton#underlineButton, QPushButton#strikeButton, QPushButton#ulistButton, QPushButton#olistButton, QPushButton#quoteButton, QPushButton#codeButton, QPushButton#spoilButton
 {
-    border: 2px solid white;
+	border: 2px solid white;
 	background-color: white;
 	background-repeat: no-repeat;
 	background-origin: content;

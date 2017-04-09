@@ -1,11 +1,11 @@
 QMainWindow, QDialog
 {
-    background: #303030;
+	background: #303030;
 }
 
 QLabel, QGroupBox, QCheckBox
 {
-    color: #E0E0E0;
+	color: #E0E0E0;
 }
 
 QMenuBar
@@ -44,11 +44,27 @@ QMenu::item:disabled
 	color: #858585;
 }
 
-QTextBrowser, QListView, QTabWidget::pane, QTextEdit, QLineEdit
+QTextBrowser, .QListView, QTreeView, QTabWidget::pane, QTextEdit, QLineEdit
 {
-    background: #444444;
-    color: #E0E0E0;
+	background: #444444;
+	color: #E0E0E0;
 	border: 1px;
+}
+
+QTreeView QHeaderView::section
+{
+	background: #262626;
+	color: white;
+	padding: 4px;
+	border: 0px;
+}
+
+QTreeView QHeaderView::section:!last
+{
+	border: 1px solid #444444;
+	border-bottom: 0px;
+	border-top: 0px;
+	border-left: 0px;
 }
 
 QTextBrowser, QTextEdit, QLineEdit
@@ -57,20 +73,20 @@ QTextBrowser, QTextEdit, QLineEdit
 	selection-color: #505050;
 }
 
-QListView::item:hover
+.QListView::item:hover, QTreeView::item:hover
 {
 	background: #595959;
 }
 
-QListView::item:selected
+.QListView::item:selected, QTreeView::item:selected
 {
 	background: #737373;
 }
 
 QPushButton
 {
-    background: #484A4B;
-    color: white;
+	background: #484A4B;
+	color: white;
 	border-radius: 0px;
 	padding: 3px;
 	min-width: 60px;
@@ -109,12 +125,12 @@ QPushButton:pressed, QPushButton:focus:pressed
 QPushButton:!enabled
 {
 	background: #3E4041;
-    color: #999999;
+	color: #999999;
 }
 
 QSplitter::handle
 {
-    background: #444444;
+	background: #444444;
 	border-left: 1px solid #444444;
 	border-right: 1px solid #A5A5A5;
 	margin-top: 5px;
@@ -171,7 +187,7 @@ QTabBar::tab:!selected:hover
 
 QTabBar::tab:!selected
 {
-    margin-top: 3px;
+	margin-top: 3px;
 	border-right: 1px solid #444444;
 }
 

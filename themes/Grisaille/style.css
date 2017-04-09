@@ -52,7 +52,7 @@ QTextEdit, QLineEdit
 
 QLineEdit:disabled
 {
-    background: grey;
+	background: grey;
 }
 
 QTextBrowser
@@ -62,7 +62,7 @@ QTextBrowser
 	border: 0px;
 }
 
-QListView
+.QListView
 {
 	background: grey;
 	color: lightgrey;
@@ -70,42 +70,58 @@ QListView
 	outline: none;
 }
 
-QDialog QListView
+QDialog .QListView
 {
 	background: grey;
 	color: lightgrey;
 	border: 1px solid darkgrey;
 }
 
-QListView::item:hover
+QTreeView
+{
+	background: grey;
+	color: lightgrey;
+	border: 1px solid darkgrey;
+	outline: none;
+}
+
+QTreeView QHeaderView::section
+{
+	background: grey;
+	color: lightgrey;
+	padding: 4px;
+	border: 1px solid darkgrey;
+}
+
+.QListView::item:hover, QTreeView::item:hover
 {
 	background: dimgrey;
 }
 
-QListView::item:selected
+.QListView::item:selected, QTreeView::item:selected
 {
 	background: dimgrey;
 }
 
 QTabWidget::pane
 {
-    border: 2px solid darkgrey;
+	border: 2px solid darkgrey;
 }
 
 QSplitter:handle
 {
-    background: darkgrey;
+	background: darkgrey;
 }
 
 QTabBar::tab
 {
-    border: 2px solid darkgrey;
+	border: 2px solid darkgrey;
 	color: lightgrey;
 	border-bottom: 0px;
-    padding-bottom: 5px;
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 2px;
+	padding-bottom: 5px;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-top: 2px;
 }
 
 QTabBar::tab:!selected
@@ -121,8 +137,8 @@ QTabBar::tab:selected, QTabBar::tab:hover
 
 QPushButton
 {
-    background: lightgrey;
-    color: black;
+	background: lightgrey;
+	color: black;
 	border: 2px solid darkgrey;
 	padding: 3px;
 	min-width: 50px;
@@ -154,7 +170,7 @@ QPushButton:pressed, QPushButton:focus:pressed
 QPushButton:!enabled
 {
 	background: #b3b3b3;
-    color: dimgrey;
+	color: dimgrey;
 }
 
 QScrollBar

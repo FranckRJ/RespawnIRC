@@ -54,6 +54,7 @@ showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWid
         normalTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier1.png");
     }
 
+    listViewOfTopic.setObjectName("listOfTopics");
     listViewOfTopic.setModel(&modelForListView);
     listViewOfTopic.setEditTriggers(QAbstractItemView::NoEditTriggers);
     listViewOfTopic.setContextMenuPolicy(Qt::CustomContextMenu);

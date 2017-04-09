@@ -7,20 +7,20 @@
 /* Général */
 QMainWindow
 {
-    background: #DBDBDB;
+	background: #DBDBDB;
 }
 QMenuBar
 {
-    background: #19709E;
+	background: #19709E;
 }
 QMenuBar::item
 {
-    color: white;
-    background: #19709E;
+	color: white;
+	background: #19709E;
 }
 QMenuBar::item:selected
 {
-    background: #003E5D;
+	background: #003E5D;
 }
 QTabWidget#tabListForTopics:pane
 {
@@ -30,31 +30,31 @@ QTabWidget#tabListForTopics:pane
 /* Tabs des topics */
 QTabWidget#tabListForTopics > QTabBar::tab
 {
-    padding: 5px;
-    color: white;
-    background-color: #003E5D;
-    border-bottom-width: 2px;
-    border-bottom-style: solid;
-    border-bottom-color: #003E5D;
+	padding: 5px;
+	color: white;
+	background-color: #003E5D;
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	border-bottom-color: #003E5D;
 }
 QTabWidget#tabListForTopics > QTabBar::tab:selected
 {
-    color: #FF6600;
-    background-color: white;
-    border-bottom-color: #FF6600;
+	color: #FF6600;
+	background-color: white;
+	border-bottom-color: #FF6600;
 }
 QTabWidget#tabListForTopics > QTabBar::tab:hover:!selected
 {
-    color: #FF6600;
-    background-color: white;
-    border-bottom-color: white;
+	color: #FF6600;
+	background-color: white;
+	border-bottom-color: white;
 }
 
 /* Sections des messages */
 QTextBrowser, QTextEdit, QLineEdit
 {
-    selection-color: white;
-    selection-background-color: #338FFF;
+	selection-color: white;
+	selection-background-color: #338FFF;
 }
 
 /* Scrollbar*/
@@ -86,38 +86,38 @@ QScrollBar::up-arrow, QScrollBar::down-arrow, QScrollBar::add-page, QScrollBar::
 /* Barre de séparation */
 QSplitter:handle
 {
-    background: #6C7984;
+	background: #6C7984;
 }
 
 /* Liste des topics */
-QTabWidget QListView
+QListView#listOfTopics
 {
-    color: #B5B5B5;
-    padding-top: 4px;
-    background-color: #2A2A2A;
+	color: #B5B5B5;
+	padding-top: 4px;
+	background-color: #2A2A2A;
 	outline: none;
 }
-QTabWidget QListView::item:hover
+QListView#listOfTopics::item:hover
 {
-    color: white;
-    background-color: rgba(0, 0, 0, 0);
+	color: white;
+	background-color: rgba(0, 0, 0, 0);
 }
-QTabWidget QListView::item:selected
+QListView#listOfTopics::item:selected
 {
-    color:  white;
-    background-color: rgba(0, 0, 0, 100);
+	color:  white;
+	background-color: rgba(0, 0, 0, 100);
 }
 
 /* Décoration de texte */
 QPushButton#boldButton, QPushButton#italicButton, QPushButton#underlineButton, QPushButton#strikeButton, 
 QPushButton#ulistButton, QPushButton#olistButton, QPushButton#quoteButton, QPushButton#codeButton, QPushButton#spoilButton
 {
-    color: #8A8A8A;
+	color: #8A8A8A;
 	background: #E6E6E6;
-    font: 12px;
-    min-width: 30px;
-    padding: 0px 4px 0px 4px;
-    min-height: 17px;
+	font: 12px;
+	min-width: 30px;
+	padding: 0px 4px 0px 4px;
+	min-height: 17px;
 	border: 1px solid #B3B3B3;
 	font-weight: bold;
 	outline: none;
@@ -125,61 +125,61 @@ QPushButton#ulistButton, QPushButton#olistButton, QPushButton#quoteButton, QPush
 QPushButton#boldButton:focus, QPushButton#italicButton:focus, QPushButton#underlineButton:focus, QPushButton#strikeButton:focus, 
 QPushButton#ulistButton:focus, QPushButton#olistButton:focus, QPushButton#quoteButton:focus, QPushButton#codeButton:focus, QPushButton#spoilButton:focus
 {
-    color: #404040;
+	color: #404040;
 }
 QPushButton#boldButton:hover, QPushButton#italicButton:hover, QPushButton#underlineButton:hover, QPushButton#strikeButton:hover, 
 QPushButton#ulistButton:hover, QPushButton#olistButton:hover, QPushButton#quoteButton:hover, QPushButton#codeButton:hover, QPushButton#spoilButton:hover
 {
-    color: black;
+	color: black;
 }
 QPushButton#boldButton:pressed, QPushButton#italicButton:pressed, QPushButton#underlineButton:pressed, QPushButton#strikeButton:pressed, 
 QPushButton#ulistButton:pressed, QPushButton#olistButton:pressed, QPushButton#quoteButton:pressed, QPushButton#codeButton:pressed, QPushButton#spoilButton:pressed
 {
-    background: #CCCCCC;
+	background: #CCCCCC;
 }
 
 /* Zone d'édition de texte */
-QTextEdit
+QTextEdit#sendMessageText, QLineEdit#sendMessageLine
 {
-    color: black;
-    padding: 4px;
-    background: white;
-    border-color: #F3F3F5;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 2px;
+	color: black;
+	padding: 4px;
+	background: white;
+	border-color: #F3F3F5;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
 }
 /* Bouton d'envoie du message */
 QPushButton#sendButton
 {
-    color: white;
-    font: 16px;
-    font-weight: 700;
-    height: 32px;
-    border: 1px solid transparent;
-    border-radius: 2px;
-    margin-bottom: 0;
-    padding: 0 20px;
-    background: #FD612C;
+	color: white;
+	font: 16px;
+	font-weight: 700;
+	height: 32px;
+	border: 1px solid transparent;
+	border-radius: 2px;
+	margin-bottom: 0;
+	padding: 0 20px;
+	background: #FD612C;
 	outline: none;
 }
 QPushButton#sendButton:focus
 {
-    color: #000;
-    background: #D75628;
+	color: #000;
+	background: #D75628;
 }
 QPushButton#sendButton:hover
 {
-    color: #000;
-    background: #C85025;
+	color: #000;
+	background: #C85025;
 }
 QPushButton#sendButton:pressed
 {
-    color: #FFF;
-    background: #B64821;
+	color: #FFF;
+	background: #B64821;
 }
 QPushButton#sendButton:!enabled
 {
-    color: #B3B3B3;
-    background: #813418;
+	color: #B3B3B3;
+	background: #813418;
 }

@@ -77,7 +77,7 @@ QTextBrowser
 	border: 0px;
 }
 
-QListView
+.QListView
 {
 	background: black;
 	color: white;
@@ -86,20 +86,39 @@ QListView
 	outline: none;
 }
 
-QDialog QListView
+QDialog .QListView
 {
 	background: black;
 	color: white;
 	border: 1px solid white;
 }
 
-QListView::item:hover
+QTreeView
+{
+	background: black;
+	color: white;
+	font-family: "DejaVu Sans Mono";
+	border: 1px solid white;
+	outline: none;
+}
+
+QTreeView QHeaderView::section
+{
+	background: black;
+	color: white;
+	font-family: "DejaVu Sans Mono";
+	padding: 4px;
+	border: 1px solid white;
+}
+
+.QListView::item:hover, QTreeView::item:hover
 {
 	background: #191919;
 }
 
-QListView::item:selected
+.QListView::item:selected, QTreeView::item:selected
 {
+	color: white;
 	background: #333333;
 }
 
