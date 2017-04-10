@@ -10,16 +10,18 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    stickerBrowser.setContextMenuPolicy(Qt::CustomContextMenu);
-    stickerBrowser.setReadOnly(true);
-    stickerBrowser.setOpenExternalLinks(false);
-    stickerBrowser.setOpenLinks(false);
-    stickerBrowser.setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
-    stickerBrowser.setMinimumWidth(465);
-    stickerBrowser.setMinimumHeight(430);
+    stickerBrowser = new QTextBrowser(this);
+
+    stickerBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
+    stickerBrowser->setReadOnly(true);
+    stickerBrowser->setOpenExternalLinks(false);
+    stickerBrowser->setOpenLinks(false);
+    stickerBrowser->setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
+    stickerBrowser->setMinimumWidth(465);
+    stickerBrowser->setMinimumHeight(430);
 
     QHBoxLayout* mainLayout = new QHBoxLayout;
-    mainLayout->addWidget(&stickerBrowser);
+    mainLayout->addWidget(stickerBrowser);
     mainLayout->setMargin(0);
 
     setLayout(mainLayout);
@@ -27,9 +29,9 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
 
     loadListOfStickers();
 
-    connect(&stickerBrowser, &QTextBrowser::customContextMenuRequested, this, &selectStickerWindowClass::createContextMenu);
-    connect(&stickerBrowser, &QTextBrowser::anchorClicked, this, &selectStickerWindowClass::linkClicked);
-    connect(stickerBrowser.verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
+    connect(stickerBrowser, &QTextBrowser::customContextMenuRequested, this, &selectStickerWindowClass::createContextMenu);
+    connect(stickerBrowser, &QTextBrowser::anchorClicked, this, &selectStickerWindowClass::linkClicked);
+    connect(stickerBrowser->verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
 }
 
 void selectStickerWindowClass::loadListOfStickers()
@@ -44,7 +46,7 @@ void selectStickerWindowClass::loadListOfStickers()
 
     for(const QString& thisSticker : listOfStickers)
     {
-        stickerBrowser.insertHtml("<a href=\"sticker:" + thisSticker.left(thisSticker.size() - 4) +
+        stickerBrowser->insertHtml("<a href=\"sticker:" + thisSticker.left(thisSticker.size() - 4) +
                                   "\"><img src=\"resources/stickers/" + thisSticker + "\" /></a>");
     }
 }
@@ -64,7 +66,7 @@ void selectStickerWindowClass::createContextMenu(const QPoint& thisPoint)
 
 void selectStickerWindowClass::scrollBarSizeChanged()
 {
-    stickerBrowser.verticalScrollBar()->setValue(stickerBrowser.verticalScrollBar()->maximum() / 2);
+    stickerBrowser->verticalScrollBar()->setValue(stickerBrowser->verticalScrollBar()->maximum() / 2);
 
-    disconnect(stickerBrowser.verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
+    disconnect(stickerBrowser->verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
 }

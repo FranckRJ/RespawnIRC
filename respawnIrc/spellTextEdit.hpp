@@ -16,7 +16,7 @@ class spellTextEditClass : public QTextEdit
 {
     Q_OBJECT
 public:
-    explicit spellTextEditClass(QWidget* parent = 0);
+    explicit spellTextEditClass(QWidget* parent = nullptr);
     ~spellTextEditClass();
     void doStuffBeforeQuit();
     void enableSpellChecking(bool newVal);

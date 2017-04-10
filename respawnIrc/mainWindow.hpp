@@ -27,7 +27,7 @@ private slots:
     void delFavoriteClicked();
     void setNewTheme(QString newThemeName);
 private:
-    respawnIrcClass respawnIrc;
+    respawnIrcClass* respawnIrc;
     QVector<QAction*> vectorOfUseFavorite;
     QVector<QAction*> vectorOfAddFavorite;
     QVector<QAction*> vectorOfDelFavorite;

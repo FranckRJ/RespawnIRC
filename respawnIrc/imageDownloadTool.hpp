@@ -30,7 +30,7 @@ class imageDownloadToolClass : public QObject
 {
     Q_OBJECT
 public:
-    explicit imageDownloadToolClass(QObject* parent = 0);
+    explicit imageDownloadToolClass(QObject* parent = nullptr);
     void addRule(QString ruleName, QString directoryPath, bool isInTmpDir = false, bool alwaysCheckBeforeDL = false,
                  QString baseUrl = "", QString appendAfetName = "", bool takeOnlyFileNameForSave = false);
     void checkAndStartDownloadMissingImages(QStringList listOfImagesUrlToCheck, QString ruleName);

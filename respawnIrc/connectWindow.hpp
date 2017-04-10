@@ -31,8 +31,8 @@ private:
     QWebEngineView* webView = nullptr;
     QPushButton* buttonShowWebView;
     QVBoxLayout* mainLayout;
-    QLineEdit pseudoLine;
-    QCheckBox rememberBox;
+    QLineEdit* pseudoLine;
+    QCheckBox* rememberBox;
 };
 
 #endif

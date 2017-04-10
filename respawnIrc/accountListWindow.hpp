@@ -37,9 +37,9 @@ signals:
     void eraseThisPseudo(QString thisPseudo);
 private:
     QList<accountStruct>* listOfAccount;
-    QListView viewListOfAccount;
-    QStringListModel modelForListView;
-    QCheckBox rememberBox;
+    QListView* viewListOfAccount;
+    QStringListModel* modelForListView;
+    QCheckBox* rememberBox;
 };
 
 #endif

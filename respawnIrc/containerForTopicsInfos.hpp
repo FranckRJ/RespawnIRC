@@ -16,7 +16,7 @@ class containerForTopicsInfosClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit containerForTopicsInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    explicit containerForTopicsInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = nullptr);
     const showTopicClass& getConstShowTopic() const;
     showTopicClass& getShowTopic();
     typeOfSaveForPseudo getPseudoTypeOfSave() const;
@@ -30,8 +30,8 @@ signals:
     void topicNeedChanged(QString topicLink);
     void openThisTopicInNewTab(QString topicLink);
 private:
-    showTopicClass showTopic;
-    showForumClass showForum;
+    showTopicClass* showTopic;
+    showForumClass* showForum;
     typeOfSaveForPseudo pseudoTypeOfSave = typeOfSaveForPseudo::DEFAULT;
     QString bufferForTopicLinkFirstPage;
 

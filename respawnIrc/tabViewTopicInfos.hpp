@@ -19,7 +19,7 @@ class tabViewTopicInfosClass : public QWidget
     Q_OBJECT
 public:
     explicit tabViewTopicInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo,
-                           const QList<accountStruct>* newListOfAccount, QWidget* parent = 0);
+                           const QList<accountStruct>* newListOfAccount, QWidget* parent = nullptr);
     void doStuffBeforeQuit();
     void updateSettings();
     void updateSettingInfoForList();
@@ -72,7 +72,7 @@ signals:
     void editThisMessage(long idOfMessageEdit, bool useMessageEdit);
     void newCookiesHaveToBeSet(QString pseudo, const QList<QNetworkCookie>& cookiesForPseudo);
 private:
-    QTabWidget tabList;
+    QTabWidget* tabList;
     QList<containerForTopicsInfosClass*> listOfContainerForTopicsInfos;
     const QList<QString>* listOfIgnoredPseudo;
     const QList<pseudoWithColorStruct>* listOfColorPseudo;
@@ -80,7 +80,7 @@ private:
     QList<QNetworkCookie> generalCookieList;
     QString generalPseudoToUse;
     QPixmap alertImage;
-    imageDownloadToolClass imageDownloadTool;
+    imageDownloadToolClass* imageDownloadTool;
     QString currentThemeName;
     int typeOfImageRefresh;
 };

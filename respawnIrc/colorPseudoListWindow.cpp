@@ -16,11 +16,13 @@ colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStru
     QPushButton* buttonRemovePseudo = new QPushButton("Supprimer", this);
     QPushButton* buttonValidate = new QPushButton("Choisir une couleur", this);
     QPushButton* buttonOk = new QPushButton("OK", this);
+    viewListOfColorPseudo = new QListView(this);
+    modelForListView = new QStringListModel(viewListOfColorPseudo);
 
-    viewListOfColorPseudo.setEditTriggers(QAbstractItemView::NoEditTriggers);
+    viewListOfColorPseudo->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     QGridLayout* mainLayout = new QGridLayout(this);
-    mainLayout->addWidget(&viewListOfColorPseudo, 0, 0, 1, 3);
+    mainLayout->addWidget(viewListOfColorPseudo, 0, 0, 1, 3);
     mainLayout->addWidget(buttonAddPseudo, 1, 0);
     mainLayout->addWidget(buttonEditPseudo, 1, 1);
     mainLayout->addWidget(buttonRemovePseudo, 1, 2);
@@ -32,7 +34,7 @@ colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStru
 
     listOfColorPseudo = newListOfColorPseudo;
     updateList();
-    viewListOfColorPseudo.setModel(&modelForListView);
+    viewListOfColorPseudo->setModel(modelForListView);
 
     connect(buttonAddPseudo, &QPushButton::clicked, this, &colorPseudoListWindowClass::addPseudo);
     connect(buttonEditPseudo, &QPushButton::clicked, this, &colorPseudoListWindowClass::editCurrentPseudo);
@@ -72,7 +74,7 @@ void colorPseudoListWindowClass::updateList()
         listOfPseudo.append(thisColor.pseudo);
     }
 
-    modelForListView.setStringList(listOfPseudo);
+    modelForListView->setStringList(listOfPseudo);
     emit listHasChanged();
 }
 
@@ -85,9 +87,9 @@ void colorPseudoListWindowClass::addPseudo()
 
 void colorPseudoListWindowClass::editCurrentPseudo()
 {
-    if(viewListOfColorPseudo.currentIndex().row() != -1)
+    if(viewListOfColorPseudo->currentIndex().row() != -1)
     {
-        addPseudoWindowClass* myAddPseudoWindow = new addPseudoWindowClass(this, listOfColorPseudo->at(viewListOfColorPseudo.currentIndex().row()).pseudo);
+        addPseudoWindowClass* myAddPseudoWindow = new addPseudoWindowClass(this, listOfColorPseudo->at(viewListOfColorPseudo->currentIndex().row()).pseudo);
         connect(myAddPseudoWindow, &addPseudoWindowClass::newPseudoSet, this, &colorPseudoListWindowClass::setCurrentPseudo);
         myAddPseudoWindow->exec();
     }
@@ -96,9 +98,9 @@ void colorPseudoListWindowClass::editCurrentPseudo()
 
 void colorPseudoListWindowClass::removeCurrentPseudo()
 {
-    if(viewListOfColorPseudo.currentIndex().row() != -1)
+    if(viewListOfColorPseudo->currentIndex().row() != -1)
     {
-        listOfColorPseudo->removeAt(viewListOfColorPseudo.currentIndex().row());
+        listOfColorPseudo->removeAt(viewListOfColorPseudo->currentIndex().row());
         updateList();
     }
 }
@@ -119,7 +121,7 @@ void colorPseudoListWindowClass::setCurrentPseudo(QString newPseudo)
 {
     if(addPseudoToColorPseudoList(newPseudo, false) == true)
     {
-        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].pseudo = newPseudo.toLower();
+        (*listOfColorPseudo)[viewListOfColorPseudo->currentIndex().row()].pseudo = newPseudo.toLower();
         updateList();
     }
     else
@@ -130,14 +132,14 @@ void colorPseudoListWindowClass::setCurrentPseudo(QString newPseudo)
 
 void colorPseudoListWindowClass::chooseColor()
 {
-    if(viewListOfColorPseudo.currentIndex().row() != -1)
+    if(viewListOfColorPseudo->currentIndex().row() != -1)
     {
-        QColor newColor = QColorDialog::getColor(QColor(listOfColorPseudo->at(viewListOfColorPseudo.currentIndex().row()).red,
-                                                        listOfColorPseudo->at(viewListOfColorPseudo.currentIndex().row()).green,
-                                                        listOfColorPseudo->at(viewListOfColorPseudo.currentIndex().row()).blue), this, "Choisir une couleur");
-        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].red = newColor.red();
-        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].green = newColor.green();
-        (*listOfColorPseudo)[viewListOfColorPseudo.currentIndex().row()].blue = newColor.blue();
+        QColor newColor = QColorDialog::getColor(QColor(listOfColorPseudo->at(viewListOfColorPseudo->currentIndex().row()).red,
+                                                        listOfColorPseudo->at(viewListOfColorPseudo->currentIndex().row()).green,
+                                                        listOfColorPseudo->at(viewListOfColorPseudo->currentIndex().row()).blue), this, "Choisir une couleur");
+        (*listOfColorPseudo)[viewListOfColorPseudo->currentIndex().row()].red = newColor.red();
+        (*listOfColorPseudo)[viewListOfColorPseudo->currentIndex().row()].green = newColor.green();
+        (*listOfColorPseudo)[viewListOfColorPseudo->currentIndex().row()].blue = newColor.blue();
         emit listHasChanged();
     }
 }

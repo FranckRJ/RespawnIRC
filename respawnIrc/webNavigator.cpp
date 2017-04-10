@@ -16,6 +16,8 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     QPushButton* backwardButton = new QPushButton("←", this);
     QPushButton* forwardButton = new QPushButton("→", this);
     QPushButton* goButton = new QPushButton("Go", this);
+    urlLine = new QLineEdit(this);
+    webView = new QWebEngineView(this);
 
     backwardButton->setAutoDefault(false);
     backwardButton->setMaximumWidth(backwardButton->fontMetrics().boundingRect(backwardButton->text()).width() + 15);
@@ -27,20 +29,20 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     QHBoxLayout* topLayout = new QHBoxLayout();
     topLayout->addWidget(backwardButton);
     topLayout->addWidget(forwardButton);
-    topLayout->addWidget(&urlLine, 1);
+    topLayout->addWidget(urlLine, 1);
     topLayout->addWidget(goButton);
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->addLayout(topLayout);
-    mainLayout->addWidget(&webView);
+    mainLayout->addWidget(webView);
 
     setLayout(mainLayout);
     setWindowTitle("RespawnIRC Navigator");
 
-    webView.setPage(customPage);
+    webView->setPage(customPage);
     for(const QNetworkCookie& thisCookie : cookiesList)
     {
-        webView.page()->profile()->cookieStore()->setCookie(thisCookie);
+        webView->page()->profile()->cookieStore()->setCookie(thisCookie);
     }
 
     if(startUrl.isEmpty() == true)
@@ -48,28 +50,28 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
         startUrl = "http://www.jeuxvideo.com";
     }
 
-    webView.setUrl(QUrl(startUrl));
+    webView->setUrl(QUrl(startUrl));
 
-    connect(&webView, &QWebEngineView::urlChanged, this, &webNavigatorClass::changeUrl);
-    connect(&urlLine, &QLineEdit::returnPressed, goButton, &QPushButton::click);
+    connect(webView, &QWebEngineView::urlChanged, this, &webNavigatorClass::changeUrl);
+    connect(urlLine, &QLineEdit::returnPressed, goButton, &QPushButton::click);
     connect(goButton, &QPushButton::clicked, this, &webNavigatorClass::goToUrl);
-    connect(backwardButton, &QPushButton::clicked, &webView, &QWebEngineView::back);
-    connect(forwardButton, &QPushButton::clicked, &webView, &QWebEngineView::forward);
+    connect(backwardButton, &QPushButton::clicked, webView, &QWebEngineView::back);
+    connect(forwardButton, &QPushButton::clicked, webView, &QWebEngineView::forward);
 }
 
 void webNavigatorClass::changeUrl(QUrl newUrl)
 {
-    urlLine.setText(newUrl.toString());
+    urlLine->setText(newUrl.toString());
 }
 
 void webNavigatorClass::goToUrl()
 {
-    QString currentUrlToGo = urlLine.text();
+    QString currentUrlToGo = urlLine->text();
 
     if(currentUrlToGo.startsWith("http://") == false && currentUrlToGo.startsWith("https://") == false)
     {
         currentUrlToGo = "http://" + currentUrlToGo;
     }
 
-    webView.setUrl(QUrl(currentUrlToGo));
+    webView->setUrl(QUrl(currentUrlToGo));
 }

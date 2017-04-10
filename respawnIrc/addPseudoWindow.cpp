@@ -14,8 +14,9 @@ addPseudoWindowClass::addPseudoWindowClass(QWidget* parent, QString currentPseud
     QLabel* labPseudo = new QLabel("Pseudo :", this);
     QPushButton* buttonValide = new QPushButton("Valider", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
+    pseudoLine = new QLineEdit(this);
 
-    pseudoLine.setText(currentPseudo);
+    pseudoLine->setText(currentPseudo);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(buttonValide);
@@ -23,12 +24,12 @@ addPseudoWindowClass::addPseudoWindowClass(QWidget* parent, QString currentPseud
 
     QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(labPseudo, 0, 0);
-    mainLayout->addWidget(&pseudoLine, 0, 1);
+    mainLayout->addWidget(pseudoLine, 0, 1);
     mainLayout->addLayout(buttonLayout, 1, 0, 1, 2);
 
     setLayout(mainLayout);
     setWindowTitle("Choisir un pseudo");
-    pseudoLine.setFocus();
+    pseudoLine->setFocus();
 
     connect(buttonValide, &QPushButton::clicked, this, &addPseudoWindowClass::setPseudo);
     connect(buttonCancel, &QPushButton::clicked, this, &addPseudoWindowClass::close);
@@ -51,9 +52,9 @@ bool addPseudoWindowClass::pseudoIsValide(QString pseudo)
 
 void addPseudoWindowClass::setPseudo()
 {
-    if(pseudoIsValide(pseudoLine.text()) == true)
+    if(pseudoIsValide(pseudoLine->text()) == true)
     {
-        emit newPseudoSet(pseudoLine.text());
+        emit newPseudoSet(pseudoLine->text());
         close();
     }
     else

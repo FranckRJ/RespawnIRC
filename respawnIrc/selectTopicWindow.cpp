@@ -14,9 +14,10 @@ selectTopicWindowClass::selectTopicWindowClass(QString currentTopic, QWidget* pa
     QLabel* labTopic = new QLabel("Topic :", this);
     QPushButton* buttonSelect = new QPushButton("Choisir ce topic", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
+    topicLine = new QLineEdit(this);
 
-    topicLine.setText(currentTopic);
-    topicLine.setMinimumWidth(500);
+    topicLine->setText(currentTopic);
+    topicLine->setMinimumWidth(500);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(buttonSelect);
@@ -24,12 +25,12 @@ selectTopicWindowClass::selectTopicWindowClass(QString currentTopic, QWidget* pa
 
     QGridLayout* mainLayout = new QGridLayout(this);
     mainLayout->addWidget(labTopic, 0, 0);
-    mainLayout->addWidget(&topicLine, 0, 1);
+    mainLayout->addWidget(topicLine, 0, 1);
     mainLayout->addLayout(buttonLayout, 1, 0, 1, 2);
 
     setLayout(mainLayout);
     setWindowTitle("Choisir un topic");
-    topicLine.setFocus();
+    topicLine->setFocus();
 
     connect(buttonSelect, &QPushButton::clicked, this, &selectTopicWindowClass::selectThisTopic);
     connect(buttonCancel, &QPushButton::clicked, this, &selectTopicWindowClass::close);
@@ -67,7 +68,7 @@ QString selectTopicWindowClass::transformLinkIfNeeded(QString link) const
 
 void selectTopicWindowClass::selectThisTopic()
 {
-    QString newLink = transformLinkIfNeeded(topicLine.text());
+    QString newLink = transformLinkIfNeeded(topicLine->text());
 
     if(newLink.isEmpty() == false)
     {

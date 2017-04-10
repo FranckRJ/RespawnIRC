@@ -19,8 +19,8 @@ private slots:
     void changeUrl(QUrl newUrl);
     void goToUrl();
 private:
-    QWebEngineView webView;
-    QLineEdit urlLine;
+    QWebEngineView* webView;
+    QLineEdit* urlLine;
 };
 
 #endif

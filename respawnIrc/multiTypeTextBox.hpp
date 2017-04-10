@@ -14,7 +14,7 @@ class multiTypeTextBoxClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit multiTypeTextBoxClass(QWidget* parent = 0);
+    explicit multiTypeTextBoxClass(QWidget* parent = nullptr);
     void doStuffBeforeQuit();
     void clear();
     QString text() const;
@@ -40,10 +40,10 @@ private:
 signals:
     void returnPressed();
 private:
-    QVBoxLayout layout;
-    spellTextEditClass textEdit;
+    QVBoxLayout* layout;
+    spellTextEditClass* textEdit;
     highlighterClass* highlighter;
-    QLineEdit lineEdit;
+    QLineEdit* lineEdit;
     bool textEditSelected = true;
     bool dicAreLoaded = false;
 };

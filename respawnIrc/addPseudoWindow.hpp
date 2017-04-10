@@ -17,7 +17,7 @@ private slots:
 signals:
     void newPseudoSet(QString newPseudo);
 private:
-    QLineEdit pseudoLine;
+    QLineEdit* pseudoLine;
 };
 
 #endif

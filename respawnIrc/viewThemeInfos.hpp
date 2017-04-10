@@ -9,7 +9,7 @@ class viewThemeInfosClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit viewThemeInfosClass(QWidget* parent = 0);
+    explicit viewThemeInfosClass(QWidget* parent = nullptr);
     void setThemeToShow(QString newThemeName);
 private:
     QString boolToYesOrNo(bool boolToCheck) const;

@@ -30,8 +30,9 @@ class showTopicClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit showTopicClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = 0);
+    explicit showTopicClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent = nullptr);
     ~showTopicClass();
+    static void createThread(QObject* parentForThread);
     static void startThread();
     static void stopThread();
     void startGetMessage();
@@ -79,9 +80,9 @@ signals:
     void downloadTheseNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesToCheck);
     void downloadTheseAvatarsIfNeeded(QStringList listOfAvatarsUsed);
 private:
-    static QThread threadForGetMessages;
+    static QThread* threadForGetMessages;
     QRegularExpression expForColorPseudo;
-    QTextBrowser messagesBox;
+    QTextBrowser* messagesBox;
     QString baseModel;
     getTopicMessagesClass* getTopicMessages;
     messageActionsClass* messageActions;

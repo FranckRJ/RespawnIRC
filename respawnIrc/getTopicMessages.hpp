@@ -31,7 +31,7 @@ class getTopicMessagesClass : public QObject
 {
     Q_OBJECT
 public:
-    explicit getTopicMessagesClass(QObject* parent = 0);
+    explicit getTopicMessagesClass(QObject* parent = nullptr);
 public slots:
     void setNewTopic(QString newTopicLink, bool getFirstMessage);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages);

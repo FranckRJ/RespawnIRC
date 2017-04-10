@@ -13,9 +13,10 @@
 #include "styleTool.hpp"
 #include "shortcutTool.hpp"
 
-mainWindowClass::mainWindowClass() : respawnIrc(this)
+mainWindowClass::mainWindowClass()
 {
     QMenuBar* menuBar = new QMenuBar(this);
+    respawnIrc = new respawnIrcClass(this);
 
     QMenu* menuFile = menuBar->addMenu("&Fichier");
     QAction* actionConnect = menuFile->addAction("Se connecter");
@@ -141,7 +142,7 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     actionAboutQt->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
 
     setMenuBar(menuBar);
-    setCentralWidget(&respawnIrc);
+    setCentralWidget(respawnIrc);
     setWindowTitle("RespawnIRC " + respawnIrcClass::currentVersionName);
 
     if(settingTool::getThisBoolOption("saveWindowGeometry") == false ||
@@ -153,49 +154,49 @@ mainWindowClass::mainWindowClass() : respawnIrc(this)
     {
         restoreGeometry(settingTool::getThisByteOption("windowGeometry"));
     }
-    respawnIrc.setFocus();
+    respawnIrc->setFocus();
 
-    connect(actionConnect, &QAction::triggered, &respawnIrc, &respawnIrcClass::showConnect);
-    connect(actionShowAccountList, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAccountListWindow);
-    connect(actionDisconnectFromCurrentTab, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromCurrentTab);
-    connect(actionDisconnectFromAllTabs, &QAction::triggered, &respawnIrc, &respawnIrcClass::disconnectFromAllTabs);
-    connect(actionTabAddTab, &QAction::triggered, respawnIrc.getTabView(), &tabViewTopicInfosClass::addNewTab);
-    connect(actionOpenWebNavigator, &QAction::triggered, &respawnIrc, &respawnIrcClass::showWebNavigator);
-    connect(actionOpenWebNavigatorAtMP, &QAction::triggered, &respawnIrc, &respawnIrcClass::showWebNavigatorAtMP);
+    connect(actionConnect, &QAction::triggered, respawnIrc, &respawnIrcClass::showConnect);
+    connect(actionShowAccountList, &QAction::triggered, respawnIrc, &respawnIrcClass::showAccountListWindow);
+    connect(actionDisconnectFromCurrentTab, &QAction::triggered, respawnIrc, &respawnIrcClass::disconnectFromCurrentTab);
+    connect(actionDisconnectFromAllTabs, &QAction::triggered, respawnIrc, &respawnIrcClass::disconnectFromAllTabs);
+    connect(actionTabAddTab, &QAction::triggered, respawnIrc->getTabView(), &tabViewTopicInfosClass::addNewTab);
+    connect(actionOpenWebNavigator, &QAction::triggered, respawnIrc, &respawnIrcClass::showWebNavigator);
+    connect(actionOpenWebNavigatorAtMP, &QAction::triggered, respawnIrc, &respawnIrcClass::showWebNavigatorAtMP);
     connect(actionGoToMp, &QAction::triggered, this, &mainWindowClass::goToMp);
-    connect(actionCheckUpdate, &QAction::triggered, &respawnIrc, &respawnIrcClass::checkForUpdate);
-    connect(actionSelectTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTopic);
-    connect(actionUpdateTopic, &QAction::triggered, respawnIrc.getTabView(), &tabViewTopicInfosClass::updateCurrentTopic);
-    connect(actionReloadTopic, &QAction::triggered, respawnIrc.getTabView(), &tabViewTopicInfosClass::reloadCurrentTopic);
-    connect(actionReloadAllTopic, &QAction::triggered, respawnIrc.getTabView(), &tabViewTopicInfosClass::reloadAllTopic);
-    connect(actionSelectSticker, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectSticker);
-    connect(actionAddBold, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addBold);
-    connect(actionAddItalic, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addItalic);
-    connect(actionAddUnderline, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
-    connect(actionAddStrike, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addStrike);
-    connect(actionAddUList, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addUList);
-    connect(actionAddOList, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addOListe);
-    connect(actionAddQuote, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addQuote);
-    connect(actionAddCode, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addCode);
-    connect(actionAddSpoil, &QAction::triggered, respawnIrc.getMessageLine(), &multiTypeTextBoxClass::addSpoil);
-    connect(actionEditLastMessage, &QAction::triggered, &respawnIrc, &respawnIrcClass::editLastMessage);
-    connect(actionGoToTopic, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentTopic);
-    connect(actionGoToForum, &QAction::triggered, &respawnIrc, &respawnIrcClass::goToCurrentForum);
-    connect(actionShowListOfIgnoredPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showIgnoreListWindow);
-    connect(actionShowListOfColorPseudo, &QAction::triggered, &respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
-    connect(actionManageShortcuts, &QAction::triggered, &respawnIrc, &respawnIrcClass::showManageShortcutWindow);
+    connect(actionCheckUpdate, &QAction::triggered, respawnIrc, &respawnIrcClass::checkForUpdate);
+    connect(actionSelectTopic, &QAction::triggered, respawnIrc, &respawnIrcClass::showSelectTopic);
+    connect(actionUpdateTopic, &QAction::triggered, respawnIrc->getTabView(), &tabViewTopicInfosClass::updateCurrentTopic);
+    connect(actionReloadTopic, &QAction::triggered, respawnIrc->getTabView(), &tabViewTopicInfosClass::reloadCurrentTopic);
+    connect(actionReloadAllTopic, &QAction::triggered, respawnIrc->getTabView(), &tabViewTopicInfosClass::reloadAllTopic);
+    connect(actionSelectSticker, &QAction::triggered, respawnIrc, &respawnIrcClass::showSelectSticker);
+    connect(actionAddBold, &QAction::triggered, respawnIrc->getMessageLine(), &multiTypeTextBoxClass::addBold);
+    connect(actionAddItalic, &QAction::triggered, respawnIrc->getMessageLine(), &multiTypeTextBoxClass::addItalic);
+    connect(actionAddUnderline, &QAction::triggered, respawnIrc->getMessageLine(), &multiTypeTextBoxClass::addUnderLine);
+    connect(actionAddStrike, &QAction::triggered, respawnIrc->getMessageLine(), &multiTypeTextBoxClass::addStrike);
+    connect(actionAddUList, &QAction::triggered, respawnIrc->getMessageLine(), &multiTypeTextBoxClass::addUList);
+    connect(actionAddOList, &QAction::triggered, respawnIrc->getMessageLine(), &multiTypeTextBoxClass::addOListe);
+    connect(actionAddQuote, &QAction::triggered, respawnIrc->getMessageLine(), &multiTypeTextBoxClass::addQuote);
+    connect(actionAddCode, &QAction::triggered, respawnIrc->getMessageLine(), &multiTypeTextBoxClass::addCode);
+    connect(actionAddSpoil, &QAction::triggered, respawnIrc->getMessageLine(), &multiTypeTextBoxClass::addSpoil);
+    connect(actionEditLastMessage, &QAction::triggered, respawnIrc, &respawnIrcClass::editLastMessage);
+    connect(actionGoToTopic, &QAction::triggered, respawnIrc, &respawnIrcClass::goToCurrentTopic);
+    connect(actionGoToForum, &QAction::triggered, respawnIrc, &respawnIrcClass::goToCurrentForum);
+    connect(actionShowListOfIgnoredPseudo, &QAction::triggered, respawnIrc, &respawnIrcClass::showIgnoreListWindow);
+    connect(actionShowListOfColorPseudo, &QAction::triggered, respawnIrc, &respawnIrcClass::showColorPseudoListWindow);
+    connect(actionManageShortcuts, &QAction::triggered, respawnIrc, &respawnIrcClass::showManageShortcutWindow);
     connect(actionReloadShortcuts, &QAction::triggered, this, &mainWindowClass::reloadShortcuts);
-    connect(actionShowPreferences, &QAction::triggered, &respawnIrc, &respawnIrcClass::showPreferences);
+    connect(actionShowPreferences, &QAction::triggered, respawnIrc, &respawnIrcClass::showPreferences);
     connect(actionQuit, &QAction::triggered, this, &QMainWindow::close);
-    connect(actionSelectTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::showSelectTheme);
-    connect(actionReloadTheme, &QAction::triggered, &respawnIrc, &respawnIrcClass::reloadTheme);
+    connect(actionSelectTheme, &QAction::triggered, respawnIrc, &respawnIrcClass::showSelectTheme);
+    connect(actionReloadTheme, &QAction::triggered, respawnIrc, &respawnIrcClass::reloadTheme);
     connect(actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
-    connect(actionAbout, &QAction::triggered, &respawnIrc, &respawnIrcClass::showAbout);
-    connect(QApplication::clipboard(), &QClipboard::changed, &respawnIrc, &respawnIrcClass::clipboardChanged);
-    connect(&respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
+    connect(actionAbout, &QAction::triggered, respawnIrc, &respawnIrcClass::showAbout);
+    connect(QApplication::clipboard(), &QClipboard::changed, respawnIrc, &respawnIrcClass::clipboardChanged);
+    connect(respawnIrc, &respawnIrcClass::themeChanged, this, &mainWindowClass::setNewTheme);
     connect(QApplication::instance(), &QApplication::aboutToQuit, this, &mainWindowClass::doStuffBeforeQuit);
 
-    respawnIrc.setNewTheme(settingTool::getThisStringOption("themeUsed"));
+    respawnIrc->setNewTheme(settingTool::getThisStringOption("themeUsed"));
 }
 
 void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
@@ -205,47 +206,47 @@ void mainWindowClass::keyPressEvent(QKeyEvent* thisKey)
     {
         if(keyPressed == "&")
         {
-            respawnIrc.getTabView()->selectThisTab(0);
+            respawnIrc->getTabView()->selectThisTab(0);
         }
         else if(keyPressed == "\u00C9" || keyPressed == "É")
         {
-            respawnIrc.getTabView()->selectThisTab(1);
+            respawnIrc->getTabView()->selectThisTab(1);
         }
         else if(keyPressed == "\"")
         {
-            respawnIrc.getTabView()->selectThisTab(2);
+            respawnIrc->getTabView()->selectThisTab(2);
         }
         else if(keyPressed == "'")
         {
-            respawnIrc.getTabView()->selectThisTab(3);
+            respawnIrc->getTabView()->selectThisTab(3);
         }
         else if(keyPressed == "(")
         {
-            respawnIrc.getTabView()->selectThisTab(4);
+            respawnIrc->getTabView()->selectThisTab(4);
         }
         else if(keyPressed == "-")
         {
-            respawnIrc.getTabView()->selectThisTab(5);
+            respawnIrc->getTabView()->selectThisTab(5);
         }
         else if(keyPressed == "\u00C8" || keyPressed == "È")
         {
-            respawnIrc.getTabView()->selectThisTab(6);
+            respawnIrc->getTabView()->selectThisTab(6);
         }
         else if(keyPressed == "_")
         {
-            respawnIrc.getTabView()->selectThisTab(7);
+            respawnIrc->getTabView()->selectThisTab(7);
         }
         else if(keyPressed == "\u00C7" || keyPressed == "Ç")
         {
-            respawnIrc.getTabView()->selectThisTab(8);
+            respawnIrc->getTabView()->selectThisTab(8);
         }
         else if(keyPressed == "@")
         {
-            respawnIrc.getTabView()->selectThisTab(9);
+            respawnIrc->getTabView()->selectThisTab(9);
         }
         else if(keyPressed == "Enter" || keyPressed == "Return")
         {
-            respawnIrc.messageHaveToBePosted();
+            respawnIrc->messageHaveToBePosted();
         }
     }
 }
@@ -258,7 +259,7 @@ void mainWindowClass::closeEvent(QCloseEvent* event)
 
 void mainWindowClass::doStuffBeforeQuit()
 {
-    respawnIrc.doStuffBeforeQuit();
+    respawnIrc->doStuffBeforeQuit();
     settingTool::forceSync();
 }
 
@@ -276,13 +277,13 @@ void mainWindowClass::useFavoriteClicked()
 {
     QAction* thisAction = dynamic_cast<QAction*>(sender());
 
-    respawnIrc.useThisFavorite(vectorOfUseFavorite.indexOf(thisAction));
+    respawnIrc->useThisFavorite(vectorOfUseFavorite.indexOf(thisAction));
 }
 
 void mainWindowClass::addFavoriteClicked()
 {
     QAction* thisAction = dynamic_cast<QAction*>(sender());
-    QString newTopicName = respawnIrc.addThisFavorite(vectorOfAddFavorite.indexOf(thisAction));
+    QString newTopicName = respawnIrc->addThisFavorite(vectorOfAddFavorite.indexOf(thisAction));
 
     if(newTopicName.isEmpty() == false)
     {
@@ -309,7 +310,7 @@ void mainWindowClass::delFavoriteClicked()
     QAction* thisAction = dynamic_cast<QAction*>(sender());
     int index = vectorOfDelFavorite.indexOf(thisAction);
 
-    respawnIrc.delThisFavorite(index);
+    respawnIrc->delThisFavorite(index);
 
     thisFont = vectorOfDelFavorite[index]->font();
     thisFont.setItalic(true);

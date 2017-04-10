@@ -6,11 +6,14 @@
 #include "settingTool.hpp"
 
 containerForTopicsInfosClass::containerForTopicsInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) :
-    QWidget(parent), showTopic(newListOfIgnoredPseudo, newListOfColorPseudo, currentThemeName), showForum(currentThemeName)
+    QWidget(parent)
 {
+    showTopic = new showTopicClass(newListOfIgnoredPseudo, newListOfColorPseudo, currentThemeName, this);
+    showForum = new showForumClass(currentThemeName, this);
+
     QSplitter* splitter = new QSplitter(this);
-    splitter->addWidget(&showTopic);
-    splitter->addWidget(&showForum);
+    splitter->addWidget(showTopic);
+    splitter->addWidget(showForum);
     splitter->setStretchFactor(0, 1);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
@@ -21,21 +24,21 @@ containerForTopicsInfosClass::containerForTopicsInfosClass(const QList<QString>*
 
     if(settingTool::getThisBoolOption("showListOfTopic") == false || settingTool::getThisBoolOption("fastModeEnbled") == true)
     {
-        showForum.setVisible(false);
+        showForum->setVisible(false);
     }
 
-    connect(&showForum, &showForumClass::openThisTopic, this, &containerForTopicsInfosClass::topicNeedChanged);
-    connect(&showForum, &showForumClass::openThisTopicInNewTab, this, &containerForTopicsInfosClass::openThisTopicInNewTab);
+    connect(showForum, &showForumClass::openThisTopic, this, &containerForTopicsInfosClass::topicNeedChanged);
+    connect(showForum, &showForumClass::openThisTopicInNewTab, this, &containerForTopicsInfosClass::openThisTopicInNewTab);
 }
 
 const showTopicClass& containerForTopicsInfosClass::getConstShowTopic() const
 {
-    return showTopic;
+    return *showTopic;
 }
 
 showTopicClass& containerForTopicsInfosClass::getShowTopic()
 {
-    return showTopic;
+    return *showTopic;
 }
 
 typeOfSaveForPseudo containerForTopicsInfosClass::getPseudoTypeOfSave() const
@@ -45,13 +48,13 @@ typeOfSaveForPseudo containerForTopicsInfosClass::getPseudoTypeOfSave() const
 
 QString containerForTopicsInfosClass::getTopicLinkFirstPage() const
 {
-    if(showTopic.getTopicLinkFirstPage().isEmpty() == true)
+    if(showTopic->getTopicLinkFirstPage().isEmpty() == true)
     {
         return bufferForTopicLinkFirstPage;
     }
     else
     {
-        return showTopic.getTopicLinkFirstPage();
+        return showTopic->getTopicLinkFirstPage();
     }
 }
 
@@ -59,8 +62,8 @@ void containerForTopicsInfosClass::setNewCookiesForInfo(QList<QNetworkCookie> ne
 {
     pseudoTypeOfSave = newTypeOfSave;
 
-    showTopic.setNewCookies(newCookies, "www.jeuxvideo.com", newPseudoOfUser);
-    showForum.setNewCookies(newCookies, "www.jeuxvideo.com");
+    showTopic->setNewCookies(newCookies, "www.jeuxvideo.com", newPseudoOfUser);
+    showForum->setNewCookies(newCookies, "www.jeuxvideo.com");
 }
 
 void containerForTopicsInfosClass::setBufferForTopicLinkFirstPage(QString newLink)
@@ -70,20 +73,20 @@ void containerForTopicsInfosClass::setBufferForTopicLinkFirstPage(QString newLin
 
 void containerForTopicsInfosClass::updateSettingsForInfo()
 {
-    showTopic.updateSettingInfo();
-    showForum.updateSettings();
+    showTopic->updateSettingInfo();
+    showForum->updateSettings();
 
-    showForum.setVisible(showForum.getLoadNeeded());
+    showForum->setVisible(showForum->getLoadNeeded());
 }
 
 void containerForTopicsInfosClass::setNewThemeForInfo(QString newThemeName)
 {
-    showTopic.setNewTheme(newThemeName);
-    showForum.setNewTheme(newThemeName);
+    showTopic->setNewTheme(newThemeName);
+    showForum->setNewTheme(newThemeName);
 }
 
 void containerForTopicsInfosClass::setNewTopicForInfo(QString newTopic)
 {
-    showTopic.setNewTopic(newTopic);
-    showForum.setForumLink(parsingTool::getForumOfTopic(newTopic));
+    showTopic->setNewTopic(newTopic);
+    showForum->setForumLink(parsingTool::getForumOfTopic(newTopic));
 }

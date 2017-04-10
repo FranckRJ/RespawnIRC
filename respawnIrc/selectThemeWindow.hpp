@@ -24,9 +24,9 @@ private slots:
 signals:
     void newThemeSelected(QString newTheme);
 private:
-    QListView listViewOfTheme;
-    QStringListModel modelForListViewOfTheme;
-    QLabel currentThemeName;
+    QListView* listViewOfTheme;
+    QStringListModel* modelForListViewOfTheme;
+    QLabel* currentThemeName;
     viewThemeInfosClass* viewThemeInfos;
 };
 

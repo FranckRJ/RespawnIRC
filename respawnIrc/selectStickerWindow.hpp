@@ -22,7 +22,7 @@ private slots:
 signals:
     void addThisSticker(QString stringSticker);
 private:
-    QTextBrowser stickerBrowser;
+    QTextBrowser* stickerBrowser;
 };
 
 #endif

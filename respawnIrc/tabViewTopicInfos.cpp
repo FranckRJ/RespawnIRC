@@ -9,28 +9,32 @@
 tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo,
                                                const QList<accountStruct>* newListOfAccount, QWidget* parent) : QWidget(parent)
 {
+    tabList = new QTabWidget(this);
+    imageDownloadTool = new imageDownloadToolClass(this);
+
     listOfIgnoredPseudo = newListOfIgnoredPseudo;
     listOfColorPseudo = newListOfColorPseudo;
     listOfAccount = newListOfAccount;
-    tabList.setObjectName("tabListForTopics");
 
-    tabList.setTabsClosable(true);
-    tabList.setMovable(true);
+    tabList->setObjectName("tabListForTopics");
+
+    tabList->setTabsClosable(true);
+    tabList->setMovable(true);
     alertImage.load(QCoreApplication::applicationDirPath() + "/resources/alert.png");
-    imageDownloadTool.addRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
-    imageDownloadTool.addRule("noelshack", "/img/", true);
-    imageDownloadTool.addRule("avatar", "/vtr/", true, false, "http://");
+    imageDownloadTool->addRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
+    imageDownloadTool->addRule("noelshack", "/img/", true);
+    imageDownloadTool->addRule("avatar", "/vtr/", true, false, "http://");
 
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
-    mainLayout->addWidget(&tabList);
+    mainLayout->addWidget(tabList);
     mainLayout->setMargin(0);
 
     setLayout(mainLayout);
 
-    connect(&tabList, &QTabWidget::currentChanged, this, &tabViewTopicInfosClass::currentTabChanged);
-    connect(&tabList, &QTabWidget::tabCloseRequested, this, &tabViewTopicInfosClass::removeTab);
-    connect(tabList.tabBar(), &QTabBar::tabMoved, this, &tabViewTopicInfosClass::tabHasMoved);
-    connect(&imageDownloadTool, &imageDownloadToolClass::oneDownloadFinished, this, &tabViewTopicInfosClass::updateImagesIfNeeded);
+    connect(tabList, &QTabWidget::currentChanged, this, &tabViewTopicInfosClass::currentTabChanged);
+    connect(tabList, &QTabWidget::tabCloseRequested, this, &tabViewTopicInfosClass::removeTab);
+    connect(tabList->tabBar(), &QTabBar::tabMoved, this, &tabViewTopicInfosClass::tabHasMoved);
+    connect(imageDownloadTool, &imageDownloadToolClass::oneDownloadFinished, this, &tabViewTopicInfosClass::updateImagesIfNeeded);
 
     updateSettings();
 }
@@ -128,7 +132,7 @@ void tabViewTopicInfosClass::selectThisTab(int number)
 {
     if(listOfContainerForTopicsInfos.size() > number)
     {
-        tabList.setCurrentIndex(number);
+        tabList->setCurrentIndex(number);
     }
 }
 
@@ -168,7 +172,7 @@ void tabViewTopicInfosClass::addNewTabWithPseudo(QString useThisPseudo)
         listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(generalCookieList, generalPseudoToUse, typeOfSaveForPseudo::DEFAULT);
     }
 
-    listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(imageDownloadTool.getPathOfTmpDir());
+    listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(imageDownloadTool->getPathOfTmpDir());
     if(themeImgDir.isEmpty() == false)
     {
         listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(themeImgDir);
@@ -189,8 +193,8 @@ void tabViewTopicInfosClass::addNewTabWithPseudo(QString useThisPseudo)
     connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::openThisTopicInNewTab, this, &tabViewTopicInfosClass::addNewTabWithTopic);
     connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::topicNeedChanged, this, &tabViewTopicInfosClass::setNewTopicForCurrentTab);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newCookiesHaveToBeSet, this, &tabViewTopicInfosClass::setNewCookiesForPseudo);
-    tabList.addTab(listOfContainerForTopicsInfos.back(), "Onglet " + QString::number(listOfContainerForTopicsInfos.size()));
-    tabList.setCurrentIndex(listOfContainerForTopicsInfos.size() - 1);
+    tabList->addTab(listOfContainerForTopicsInfos.back(), "Onglet " + QString::number(listOfContainerForTopicsInfos.size()));
+    tabList->setCurrentIndex(listOfContainerForTopicsInfos.size() - 1);
 }
 
 bool tabViewTopicInfosClass::getTabListIsEmpty() const
@@ -276,22 +280,22 @@ void tabViewTopicInfosClass::reloadAllTopic()
 
 const containerForTopicsInfosClass* tabViewTopicInfosClass::getConstCurrentWidget() const
 {
-    return listOfContainerForTopicsInfos.at(tabList.currentIndex());
+    return listOfContainerForTopicsInfos.at(tabList->currentIndex());
 }
 
 containerForTopicsInfosClass* tabViewTopicInfosClass::getCurrentWidget()
 {
-    return listOfContainerForTopicsInfos.at(tabList.currentIndex());
+    return listOfContainerForTopicsInfos.at(tabList->currentIndex());
 }
 
 void tabViewTopicInfosClass::currentTabChanged(int newIndex)
 {
     if(newIndex == -1)
     {
-        newIndex = tabList.currentIndex();
+        newIndex = tabList->currentIndex();
     }
 
-    tabList.setTabIcon(newIndex, QIcon());
+    tabList->setTabIcon(newIndex, QIcon());
 
     emit currentTabHasChanged();
 }
@@ -306,7 +310,7 @@ void tabViewTopicInfosClass::removeTab(int index)
 {
     if(listOfContainerForTopicsInfos.size() > 1)
     {
-        tabList.removeTab(index);
+        tabList->removeTab(index);
         listOfContainerForTopicsInfos.takeAt(index)->deleteLater();
         emit currentTabChanged(-1);
     }
@@ -326,7 +330,7 @@ void tabViewTopicInfosClass::setNewTopicName(QString topicName)
     {
         if(senderObject == &listOfContainerForTopicsInfos.at(i)->getShowTopic())
         {
-            tabList.setTabText(i, topicName);
+            tabList->setTabText(i, topicName);
         }
     }
 }
@@ -354,7 +358,7 @@ void tabViewTopicInfosClass::warnUserForNewMessages()
         {
             if(senderObject == &listOfContainerForTopicsInfos.at(i)->getShowTopic())
             {
-                tabList.setTabIcon(i, QIcon(alertImage));
+                tabList->setTabIcon(i, QIcon(alertImage));
             }
         }
     }
@@ -364,17 +368,17 @@ void tabViewTopicInfosClass::warnUserForNewMessages()
 
 void tabViewTopicInfosClass::downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck)
 {
-    imageDownloadTool.checkAndStartDownloadMissingImages(listOfStickersNeedToBeCheck, "sticker");
+    imageDownloadTool->checkAndStartDownloadMissingImages(listOfStickersNeedToBeCheck, "sticker");
 }
 
 void tabViewTopicInfosClass::downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck)
 {
-    imageDownloadTool.checkAndStartDownloadMissingImages(listOfNoelshackImagesNeedToBeCheck, "noelshack");
+    imageDownloadTool->checkAndStartDownloadMissingImages(listOfNoelshackImagesNeedToBeCheck, "noelshack");
 }
 
 void tabViewTopicInfosClass::downloadAvatarsIfNeeded(QStringList listOfAvatarsNeedToBeCheck)
 {
-    imageDownloadTool.checkAndStartDownloadMissingImages(listOfAvatarsNeedToBeCheck, "avatar");
+    imageDownloadTool->checkAndStartDownloadMissingImages(listOfAvatarsNeedToBeCheck, "avatar");
 }
 
 void tabViewTopicInfosClass::updateImagesIfNeeded()
@@ -385,7 +389,7 @@ void tabViewTopicInfosClass::updateImagesIfNeeded()
     }
     else if(typeOfImageRefresh == 1)
     {
-        if(imageDownloadTool.getNumberOfDownloadRemaining() == 0)
+        if(imageDownloadTool->getNumberOfDownloadRemaining() == 0)
         {
             getCurrentWidget()->getShowTopic().relayoutDocumentHack();
         }

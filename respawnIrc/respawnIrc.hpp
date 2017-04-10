@@ -23,7 +23,7 @@ class respawnIrcClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit respawnIrcClass(QWidget* parent = 0);
+    explicit respawnIrcClass(QWidget* parent = nullptr);
     void doStuffBeforeQuit();
     void useThisFavorite(int index);
     QString addThisFavorite(int index);
@@ -80,18 +80,18 @@ public:
     static const QString currentVersionName;
 private:
     QHBoxLayout* buttonLayout;
-    sendMessagesClass sendMessages;
-    tabViewTopicInfosClass tabViewTopicInfos;
+    sendMessagesClass* sendMessages;
+    tabViewTopicInfosClass* tabViewTopicInfos;
     QVector<QString> vectorOfFavoriteLink;
     QList<QNetworkCookie> currentCookieList;
     QList<QString> listOfIgnoredPseudo;
     QList<pseudoWithColorStruct> listOfColorPseudo;
     QList<accountStruct> listOfAccount;
     QMap<QString, int> numberOfMPPerPseudos;
-    QLabel messagesStatus;
-    QLabel numberOfConnectedAndPseudoUsed;
+    QLabel* messagesStatus;
+    QLabel* numberOfConnectedAndPseudoUsed;
     QString pseudoOfUser;
-    checkUpdateClass checkUpdate;
+    checkUpdateClass* checkUpdate;
     QString currentThemeName;
     QString lastClipboardDataChanged;
     bool beepWhenWarn;

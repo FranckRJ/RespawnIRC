@@ -38,9 +38,9 @@ private:
     QString websiteOfCookies;
     QString websiteOfTopic;
     QNetworkAccessManager* networkManager;
-    autoTimeoutReplyClass timeoutForEditInfo;
-    autoTimeoutReplyClass timeoutForQuoteInfo;
-    autoTimeoutReplyClass timeoutForDeleteInfo;
+    autoTimeoutReplyClass* timeoutForEditInfo;
+    autoTimeoutReplyClass* timeoutForQuoteInfo;
+    autoTimeoutReplyClass* timeoutForDeleteInfo;
     QNetworkReply* replyForEditInfo = nullptr;
     QNetworkReply* replyForQuoteInfo = nullptr;
     QNetworkReply* replyForDeleteInfo = nullptr;

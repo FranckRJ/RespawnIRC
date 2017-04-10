@@ -13,19 +13,20 @@
 #include "settingTool.hpp"
 #include "configDependentVar.hpp"
 
-QThread showTopicClass::threadForGetMessages;
+QThread* showTopicClass::threadForGetMessages;
 
 showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo, QString currentThemeName, QWidget* parent) : QWidget(parent)
 {
     getTopicMessages = new getTopicMessagesClass();
     messageActions = new messageActionsClass(this);
-    getTopicMessages->moveToThread(&threadForGetMessages);
+    messagesBox = new QTextBrowser(this);
+    getTopicMessages->moveToThread(threadForGetMessages);
 
     expForColorPseudo.setPatternOptions(QRegularExpression::CaseInsensitiveOption | configDependentVar::regexpBaseOptions);
-    messagesBox.setReadOnly(true);
-    messagesBox.setOpenExternalLinks(false);
-    messagesBox.setOpenLinks(false);
-    messagesBox.setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
+    messagesBox->setReadOnly(true);
+    messagesBox->setOpenExternalLinks(false);
+    messagesBox->setOpenLinks(false);
+    messagesBox->setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
 
     updateSettingInfo();
     currentTypeOfEdit = realTypeOfEdit;
@@ -36,12 +37,12 @@ showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, con
     setNewTheme(currentThemeName);
 
     QVBoxLayout* layout = new QVBoxLayout;
-    layout->addWidget(&messagesBox);
+    layout->addWidget(messagesBox);
     layout->setMargin(0);
 
     setLayout(layout);
 
-    connect(&messagesBox, &QTextBrowser::anchorClicked, this, &showTopicClass::linkClicked);
+    connect(messagesBox, &QTextBrowser::anchorClicked, this, &showTopicClass::linkClicked);
 
     connect(getTopicMessages, &getTopicMessagesClass::newMessagesAreAvailable, this, &showTopicClass::analyzeMessages);
     connect(getTopicMessages, &getTopicMessagesClass::newMessageStatus, this, &showTopicClass::setMessageStatus);
@@ -60,15 +61,20 @@ showTopicClass::~showTopicClass()
     QMetaObject::invokeMethod(getTopicMessages, "deleteLater", Qt::QueuedConnection);
 }
 
+void showTopicClass::createThread(QObject* parentForThread)
+{
+    threadForGetMessages = new QThread(parentForThread);
+}
+
 void showTopicClass::startThread()
 {
-    threadForGetMessages.start();
+    threadForGetMessages->start();
 }
 
 void showTopicClass::stopThread()
 {
-    threadForGetMessages.quit();
-    threadForGetMessages.wait();
+    threadForGetMessages->quit();
+    threadForGetMessages->wait();
 }
 
 void showTopicClass::startGetMessage()
@@ -163,7 +169,7 @@ void showTopicClass::setNewTheme(QString newThemeName)
 
 void showTopicClass::setNewTopic(QString newTopic)
 {
-    messagesBox.clear();
+    messagesBox->clear();
     topicName.clear();
     lastDate.clear();
     listOfInfosForEdit.clear();
@@ -239,26 +245,26 @@ void showTopicClass::updateSettingInfo()
 
 void showTopicClass::addSearchPath(QString newSearchPath)
 {
-    QStringList currentSearchPaths = messagesBox.searchPaths();
+    QStringList currentSearchPaths = messagesBox->searchPaths();
 
     if(currentSearchPaths.indexOf(newSearchPath) == -1)
     {
         currentSearchPaths.append(newSearchPath);
-        messagesBox.setSearchPaths(currentSearchPaths);
+        messagesBox->setSearchPaths(currentSearchPaths);
     }
 }
 
 void showTopicClass::relayoutDocumentHack()
 {
-    messagesBox.setLineWrapColumnOrWidth(messagesBox.lineWrapColumnOrWidth());
+    messagesBox->setLineWrapColumnOrWidth(messagesBox->lineWrapColumnOrWidth());
 }
 
 void showTopicClass::addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID)
 {
     messageInfoForEditStruct newInfos;
-    int baseSizeOfDocument = messagesBox.document()->characterCount();
+    int baseSizeOfDocument = messagesBox->document()->characterCount();
 
-    messagesBox.append(newMessage);
+    messagesBox->append(newMessage);
 
     if(currentTypeOfEdit > 0)
     {
@@ -267,7 +273,7 @@ void showTopicClass::addMessageToTheEndOfMessagesBox(const QString& newMessage, 
             newInfos.messageContent = newMessage;
         }
 
-        newInfos.realPosition = messagesBox.document()->characterCount() - 1;
+        newInfos.realPosition = messagesBox->document()->characterCount() - 1;
         newInfos.messageSize = newInfos.realPosition - baseSizeOfDocument;
 
         listOfInfosForEdit.push_back(QPair<long, messageInfoForEditStruct>(messageID, newInfos));
@@ -298,9 +304,9 @@ void showTopicClass::editThisMessageOfMessagesBox(QString newMessage, long messa
     }
     else
     {
-        int baseSizeOfDocument = messagesBox.document()->characterCount();
+        int baseSizeOfDocument = messagesBox->document()->characterCount();
         int newSizeOfDocument;
-        QTextCursor currentCurs = messagesBox.textCursor();
+        QTextCursor currentCurs = messagesBox->textCursor();
 
         if(currentTypeOfEdit == 1)
         {
@@ -311,7 +317,7 @@ void showTopicClass::editThisMessageOfMessagesBox(QString newMessage, long messa
         currentCurs.setPosition(ite.peekPrevious().second.realPosition - ite.peekPrevious().second.messageSize, QTextCursor::KeepAnchor);
         currentCurs.insertHtml(newMessage);
 
-        newSizeOfDocument = messagesBox.document()->characterCount() - baseSizeOfDocument;
+        newSizeOfDocument = messagesBox->document()->characterCount() - baseSizeOfDocument;
         ite.peekPrevious().second.messageSize += newSizeOfDocument;
 
         ite.previous();
@@ -345,7 +351,7 @@ void showTopicClass::setTopicToErrorMode()
         {
             topicLinkLastPage.clear();
             topicName.clear();
-            messagesBox.clear();
+            messagesBox->clear();
             firstMessageOfTopic.isFirstMessage = false;
             setMessageStatus("Erreur, topic invalide.");
             setNumberOfConnectedAndMP("", -1, true);
@@ -407,7 +413,7 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
     bool appendHrAtEndOfFirstMessage = false;
     bool errorHappen = false;
     bool firstTimeAddMessages = false;
-    bool needToScrollDown = messagesBox.verticalScrollBar()->value() >= messagesBox.verticalScrollBar()->maximum();
+    bool needToScrollDown = messagesBox->verticalScrollBar()->value() >= messagesBox->verticalScrollBar()->maximum();
     bool newMessagesAreAvailable = false;
 
     if(parsingTool::getFirstPageOfTopic(fromThisTopic) != topicLinkFirstPage)
@@ -447,7 +453,7 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
         }
     }
 
-    if(messagesBox.toPlainText().isEmpty() == true)
+    if(messagesBox->toPlainText().isEmpty() == true)
     {
         while(listOfNewMessages.size() > numberOfMessageShowedFirstTime)
         {
@@ -637,8 +643,8 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
 
     if(needToScrollDown == true)
     {
-        messagesBox.verticalScrollBar()->updateGeometry();
-        messagesBox.verticalScrollBar()->setValue(messagesBox.verticalScrollBar()->maximum());
+        messagesBox->verticalScrollBar()->updateGeometry();
+        messagesBox->verticalScrollBar()->setValue(messagesBox->verticalScrollBar()->maximum());
     }
 
     while(listOfInfosForEdit.size() > 40)

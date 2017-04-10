@@ -34,35 +34,41 @@ namespace
     QRegularExpression expForImageTag(R"rgx(<img[^>]*>)rgx", configDependentVar::regexpBaseOptions);
 }
 
-respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate(this, currentVersionName), tabViewTopicInfos(&listOfIgnoredPseudo, &listOfColorPseudo, &listOfAccount)
+respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
 {
+    showTopicClass::createThread(this);
+    sendMessages = new sendMessagesClass(this);
+    tabViewTopicInfos = new tabViewTopicInfosClass(&listOfIgnoredPseudo, &listOfColorPseudo, &listOfAccount, this);
+    checkUpdate = new checkUpdateClass(this, currentVersionName);
+    messagesStatus = new QLabel(this);
+    numberOfConnectedAndPseudoUsed = new QLabel(this);
     addButtonToButtonLayout();
 
     QHBoxLayout* infoLayout = new QHBoxLayout();
-    infoLayout->addWidget(&messagesStatus);
-    infoLayout->addWidget(&numberOfConnectedAndPseudoUsed, 1, Qt::AlignRight);
+    infoLayout->addWidget(messagesStatus);
+    infoLayout->addWidget(numberOfConnectedAndPseudoUsed, 1, Qt::AlignRight);
 
     QGridLayout* mainLayout = new QGridLayout(this);
-    mainLayout->addWidget(&tabViewTopicInfos, 0, 0);
+    mainLayout->addWidget(tabViewTopicInfos, 0, 0);
     mainLayout->addLayout(buttonLayout, 1, 0, 1, 1, Qt::AlignLeft);
-    mainLayout->addWidget(&sendMessages, 2, 0);
+    mainLayout->addWidget(sendMessages, 2, 0);
     mainLayout->addLayout(infoLayout, 3, 0);
 
     setLayout(mainLayout);
 
-    connect(&sendMessages, &sendMessagesClass::needToPostMessage, this, &respawnIrcClass::messageHaveToBePosted);
-    connect(&sendMessages, &sendMessagesClass::needToSetEditMessage, this, &respawnIrcClass::setEditMessage);
-    connect(&sendMessages, &sendMessagesClass::needToGetMessages, &tabViewTopicInfos, &tabViewTopicInfosClass::updateCurrentTopic);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::currentTabHasChanged, this, &respawnIrcClass::tabOfTabViewChanged);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::newMPAreAvailables, this, &respawnIrcClass::warnUserForNewMP);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::setEditInfo, &sendMessages, &sendMessagesClass::setInfoForEditMessage);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::quoteThisMessage, &sendMessages, &sendMessagesClass::quoteThisMessage);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
-    connect(&tabViewTopicInfos, &tabViewTopicInfosClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
+    connect(sendMessages, &sendMessagesClass::needToPostMessage, this, &respawnIrcClass::messageHaveToBePosted);
+    connect(sendMessages, &sendMessagesClass::needToSetEditMessage, this, &respawnIrcClass::setEditMessage);
+    connect(sendMessages, &sendMessagesClass::needToGetMessages, tabViewTopicInfos, &tabViewTopicInfosClass::updateCurrentTopic);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::currentTabHasChanged, this, &respawnIrcClass::tabOfTabViewChanged);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::newMessageStatus, this, &respawnIrcClass::setNewMessageStatus);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::newNumberOfConnectedAndMP, this, &respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::newMPAreAvailables, this, &respawnIrcClass::warnUserForNewMP);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::newMessagesAvailable, this, &respawnIrcClass::warnUserForNewMessages);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::setEditInfo, sendMessages, &sendMessagesClass::setInfoForEditMessage);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::quoteThisMessage, sendMessages, &sendMessagesClass::quoteThisMessage);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
 
     loadSettings();
 
@@ -71,30 +77,30 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent), checkUpdate
 
 void respawnIrcClass::doStuffBeforeQuit()
 {
-    tabViewTopicInfos.doStuffBeforeQuit();
+    tabViewTopicInfos->doStuffBeforeQuit();
 
     showTopicClass::stopThread();
 
-    sendMessages.doStuffBeforeQuit();
+    sendMessages->doStuffBeforeQuit();
 }
 
 void respawnIrcClass::useThisFavorite(int index)
 {
     if(vectorOfFavoriteLink.at(index).isEmpty() == false)
     {
-        tabViewTopicInfos.setNewTopicForCurrentTab(vectorOfFavoriteLink.at(index));
+        tabViewTopicInfos->setNewTopicForCurrentTab(vectorOfFavoriteLink.at(index));
     }
 }
 
 QString respawnIrcClass::addThisFavorite(int index)
 {
-    if(tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab().isEmpty() == false && tabViewTopicInfos.getTopicNameOfCurrentTab().isEmpty() == false)
+    if(tabViewTopicInfos->getTopicLinkFirstPageOfCurrentTab().isEmpty() == false && tabViewTopicInfos->getTopicNameOfCurrentTab().isEmpty() == false)
     {
-        vectorOfFavoriteLink[index] = tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab();
-        settingTool::saveThisOption("favoriteLink" + QString::number(index), tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab());
-        settingTool::saveThisOption("favoriteName" + QString::number(index), tabViewTopicInfos.getTopicNameOfCurrentTab());
+        vectorOfFavoriteLink[index] = tabViewTopicInfos->getTopicLinkFirstPageOfCurrentTab();
+        settingTool::saveThisOption("favoriteLink" + QString::number(index), tabViewTopicInfos->getTopicLinkFirstPageOfCurrentTab());
+        settingTool::saveThisOption("favoriteName" + QString::number(index), tabViewTopicInfos->getTopicNameOfCurrentTab());
 
-        return tabViewTopicInfos.getTopicNameOfCurrentTab();
+        return tabViewTopicInfos->getTopicNameOfCurrentTab();
     }
     else
     {
@@ -111,23 +117,23 @@ void respawnIrcClass::delThisFavorite(int index)
 
 tabViewTopicInfosClass* respawnIrcClass::getTabView()
 {
-    return &tabViewTopicInfos;
+    return tabViewTopicInfos;
 }
 
 multiTypeTextBoxClass* respawnIrcClass::getMessageLine()
 {
-    return sendMessages.getMessageLine();
+    return sendMessages->getMessageLine();
 }
 
 void respawnIrcClass::showWebNavigator()
 {
-    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, tabViewTopicInfos.getTopicLinkLastPageOfCurrentTab(), tabViewTopicInfos.getListOfCookiesOfCurrentTab());
+    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, tabViewTopicInfos->getTopicLinkLastPageOfCurrentTab(), tabViewTopicInfos->getListOfCookiesOfCurrentTab());
     myWebNavigator->exec();
 }
 
 void respawnIrcClass::showWebNavigatorAtMP()
 {
-    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, "http://www.jeuxvideo.com/messages-prives/boite-reception.php", tabViewTopicInfos.getListOfCookiesOfCurrentTab());
+    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, "http://www.jeuxvideo.com/messages-prives/boite-reception.php", tabViewTopicInfos->getListOfCookiesOfCurrentTab());
     myWebNavigator->exec();
 }
 
@@ -150,15 +156,15 @@ void respawnIrcClass::showAccountListWindow()
 
 void respawnIrcClass::showSelectTopic()
 {
-    selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab(), this);
-    connect(mySelectTopicWindow, &selectTopicWindowClass::newTopicSelected, &tabViewTopicInfos, &tabViewTopicInfosClass::setNewTopicForCurrentTab);
+    selectTopicWindowClass* mySelectTopicWindow = new selectTopicWindowClass(tabViewTopicInfos->getTopicLinkFirstPageOfCurrentTab(), this);
+    connect(mySelectTopicWindow, &selectTopicWindowClass::newTopicSelected, tabViewTopicInfos, &tabViewTopicInfosClass::setNewTopicForCurrentTab);
     mySelectTopicWindow->exec();
 }
 
 void respawnIrcClass::showSelectSticker()
 {
     selectStickerWindowClass* mySelectStickerWindow = new selectStickerWindowClass(this);
-    connect(mySelectStickerWindow, &selectStickerWindowClass::addThisSticker, sendMessages.getMessageLine(), &multiTypeTextBoxClass::insertText);
+    connect(mySelectStickerWindow, &selectStickerWindowClass::addThisSticker, sendMessages->getMessageLine(), &multiTypeTextBoxClass::insertText);
     mySelectStickerWindow->exec();
 }
 
@@ -204,19 +210,19 @@ void respawnIrcClass::showAbout()
                            "Ce logiciel à été developpé à l'aide de Qt 5 ainsi que de Hunspell <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://hunspell.github.io/\">http://hunspell.github.io/</a>.<br />" +
                            "Lien du dépôt github : <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"https://github.com/FranckRJ/RespawnIRC\">https://github.com/FranckRJ/RespawnIRC</a><br />" +
                            "Lien du site : <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://franckrj.github.io/RespawnIRC/\">http://franckrj.github.io/RespawnIRC/</a><br /><br />"
-                           "Nombre de messages que vous avez posté depuis la version 2.2 : <b>" + QString::number(settingTool::getThisIntOption("nbOfMessagesSend").value + sendMessages.getNbOfMessagesSend()) + "</b>");
+                           "Nombre de messages que vous avez posté depuis la version 2.2 : <b>" + QString::number(settingTool::getThisIntOption("nbOfMessagesSend").value + sendMessages->getNbOfMessagesSend()) + "</b>");
 }
 
 void respawnIrcClass::checkForUpdate()
 {
-    checkUpdate.startDownloadOfLatestUpdatePage(true);
+    checkUpdate->startDownloadOfLatestUpdatePage(true);
 }
 
 void respawnIrcClass::goToCurrentTopic()
 {
-    if(tabViewTopicInfos.getTopicLinkLastPageOfCurrentTab().isEmpty() == false)
+    if(tabViewTopicInfos->getTopicLinkLastPageOfCurrentTab().isEmpty() == false)
     {
-        QDesktopServices::openUrl(QUrl(tabViewTopicInfos.getTopicLinkLastPageOfCurrentTab()));
+        QDesktopServices::openUrl(QUrl(tabViewTopicInfos->getTopicLinkLastPageOfCurrentTab()));
     }
     else
     {
@@ -226,9 +232,9 @@ void respawnIrcClass::goToCurrentTopic()
 
 void respawnIrcClass::goToCurrentForum()
 {
-    if(parsingTool::getForumOfTopic(tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab()).isEmpty() == false)
+    if(parsingTool::getForumOfTopic(tabViewTopicInfos->getTopicLinkFirstPageOfCurrentTab()).isEmpty() == false)
     {
-        QDesktopServices::openUrl(QUrl(parsingTool::getForumOfTopic(tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab())));
+        QDesktopServices::openUrl(QUrl(parsingTool::getForumOfTopic(tabViewTopicInfos->getTopicLinkFirstPageOfCurrentTab())));
     }
     else
     {
@@ -240,26 +246,26 @@ void respawnIrcClass::disconnectFromAllTabs()
 {
     currentCookieList = QList<QNetworkCookie>();
     pseudoOfUser = "";
-    tabViewTopicInfos.setNewCookies(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::REMEMBER);
+    tabViewTopicInfos->setNewCookies(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::REMEMBER);
     settingTool::saveThisOption("pseudo", pseudoOfUser);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
 void respawnIrcClass::disconnectFromCurrentTab()
 {
-    tabViewTopicInfos.setNewCookiesForCurrentTab(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
+    tabViewTopicInfos->setNewCookiesForCurrentTab(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
 void respawnIrcClass::setNewTheme(QString newThemeName)
 {
     currentThemeName = newThemeName;
-    tabViewTopicInfos.setNewTheme(currentThemeName);
+    tabViewTopicInfos->setNewTheme(currentThemeName);
     styleTool::loadThemeFont(currentThemeName);
 
     emit themeChanged(currentThemeName);
 
-    sendMessages.styleChanged();
+    sendMessages->styleChanged();
 
     settingTool::saveThisOption("themeUsed", currentThemeName);
 }
@@ -271,8 +277,8 @@ void respawnIrcClass::reloadTheme()
 
 void respawnIrcClass::messageHaveToBePosted()
 {
-    sendMessages.postMessage(tabViewTopicInfos.getPseudoUsedOfCurrentTab(), tabViewTopicInfos.getTopicLinkFirstPageOfCurrentTab(),
-                             tabViewTopicInfos.getListOfCookiesOfCurrentTab(), tabViewTopicInfos.getListOfInputsOfCurrentTab());
+    sendMessages->postMessage(tabViewTopicInfos->getPseudoUsedOfCurrentTab(), tabViewTopicInfos->getTopicLinkFirstPageOfCurrentTab(),
+                             tabViewTopicInfos->getListOfCookiesOfCurrentTab(), tabViewTopicInfos->getListOfInputsOfCurrentTab());
 }
 
 void respawnIrcClass::editLastMessage()
@@ -422,18 +428,18 @@ void respawnIrcClass::loadSettings()
 
     for(int i = 0; i < listOfTopicLink.size(); ++i)
     {
-        tabViewTopicInfos.addNewTabWithPseudo((i < listOfPseudoForTopic.size() ? listOfPseudoForTopic.at(i) : ""));
-        tabViewTopicInfos.setBufferForTopicLinkFirstPage(listOfTopicLink.at(i), i);
+        tabViewTopicInfos->addNewTabWithPseudo((i < listOfPseudoForTopic.size() ? listOfPseudoForTopic.at(i) : ""));
+        tabViewTopicInfos->setBufferForTopicLinkFirstPage(listOfTopicLink.at(i), i);
     }
 
-    if(tabViewTopicInfos.getTabListIsEmpty() == true)
+    if(tabViewTopicInfos->getTabListIsEmpty() == true)
     {
-        tabViewTopicInfos.addNewTab();
+        tabViewTopicInfos->addNewTab();
     }
 
-    tabViewTopicInfos.selectThisTab(0);
+    tabViewTopicInfos->selectThisTab(0);
 
-    messagesStatus.setText(tabViewTopicInfos.getMessageStatusOfCurrentTab());
+    messagesStatus->setText(tabViewTopicInfos->getMessageStatusOfCurrentTab());
     setNewNumberOfConnectedAndPseudoUsed();
 
     if(settingTool::getThisBoolOption("showTextDecorationButton") == false)
@@ -441,11 +447,11 @@ void respawnIrcClass::loadSettings()
         setShowTextDecorationButton(false);
     }
 
-    sendMessages.setMultilineEdit(settingTool::getThisBoolOption("setMultilineEdit"));
+    sendMessages->setMultilineEdit(settingTool::getThisBoolOption("setMultilineEdit"));
 
     if(settingTool::getThisBoolOption("searchForUpdateAtLaunch") == true)
     {
-        checkUpdate.startDownloadOfLatestUpdatePage();
+        checkUpdate->startDownloadOfLatestUpdatePage();
     }
 }
 
@@ -521,7 +527,7 @@ void respawnIrcClass::setShowTextDecorationButton(bool newVal)
 void respawnIrcClass::focusInEvent(QFocusEvent* event)
 {
     (void)event;
-    sendMessages.setFocus();
+    sendMessages->setFocus();
 }
 
 void respawnIrcClass::disconnectFromThisPseudo(QString thisPseudo)
@@ -532,7 +538,7 @@ void respawnIrcClass::disconnectFromThisPseudo(QString thisPseudo)
         pseudoOfUser = "";
     }
 
-    tabViewTopicInfos.setNewCookies(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT, thisPseudo);
+    tabViewTopicInfos->setNewCookies(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT, thisPseudo);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
@@ -568,7 +574,7 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     }
     if((boolIte = newBoolOptions.find("setMultilineEdit")) != newBoolOptions.end())
     {
-        sendMessages.setMultilineEdit(boolIte.value());
+        sendMessages->setMultilineEdit(boolIte.value());
         newBoolOptions.erase(boolIte);
     }
     if((boolIte = newBoolOptions.find("beepWhenWarn")) != newBoolOptions.end())
@@ -590,7 +596,7 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     {
         if(sendMessageAlreadyUpdated == false)
         {
-            sendMessages.settingsChanged();
+            sendMessages->settingsChanged();
             sendMessageAlreadyUpdated = true;
         }
         newBoolOptions.erase(boolIte);
@@ -599,7 +605,7 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     {
         if(sendMessageAlreadyUpdated == false)
         {
-            sendMessages.settingsChanged();
+            sendMessages->settingsChanged();
             sendMessageAlreadyUpdated = true;
         }
         newBoolOptions.erase(boolIte);
@@ -609,14 +615,14 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     {
         if(sendMessageAlreadyUpdated == false)
         {
-            sendMessages.settingsChanged();
+            sendMessages->settingsChanged();
             sendMessageAlreadyUpdated = true;
         }
         newIntOptions.erase(intIte);
     }
     if((intIte = newIntOptions.find("typeOfImageRefresh")) != newIntOptions.end())
     {
-        tabViewTopicInfos.updateSettings();
+        tabViewTopicInfos->updateSettings();
         newIntOptions.erase(intIte);
     }
     if((intIte = newIntOptions.find("typeOfEdit")) != newIntOptions.end())
@@ -626,10 +632,10 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
 
     if(newBoolOptions.isEmpty() == false || newIntOptions.isEmpty() == false)
     {
-        tabViewTopicInfos.updateSettingInfoForList();
+        tabViewTopicInfos->updateSettingInfoForList();
         if(reloadForAllTopicNeeded == true)
         {
-            tabViewTopicInfos.reloadAllTopic();
+            tabViewTopicInfos->reloadAllTopic();
         }
     }
 }
@@ -640,7 +646,7 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
     {
         currentCookieList = newCookies;
         pseudoOfUser = newPseudoOfUser;
-        tabViewTopicInfos.setNewCookies(currentCookieList, pseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::DEFAULT : typeOfSaveForPseudo::DONT_REMEMBER));
+        tabViewTopicInfos->setNewCookies(currentCookieList, pseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::DEFAULT : typeOfSaveForPseudo::DONT_REMEMBER));
         setNewNumberOfConnectedAndPseudoUsed();
 
         if(saveAccountList == true)
@@ -658,7 +664,7 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
 
 void respawnIrcClass::setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo)
 {
-    tabViewTopicInfos.setNewCookiesForCurrentTab(newCookies, newPseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::REMEMBER : typeOfSaveForPseudo::DONT_REMEMBER));
+    tabViewTopicInfos->setNewCookiesForCurrentTab(newCookies, newPseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::REMEMBER : typeOfSaveForPseudo::DONT_REMEMBER));
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
@@ -677,28 +683,28 @@ void respawnIrcClass::setNewCookiesForPseudo(QString pseudo, const QList<QNetwor
 
 void respawnIrcClass::setNewMessageStatus()
 {
-    messagesStatus.setText(tabViewTopicInfos.getMessageStatusOfCurrentTab());
+    messagesStatus->setText(tabViewTopicInfos->getMessageStatusOfCurrentTab());
 }
 
 void respawnIrcClass::setNewNumberOfConnectedAndPseudoUsed()
 {
     QString textToShow;
 
-    if(tabViewTopicInfos.getTabListIsEmpty() == false)
+    if(tabViewTopicInfos->getTabListIsEmpty() == false)
     {
-        textToShow += tabViewTopicInfos.getNumberOfConnectedAndMPOfCurrentTab();
+        textToShow += tabViewTopicInfos->getNumberOfConnectedAndMPOfCurrentTab();
 
-        if(tabViewTopicInfos.getPseudoUsedOfCurrentTab().isEmpty() == false)
+        if(tabViewTopicInfos->getPseudoUsedOfCurrentTab().isEmpty() == false)
         {
             if(textToShow.isEmpty() == false)
             {
                 textToShow += " - ";
             }
-            textToShow += tabViewTopicInfos.getPseudoUsedOfCurrentTab();
+            textToShow += tabViewTopicInfos->getPseudoUsedOfCurrentTab();
         }
     }
 
-    numberOfConnectedAndPseudoUsed.setText(textToShow);
+    numberOfConnectedAndPseudoUsed->setText(textToShow);
 }
 
 void respawnIrcClass::saveListOfAccount()
@@ -748,16 +754,16 @@ void respawnIrcClass::warnUserForNewMP(int newNumber, QString withThisPseudo)
 
 void respawnIrcClass::tabOfTabViewChanged()
 {
-    if(sendMessages.getIsSending() == false)
+    if(sendMessages->getIsSending() == false)
     {
-        sendMessages.setEnableSendButton(true);
+        sendMessages->setEnableSendButton(true);
 
-        if(sendMessages.getIsInEdit() == true)
+        if(sendMessages->getIsInEdit() == true)
         {
-            sendMessages.clearMessageLine();
+            sendMessages->clearMessageLine();
         }
 
-        sendMessages.setIsInEdit(false);
+        sendMessages->setIsInEdit(false);
     }
 
     setNewMessageStatus();
@@ -766,24 +772,24 @@ void respawnIrcClass::tabOfTabViewChanged()
 
 void respawnIrcClass::setEditMessage(long idOfMessageToEdit, bool useMessageEdit)
 {
-    if(sendMessages.getIsSending() == false)
+    if(sendMessages->getIsSending() == false)
     {
-        if(sendMessages.getIsInEdit() == false)
+        if(sendMessages->getIsInEdit() == false)
         {
-            sendMessages.setIsInEdit(true);
-            sendMessages.setEnableSendButton(false);
-            if(tabViewTopicInfos.getEditInfoForCurrentTab(idOfMessageToEdit, useMessageEdit) == false)
+            sendMessages->setIsInEdit(true);
+            sendMessages->setEnableSendButton(false);
+            if(tabViewTopicInfos->getEditInfoForCurrentTab(idOfMessageToEdit, useMessageEdit) == false)
             {
                 QMessageBox::warning(this, "Erreur", "Impossible d'éditer ce message.");
-                sendMessages.setIsInEdit(false);
-                sendMessages.setEnableSendButton(true);
+                sendMessages->setIsInEdit(false);
+                sendMessages->setEnableSendButton(true);
             }
         }
         else
         {
-            sendMessages.setIsInEdit(false);
-            sendMessages.setEnableSendButton(true);
-            sendMessages.clearMessageLine();
+            sendMessages->setIsInEdit(false);
+            sendMessages->setEnableSendButton(true);
+            sendMessages->clearMessageLine();
         }
     }
 }

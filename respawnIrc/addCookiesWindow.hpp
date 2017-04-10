@@ -16,8 +16,8 @@ private slots:
 signals:
     void newCookiesAvailable(QString helloCookie, QString connectCookie);
 private:
-    QLineEdit helloCookieLine;
-    QLineEdit connectCookieLine;
+    QLineEdit* helloCookieLine;
+    QLineEdit* connectCookieLine;
 };
 
 #endif

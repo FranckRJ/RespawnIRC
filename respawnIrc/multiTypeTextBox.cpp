@@ -13,46 +13,49 @@ namespace
 
 multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
 {
-    highlighter = new highlighterClass(textEdit.document());
+    layout = new QVBoxLayout(this);
+    lineEdit = new QLineEdit(this);
+    textEdit = new spellTextEditClass(this);
+    highlighter = new highlighterClass(textEdit->document());
 
-    textEdit.setObjectName("sendMessageText");
-    lineEdit.setObjectName("sendMessageLine");
+    textEdit->setObjectName("sendMessageText");
+    lineEdit->setObjectName("sendMessageLine");
 
-    textEdit.setTabChangesFocus(true);
-    textEdit.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    textEdit.setAcceptRichText(false);
+    textEdit->setTabChangesFocus(true);
+    textEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    textEdit->setAcceptRichText(false);
 
     settingsChanged();
 
-    layout.addWidget(&lineEdit);
-    layout.setMargin(0);
+    layout->addWidget(lineEdit);
+    layout->setMargin(0);
 
-    setLayout(&layout);
+    setLayout(layout);
 
-    connect(&lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnPressed);
-    connect(&textEdit, &spellTextEditClass::addWord, highlighter, &highlighterClass::addWordToDic);
+    connect(lineEdit, &QLineEdit::returnPressed, this, &multiTypeTextBoxClass::returnPressed);
+    connect(textEdit, &spellTextEditClass::addWord, highlighter, &highlighterClass::addWordToDic);
 }
 
 void multiTypeTextBoxClass::doStuffBeforeQuit()
 {
-    textEdit.doStuffBeforeQuit();
+    textEdit->doStuffBeforeQuit();
 }
 
 void multiTypeTextBoxClass::clear()
 {
-    textEdit.clear();
-    lineEdit.clear();
+    textEdit->clear();
+    lineEdit->clear();
 }
 
 QString multiTypeTextBoxClass::text() const
 {
     if(textEditSelected == true)
     {
-        return textEdit.toPlainText();
+        return textEdit->toPlainText();
     }
     else
     {
-        return lineEdit.text().replace(expForLineReturn, "\n").replace("\\&n", "&n");
+        return lineEdit->text().replace(expForLineReturn, "\n").replace("\\&n", "&n");
     }
 }
 
@@ -62,11 +65,11 @@ void multiTypeTextBoxClass::setFocus()
 
     if(textEditSelected == true)
     {
-        textEdit.setFocus();
+        textEdit->setFocus();
     }
     else
     {
-        lineEdit.setFocus();
+        lineEdit->setFocus();
     }
 }
 
@@ -76,35 +79,35 @@ void multiTypeTextBoxClass::setEditMode(bool newVal)
     {
         QString newStyle = "#sendMessageText, #sendMessageLine { color: " + styleTool::getColorInfo().editMessageColor + "; }";
 
-        textEdit.setStyleSheet(newStyle);
-        lineEdit.setStyleSheet(newStyle);
+        textEdit->setStyleSheet(newStyle);
+        lineEdit->setStyleSheet(newStyle);
     }
     else
     {
-        textEdit.setStyleSheet("");
-        lineEdit.setStyleSheet("");
+        textEdit->setStyleSheet("");
+        lineEdit->setStyleSheet("");
     }
 }
 
 void multiTypeTextBoxClass::setTextEditSelected(bool newVal)
 {
     clear();
-    layout.removeWidget(layout.itemAt(0)->widget());
+    layout->removeWidget(layout->itemAt(0)->widget());
     textEditSelected = newVal;
 
     if(textEditSelected == true)
     {
-        lineEdit.setVisible(false);
-        layout.addWidget(&textEdit);
-        textEdit.setVisible(true);
-        setTabOrder(&lineEdit, &textEdit);
+        lineEdit->setVisible(false);
+        layout->addWidget(textEdit);
+        textEdit->setVisible(true);
+        setTabOrder(lineEdit, textEdit);
     }
     else
     {
-        textEdit.setVisible(false);
-        layout.addWidget(&lineEdit);
-        lineEdit.setVisible(true);
-        setTabOrder(&textEdit, &lineEdit);
+        textEdit->setVisible(false);
+        layout->addWidget(lineEdit);
+        lineEdit->setVisible(true);
+        setTabOrder(textEdit, lineEdit);
     }
 }
 
@@ -119,27 +122,27 @@ void multiTypeTextBoxClass::settingsChanged()
 
     if(useSpellChecker == true && dicAreLoaded == false)
     {
-        textEdit.setDic("fr");
+        textEdit->setDic("fr");
         highlighter->setDic("fr");
         dicAreLoaded = true;
     }
 
     highlighter->enableSpellChecking(useSpellChecker);
-    textEdit.enableSpellChecking(useSpellChecker);
-    textEdit.setFixedHeight(settingTool::getThisIntOption("textBoxSize").value);
+    textEdit->enableSpellChecking(useSpellChecker);
+    textEdit->setFixedHeight(settingTool::getThisIntOption("textBoxSize").value);
 }
 
 void multiTypeTextBoxClass::insertText(QString newText)
 {
     if(textEditSelected == true)
     {
-        textEdit.insertPlainText(newText);
-        textEdit.verticalScrollBar()->updateGeometry();
-        textEdit.verticalScrollBar()->setValue(textEdit.verticalScrollBar()->maximum());
+        textEdit->insertPlainText(newText);
+        textEdit->verticalScrollBar()->updateGeometry();
+        textEdit->verticalScrollBar()->setValue(textEdit->verticalScrollBar()->maximum());
     }
     else
     {
-        lineEdit.insert(newText.replace("&n", "\\&n").replace("\n", "&n"));
+        lineEdit->insert(newText.replace("&n", "\\&n").replace("\n", "&n"));
     }
 }
 
@@ -215,7 +218,7 @@ void multiTypeTextBoxClass::moveCursor(QTextCursor::MoveOperation operation, int
     {
         for(int i = 0; i < numberOfTime; ++i)
         {
-            textEdit.moveCursor(operation);
+            textEdit->moveCursor(operation);
         }
     }
     else
@@ -226,15 +229,15 @@ void multiTypeTextBoxClass::moveCursor(QTextCursor::MoveOperation operation, int
             {
                 numberOfTime = -numberOfTime;
             }
-            lineEdit.setCursorPosition(lineEdit.cursorPosition() + numberOfTime);
+            lineEdit->setCursorPosition(lineEdit->cursorPosition() + numberOfTime);
         }
         else if(operation == QTextCursor::StartOfLine)
         {
-            lineEdit.setCursorPosition(0);
+            lineEdit->setCursorPosition(0);
         }
         else if(operation == QTextCursor::EndOfLine)
         {
-            lineEdit.setCursorPosition(lineEdit.text().size());
+            lineEdit->setCursorPosition(lineEdit->text().size());
         }
     }
 }
@@ -243,10 +246,10 @@ QString multiTypeTextBoxClass::getSelectedText() const
 {
     if(textEditSelected == true)
     {
-        return textEdit.textCursor().selectedText();
+        return textEdit->textCursor().selectedText();
     }
     else
     {
-        return lineEdit.selectedText();
+        return lineEdit->selectedText();
     }
 }

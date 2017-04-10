@@ -15,14 +15,17 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
     QPushButton* buttonRemoveAccount = new QPushButton("Supprimer", this);
     QPushButton* buttonLogin = new QPushButton("Se connecter sur tous les onglets", this);
     QPushButton* buttonLoginOneTopic = new QPushButton("Se connecter sur l'onglet actuel", this);
+    rememberBox = new QCheckBox(this);
+    viewListOfAccount = new QListView(this);
+    modelForListView = new QStringListModel(viewListOfAccount);
 
-    rememberBox.setChecked(true);
-    viewListOfAccount.setEditTriggers(QAbstractItemView::NoEditTriggers);
+    rememberBox->setChecked(true);
+    viewListOfAccount->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     QGridLayout* mainLayout = new QGridLayout(this);
-    mainLayout->addWidget(&viewListOfAccount, 0, 0, 1, 2);
+    mainLayout->addWidget(viewListOfAccount, 0, 0, 1, 2);
     mainLayout->addWidget(labRemember, 1, 0);
-    mainLayout->addWidget(&rememberBox, 1, 1);
+    mainLayout->addWidget(rememberBox, 1, 1);
     mainLayout->addWidget(buttonAddAccount, 2, 0);
     mainLayout->addWidget(buttonRemoveAccount, 2, 1);
     mainLayout->addWidget(buttonLogin, 3, 0);
@@ -33,7 +36,7 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
 
     listOfAccount = newListOfAccount;
     updateList();
-    viewListOfAccount.setModel(&modelForListView);
+    viewListOfAccount->setModel(modelForListView);
 
     connect(buttonAddAccount, &QPushButton::clicked, this, &accountListWindowClass::showConnectWindow);
     connect(buttonRemoveAccount, &QPushButton::clicked, this, &accountListWindowClass::removeCurrentAccount);
@@ -72,7 +75,7 @@ void accountListWindowClass::updateList()
         listOfAccountName.append(thisAccount.pseudo);
     }
 
-    modelForListView.setStringList(listOfAccountName);
+    modelForListView->setStringList(listOfAccountName);
     emit listHasChanged();
 }
 
@@ -99,28 +102,28 @@ void accountListWindowClass::addAccount(QList<QNetworkCookie> newCookies, QStrin
 
 void accountListWindowClass::removeCurrentAccount()
 {
-    if(viewListOfAccount.currentIndex().row() != -1)
+    if(viewListOfAccount->currentIndex().row() != -1)
     {
-        emit eraseThisPseudo(listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo);
-        listOfAccount->removeAt(viewListOfAccount.currentIndex().row());
+        emit eraseThisPseudo(listOfAccount->at(viewListOfAccount->currentIndex().row()).pseudo);
+        listOfAccount->removeAt(viewListOfAccount->currentIndex().row());
         updateList();
     }
 }
 
 void accountListWindowClass::connectWithThisAccount()
 {
-    if(viewListOfAccount.currentIndex().row() != -1)
+    if(viewListOfAccount->currentIndex().row() != -1)
     {
-        emit useThisAccount(listOfAccount->at(viewListOfAccount.currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo, false, rememberBox.isChecked());
+        emit useThisAccount(listOfAccount->at(viewListOfAccount->currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount->currentIndex().row()).pseudo, false, rememberBox->isChecked());
         close();
     }
 }
 
 void accountListWindowClass::connectToOneTopicWithThisAccount()
 {
-    if(viewListOfAccount.currentIndex().row() != -1)
+    if(viewListOfAccount->currentIndex().row() != -1)
     {
-        emit useThisAccountForOneTopic(listOfAccount->at(viewListOfAccount.currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount.currentIndex().row()).pseudo, rememberBox.isChecked());
+        emit useThisAccountForOneTopic(listOfAccount->at(viewListOfAccount->currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount->currentIndex().row()).pseudo, rememberBox->isChecked());
         close();
     }
 }

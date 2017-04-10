@@ -8,13 +8,16 @@ messageActionsClass::messageActionsClass(QWidget* newParent) : QObject(newParent
 {
     parent = newParent;
     networkManager = new QNetworkAccessManager(this);
+    timeoutForEditInfo = new autoTimeoutReplyClass(0, this);
+    timeoutForQuoteInfo = new autoTimeoutReplyClass(0, this);
+    timeoutForDeleteInfo = new autoTimeoutReplyClass(0, this);
 }
 
 void messageActionsClass::updateSettingInfo()
 {
-    timeoutForEditInfo.updateTimeoutTime();
-    timeoutForQuoteInfo.updateTimeoutTime();
-    timeoutForDeleteInfo.updateTimeoutTime();
+    timeoutForEditInfo->updateTimeoutTime();
+    timeoutForQuoteInfo->updateTimeoutTime();
+    timeoutForDeleteInfo->updateTimeoutTime();
 }
 
 void messageActionsClass::setNewTopic(QString newTopicLink)
@@ -68,7 +71,7 @@ bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdi
             oldAjaxInfo = ajaxInfo;
             ajaxInfo.list.clear();
             oldUseMessageEdit = useMessageEdit;
-            replyForEditInfo = timeoutForEditInfo.resetReply(networkManager->get(requestForEditInfo));
+            replyForEditInfo = timeoutForEditInfo->resetReply(networkManager->get(requestForEditInfo));
 
             if(replyForEditInfo->isOpen() == true)
             {
@@ -101,7 +104,7 @@ void messageActionsClass::getQuoteInfo(QString idOfMessageQuoted, QString messag
         QNetworkRequest requestForQuoteInfo = parsingTool::buildRequestWithThisUrl("http://" + websiteOfTopic + "/forums/ajax_citation.php");
         QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo.list;
         lastMessageQuoted = messageQuoted;
-        replyForQuoteInfo = timeoutForQuoteInfo.resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
+        replyForQuoteInfo = timeoutForQuoteInfo->resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
 
         if(replyForQuoteInfo->isOpen() == true)
         {
@@ -131,7 +134,7 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
     if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)
     {
         QNetworkRequest requestForDeleteInfo = parsingTool::buildRequestWithThisUrl("http://" + websiteOfTopic + "/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
-        replyForDeleteInfo = timeoutForDeleteInfo.resetReply(networkManager->get(requestForDeleteInfo));
+        replyForDeleteInfo = timeoutForDeleteInfo->resetReply(networkManager->get(requestForDeleteInfo));
 
         if(replyForDeleteInfo->isOpen() == true)
         {
@@ -157,7 +160,7 @@ void messageActionsClass::analyzeEditInfo()
     QList<QPair<QString, QString>> listOfEditInput;
     QString source;
 
-    timeoutForEditInfo.resetReply();
+    timeoutForEditInfo->resetReply();
 
     if(replyForEditInfo->isReadable())
     {
@@ -184,7 +187,7 @@ void messageActionsClass::analyzeQuoteInfo()
     QString messageQuote;
     QString source;
 
-    timeoutForQuoteInfo.resetReply();
+    timeoutForQuoteInfo->resetReply();
 
     if(replyForQuoteInfo->isReadable())
     {
@@ -204,7 +207,7 @@ void messageActionsClass::analyzeDeleteInfo()
 {
     QString source;
 
-    timeoutForDeleteInfo.resetReply();
+    timeoutForDeleteInfo->resetReply();
 
     if(replyForDeleteInfo->isReadable())
     {

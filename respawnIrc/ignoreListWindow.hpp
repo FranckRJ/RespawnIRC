@@ -25,8 +25,8 @@ signals:
     void listHasChanged();
 private:
     QList<QString>* listOfIgnoredPseudo;
-    QListView viewListOfIgnoredPseudo;
-    QStringListModel modelForListView;
+    QListView* viewListOfIgnoredPseudo;
+    QStringListModel* modelForListView;
 };
 
 #endif

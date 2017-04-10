@@ -11,30 +11,33 @@
 
 sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 {
-    sendButton.setObjectName("sendButton");
+    messageLine = new multiTypeTextBoxClass(this);
+    sendButton = new QPushButton(this);
 
-    sendButton.setText("Envoyer");
-    sendButton.setAutoDefault(true);
+    sendButton->setObjectName("sendButton");
+
+    sendButton->setText("Envoyer");
+    sendButton->setAutoDefault(true);
 
     changeColorOnEdit = settingTool::getThisBoolOption("changeColorOnEdit");
     networkManager = new QNetworkAccessManager(this);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
-    layout->addWidget(&messageLine, 1);
-    layout->addWidget(&sendButton);
+    layout->addWidget(messageLine, 1);
+    layout->addWidget(sendButton);
     layout->setMargin(0);
 
     setLayout(layout);
 
-    connect(&sendButton, &QPushButton::clicked, this, &sendMessagesClass::needToPostMessage);
-    connect(&messageLine, &multiTypeTextBoxClass::returnPressed, &sendButton, &QPushButton::click);
+    connect(sendButton, &QPushButton::clicked, this, &sendMessagesClass::needToPostMessage);
+    connect(messageLine, &multiTypeTextBoxClass::returnPressed, sendButton, &QPushButton::click);
 }
 
 void sendMessagesClass::doStuffBeforeQuit()
 {
     settingTool::saveThisOption("nbOfMessagesSend",
                                      settingTool::getThisIntOption("nbOfMessagesSend").value + nbOfMessagesSend);
-    messageLine.doStuffBeforeQuit();
+    messageLine->doStuffBeforeQuit();
 }
 
 void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString>>& listOfInput)
@@ -76,7 +79,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         }
     }
 
-    if(replyForSendMessage == nullptr && pseudoUsed.isEmpty() == false && topicLink.isEmpty() == false && sendButton.isEnabled() == true)
+    if(replyForSendMessage == nullptr && pseudoUsed.isEmpty() == false && topicLink.isEmpty() == false && sendButton->isEnabled() == true)
     {
         QNetworkRequest request;
         QString data;
@@ -95,7 +98,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
             request = parsingTool::buildRequestWithThisUrl(topicLink);
         }
 
-        sendButton.setEnabled(false);
+        sendButton->setEnabled(false);
         inSending = true;
 
         if(isInEdit == false)
@@ -104,7 +107,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         }
         else
         {
-            data = "message_topic=" + QUrl::toPercentEncoding(shortcutTool::transformMessage(messageLine.text(), "shortcut"));
+            data = "message_topic=" + QUrl::toPercentEncoding(shortcutTool::transformMessage(messageLine->text(), "shortcut"));
             data += "&" + dataForEditLastMessage;
         }
 
@@ -126,36 +129,36 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
 
 void sendMessagesClass::clearMessageLine()
 {
-    messageLine.clear();
+    messageLine->clear();
 }
 
 void sendMessagesClass::settingsChanged()
 {
-    messageLine.settingsChanged();
+    messageLine->settingsChanged();
     changeColorOnEdit = settingTool::getThisBoolOption("changeColorOnEdit");
 
     if(changeColorOnEdit == true)
     {
-        messageLine.setEditMode(isInEdit);
+        messageLine->setEditMode(isInEdit);
     }
     else
     {
-        messageLine.setEditMode(false);
+        messageLine->setEditMode(false);
     }
 }
 
 void sendMessagesClass::styleChanged()
 {
-    messageLine.styleChanged();
+    messageLine->styleChanged();
     if(changeColorOnEdit == true)
     {
-        messageLine.setEditMode(isInEdit);
+        messageLine->setEditMode(isInEdit);
     }
 }
 
 multiTypeTextBoxClass* sendMessagesClass::getMessageLine()
 {
-    return &messageLine;
+    return messageLine;
 }
 
 bool sendMessagesClass::getIsSending() const
@@ -179,43 +182,43 @@ void sendMessagesClass::setIsInEdit(bool newVal)
 
     if(isInEdit == true)
     {
-        sendButton.setText("Editer");
+        sendButton->setText("Editer");
     }
     else
     {
-        sendButton.setText("Envoyer");
+        sendButton->setText("Envoyer");
     }
 
     if(changeColorOnEdit == true)
     {
-        messageLine.setEditMode(newVal);
+        messageLine->setEditMode(newVal);
     }
 }
 
 void sendMessagesClass::setEnableSendButton(bool newVal)
 {
-    sendButton.setEnabled(newVal);
+    sendButton->setEnabled(newVal);
 }
 
 void sendMessagesClass::setMultilineEdit(bool newVal)
 {
-    messageLine.setTextEditSelected(newVal);
-    messageLine.setFocus();
+    messageLine->setTextEditSelected(newVal);
+    messageLine->setFocus();
 }
 
 void sendMessagesClass::quoteThisMessage(QString messageToQuote)
 {
-    if(messageLine.text().isEmpty() == false && messageLine.text().endsWith("\n\n") == false)
+    if(messageLine->text().isEmpty() == false && messageLine->text().endsWith("\n\n") == false)
     {
-        if(messageLine.text().endsWith("\n") == false)
+        if(messageLine->text().endsWith("\n") == false)
         {
-            messageLine.insertText("\n");
+            messageLine->insertText("\n");
         }
-        messageLine.insertText("\n");
+        messageLine->insertText("\n");
     }
-    messageLine.insertText(messageToQuote);
-    messageLine.insertText("\n\n");
-    messageLine.setFocus();
+    messageLine->insertText(messageToQuote);
+    messageLine->insertText("\n\n");
+    messageLine->setFocus();
 }
 
 void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit)
@@ -224,8 +227,8 @@ void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messa
     {
         if(useMessageEdit == true)
         {
-            messageLine.clear();
-            messageLine.insertText(messageEdit);
+            messageLine->clear();
+            messageLine->insertText(messageEdit);
         }
         dataForEditLastMessage = "id_message=" + QString::number(idOfMessageEdit) + "&" + infoToSend;
         setIsInEdit(true);
@@ -237,7 +240,7 @@ void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messa
         setIsInEdit(false);
     }
 
-    sendButton.setEnabled(true);
+    sendButton->setEnabled(true);
 }
 
 QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString>>& listOfInput) const
@@ -249,7 +252,7 @@ QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QStrin
         data += thisInput.first + "=" + thisInput.second + "&";
     }
 
-    data += "message_topic=" + QUrl::toPercentEncoding(shortcutTool::transformMessage(messageLine.text(), "shortcut"));
+    data += "message_topic=" + QUrl::toPercentEncoding(shortcutTool::transformMessage(messageLine->text(), "shortcut"));
 
     data += "&form_alias_rang=1";
 
@@ -280,7 +283,7 @@ void sendMessagesClass::deleteReplyForSendMessage()
 
     if(source.isEmpty() == true || (isInEdit == true && source.startsWith("{\"erreur\":[]") == true))
     {
-        messageLine.clear();
+        messageLine->clear();
 
         if(isInEdit == false)
         {
@@ -300,7 +303,7 @@ void sendMessagesClass::deleteReplyForSendMessage()
         dontEraseEditMessage = true;
     }
 
-    sendButton.setEnabled(true);
+    sendButton->setEnabled(true);
     inSending = false;
 
     if(isInEdit == true)
@@ -314,5 +317,5 @@ void sendMessagesClass::deleteReplyForSendMessage()
     }
 
     emit needToGetMessages();
-    messageLine.setFocus();
+    messageLine->setFocus();
 }

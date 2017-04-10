@@ -20,14 +20,16 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     QPushButton* buttonAddCookies = new QPushButton("Ajouter des cookies", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
     QPushButton* buttonHelp = new QPushButton("Aide pour se connecter", this);
+    pseudoLine = new QLineEdit(this);
+    rememberBox = new QCheckBox(this);
 
-    rememberBox.setChecked(true);
+    rememberBox->setChecked(true);
     buttonValidate->setDefault(true);
 
     QHBoxLayout* bottomLayout = new QHBoxLayout;
     bottomLayout->addWidget(buttonAddCookies);
     bottomLayout->addWidget(labForPseudo);
-    bottomLayout->addWidget(&pseudoLine);
+    bottomLayout->addWidget(pseudoLine);
     bottomLayout->addWidget(labForButton, 1, Qt::AlignRight);
     bottomLayout->addWidget(buttonValidate);
 
@@ -40,12 +42,12 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
         QLabel* labForRemember = new QLabel("Enregistrer le compte dans la liste des comptes (se souvenir) :", this);
         QHBoxLayout* rememberLayout = new QHBoxLayout;
         rememberLayout->addWidget(labForRemember);
-        rememberLayout->addWidget(&rememberBox, 1, Qt::AlignLeft);
+        rememberLayout->addWidget(rememberBox, 1, Qt::AlignLeft);
         mainLayout->addLayout(rememberLayout);
     }
     else
     {
-        rememberBox.setVisible(false);
+        rememberBox->setVisible(false);
     }
 
     mainLayout->addWidget(buttonHelp);
@@ -115,9 +117,9 @@ void connectWindowClass::addCookiesManually(QString newHelloCookie, QString newC
 
 void connectWindowClass::valideConnect()
 {
-    if(addPseudoWindowClass::pseudoIsValide(pseudoLine.text()) == true && cookieList.size() >= 2)
+    if(addPseudoWindowClass::pseudoIsValide(pseudoLine->text()) == true && cookieList.size() >= 2)
     {
-        emit newCookiesAvailable(cookieList, pseudoLine.text(), rememberBox.isChecked(), rememberBox.isChecked());
+        emit newCookiesAvailable(cookieList, pseudoLine->text(), rememberBox->isChecked(), rememberBox->isChecked());
         close();
         return;
     }

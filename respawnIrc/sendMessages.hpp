@@ -16,7 +16,7 @@ class sendMessagesClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit sendMessagesClass(QWidget* parent = 0);
+    explicit sendMessagesClass(QWidget* parent = nullptr);
     void doStuffBeforeQuit();
     void postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString>>& listOfInput);
     void clearMessageLine();
@@ -41,8 +41,8 @@ signals:
     void needToSetEditMessage(int idOfLastMessage, bool useMessageEdit);
     void needToGetMessages();
 private:
-    multiTypeTextBoxClass messageLine;
-    QPushButton sendButton;
+    multiTypeTextBoxClass* messageLine;
+    QPushButton* sendButton;
     QNetworkReply* replyForSendMessage = nullptr;
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> cookieListForPostMsg;

@@ -607,10 +607,11 @@ QString parsingTool::parsingAjaxMessages(QString thisMessage)
 {
     thisMessage.remove("\n");
     thisMessage.remove("\r");
-    thisMessage.replace(QRegularExpression("(?<!\\\\)\\\\r"), "");
-    thisMessage.replace(QRegularExpression("(?<!\\\\)\\\\\""), "\"");
-    thisMessage.replace(QRegularExpression("(?<!\\\\)\\\\/"), "/");
-    thisMessage.replace(QRegularExpression("(?<!\\\\)\\\\n"), "\n");
+    thisMessage.replace(QRegularExpression(R"rgx((?<!\\)\\r)rgx"), "");
+    thisMessage.replace(QRegularExpression(R"rgx((?<!\\)\\")rgx"), "\"");
+    thisMessage.replace(QRegularExpression(R"rgx((?<!\\)\\/)rgx"), "/");
+    thisMessage.replace(QRegularExpression(R"rgx((?<!\\)\\n)rgx"), "\n");
+    thisMessage.replace(QRegularExpression(R"rgx((?<!\\)\\t)rgx"), "\t");
     thisMessage.replace("\\\\", "\\");
 
     QRegularExpressionMatchIterator matchIterator = expForUnicodeInText.globalMatch(thisMessage);

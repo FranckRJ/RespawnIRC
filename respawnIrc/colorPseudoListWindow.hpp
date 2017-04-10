@@ -35,8 +35,8 @@ signals:
     void listHasChanged();
 private:
     QList<pseudoWithColorStruct>* listOfColorPseudo;
-    QListView viewListOfColorPseudo;
-    QStringListModel modelForListView;
+    QListView* viewListOfColorPseudo;
+    QStringListModel* modelForListView;
 };
 
 #endif

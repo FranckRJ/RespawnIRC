@@ -22,7 +22,7 @@ namespace
 }
 
 showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWidget(parent)
-{
+{    
     if(pinnedOnTagImage.isNull() == true)
     {
         pinnedOnTagImage.reset(new QPixmap);
@@ -54,26 +54,31 @@ showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWid
         normalTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier1.png");
     }
 
-    listViewOfTopic.setObjectName("listOfTopics");
-    listViewOfTopic.setModel(&modelForListView);
-    listViewOfTopic.setEditTriggers(QAbstractItemView::NoEditTriggers);
-    listViewOfTopic.setContextMenuPolicy(Qt::CustomContextMenu);
-    timerForGetList.setTimerType(Qt::CoarseTimer);
-    timerForGetList.setInterval(15000);
+    timerForGetList = new QTimer(this);
+    timeoutForReply = new autoTimeoutReplyClass(0, this);
+    listViewOfTopic = new QListView(this);
+    modelForListView = new QStandardItemModel(listViewOfTopic);
+
+    listViewOfTopic->setObjectName("listOfTopics");
+    listViewOfTopic->setModel(modelForListView);
+    listViewOfTopic->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    listViewOfTopic->setContextMenuPolicy(Qt::CustomContextMenu);
+    timerForGetList->setTimerType(Qt::CoarseTimer);
+    timerForGetList->setInterval(15000);
     updateSettings();
     setNewTheme(currentThemeName);
 
     networkManager = new QNetworkAccessManager(this);
 
     QVBoxLayout* layout = new QVBoxLayout;
-    layout->addWidget(&listViewOfTopic);
+    layout->addWidget(listViewOfTopic);
     layout->setMargin(0);
 
     setLayout(layout);
 
-    connect(&listViewOfTopic, &QListView::customContextMenuRequested, this, &showForumClass::createContextMenu);
-    connect(&listViewOfTopic, &QListView::doubleClicked, this, &showForumClass::clickedOnLink);
-    connect(&timerForGetList, &QTimer::timeout, this, &showForumClass::startGetListOfTopic);
+    connect(listViewOfTopic, &QListView::customContextMenuRequested, this, &showForumClass::createContextMenu);
+    connect(listViewOfTopic, &QListView::doubleClicked, this, &showForumClass::clickedOnLink);
+    connect(timerForGetList, &QTimer::timeout, this, &showForumClass::startGetListOfTopic);
 }
 
 bool showForumClass::getLoadNeeded() const
@@ -94,18 +99,18 @@ void showForumClass::setForumLink(QString newForumLink)
     forumLink = newForumLink;
     websiteOfForum = parsingTool::getWebsite(forumLink);
 
-    modelForListView.clear();
+    modelForListView->clear();
     if(newForumLink.isEmpty() == false)
     {
         if(loadNeeded == true)
         {
             startGetListOfTopic();
-            timerForGetList.start();
+            timerForGetList->start();
         }
     }
     else
     {
-        timerForGetList.stop();
+        timerForGetList->stop();
     }
 }
 
@@ -140,15 +145,15 @@ void showForumClass::updateSettings()
     showNormalTagOnTopic = settingTool::getThisBoolOption("showNormalTagOnTopicInTopicList");
     useIconInsteadOfTag = settingTool::getThisBoolOption("useIconInsteadOfTagInTopicList");
     topicNameMaxSize = settingTool::getThisIntOption("topicNameMaxSizeInTopicList").value;
-    timerForGetList.setInterval(updateTopicListTimeSetting.value);
+    timerForGetList->setInterval(updateTopicListTimeSetting.value);
 
     if(updateTopicListTimeSetting.value < updateTopicListTimeSetting.minValue)
     {
-        timerForGetList.setInterval(updateTopicListTimeSetting.minValue);
+        timerForGetList->setInterval(updateTopicListTimeSetting.minValue);
     }
 
     setLoadNeeded(settingTool::getThisBoolOption("showListOfTopic") == true && settingTool::getThisBoolOption("fastModeEnbled") == false);
-    timeoutForReply.updateTimeoutTime();
+    timeoutForReply->updateTimeoutTime();
 }
 
 QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& forThisTopic)
@@ -279,12 +284,12 @@ void showForumClass::setLoadNeeded(bool newVal)
 
         if(loadNeeded == false)
         {
-            timerForGetList.stop();
+            timerForGetList->stop();
         }
         else
         {
             startGetListOfTopic();
-            timerForGetList.start();
+            timerForGetList->start();
         }
     }
 }
@@ -309,7 +314,7 @@ void showForumClass::startGetListOfTopic()
         if(forumLink.isEmpty() == false)
         {
             QNetworkRequest request = parsingTool::buildRequestWithThisUrl(forumLink);
-            reply = timeoutForReply.resetReply(networkManager->get(request));
+            reply = timeoutForReply->resetReply(networkManager->get(request));
 
             if(reply->isOpen() == true)
             {
@@ -330,7 +335,7 @@ void showForumClass::analyzeReply()
     QString source;
     QString locationHeader;
 
-    timeoutForReply.resetReply();
+    timeoutForReply->resetReply();
 
     if(reply->isReadable() == true)
     {
@@ -355,20 +360,20 @@ void showForumClass::analyzeReply()
         QStandardItem* newItemToAppend;
         QFont tmpFont;
 
-        modelForListView.clear();
+        modelForListView->clear();
         listOfLink.clear();
 
         newItemToAppend = new QStandardItem(parsingTool::getForumName(source));
         tmpFont = newItemToAppend->font();
         tmpFont.setBold(true);
         newItemToAppend->setFont(tmpFont);
-        modelForListView.appendRow(newItemToAppend);
+        modelForListView->appendRow(newItemToAppend);
 
         listOfLink.append("");
 
         for(const topicStruct& thisTopic : listOfTopic)
         {
-            modelForListView.appendRow(createItemDependingOnTopic(thisTopic));
+            modelForListView->appendRow(createItemDependingOnTopic(thisTopic));
             listOfLink.append(thisTopic.link);
         }
     }
@@ -387,7 +392,7 @@ void showForumClass::clickedOnLink(QModelIndex index)
 void showForumClass::createContextMenu(const QPoint& thisPoint)
 {
     QList<QString> oldListOfTopicLink = listOfLink;
-    QModelIndex indexSelected = listViewOfTopic.indexAt(thisPoint);
+    QModelIndex indexSelected = listViewOfTopic->indexAt(thisPoint);
     if(indexSelected.row() >= 1)
     {
         QAction* actionSelected = nullptr;
@@ -395,7 +400,7 @@ void showForumClass::createContextMenu(const QPoint& thisPoint)
         QAction* actionOpen = contextMenu.addAction("Ouvrir ce topic dans l'onglet actuel");
         QAction* actionOpenInNewTab = contextMenu.addAction("Ouvrir ce topic dans un nouvel onglet");
         QAction* actionOpenInNavigator = contextMenu.addAction("Ouvrir ce topic dans le navigateur");
-        actionSelected = contextMenu.exec(listViewOfTopic.viewport()->mapToGlobal(thisPoint));
+        actionSelected = contextMenu.exec(listViewOfTopic->viewport()->mapToGlobal(thisPoint));
 
         if(actionSelected == actionOpen)
         {

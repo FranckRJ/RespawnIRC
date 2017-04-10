@@ -18,7 +18,7 @@ private slots:
 signals:
     void newTopicSelected(QString newTopic);
 private:
-    QLineEdit topicLine;
+    QLineEdit* topicLine;
 };
 
 #endif

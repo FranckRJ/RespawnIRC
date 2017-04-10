@@ -18,14 +18,16 @@ addCookiesWindowClass::addCookiesWindowClass(QWidget* parent) : QDialog(parent, 
                                  "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"https://github.com/FranckRJ/RespawnIRC/wiki/Ajouter-manuellement-des-cookies\">wiki</a>.", this);
     QPushButton* buttonValide = new QPushButton("Valider", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);
+    helloCookieLine = new QLineEdit(this);
+    connectCookieLine = new QLineEdit(this);
 
     labHelp->setOpenExternalLinks(true);
 
     QGridLayout* cookiesLayout = new QGridLayout;
     cookiesLayout->addWidget(labHello, 0, 0);
-    cookiesLayout->addWidget(&helloCookieLine, 0, 1);
+    cookiesLayout->addWidget(helloCookieLine, 0, 1);
     cookiesLayout->addWidget(labConnect, 1, 0);
-    cookiesLayout->addWidget(&connectCookieLine, 1, 1);
+    cookiesLayout->addWidget(connectCookieLine, 1, 1);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(buttonValide);
@@ -45,9 +47,9 @@ addCookiesWindowClass::addCookiesWindowClass(QWidget* parent) : QDialog(parent, 
 
 void addCookiesWindowClass::valideCookies()
 {
-    if(helloCookieLine.text().isEmpty() == false && connectCookieLine.text().isEmpty() == false)
+    if(helloCookieLine->text().isEmpty() == false && connectCookieLine->text().isEmpty() == false)
     {
-        emit newCookiesAvailable(helloCookieLine.text(), connectCookieLine.text());
+        emit newCookiesAvailable(helloCookieLine->text(), connectCookieLine->text());
         close();
     }
     else

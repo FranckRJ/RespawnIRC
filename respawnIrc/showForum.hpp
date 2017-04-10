@@ -22,7 +22,7 @@ class showForumClass : public QWidget
 {
     Q_OBJECT
 public:
-    explicit showForumClass(QString currentThemeName, QWidget* parent = 0);
+    explicit showForumClass(QString currentThemeName, QWidget* parent = nullptr);
     bool getLoadNeeded() const;
     void setForumLink(QString newForumLink);
     void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies);
@@ -40,12 +40,12 @@ signals:
     void openThisTopic(QString topicLink);
     void openThisTopicInNewTab(QString topicLink);
 private:
-    QTimer timerForGetList;
+    QTimer* timerForGetList;
     QString forumLink;
     QString websiteOfForum;
-    QListView listViewOfTopic;
-    QStandardItemModel modelForListView;
-    autoTimeoutReplyClass timeoutForReply;
+    QListView* listViewOfTopic;
+    QStandardItemModel* modelForListView;
+    autoTimeoutReplyClass* timeoutForReply;
     QNetworkReply* reply = nullptr;
     QNetworkAccessManager* networkManager;
     QList<QNetworkCookie> currentCookieList;
