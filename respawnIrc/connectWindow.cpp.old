@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <QWebSettings>
 
 #include "connectWindow.hpp"
 #include "addCookiesWindow.hpp"
@@ -20,15 +21,17 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     QPushButton* buttonAddCookies = new QPushButton("Ajouter des cookies", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
     QPushButton* buttonHelp = new QPushButton("Aide pour se connecter", this);
+    pseudoLine = new QLineEdit(this);
+    rememberBox = new QCheckBox(this);
 
     webView = new QWebView(this);
-    rememberBox.setChecked(false);
+    rememberBox->setChecked(false);
     buttonValidate->setDefault(true);
 
     QHBoxLayout* bottomLayout = new QHBoxLayout;
     bottomLayout->addWidget(buttonAddCookies);
     bottomLayout->addWidget(labForPseudo);
-    bottomLayout->addWidget(&pseudoLine);
+    bottomLayout->addWidget(pseudoLine);
     bottomLayout->addWidget(labForButton, 1, Qt::AlignRight);
     bottomLayout->addWidget(buttonValidate);
 
@@ -41,12 +44,12 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
         QLabel* labForRemember = new QLabel("Enregistrer le compte dans la liste des comptes :", this);
         QHBoxLayout* rememberLayout = new QHBoxLayout;
         rememberLayout->addWidget(labForRemember);
-        rememberLayout->addWidget(&rememberBox, 1, Qt::AlignLeft);
+        rememberLayout->addWidget(rememberBox, 1, Qt::AlignLeft);
         mainLayout->addLayout(rememberLayout);
     }
     else
     {
-        rememberBox.setVisible(false);
+        rememberBox->setVisible(false);
     }
 
     mainLayout->addWidget(buttonHelp);
@@ -59,10 +62,10 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     webView->load(QUrl("http://www.jeuxvideo.com/login"));
     tmpManagerForReply = webView->page()->networkAccessManager();
 
-    QObject::connect(tmpManagerForReply, &QNetworkAccessManager::finished, this, &connectWindowClass::newPageLoaded);
-    QObject::connect(buttonAddCookies, &QPushButton::pressed, this, &connectWindowClass::showAddCookiesWindow);
-    QObject::connect(buttonValidate, &QPushButton::pressed, this, &connectWindowClass::valideConnect);
-    QObject::connect(buttonHelp, &QPushButton::pressed, this, &connectWindowClass::showHelpConnect);
+    connect(tmpManagerForReply, &QNetworkAccessManager::finished, this, &connectWindowClass::newPageLoaded);
+    connect(buttonAddCookies, &QPushButton::pressed, this, &connectWindowClass::showAddCookiesWindow);
+    connect(buttonValidate, &QPushButton::pressed, this, &connectWindowClass::valideConnect);
+    connect(buttonHelp, &QPushButton::pressed, this, &connectWindowClass::showHelpConnect);
 }
 
 void connectWindowClass::newPageLoaded(QNetworkReply* reply)
@@ -95,7 +98,7 @@ void connectWindowClass::newPageLoaded(QNetworkReply* reply)
 void connectWindowClass::showAddCookiesWindow()
 {
     addCookiesWindowClass* myAddCookiesWindow = new addCookiesWindowClass(this);
-    QObject::connect(myAddCookiesWindow, &addCookiesWindowClass::newCookiesAvailable, this, &connectWindowClass::addCookiesManually);
+    connect(myAddCookiesWindow, &addCookiesWindowClass::newCookiesAvailable, this, &connectWindowClass::addCookiesManually);
     myAddCookiesWindow->exec();
 }
 
@@ -108,9 +111,9 @@ void connectWindowClass::addCookiesManually(QString newHelloCookie, QString newC
 
 void connectWindowClass::valideConnect()
 {
-    if(pseudoLine.text().isEmpty() == false && cookieList.size() >= 2)
+    if(pseudoLine->text().isEmpty() == false && cookieList.size() >= 2)
     {
-        emit newCookiesAvailable(cookieList, pseudoLine.text(), rememberBox.isChecked(), rememberBox.isChecked());
+        emit newCookiesAvailable(cookieList, pseudoLine->text(), rememberBox->isChecked(), rememberBox->isChecked());
         close();
         return;
     }

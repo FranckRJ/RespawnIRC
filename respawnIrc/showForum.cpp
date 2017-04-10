@@ -22,7 +22,7 @@ namespace
 }
 
 showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWidget(parent)
-{    
+{
     if(pinnedOnTagImage.isNull() == true)
     {
         pinnedOnTagImage.reset(new QPixmap);

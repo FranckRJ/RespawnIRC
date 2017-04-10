@@ -16,7 +16,7 @@ class connectWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit connectWindowClass(QWidget* parent, bool showRemeberBox = true);
-public slots:
+private slots:
     void newPageLoaded(QNetworkReply* reply);
     void showAddCookiesWindow();
     void addCookiesManually(QString newHelloCookie, QString newConnectCookie);
@@ -27,7 +27,7 @@ signals:
 private:
     QList<QNetworkCookie> cookieList;
     QWebView* webView;
-    QLineEdit pseudoLine;
-    QCheckBox rememberBox;
+    QLineEdit* pseudoLine;
+    QCheckBox* rememberBox;
 };
 #endif

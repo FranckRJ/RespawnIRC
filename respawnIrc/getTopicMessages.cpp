@@ -1,7 +1,6 @@
 #include <QNetworkCookieJar>
 #include <QNetworkRequest>
 #include <QVector>
-#include <QThread>
 
 #include "getTopicMessages.hpp"
 
