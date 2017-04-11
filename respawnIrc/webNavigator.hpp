@@ -4,11 +4,13 @@
 #include <QWidget>
 #include <QDialog>
 #include <QNetworkCookie>
-#include <QWebEngineView>
 #include <QLineEdit>
 #include <QList>
 #include <QString>
 #include <QUrl>
+#include <QProgressBar>
+
+#include "customWebView.hpp"
 
 class webNavigatorClass : public QDialog
 {
@@ -17,9 +19,13 @@ public:
     explicit webNavigatorClass(QWidget* parent, QString startUrl = "", QList<QNetworkCookie> cookiesList = QList<QNetworkCookie>());
 private slots:
     void changeUrl(QUrl newUrl);
+    void handleLoadProgress(int progress);
     void goToUrl();
 private:
-    QWebEngineView* webView;
+    customWebViewClass* webView;
+    QProgressBar* webViewLoadBar;
+    QPushButton* backwardButton;
+    QPushButton* forwardButton;
     QLineEdit* urlLine;
 };
 

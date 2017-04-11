@@ -32,7 +32,8 @@ SOURCES += \
     messageActions.cpp \
     tabViewTopicInfos.cpp \
     manageShortcutWindow.cpp \
-    addShortcutWindow.cpp
+    addShortcutWindow.cpp \
+    customWebView.cpp
 
 QT += \
     network \
@@ -74,7 +75,8 @@ HEADERS += \
     messageActions.hpp \
     tabViewTopicInfos.hpp \
     manageShortcutWindow.hpp \
-    addShortcutWindow.hpp
+    addShortcutWindow.hpp \
+    customWebView.hpp
 
 RC_FILE = respawnIrc.rc
 

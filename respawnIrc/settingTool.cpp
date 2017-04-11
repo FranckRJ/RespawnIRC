@@ -43,7 +43,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["colorUserPseudoInMessages"] = true;
     listOfDefaultBoolOption["warnWhenEdit"] = true;
     listOfDefaultBoolOption["betterQuote"] = true;
-    listOfDefaultBoolOption["changeColorOnEdit"] = false;
+    listOfDefaultBoolOption["changeColorOnEdit"] = true;
     listOfDefaultBoolOption["showNumberOfMessagesInTopicList"] = true;
     listOfDefaultBoolOption["cutLongTopicNameInTopicList"] = true;
     listOfDefaultBoolOption["downloadMissingStickers"] = true;
