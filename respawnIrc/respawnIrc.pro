@@ -26,14 +26,14 @@ SOURCES += \
     addCookiesWindow.cpp \
     imageDownloadTool.cpp \
     webNavigator.cpp \
+    customWebView.cpp \
     viewThemeInfos.cpp \
     showForum.cpp \
     showTopic.cpp \
     messageActions.cpp \
     tabViewTopicInfos.cpp \
     manageShortcutWindow.cpp \
-    addShortcutWindow.cpp \
-    customWebView.cpp
+    addShortcutWindow.cpp
 
 QT += \
     network \
@@ -68,6 +68,7 @@ HEADERS += \
     addCookiesWindow.hpp \
     imageDownloadTool.hpp \
     webNavigator.hpp \
+    customWebView.hpp \
     viewThemeInfos.hpp \
     configDependentVar.hpp \
     showForum.hpp \
@@ -75,8 +76,7 @@ HEADERS += \
     messageActions.hpp \
     tabViewTopicInfos.hpp \
     manageShortcutWindow.hpp \
-    addShortcutWindow.hpp \
-    customWebView.hpp
+    addShortcutWindow.hpp
 
 RC_FILE = respawnIrc.rc
 
