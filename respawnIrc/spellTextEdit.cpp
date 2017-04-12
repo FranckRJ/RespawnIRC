@@ -195,9 +195,8 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos) const
 
 void spellTextEditClass::createActions()
 {
-    for(QAction*& thisAction : wordPropositionsActions)
+    for(QAction* thisAction : wordPropositionsActions)
     {
-        thisAction = new QAction(this);
         thisAction->setVisible(false);
         connect(thisAction, &QAction::triggered, this, &spellTextEditClass::correctWord);
     }
@@ -218,8 +217,8 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
         if(wordUnderCursor.size() > 1 && checkWord(wordUnderCursor) == false)
         {
             menuRightClick->addSeparator();
-            menuRightClick->addAction("Add...", this, SLOT(addWordToUserDic()));
-            menuRightClick->addAction("Ignore...", this, SLOT(ignoreWord()));
+            menuRightClick->addAction("Add...", this, &spellTextEditClass::addWordToUserDic);
+            menuRightClick->addAction("Ignore...", this, &spellTextEditClass::ignoreWord);
 
             if(listOfWord.isEmpty() == false)
             {

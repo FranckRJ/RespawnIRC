@@ -3,13 +3,12 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QAction>
-#include <QDesktopServices>
 #include <QCoreApplication>
 #include <QPixmap>
 #include <QScopedPointer>
 
 #include "showForum.hpp"
-#include "webNavigator.hpp"
+#include "utilityTool.hpp"
 #include "settingTool.hpp"
 
 namespace
@@ -398,11 +397,12 @@ void showForumClass::createContextMenu(const QPoint& thisPoint)
     if(indexSelected.row() >= 1)
     {
         QAction* actionSelected = nullptr;
-        QMenu contextMenu;
-        QAction* actionOpen = contextMenu.addAction("Ouvrir ce topic dans l'onglet actuel");
-        QAction* actionOpenInNewTab = contextMenu.addAction("Ouvrir ce topic dans un nouvel onglet");
-        QAction* actionOpenInNavigator = contextMenu.addAction("Ouvrir ce topic dans le navigateur");
-        actionSelected = contextMenu.exec(listViewOfTopic->viewport()->mapToGlobal(thisPoint));
+        QMenu* contextMenu = new QMenu(this);
+        QAction* actionOpen = contextMenu->addAction("Ouvrir ce topic dans l'onglet actuel");
+        QAction* actionOpenInNewTab = contextMenu->addAction("Ouvrir ce topic dans un nouvel onglet");
+        QAction* actionOpenInNavigator = contextMenu->addAction("Ouvrir ce topic dans le navigateur");
+        actionSelected = contextMenu->exec(listViewOfTopic->mapToGlobal(thisPoint));
+        contextMenu->deleteLater();
 
         if(actionSelected == actionOpen)
         {
@@ -414,15 +414,7 @@ void showForumClass::createContextMenu(const QPoint& thisPoint)
         }
         else if(actionSelected == actionOpenInNavigator)
         {
-            if(useInternalNavigatorForLinks == true)
-            {
-                webNavigatorClass* myWebNavigator = new webNavigatorClass(this, oldListOfTopicLink.at(indexSelected.row()), currentCookieList);
-                myWebNavigator->exec();
-            }
-            else
-            {
-                QDesktopServices::openUrl(oldListOfTopicLink.at(indexSelected.row()));
-            }
+            utilityTool::openLinkInBrowser(this, useInternalNavigatorForLinks, oldListOfTopicLink.at(indexSelected.row()), currentCookieList);
         }
     }
 }

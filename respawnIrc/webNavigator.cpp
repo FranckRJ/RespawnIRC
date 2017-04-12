@@ -108,7 +108,7 @@ void webNavigatorClass::goToUrl()
     webView->setUrl(QUrl(currentUrlToGo));
 }
 
-void webNavigatorClass::openCurrentPageInExternalNavigator()
+void webNavigatorClass::openCurrentPageInExternalNavigator() const
 {
     QDesktopServices::openUrl(webView->url());
 }

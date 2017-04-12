@@ -33,7 +33,8 @@ SOURCES += \
     messageActions.cpp \
     tabViewTopicInfos.cpp \
     manageShortcutWindow.cpp \
-    addShortcutWindow.cpp
+    addShortcutWindow.cpp \
+    utilityTool.cpp
 
 QT += \
     network \
@@ -76,7 +77,8 @@ HEADERS += \
     messageActions.hpp \
     tabViewTopicInfos.hpp \
     manageShortcutWindow.hpp \
-    addShortcutWindow.hpp
+    addShortcutWindow.hpp \
+    utilityTool.hpp
 
 RC_FILE = respawnIrc.rc
 

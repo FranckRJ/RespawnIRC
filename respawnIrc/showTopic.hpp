@@ -58,6 +58,7 @@ private:
     void setTopicToErrorMode();
 private slots:
     void linkClicked(const QUrl& link);
+    void createContextMenu(const QPoint& thisPoint);
     void analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString>> newListOfInput,
                          ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
     void setMessageStatus(QString newStatus);

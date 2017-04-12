@@ -57,8 +57,8 @@ QString selectTopicWindowClass::transformLinkIfNeeded(QString link) const
         link.replace("http://", "http://www.");
     }
 
-    if(link.startsWith("http://www.jeuxvideo.com/") == false && link.startsWith("http://jvforum.fr/") == false
-       && link.startsWith("http://www.forumjv.com/") == false)
+    if(link.startsWith("http://www.jeuxvideo.com/forums/") == false && link.startsWith("http://jvforum.fr/") == false
+       && link.startsWith("http://www.forumjv.com/forums/") == false)
     {
         return "";
     }

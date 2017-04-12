@@ -2,16 +2,17 @@
 #include <QVBoxLayout>
 #include <QNetworkCookieJar>
 #include <QMessageBox>
-#include <QDesktopServices>
 #include <QNetworkRequest>
 #include <QScrollBar>
 #include <QMetaObject>
 #include <QMutableListIterator>
 #include <QTextCursor>
+#include <QMenu>
+#include <QAction>
 
 #include "showTopic.hpp"
-#include "webNavigator.hpp"
 #include "settingTool.hpp"
+#include "utilityTool.hpp"
 #include "configDependentVar.hpp"
 
 QThread* showTopicClass::threadForGetMessages;
@@ -28,6 +29,7 @@ showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, con
     messagesBox->setOpenExternalLinks(false);
     messagesBox->setOpenLinks(false);
     messagesBox->setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
+    messagesBox->setContextMenuPolicy(Qt::CustomContextMenu);
 
     updateSettingInfo();
     currentTypeOfEdit = realTypeOfEdit;
@@ -44,6 +46,7 @@ showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, con
     setLayout(layout);
 
     connect(messagesBox, &QTextBrowser::anchorClicked, this, &showTopicClass::linkClicked);
+    connect(messagesBox, &QTextBrowser::customContextMenuRequested, this, &showTopicClass::createContextMenu);
 
     connect(getTopicMessages, &getTopicMessagesClass::newMessagesAreAvailable, this, &showTopicClass::analyzeMessages);
     connect(getTopicMessages, &getTopicMessagesClass::newMessageStatus, this, &showTopicClass::setMessageStatus);
@@ -402,16 +405,44 @@ void showTopicClass::linkClicked(const QUrl& link)
     }
     else
     {
-        if(useInternalNavigatorForLinks == true)
-        {
-            webNavigatorClass* myWebNavigator = new webNavigatorClass(this, link.toString(), messageActions->getCookieList());
-            myWebNavigator->exec();
-        }
-        else
-        {
-            QDesktopServices::openUrl(link);
-        }
+        utilityTool::openLinkInBrowser(this, useInternalNavigatorForLinks, link.toString(), messageActions->getCookieList());
     }
+}
+
+void showTopicClass::createContextMenu(const QPoint& thisPoint)
+{
+    QString anchorOfContextMenu = messagesBox->anchorAt(thisPoint);
+    QMenu* contextMenu = messagesBox->createStandardContextMenu(thisPoint);
+    QList<QAction*> baseActions = contextMenu->actions();
+    QAction* actionToAdd = new QAction(contextMenu);
+
+    actionToAdd->setEnabled(anchorOfContextMenu.isEmpty() == false);
+
+    if(useInternalNavigatorForLinks == true)
+    {
+        actionToAdd->setText("Open link in external browser");
+    }
+    else
+    {
+        actionToAdd->setText("Open link in RespawnIRC Navigator");
+    }
+
+    if(baseActions.isEmpty() == false)
+    {
+        QAction* separator = contextMenu->insertSeparator(baseActions.first());
+        contextMenu->insertAction(separator, actionToAdd);
+    }
+    else
+    {
+        contextMenu->addAction(actionToAdd);
+    }
+
+    if(contextMenu->exec(messagesBox->mapToGlobal(thisPoint)) == actionToAdd)
+    {
+        utilityTool::openLinkInBrowser(this, (useInternalNavigatorForLinks == false), anchorOfContextMenu, messageActions->getCookieList());
+    }
+
+    contextMenu->deleteLater();
 }
 
 void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString>> newListOfInput,
