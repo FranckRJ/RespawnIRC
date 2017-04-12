@@ -61,6 +61,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["fastModeEnbled"] = false;
     listOfDefaultBoolOption["beepForNewMP"] = false;
     listOfDefaultBoolOption["hideUglyImages"] = false;
+    listOfDefaultBoolOption["useInternalNavigatorForLinks"] = false;
     listOfDefaultIntOption["updateTopicTime"].value = 7500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 2000;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;

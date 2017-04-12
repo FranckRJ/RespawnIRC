@@ -9,6 +9,7 @@
 #include <QScopedPointer>
 
 #include "showForum.hpp"
+#include "webNavigator.hpp"
 #include "settingTool.hpp"
 
 namespace
@@ -145,6 +146,7 @@ void showForumClass::updateSettings()
     showNormalTagOnTopic = settingTool::getThisBoolOption("showNormalTagOnTopicInTopicList");
     useIconInsteadOfTag = settingTool::getThisBoolOption("useIconInsteadOfTagInTopicList");
     topicNameMaxSize = settingTool::getThisIntOption("topicNameMaxSizeInTopicList").value;
+    useInternalNavigatorForLinks = settingTool::getThisBoolOption("useInternalNavigatorForLinks");
     timerForGetList->setInterval(updateTopicListTimeSetting.value);
 
     if(updateTopicListTimeSetting.value < updateTopicListTimeSetting.minValue)
@@ -412,7 +414,15 @@ void showForumClass::createContextMenu(const QPoint& thisPoint)
         }
         else if(actionSelected == actionOpenInNavigator)
         {
-            QDesktopServices::openUrl(oldListOfTopicLink.at(indexSelected.row()));
+            if(useInternalNavigatorForLinks == true)
+            {
+                webNavigatorClass* myWebNavigator = new webNavigatorClass(this, oldListOfTopicLink.at(indexSelected.row()), currentCookieList);
+                myWebNavigator->exec();
+            }
+            else
+            {
+                QDesktopServices::openUrl(oldListOfTopicLink.at(indexSelected.row()));
+            }
         }
     }
 }

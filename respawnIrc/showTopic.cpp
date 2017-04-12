@@ -10,6 +10,7 @@
 #include <QTextCursor>
 
 #include "showTopic.hpp"
+#include "webNavigator.hpp"
 #include "settingTool.hpp"
 #include "configDependentVar.hpp"
 
@@ -207,6 +208,7 @@ void showTopicClass::updateSettingInfo()
     numberOfErrorsBeforeWarning = settingTool::getThisIntOption("numberOfErrorsBeforeWarning").value;
     warnOnFirstTime = settingTool::getThisBoolOption("warnOnFirstTime");
     realTypeOfEdit = settingTool::getThisIntOption("typeOfEdit").value;
+    useInternalNavigatorForLinks = settingTool::getThisBoolOption("useInternalNavigatorForLinks");
 
     messageActions->updateSettingInfo();
 
@@ -400,7 +402,15 @@ void showTopicClass::linkClicked(const QUrl& link)
     }
     else
     {
-        QDesktopServices::openUrl(link);
+        if(useInternalNavigatorForLinks == true)
+        {
+            webNavigatorClass* myWebNavigator = new webNavigatorClass(this, link.toString(), messageActions->getCookieList());
+            myWebNavigator->exec();
+        }
+        else
+        {
+            QDesktopServices::openUrl(link);
+        }
     }
 }
 

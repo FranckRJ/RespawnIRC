@@ -118,6 +118,7 @@ private:
     bool getFirstMessageOfTopic;
     bool warnWhenEdit;
     bool warnOnFirstTime;
+    bool useInternalNavigatorForLinks;
     long idOfLastMessageOfUser = 0;
     int realTypeOfEdit;
     int currentTypeOfEdit;

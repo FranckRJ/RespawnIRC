@@ -9,16 +9,16 @@ QMainWindow
 {
 	background: #DBDBDB;
 }
-QMenuBar
+QMenuBar#mainWindowMenuBar
 {
 	background: #19709E;
 }
-QMenuBar::item
+QMenuBar#mainWindowMenuBar::item
 {
 	color: white;
 	background: #19709E;
 }
-QMenuBar::item:selected
+QMenuBar#mainWindowMenuBar::item:selected
 {
 	background: #003E5D;
 }

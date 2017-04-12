@@ -21,6 +21,7 @@ private slots:
     void changeUrl(QUrl newUrl);
     void handleLoadProgress(int progress);
     void goToUrl();
+    void openCurrentPageInExternalNavigator();
 private:
     customWebViewClass* webView;
     QProgressBar* webViewLoadBar;

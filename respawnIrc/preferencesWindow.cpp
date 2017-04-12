@@ -77,6 +77,7 @@ QWidget* preferenceWindowClass::createWidgetForMainTab()
     QVBoxLayout* vboxMiscellaneous = new QVBoxLayout();
     vboxMiscellaneous->addWidget(makeNewCheckBox("Vérifier l'orthographe", "useSpellChecker"));
     vboxMiscellaneous->addWidget(makeNewCheckBox("Changer la couleur du message lors de l'édition", "changeColorOnEdit"));
+    vboxMiscellaneous->addWidget(makeNewCheckBox("Utiliser RespawnIRC Navigator pour ouvrir les liens", "useInternalNavigatorForLinks"));
     vboxMiscellaneous->addWidget(makeNewCheckBox("Chercher les mises à jour au lancement", "searchForUpdateAtLaunch"));
     vboxMiscellaneous->addStretch(1);
     groupBoxMiscellaneous->setLayout(vboxMiscellaneous);

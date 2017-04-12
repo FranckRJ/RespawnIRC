@@ -61,6 +61,7 @@ private:
     bool showResolvedTagOnTopic;
     bool showNormalTagOnTopic;
     bool useIconInsteadOfTag;
+    bool useInternalNavigatorForLinks;
     bool loadNeeded = true;
     int topicNameMaxSize;
 };

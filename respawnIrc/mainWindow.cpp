@@ -17,6 +17,7 @@ mainWindowClass::mainWindowClass()
 {
     QMenuBar* menuBar = new QMenuBar(this);
     respawnIrc = new respawnIrcClass(this);
+    menuBar->setObjectName("mainWindowMenuBar");
 
     QMenu* menuFile = menuBar->addMenu("&Fichier");
     QAction* actionConnect = menuFile->addAction("Se connecter");

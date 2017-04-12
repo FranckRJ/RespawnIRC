@@ -2,7 +2,12 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QWebEngineProfile>
+#include <QWebEnginePage>
 #include <QWebEngineCookieStore>
+#include <QMenuBar>
+#include <QMenu>
+#include <QAction>
+#include <QDesktopServices>
 
 #include "webNavigator.hpp"
 
@@ -13,6 +18,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     QWebEngineProfile* customProfile = new QWebEngineProfile(this);
     QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
 
+    QMenuBar* mainMenuBar = new QMenuBar(this);
     QPushButton* goButton = new QPushButton("Go", this);
     backwardButton = new QPushButton("←", this);
     forwardButton = new QPushButton("→", this);
@@ -20,6 +26,10 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     webView = new customWebViewClass(this);
     webViewLoadBar = new QProgressBar(this);
 
+    QMenu* menuFile = mainMenuBar->addMenu("&Fichier");
+    QAction* actionOpenInExternalNavigator = menuFile->addAction("Ouvrir dans le navigateur externe");
+
+    mainMenuBar->setStyleSheet("QMenuBar {padding-top: 1px;}"); //sinon les qmenu se dessinent par-dessus la ligne du bas de la qmenubar sous W7
     backwardButton->setAutoDefault(false);
     backwardButton->setMaximumWidth(backwardButton->fontMetrics().boundingRect(backwardButton->text()).width() + 15);
     backwardButton->setEnabled(false);
@@ -38,13 +48,15 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     topLayout->addWidget(forwardButton);
     topLayout->addWidget(urlLine, 1);
     topLayout->addWidget(goButton);
+    topLayout->setSpacing(2);
     topLayout->setMargin(2);
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    mainLayout->addLayout(topLayout);
+    mainLayout->addWidget(mainMenuBar);
     mainLayout->addWidget(webViewLoadBar);
+    mainLayout->addLayout(topLayout);
     mainLayout->addWidget(webView);
-    mainLayout->setSpacing(1);
+    mainLayout->setSpacing(0);
     mainLayout->setMargin(0);
 
     setLayout(mainLayout);
@@ -63,6 +75,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
 
     webView->setUrl(QUrl(startUrl));
 
+    connect(actionOpenInExternalNavigator, &QAction::triggered, this, &webNavigatorClass::openCurrentPageInExternalNavigator);
     connect(webView, &customWebViewClass::urlChanged, this, &webNavigatorClass::changeUrl);
     connect(webView, &customWebViewClass::loadProgress, this, &webNavigatorClass::handleLoadProgress);
     connect(urlLine, &QLineEdit::returnPressed, goButton, &QPushButton::click);
@@ -93,4 +106,9 @@ void webNavigatorClass::goToUrl()
     }
 
     webView->setUrl(QUrl(currentUrlToGo));
+}
+
+void webNavigatorClass::openCurrentPageInExternalNavigator()
+{
+    QDesktopServices::openUrl(webView->url());
 }
