@@ -1,6 +1,6 @@
 # RespawnIRC
 
-JVIrc-like pour respawn.
+Logiciel offrant une interface de client IRC pour les forums de jeuxvideo.com.
 
 Pour plus d'infos, le site : https://pijon.fr/RespawnIRC/
 
