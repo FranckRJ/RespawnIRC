@@ -411,8 +411,9 @@ void showTopicClass::linkClicked(const QUrl& link)
 
 void showTopicClass::createContextMenu(const QPoint& thisPoint)
 {
+    QPoint docPoint = QPoint(thisPoint.x() + messagesBox->horizontalScrollBar()->value(), thisPoint.y() + messagesBox->verticalScrollBar()->value());
     QString anchorOfContextMenu = messagesBox->anchorAt(thisPoint);
-    QMenu* contextMenu = messagesBox->createStandardContextMenu(thisPoint);
+    QMenu* contextMenu = messagesBox->createStandardContextMenu(docPoint);
     QList<QAction*> baseActions = contextMenu->actions();
     QAction* actionToAdd = new QAction(contextMenu);
 
@@ -437,7 +438,7 @@ void showTopicClass::createContextMenu(const QPoint& thisPoint)
         contextMenu->addAction(actionToAdd);
     }
 
-    if(contextMenu->exec(messagesBox->mapToGlobal(thisPoint)) == actionToAdd)
+    if(contextMenu->exec(messagesBox->viewport()->mapToGlobal(thisPoint)) == actionToAdd)
     {
         utilityTool::openLinkInBrowser(this, (useInternalNavigatorForLinks == false), anchorOfContextMenu, messageActions->getCookieList());
     }

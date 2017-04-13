@@ -12,6 +12,7 @@
 #include <QUrl>
 #include <QStringList>
 #include <QNetworkAccessManager>
+#include <QPoint>
 
 #include "colorPseudoListWindow.hpp"
 #include "getTopicMessages.hpp"

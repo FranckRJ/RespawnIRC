@@ -401,7 +401,7 @@ void showForumClass::createContextMenu(const QPoint& thisPoint)
         QAction* actionOpen = contextMenu->addAction("Ouvrir ce topic dans l'onglet actuel");
         QAction* actionOpenInNewTab = contextMenu->addAction("Ouvrir ce topic dans un nouvel onglet");
         QAction* actionOpenInNavigator = contextMenu->addAction("Ouvrir ce topic dans le navigateur");
-        actionSelected = contextMenu->exec(listViewOfTopic->mapToGlobal(thisPoint));
+        actionSelected = contextMenu->exec(listViewOfTopic->viewport()->mapToGlobal(thisPoint));
         contextMenu->deleteLater();
 
         if(actionSelected == actionOpen)
