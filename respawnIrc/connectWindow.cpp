@@ -71,7 +71,7 @@ void connectWindowClass::addWebView()
         webView = new QWebEngineView(this);
 
         webView->setPage(customPage);
-        webView->load(QUrl("http://www.jeuxvideo.com/login"));
+        webView->load(QUrl("https://www.jeuxvideo.com/login"));
 
         mainLayout->removeWidget(buttonShowWebView);
         buttonShowWebView->setEnabled(false);

@@ -14,8 +14,6 @@
 
 spellTextEditClass::spellTextEditClass(QWidget* parent) : QTextEdit(parent)
 {
-    wordPropositionsActions.fill(new QAction(this), 5);
-    createActions();
     setDic("");
 }
 
@@ -193,15 +191,6 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos) const
     return textBlock;
 }
 
-void spellTextEditClass::createActions()
-{
-    for(QAction* thisAction : wordPropositionsActions)
-    {
-        thisAction->setVisible(false);
-        connect(thisAction, &QAction::triggered, this, &spellTextEditClass::correctWord);
-    }
-}
-
 void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 {
     if(spellChecker != nullptr && codecUsed != nullptr && spellCheckingIsEnabled == true)
@@ -224,14 +213,14 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
             {
                 menuRightClick->addSeparator();
 
-                for(int i = 0; i < qMin(wordPropositionsActions.size(), listOfWord.size()); ++i)
+                for(int i = 0; i < qMin(5, listOfWord.size()); ++i)
                 {
-                    wordPropositionsActions[i]->setText(listOfWord.at(i).trimmed().replace("’", "'"));
-                    wordPropositionsActions[i]->setVisible(true);
-                    wordPropositionsActions[i]->setFont(thisFont);
-                    menuRightClick->addAction(wordPropositionsActions[i]);
+                    QAction* newCorrectWordAction = new QAction(menuRightClick);
+                    newCorrectWordAction->setText(listOfWord.at(i).trimmed().replace("’", "\'"));
+                    newCorrectWordAction->setFont(thisFont);
+                    menuRightClick->addAction(newCorrectWordAction);
+                    connect(newCorrectWordAction, &QAction::triggered, this, &spellTextEditClass::correctWord);
                 }
-
             }
         }
 
@@ -276,8 +265,6 @@ void spellTextEditClass::correctWord()
 
             cursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, pos - begin - 1);
             cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, end - begin - 1);
-
-            cursor.removeSelectedText();
         }
 
         cursor.insertText(replacement);

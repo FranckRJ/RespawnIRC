@@ -59,7 +59,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
 
     QNetworkAccessManager* tmpManagerForReply;
 
-    webView->load(QUrl("http://www.jeuxvideo.com/login"));
+    webView->load(QUrl("https://www.jeuxvideo.com/login"));
     tmpManagerForReply = webView->page()->networkAccessManager();
 
     connect(tmpManagerForReply, &QNetworkAccessManager::finished, this, &connectWindowClass::newPageLoaded);

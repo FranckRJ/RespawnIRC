@@ -25,7 +25,6 @@ private:
     void searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos) const;
     QStringList getWordPropositions(const QString word) const;
     QString getWordUnderCursor(QPoint cursorPos) const;
-    void createActions();
     void contextMenuEvent(QContextMenuEvent* event) override;
     bool checkWord(QString word) const;
 private slots:
