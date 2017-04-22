@@ -1,3 +1,3 @@
 # RespawnIRC
 
-Site web pour RespawnIRC.
+Site web de RespawnIRC.
