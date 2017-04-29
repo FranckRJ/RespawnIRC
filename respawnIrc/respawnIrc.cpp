@@ -209,7 +209,7 @@ void respawnIrcClass::showAbout()
     QMessageBox::information(this, "A propos de RespawnIRC", "<b>RespawnIRC version " + versionName + ".</b><br /><br />" +
                            "Ce logiciel à été developpé à l'aide de Qt 5 ainsi que de Hunspell <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://hunspell.github.io/\">http://hunspell.github.io/</a>.<br />" +
                            "Lien du dépôt github : <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"https://github.com/FranckRJ/RespawnIRC\">https://github.com/FranckRJ/RespawnIRC</a><br />" +
-                           "Lien du site : <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://franckrj.github.io/RespawnIRC/\">http://franckrj.github.io/RespawnIRC/</a><br /><br />"
+                           "Lien du site : <a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"https://franckrj.github.io/RespawnIRC/\">https://franckrj.github.io/RespawnIRC/</a><br /><br />"
                            "Nombre de messages que vous avez posté depuis la version 2.2 : <b>" + QString::number(settingTool::getThisIntOption("nbOfMessagesSend").value + sendMessages->getNbOfMessagesSend()) + "</b>");
 }
 

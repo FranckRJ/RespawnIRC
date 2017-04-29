@@ -81,6 +81,8 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
     listOfInfos.push_back("<i><%MESSAGE_TO_UPDATE%></i>");
     listOfInfos.push_back("<img width=60 height=60 src=\"<%AVATAR_LINK%>\">");
 
+    listOfInfos.push_back("blue"); //navigator progressbar color
+
     if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -122,6 +124,8 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
     modelInfo.signatureModel = listOfLine.at(18);
     modelInfo.updateMessageForEditModel = listOfLine.at(19);
     modelInfo.avatarModel = listOfLine.at(20);
+
+    colorInfoForMessageAndOther.navigatorProgressBarColor = listOfLine.at(21);
 
     return modelInfo;
 }

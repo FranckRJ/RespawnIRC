@@ -30,6 +30,7 @@ struct colorInfoForMessageAndOtherStruct
     QString tableBackgroundColor;
     QString tableTextColor;
     QString editMessageColor;
+    QString navigatorProgressBarColor;
 };
 
 namespace styleTool

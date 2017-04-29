@@ -10,6 +10,7 @@
 #include <QDesktopServices>
 
 #include "webNavigator.hpp"
+#include "styleTool.hpp"
 
 webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> cookiesList) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
@@ -41,7 +42,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
 
     webViewLoadBar->setMaximumHeight(1);
     webViewLoadBar->setTextVisible(false);
-    webViewLoadBar->setStyleSheet("QProgressBar {border: 0px;} QProgressBar::chunk {background-color: blue;}");
+    webViewLoadBar->setStyleSheet("QProgressBar {border: 0px; background-color: transparent;} QProgressBar::chunk {background-color: " + styleTool::getColorInfo().navigatorProgressBarColor + ";}");
 
     QHBoxLayout* topLayout = new QHBoxLayout();
     topLayout->addWidget(backwardButton);
