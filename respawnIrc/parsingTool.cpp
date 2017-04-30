@@ -203,8 +203,19 @@ QString parsingTool::getVersionName(const QString& source)
 
 QString parsingTool::getVersionChangelog(const QString& source)
 {
-    QString changelog = expForVersionChangelog.match(source).captured(1).replace("\\r\\n", "<br />").replace("\\\"", "\"").replace(" -", "--").replace("   --", "---").replace("\\\\", "\\");
+    QString changelog = expForVersionChangelog.match(source).captured(1).replace("\\n", "<br />").replace("\\r", "").replace("\\\"", "\"").replace(" -", "--").replace("   --", "---").replace("\\\\", "\\");
     replaceWithCapNumber(changelog, expForNormalLink, 0, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 0, "</a>");
+    changelog = changelog.trimmed();
+    while(changelog.startsWith("<br />") == true)
+    {
+        changelog.remove(0, 6);
+        changelog = changelog.trimmed();
+    }
+    while(changelog.endsWith("<br />") == true)
+    {
+        changelog.remove(changelog.size() - 6, 6);
+        changelog = changelog.trimmed();
+    }
     return changelog;
 }
 

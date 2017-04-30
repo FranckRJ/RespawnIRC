@@ -83,11 +83,10 @@ HEADERS += \
 RC_FILE = respawnIrc.rc
 
 QMAKE_CXXFLAGS_RELEASE += -O2
-QMAKE_LFLAGS += /NODEFAULTLIB:LIBCMT.lib
 
 CONFIG += c++11
 
-unix|win32: LIBS += -L$$PWD/../hunspell/lib/ -llibhunspell
+LIBS += -L$$PWD/../hunspell/lib/ -llibhunspell
 
 INCLUDEPATH += $$PWD/../hunspell/include
 DEPENDPATH += $$PWD/../hunspell/include
