@@ -156,6 +156,7 @@ QWidget* preferenceWindowClass::createWidgetForMessagesTab()
     vboxMessageStyle->addWidget(makeNewCheckBox("Colorer les PEMT", "colorPEMT"));
     vboxMessageStyle->addWidget(makeNewCheckBox("Colorer votre pseudo dans les messages", "colorUserPseudoInMessages"));
     vboxMessageStyle->addWidget(makeNewCheckBox("Améliorer les citations", "betterQuote"));
+    vboxMessageStyle->addWidget(makeNewCheckBox("Améliorer l'affichage de code", "betterCodeTag"));
     vboxMessageStyle->addStretch(1);
     groupBoxMessageStyle->setLayout(vboxMessageStyle);
 

@@ -25,12 +25,13 @@ struct colorInfoForMessageAndOtherStruct
 {
     QString linkColor;
     QString spoilColor;
-    QString tableBorderColor;
+    QString quoteBorderColor;
     QString underlineColor;
-    QString tableBackgroundColor;
-    QString tableTextColor;
+    QString quoteBackgroundColor;
+    QString quoteTextColor;
     QString editMessageColor;
     QString navigatorProgressBarColor;
+    QString codeTagBackgroundColor;
 };
 
 namespace styleTool

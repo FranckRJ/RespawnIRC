@@ -62,6 +62,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["beepForNewMP"] = false;
     listOfDefaultBoolOption["hideUglyImages"] = false;
     listOfDefaultBoolOption["useInternalNavigatorForLinks"] = false;
+    listOfDefaultBoolOption["betterCodeTag"] = true;
     listOfDefaultIntOption["updateTopicTime"].value = 7500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 2000;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;
@@ -77,7 +78,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["textBoxSize"].value = 65;
     listOfDefaultIntOption["textBoxSize"].minValue = 10;
     listOfDefaultIntOption["textBoxSize"].maxValue = 500;
-    listOfDefaultIntOption["maxNbOfQuotes"].value = 4;
+    listOfDefaultIntOption["maxNbOfQuotes"].value = 3;
     listOfDefaultIntOption["maxNbOfQuotes"].minValue = 0;
     listOfDefaultIntOption["maxNbOfQuotes"].maxValue = 15;
     listOfDefaultIntOption["nbOfMessagesSend"].value = 0;

@@ -56,6 +56,7 @@ struct infoForMessageParsingStruct
     int stickersSize;
     int nbMaxQuote;
     bool betterQuote;
+    bool betterCodeTag;
     int noelshackImageWidth;
     int noelshackImageHeight;
     QStringList* listOfStickersUsed = nullptr;

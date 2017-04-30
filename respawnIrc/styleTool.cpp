@@ -82,6 +82,7 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
     listOfInfos.push_back("<img width=60 height=60 src=\"<%AVATAR_LINK%>\">");
 
     listOfInfos.push_back("blue"); //navigator progressbar color
+    listOfInfos.push_back("#F2F2F2"); //code tag background color
 
     if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
@@ -107,15 +108,15 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
 
     colorInfoForMessageAndOther.linkColor = listOfLine.at(7);
     colorInfoForMessageAndOther.spoilColor = listOfLine.at(8);
-    colorInfoForMessageAndOther.tableBorderColor = listOfLine.at(9);
+    colorInfoForMessageAndOther.quoteBorderColor = listOfLine.at(9);
     colorInfoForMessageAndOther.underlineColor = listOfLine.at(10);
 
     modelInfo.modoPseudoColor = listOfLine.at(11);
     modelInfo.adminPseudoColor = listOfLine.at(12);
     modelInfo.pemtDateColor = listOfLine.at(13);
 
-    colorInfoForMessageAndOther.tableBackgroundColor = listOfLine.at(14);
-    colorInfoForMessageAndOther.tableTextColor = listOfLine.at(15);
+    colorInfoForMessageAndOther.quoteBackgroundColor = listOfLine.at(14);
+    colorInfoForMessageAndOther.quoteTextColor = listOfLine.at(15);
 
     modelInfo.deleteModel = listOfLine.at(16);
 
@@ -126,6 +127,7 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
     modelInfo.avatarModel = listOfLine.at(20);
 
     colorInfoForMessageAndOther.navigatorProgressBarColor = listOfLine.at(21);
+    colorInfoForMessageAndOther.codeTagBackgroundColor = listOfLine.at(22);
 
     return modelInfo;
 }

@@ -222,6 +222,7 @@ void showTopicClass::updateSettingInfo()
     settingsForMessageParsing.infoForMessageParsing.nbMaxQuote = settingTool::getThisIntOption("maxNbOfQuotes").value;
     settingsForMessageParsing.infoForMessageParsing.stickerToSmiley = settingTool::getThisBoolOption("stickersToSmiley");
     settingsForMessageParsing.infoForMessageParsing.betterQuote = settingTool::getThisBoolOption("betterQuote");
+    settingsForMessageParsing.infoForMessageParsing.betterCodeTag = settingTool::getThisBoolOption("betterCodeTag");
     settingsForMessageParsing.downloadMissingStickers = settingTool::getThisBoolOption("downloadMissingStickers");
     settingsForMessageParsing.downloadNoelshackImages = settingTool::getThisBoolOption("downloadNoelshackImages");
     settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingTool::getThisIntOption("noelshackImageWidth").value;

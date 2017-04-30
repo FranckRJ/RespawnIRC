@@ -499,12 +499,21 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
 
     if(infoForParsing.betterQuote == true)
     {
-        extraTableStyle += "background: " + styleTool::getColorInfo().tableBackgroundColor + ";color: " + styleTool::getColorInfo().tableTextColor + ";";
+        extraTableStyle += "background: " + styleTool::getColorInfo().quoteBackgroundColor + ";color: " + styleTool::getColorInfo().quoteTextColor + ";";
     }
 
     thisMessage.remove(expForAd);
-    replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", [](QString baseString)->QString{return baseString.replace("\n", "<br />");});
-    replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "");
+
+    if(infoForParsing.betterCodeTag == true)
+    {
+        replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;background-color: " + styleTool::getColorInfo().codeTagBackgroundColor + ";\"><tr><td><code style=\"white-space: pre-wrap\">", "</code></td></tr></table>", -1, "", [](QString baseString)->QString{return baseString.replace("\n", "<br />");});
+        replaceWithCapNumber(thisMessage, expForCodeLine, 1, "<span style=\"background-color: " + styleTool::getColorInfo().codeTagBackgroundColor + ";\"> <code style=\"white-space: pre-wrap\">", "</code> </span>", -1, "");
+    }
+    else
+    {
+        replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", [](QString baseString)->QString{return baseString.replace("\n", "<br />");});
+        replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "");
+    }
 
     thisMessage.replace("\n", "");
     thisMessage.replace("\r", "");
@@ -579,12 +588,17 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
     thisMessage.replace(QRegularExpression(R"rgx(<(/)?p>)rgx"), "<br /><br />");
     thisMessage.replace(QRegularExpression(R"rgx((<br /> *)*(<(/)?blockquote>)( *<br />)*)rgx"), "\\2");
 
+    if(infoForParsing.betterCodeTag == true)
+    {
+        thisMessage.replace(QRegularExpression(R"rgx((<br /> *)*(<(/)?table[^>]*>)( *<br />)*)rgx"), "\\2");
+    }
+
     thisMessage.replace("<br /><br /><ul>", "<ul>");
     thisMessage.replace("<br /><br /><ol>", "<ol>");
     thisMessage.replace("<ul><br /><br />", "</ul>");
     thisMessage.replace("<ol><br /><br />", "</ol>");
 
-    thisMessage.replace("<blockquote>", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;border-color: " + styleTool::getColorInfo().tableBorderColor + ";" + extraTableStyle + "\"><tr><td>");
+    thisMessage.replace("<blockquote>", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;border-color: " + styleTool::getColorInfo().quoteBorderColor + ";" + extraTableStyle + "\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
 
     thisMessage.remove("</div>");
