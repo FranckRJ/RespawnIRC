@@ -206,8 +206,10 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
         if(wordUnderCursor.size() > 1 && checkWord(wordUnderCursor) == false)
         {
             menuRightClick->addSeparator();
-            menuRightClick->addAction("Add...", this, &spellTextEditClass::addWordToUserDic);
-            menuRightClick->addAction("Ignore...", this, &spellTextEditClass::ignoreWord);
+            //Utilisation de l'ancien système de slot dans ce context pour assurer la
+            //compatibilité avec les versions de Qt inférieur à 5.6
+            menuRightClick->addAction("Add...", this, SLOT(addWordToUserDic()));
+            menuRightClick->addAction("Ignore...", this, SLOT(ignoreWord()));
 
             if(listOfWord.isEmpty() == false)
             {
@@ -276,10 +278,8 @@ void spellTextEditClass::addWordToUserDic()
     if(spellChecker != nullptr && codecUsed != nullptr)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
-        QByteArray encodedString;
 
-        encodedString = codecUsed->fromUnicode(wordUnderCursor);
-        spellChecker->add(encodedString.data());
+        spellChecker->add(codecUsed->fromUnicode(wordUnderCursor).data());
         addedWords.append(wordUnderCursor);
 
         emit addWord(wordUnderCursor);
@@ -291,10 +291,8 @@ void spellTextEditClass::ignoreWord()
     if(spellChecker != nullptr && codecUsed != nullptr)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
-        QByteArray encodedString;
 
-        encodedString = codecUsed->fromUnicode(wordUnderCursor);
-        spellChecker->add(encodedString.data());
+        spellChecker->add(codecUsed->fromUnicode(wordUnderCursor).data());
 
         emit addWord(wordUnderCursor);
     }

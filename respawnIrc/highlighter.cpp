@@ -85,9 +85,7 @@ void highlighterClass::addWordToDic(QString word)
 {
     if(spellChecker != nullptr && codec != nullptr)
     {
-        QByteArray encodedString;
-        encodedString = codec->fromUnicode(word);
-        spellChecker->add(encodedString.data());
+        spellChecker->add(codec->fromUnicode(word).data());
         rehighlight();
     }
 }
