@@ -26,14 +26,8 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
     idOfLastMessage = 0;
     needToGetMessages = false;
 
-    if(settingsForMessageParsing.isInOptimizedMode == true)
-    {
-        numberOfPagesToDownload = 2;
-    }
-    else
-    {
-        numberOfPagesToDownload = 1;
-    }
+    //qu'importe le mode, le premier chargement doit charger les deux dernières pages
+    numberOfPagesToDownload = 2;
 
     if(newTopicLink.isEmpty() == true)
     {
@@ -95,15 +89,6 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
 void getTopicMessagesClass::settingsChanged(settingsForMessageParsingStruct newSettings)
 {
     settingsForMessageParsing = newSettings;
-
-    if(settingsForMessageParsing.isInOptimizedMode == true)
-    {
-        numberOfPagesToDownload = 2;
-    }
-    else
-    {
-        numberOfPagesToDownload = 1;
-    }
 
     timerForGetMessage->setInterval(settingsForMessageParsing.timerTime);
 
@@ -283,6 +268,10 @@ void getTopicMessagesClass::analyzeMessages()
         if(settingsForMessageParsing.isInOptimizedMode == true)
         {
             numberOfPagesToDownload = (numberOfMessagesInLastPage >= settingsForMessageParsing.numberOfMessagesForOptimizationStart ? 1 : 2);
+        }
+        else
+        {
+            numberOfPagesToDownload = 1;
         }
 
         if(listOfEntireMessages.isEmpty() == true)
