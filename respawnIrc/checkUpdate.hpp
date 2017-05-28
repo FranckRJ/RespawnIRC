@@ -23,7 +23,7 @@ private:
     QNetworkAccessManager* networkManager;
     QNetworkReply* reply = nullptr;
     bool alwaysShowMessage = false;
-    bool alertForSameVersion = true; //vrai pour les snapshots, faux pour les releases
+    bool alertForSameVersion = false; //vrai pour les snapshots, faux pour les releases
 };
 
 #endif
