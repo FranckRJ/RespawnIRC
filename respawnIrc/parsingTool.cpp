@@ -31,11 +31,11 @@ namespace
     const QRegularExpression expForNumberOfConnected(R"rgx(<span class="nb-connect-fofo">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMpJvc(R"rgx(<div class=".*?account-mp.*?">[^<]*<span[^c]*class="account-number-mp[^"]*".*?data-val="([^"]*)")rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEntireMessage(R"rgx((<div class="bloc-message-forum[^"]*".*?)(<span id="post_[^"]*" class="bloc-message-forum-anchor">|<div class="bloc-outils-plus-modo bloc-outils-bottom">|<div class="bloc-pagi-default">))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForEntireTopic(R"rgx(<li class="" data-id="[^"]*">[^<]*<span class="topic-subject">.*?</li>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForEntireTopic(R"rgx(<li class="[^"]*" data-id="[^"]*">.*?<span class="topic-subject">.*?</li>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForTopicNameAndLink(R"rgx(<a class="lien-jv topic-title[^"]*" href="([^"]*" title="[^"]*)"[^>]*>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicNumberMessage(R"rgx(<span class="topic-count">[^0-9]*([0-9]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicPseudoInfo(R"rgx(<span class="JvCare [^ ]* text-([^ ]*) topic-author)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForTopicType(R"rgx(<img src="/img/forums/topic-(.*?)\.png")rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForTopicType(R"rgx(<img src="/img/forums/topic-(.*?)\.png" alt="[^"]*" title="[^"]*" class="topic-img")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMessageID(R"rgx(<div class="bloc-message-forum[^"]*" data-id="([^"]*)">)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAvatars(R"rgx(<img src="[^"]*" data-srcset="(http:)?//([^"]*)" class="user-avatar-msg")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForPseudo(R"rgx(<span class="JvCare [^ ]* bloc-pseudo-msg text-([^"]*)" target="_blank">[^a-zA-Z0-9_\[\]-]*([a-zA-Z0-9_\[\]-]*)[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
