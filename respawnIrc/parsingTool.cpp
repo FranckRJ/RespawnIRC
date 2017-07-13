@@ -50,7 +50,7 @@ namespace
     const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="(http://jv\.stkr\.fr/p[^/]*/([^"]*))"/>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForLongLink(R"rgx(<span class="JvCare [^"]*"[^i]*itle="([^"]*)">[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForShortLink(R"rgx(<span class="JvCare [^"]*" rel="nofollow[^"]*" target="_blank">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForJvcLink(R"rgx(<a href="([^"]*)"( title="[^"]*")?>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForJvcLink(R"rgx(<a href="([^"]*)"( )?( title="[^"]*")?>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNoelshack(R"rgx(<a href="([^"]*)" target="_blank"><img class="img-shack" .*? src="http(s)?://([^"]*)" [^>]*></a>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForYoutubeVideo(R"rgx(<div class="player-contenu"><div class="[^"]*"><iframe .*? src="http(s)?://www\.youtube\.com/embed/([^"]*)"[^>]*></iframe></div></div>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSpoilLine(R"rgx(<span class="bloc-spoil-jv en-ligne">.*?<span class="contenu-spoil">(.*?)</span></span>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
