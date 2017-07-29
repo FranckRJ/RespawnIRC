@@ -100,6 +100,19 @@ namespace
         }
         return baseMessage;
     }
+
+    QString stringModificatorMakeCodeBlockGreatAgain(QString baseMessage)
+    {
+        while(baseMessage.startsWith("\n") == true)
+        {
+            baseMessage.remove(0, 1);
+        }
+        while(baseMessage.endsWith("\n") == true)
+        {
+            baseMessage.remove(baseMessage.size() - 1, 1);
+        }
+        return baseMessage.replace("\n", "<br />");
+    }
 }
 
 void parsingTool::generateNewUserAgent() {
@@ -514,20 +527,20 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
     }
 
     thisMessage.remove(expForAd);
+    thisMessage.replace("\r", "");
 
     if(infoForParsing.betterCodeTag == true)
     {
-        replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;background-color: " + styleTool::getColorInfo().codeTagBackgroundColor + ";\"><tr><td><code style=\"white-space: pre-wrap\">", "</code></td></tr></table>", -1, "", [](QString baseString)->QString{return baseString.replace("\n", "<br />");});
-        replaceWithCapNumber(thisMessage, expForCodeLine, 1, "<span style=\"background-color: " + styleTool::getColorInfo().codeTagBackgroundColor + ";\"> <code style=\"white-space: pre-wrap\">", "</code> </span>", -1, "");
+        replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;background-color: " + styleTool::getColorInfo().codeTagBackgroundColor + ";\"><tr><td><code style=\"white-space: pre-wrap\">", "</code></td></tr></table>", -1, "", std::bind(stringModificatorMakeCodeBlockGreatAgain, std::placeholders::_1));
+        replaceWithCapNumber(thisMessage, expForCodeLine, 1, "<span style=\"background-color: " + styleTool::getColorInfo().codeTagBackgroundColor + ";\">" + QString(QChar::Nbsp) + "<code style=\"white-space: pre-wrap\">", "</code>" + QString(QChar::Nbsp) + "</span>", -1, "");
     }
     else
     {
-        replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", [](QString baseString)->QString{return baseString.replace("\n", "<br />");});
+        replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<p><code style=\"white-space: pre-wrap\">", "</code></p>", -1, "", std::bind(stringModificatorMakeCodeBlockGreatAgain, std::placeholders::_1));
         replaceWithCapNumber(thisMessage, expForCodeLine, 1, " <code style=\"white-space: pre-wrap\">", "</code> ", -1, "");
     }
 
     thisMessage.replace("\n", "");
-    thisMessage.replace("\r", "");
 
     shortcutTool::transformMessage(&thisMessage, "noLangageSticker");
     if(infoForParsing.stickerToSmiley == true)
