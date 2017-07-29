@@ -21,7 +21,7 @@ class accountListWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit accountListWindowClass(QList<accountStruct>* newListOfAccount, QWidget* parent);
-    static bool addAcountToThisList(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, QList<accountStruct>* thisList);
+    static void addOrUpdateAcountInThisList(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, QList<accountStruct>* thisList);
 private:
     void updateList();
 private slots:

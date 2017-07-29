@@ -44,26 +44,26 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
     connect(buttonLoginOneTopic, &QPushButton::clicked, this, &accountListWindowClass::connectToOneTopicWithThisAccount);
 }
 
-bool accountListWindowClass::addAcountToThisList(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, QList<accountStruct>* thisList)
+void accountListWindowClass::addOrUpdateAcountInThisList(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, QList<accountStruct>* thisList)
 {
-    if(newCookies.isEmpty() == false)
+    accountStruct* accountToChange = nullptr;
+
+    for(accountStruct& thisAccount : *thisList)
     {
-        for(const accountStruct& thisAccount : *thisList)
+        if(thisAccount.pseudo.toLower() == newPseudoOfUser.toLower())
         {
-            if(thisAccount.pseudo.toLower() == newPseudoOfUser.toLower())
-            {
-                return false;
-            }
+            accountToChange = &thisAccount;
         }
-
-        thisList->push_back(accountStruct());
-        thisList->back().listOfCookie = newCookies;
-        thisList->back().pseudo = newPseudoOfUser;
-
-        return true;
     }
 
-    return false;
+    if(accountToChange == nullptr)
+    {
+        thisList->push_back(accountStruct());
+        accountToChange = &thisList->back();
+    }
+
+    accountToChange->listOfCookie = newCookies;
+    accountToChange->pseudo = newPseudoOfUser;
 }
 
 void accountListWindowClass::updateList()
@@ -90,14 +90,8 @@ void accountListWindowClass::addAccount(QList<QNetworkCookie> newCookies, QStrin
 {
     (void) saveInfo;
 
-    if(addAcountToThisList(newCookies, newPseudoOfUser, listOfAccount) == true)
-    {
-        updateList();
-    }
-    else
-    {
-        QMessageBox::warning(this, "Erreur", "Le pseudo est déjà présent dans la liste.");
-    }
+    addOrUpdateAcountInThisList(newCookies, newPseudoOfUser, listOfAccount);
+    updateList();
 }
 
 void accountListWindowClass::removeCurrentAccount()

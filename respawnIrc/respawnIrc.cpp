@@ -651,7 +651,7 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
 
         if(saveAccountList == true)
         {
-            accountListWindowClass::addAcountToThisList(currentCookieList, pseudoOfUser, &listOfAccount);
+            accountListWindowClass::addOrUpdateAcountInThisList(currentCookieList, pseudoOfUser, &listOfAccount);
             settingTool::saveListOfAccount(listOfAccount);
         }
 
