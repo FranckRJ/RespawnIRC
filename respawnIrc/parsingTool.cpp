@@ -47,7 +47,7 @@ namespace
     const QRegularExpression expForForumName(R"rgx(<title>(.*?)- jeuxvideo\.com</title>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvfLink(R"rgx(http://jvforum\.fr/([^/]*)/([^-]*)-([^/]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSmiley(R"rgx(<img src="http(s)?://image\.jeuxvideo\.com/smileys_img/([^"]*)" alt="[^"]*" data-code="([^"]*)" title="[^"]*" [^>]*>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="(http://jv\.stkr\.fr/p[^/]*/([^"]*))"/>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="(http://jv\.stkr\.fr/p[^/]*/([^"]*))".*?/>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForLongLink(R"rgx(<span class="JvCare [^"]*"[^i]*itle="([^"]*)">[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForShortLink(R"rgx(<span class="JvCare [^"]*" rel="nofollow[^"]*" target="_blank">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcLink(R"rgx(<a href="([^"]*)"( )?( title="[^"]*")?>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
