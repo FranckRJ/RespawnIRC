@@ -13,11 +13,14 @@
 
 namespace
 {
+    //pourquoi j'utilise des qscopedpointer au lieu des std::unique_ptr ? Je sais plus, je crois
+    //que c'est à cause d'un problème d'ordre d'appel de constructeur/destructeur ou j'sais plus quoi
     QScopedPointer<QPixmap> pinnedOnTagImage;
     QScopedPointer<QPixmap> pinnedOffTagImage;
     QScopedPointer<QPixmap> hotTagImage;
     QScopedPointer<QPixmap> lockTagImage;
     QScopedPointer<QPixmap> resolvedTagImage;
+    QScopedPointer<QPixmap> ghostTagImage;
     QScopedPointer<QPixmap> normalTagImage;
 }
 
@@ -47,6 +50,11 @@ showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWid
     {
         resolvedTagImage.reset(new QPixmap);
         resolvedTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-resolu.png");
+    }
+    if(ghostTagImage.isNull() == true)
+    {
+        ghostTagImage.reset(new QPixmap);
+        ghostTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-ghost.png");
     }
     if(normalTagImage.isNull() == true)
     {
@@ -142,6 +150,7 @@ void showForumClass::updateSettings()
     showHotTagOnTopic = settingTool::getThisBoolOption("showHotTagOnTopicInTopicList");
     showLockTagOnTopic = settingTool::getThisBoolOption("showLockTagOnTopicInTopicList");
     showResolvedTagOnTopic = settingTool::getThisBoolOption("showResolvedTagOnTopicInTopicList");
+    showGhostTagOnTopic = settingTool::getThisBoolOption("showGhostTagOnTopicInTopicList");
     showNormalTagOnTopic = settingTool::getThisBoolOption("showNormalTagOnTopicInTopicList");
     useIconInsteadOfTag = settingTool::getThisBoolOption("useIconInsteadOfTagInTopicList");
     topicNameMaxSize = settingTool::getThisIntOption("topicNameMaxSizeInTopicList").value;
@@ -242,6 +251,20 @@ QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& for
             else
             {
                 currentTopicName = "[R] " + currentTopicName;
+            }
+        }
+    }
+    else if(forThisTopic.topicType == "ghost")
+    {
+        if(showGhostTagOnTopic == true)
+        {
+            if(useIconInsteadOfTag == true)
+            {
+                newItem->setIcon(QIcon(*ghostTagImage));
+            }
+            else
+            {
+                currentTopicName = "[S] " + currentTopicName;
             }
         }
     }

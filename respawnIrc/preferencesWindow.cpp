@@ -211,6 +211,7 @@ QWidget* preferenceWindowClass::createWidgetForTopicListTab()
     vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics multipages", "showHotTagOnTopicInTopicList"));
     vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics fermés", "showLockTagOnTopicInTopicList"));
     vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics résolus", "showResolvedTagOnTopicInTopicList"));
+    vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics supprimés", "showGhostTagOnTopicInTopicList"));
     vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics normaux", "showNormalTagOnTopicInTopicList"));
     vboxTopicTag->addWidget(makeNewCheckBox("Utiliser des icônes au lieu des balises", "useIconInsteadOfTagInTopicList"));
     vboxTopicTag->addStretch(1);

@@ -56,6 +56,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["showHotTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showLockTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showResolvedTagOnTopicInTopicList"] = true;
+    listOfDefaultBoolOption["showGhostTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showNormalTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["useIconInsteadOfTagInTopicList"] = true;
     listOfDefaultBoolOption["fastModeEnbled"] = false;

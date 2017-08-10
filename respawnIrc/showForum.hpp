@@ -59,6 +59,7 @@ private:
     bool showHotTagOnTopic;
     bool showLockTagOnTopic;
     bool showResolvedTagOnTopic;
+    bool showGhostTagOnTopic;
     bool showNormalTagOnTopic;
     bool useIconInsteadOfTag;
     bool useInternalNavigatorForLinks;
