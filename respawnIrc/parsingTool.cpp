@@ -51,7 +51,7 @@ namespace
     const QRegularExpression expForLongLink(R"rgx(<span class="JvCare [^"]*"[^i]*itle="([^"]*)">[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForShortLink(R"rgx(<span class="JvCare [^"]*" rel="nofollow[^"]*" target="_blank">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcLink(R"rgx(<a href="([^"]*)"( )?( title="[^"]*")?>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForNoelshack(R"rgx(<a href="([^"]*)" target="_blank"><img class="img-shack" .*? src="http(s)?://([^"]*)" [^>]*></a>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForNoelshack(R"rgx(<span class="JvCare[^>]*><img class="img-shack".*?src="http(s)?://([^"]*)" alt="([^"]*)"[^>]*></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForYoutubeVideo(R"rgx(<div class="player-contenu"><div class="[^"]*"><iframe .*? src="http(s)?://www\.youtube\.com/embed/([^"]*)"[^>]*></iframe></div></div>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSpoilLine(R"rgx(<span class="bloc-spoil-jv en-ligne">.*?<span class="contenu-spoil">(.*?)</span></span>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForSpoilBlock(R"rgx(<span class="bloc-spoil-jv">.*?<span class="contenu-spoil">(.*?)</span></span>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
@@ -575,7 +575,7 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
 
     if(infoForParsing.listOfNoelshackImageUsed != nullptr)
     {
-        infoForParsing.listOfNoelshackImageUsed->append(getListOfThisCapNumber(thisMessage, expForNoelshack, 3, false));
+        infoForParsing.listOfNoelshackImageUsed->append(getListOfThisCapNumber(thisMessage, expForNoelshack, 2, false));
 
         for(QString& thisNoelshackImage : *infoForParsing.listOfNoelshackImageUsed)
         {
@@ -585,11 +585,11 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
             }
         }
 
-        replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a href=\"", "\"><img width=" + QString::number(infoForParsing.noelshackImageWidth) + " height=" + QString::number(infoForParsing.noelshackImageHeight) + " src=\"img/", 3, "\" /></a>");
+        replaceWithCapNumber(thisMessage, expForNoelshack, 3, "<a href=\"", "\"><img width=" + QString::number(infoForParsing.noelshackImageWidth) + " height=" + QString::number(infoForParsing.noelshackImageHeight) + " src=\"img/", 2, "\" /></a>");
     }
     else
     {
-        replaceWithCapNumber(thisMessage, expForNoelshack, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
+        replaceWithCapNumber(thisMessage, expForNoelshack, 3, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 3, "</a>");
     }
 
     removeAllOverlySpoils(thisMessage);
