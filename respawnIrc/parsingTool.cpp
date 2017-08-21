@@ -34,6 +34,7 @@ namespace
     const QRegularExpression expForEntireTopic(R"rgx(<li class="[^"]*" data-id="[^"]*">.*?<span class="topic-subject">.*?</li>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForTopicNameAndLink(R"rgx(<a class="lien-jv topic-title[^"]*" href="([^"]*" title="[^"]*)"[^>]*>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicNumberMessage(R"rgx(<span class="topic-count">[^0-9]*([0-9]*))rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForTopicNumberMessageAdm(R"rgx(<span class="topic-count-adm">[^0-9]*([0-9]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicPseudoInfo(R"rgx(<span class="JvCare [^ ]* text-([^ ]*) topic-author)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicType(R"rgx(<img src="/img/forums/topic-(.*?)\.png" alt="[^"]*" title="[^"]*" class="topic-img")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMessageID(R"rgx(<div class="bloc-message-forum[^"]*" data-id="([^"]*)">)rgx", configDependentVar::regexpBaseOptions);
@@ -115,7 +116,8 @@ namespace
     }
 }
 
-void parsingTool::generateNewUserAgent() {
+void parsingTool::generateNewUserAgent()
+{
     QStringList allStringForGeneration;
     int lastMessageId = qrand() % 3;
 
@@ -451,6 +453,7 @@ QList<topicStruct> parsingTool::getListOfTopic(const QString& source, const QStr
 
     for(const QString& thisTopic : listOfEntireTopic)
     {
+        QRegularExpressionMatch matchForTopicNumberMessageAdm = expForTopicNumberMessageAdm.match(thisTopic);
         QString topicInfo = expForTopicNameAndLink.match(thisTopic).captured(1);
         QString link = "http://" + website + topicInfo.left(topicInfo.indexOf("\""));
         QString name = topicInfo.right(topicInfo.size() - topicInfo.indexOf("title=\"") - 7);
@@ -458,9 +461,17 @@ QList<topicStruct> parsingTool::getListOfTopic(const QString& source, const QStr
         listOfTopic.append(topicStruct());
         listOfTopic.back().name = name;
         listOfTopic.back().link = link;
-        listOfTopic.back().numberOfMessage = expForTopicNumberMessage.match(thisTopic).captured(1);
         listOfTopic.back().pseudoInfo.pseudoType = expForTopicPseudoInfo.match(thisTopic).captured(1);
         listOfTopic.back().topicType = expForTopicType.match(thisTopic).captured(1);
+
+        if(matchForTopicNumberMessageAdm.hasMatch() == true)
+        {
+            listOfTopic.back().numberOfMessage = matchForTopicNumberMessageAdm.captured(1);
+        }
+        else
+        {
+            listOfTopic.back().numberOfMessage = expForTopicNumberMessage.match(thisTopic).captured(1);
+        }
     }
 
     return listOfTopic;
