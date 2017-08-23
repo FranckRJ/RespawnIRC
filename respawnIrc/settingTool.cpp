@@ -60,7 +60,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["showNormalTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["useIconInsteadOfTagInTopicList"] = true;
     listOfDefaultBoolOption["fastModeEnbled"] = false;
-    listOfDefaultBoolOption["beepForNewMP"] = false;
+    listOfDefaultBoolOption["beepForNewMP"] = true;
     listOfDefaultBoolOption["hideUglyImages"] = false;
     listOfDefaultBoolOption["useInternalNavigatorForLinks"] = false;
     listOfDefaultBoolOption["betterCodeTag"] = true;
@@ -85,7 +85,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["nbOfMessagesSend"].value = 0;
     listOfDefaultIntOption["nbOfMessagesSend"].minValue = 0;
     listOfDefaultIntOption["nbOfMessagesSend"].maxValue = 0;
-    listOfDefaultIntOption["typeOfImageRefresh"].value = 1;
+    listOfDefaultIntOption["typeOfImageRefresh"].value = 2;
     listOfDefaultIntOption["typeOfImageRefresh"].minValue = 0;
     listOfDefaultIntOption["typeOfImageRefresh"].maxValue = 2;
     listOfDefaultIntOption["noelshackImageWidth"].value = 68;
@@ -100,7 +100,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["updateTopicListTime"].value = 15000;
     listOfDefaultIntOption["updateTopicListTime"].minValue = 4000;
     listOfDefaultIntOption["updateTopicListTime"].maxValue = 60000;
-    listOfDefaultIntOption["typeOfEdit"].value = 0;
+    listOfDefaultIntOption["typeOfEdit"].value = 2;
     listOfDefaultIntOption["typeOfEdit"].minValue = 0;
     listOfDefaultIntOption["typeOfEdit"].maxValue = 2;
     listOfDefaultIntOption["topicNameMaxSizeInTopicList"].value = 35;
