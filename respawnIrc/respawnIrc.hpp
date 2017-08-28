@@ -62,9 +62,9 @@ private slots:
     void disconnectFromThisPseudo(QString thisPseudo);
     void addThisPeudoToBlacklist(QString pseudoToAdd);
     void setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<QString, int> newIntOptions);
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
-    void setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo);
-    void setNewCookiesForPseudo(QString pseudo, const QList<QNetworkCookie>&  cookiesForPseudo);
+    void setNewCookie(QNetworkCookie newConnectCookie, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
+    void setNewCookieForCurrentTopic(QNetworkCookie newConnectCookie, QString newPseudoOfUser, bool savePseudo);
+    void setNewCookieForPseudo(QString pseudo, const QNetworkCookie& cookieForPseudo);
     void setNewMessageStatus();
     void setNewNumberOfConnectedAndPseudoUsed();
     void saveListOfAccount();
@@ -83,7 +83,7 @@ private:
     sendMessagesClass* sendMessages;
     tabViewTopicInfosClass* tabViewTopicInfos;
     QVector<QString> vectorOfFavoriteLink;
-    QList<QNetworkCookie> currentCookieList;
+    QNetworkCookie currentConnectCookie;
     QList<QString> listOfIgnoredPseudo;
     QList<pseudoWithColorStruct> listOfColorPseudo;
     QList<accountStruct> listOfAccount;

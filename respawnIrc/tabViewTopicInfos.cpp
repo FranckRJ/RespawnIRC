@@ -104,23 +104,23 @@ void tabViewTopicInfosClass::setNewTheme(QString newThemeName)
     }
 }
 
-void tabViewTopicInfosClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave, QString forThisPseudo)
+void tabViewTopicInfosClass::setNewCookie(QNetworkCookie newConnectCookie, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave, QString forThisPseudo)
 {
-    generalCookieList = newCookies;
+    generalConnectCookie = newConnectCookie;
     generalPseudoToUse = newPseudoOfUser;
 
     for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
         if(forThisPseudo.isEmpty() == true || thisContainer->getShowTopic().getPseudoUsed().toLower() == forThisPseudo.toLower())
         {
-            thisContainer->setNewCookiesForInfo(newCookies, newPseudoOfUser, newTypeOfSave);
+            thisContainer->setNewCookieForInfo(newConnectCookie, newPseudoOfUser, newTypeOfSave);
         }
     }
 }
 
-void tabViewTopicInfosClass::setNewCookiesForCurrentTab(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave)
+void tabViewTopicInfosClass::setNewCookieForCurrentTab(QNetworkCookie newConnectCookie, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave)
 {
-    getCurrentWidget()->setNewCookiesForInfo(newCookies, newPseudoOfUser, newTypeOfSave);
+    getCurrentWidget()->setNewCookieForInfo(newConnectCookie, newPseudoOfUser, newTypeOfSave);
 }
 
 bool tabViewTopicInfosClass::getEditInfoForCurrentTab(long idOfMessageToEdit, bool useMessageEdit)
@@ -152,24 +152,24 @@ void tabViewTopicInfosClass::addNewTabWithPseudo(QString useThisPseudo)
                 if(listOfAccount->at(j).pseudo.toLower() == useThisPseudo.toLower())
                 {
                     pseudoFound = true;
-                    listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(listOfAccount->at(j).listOfCookie, listOfAccount->at(j).pseudo, typeOfSaveForPseudo::REMEMBER);
+                    listOfContainerForTopicsInfos.back()->setNewCookieForInfo(listOfAccount->at(j).connectCookie, listOfAccount->at(j).pseudo, typeOfSaveForPseudo::REMEMBER);
                     break;
                 }
             }
 
             if(pseudoFound == false)
             {
-                listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(generalCookieList, generalPseudoToUse, typeOfSaveForPseudo::DEFAULT);
+                listOfContainerForTopicsInfos.back()->setNewCookieForInfo(generalConnectCookie, generalPseudoToUse, typeOfSaveForPseudo::DEFAULT);
             }
         }
         else
         {
-            listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
+            listOfContainerForTopicsInfos.back()->setNewCookieForInfo(QNetworkCookie(), "", typeOfSaveForPseudo::REMEMBER);
         }
     }
     else if(generalPseudoToUse.isEmpty() == false)
     {
-        listOfContainerForTopicsInfos.back()->setNewCookiesForInfo(generalCookieList, generalPseudoToUse, typeOfSaveForPseudo::DEFAULT);
+        listOfContainerForTopicsInfos.back()->setNewCookieForInfo(generalConnectCookie, generalPseudoToUse, typeOfSaveForPseudo::DEFAULT);
     }
 
     listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(imageDownloadTool->getPathOfTmpDir());
@@ -192,7 +192,7 @@ void tabViewTopicInfosClass::addNewTabWithPseudo(QString useThisPseudo)
     connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::downloadTheseAvatarsIfNeeded, this, &tabViewTopicInfosClass::downloadAvatarsIfNeeded);
     connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::openThisTopicInNewTab, this, &tabViewTopicInfosClass::addNewTabWithTopic);
     connect(listOfContainerForTopicsInfos.back(), &containerForTopicsInfosClass::topicNeedChanged, this, &tabViewTopicInfosClass::setNewTopicForCurrentTab);
-    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newCookiesHaveToBeSet, this, &tabViewTopicInfosClass::setNewCookiesForPseudo);
+    connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newCookieHasToBeSet, this, &tabViewTopicInfosClass::setNewCookieForPseudo);
     tabList->addTab(listOfContainerForTopicsInfos.back(), "Onglet " + QString::number(listOfContainerForTopicsInfos.size()));
     tabList->setCurrentIndex(listOfContainerForTopicsInfos.size() - 1);
 }
@@ -232,9 +232,9 @@ QString tabViewTopicInfosClass::getNumberOfConnectedAndMPOfCurrentTab() const
     return getConstCurrentWidget()->getConstShowTopic().getNumberOfConnectedAndMP();
 }
 
-const QList<QNetworkCookie>& tabViewTopicInfosClass::getListOfCookiesOfCurrentTab() const
+const QNetworkCookie& tabViewTopicInfosClass::getConnectCookieOfCurrentTab() const
 {
-    return getConstCurrentWidget()->getConstShowTopic().getListOfCookies();
+    return getConstCurrentWidget()->getConstShowTopic().getConnectCookie();
 }
 
 const QList<QPair<QString, QString>>& tabViewTopicInfosClass::getListOfInputsOfCurrentTab() const
@@ -335,7 +335,7 @@ void tabViewTopicInfosClass::setNewTopicName(QString topicName)
     }
 }
 
-void tabViewTopicInfosClass::setNewCookiesForPseudo()
+void tabViewTopicInfosClass::setNewCookieForPseudo()
 {
     QObject* senderObject = sender();
 
@@ -343,7 +343,7 @@ void tabViewTopicInfosClass::setNewCookiesForPseudo()
     {
         if(senderObject == &thisContainer->getShowTopic())
         {
-            emit newCookiesHaveToBeSet(thisContainer->getShowTopic().getPseudoUsed(), thisContainer->getShowTopic().getListOfCookies());
+            emit newCookieHasToBeSet(thisContainer->getShowTopic().getPseudoUsed(), thisContainer->getShowTopic().getConnectCookie());
         }
     }
 }

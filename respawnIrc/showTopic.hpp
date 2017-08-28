@@ -44,9 +44,9 @@ public:
     QString getMessagesStatus() const;
     QString getNumberOfConnectedAndMP() const;
     QString getPseudoUsed() const;
-    const QList<QNetworkCookie>& getListOfCookies() const;
+    const QNetworkCookie& getConnectCookie() const;
     bool getEditInfo(long idOfMessageToEdit = 0, bool useMessageEdit = true);
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages = true);
+    void setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie, QString newPseudoOfUser, bool updateMessages = true);
     void setNewTheme(QString newThemeName);
     void setNewTopic(QString newTopic);
     void updateSettingInfo();
@@ -65,7 +65,7 @@ private slots:
     void setMessageStatus(QString newStatus);
     void setNumberOfConnectedAndMP(QString newNumberConnected, int newNumberMP, bool forceSet = false);
     void setTopicName(QString newTopicName);
-    void setCookiesFromRequest(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser);
+    void setCookieFromRequest(QNetworkCookie newConnectCookie, QString currentPseudoOfUser);
     void setUpdatedTopicLink(QString newTopicLink);
 signals:
     void quoteThisMessage(QString messageToQuote);
@@ -77,7 +77,7 @@ signals:
     void setEditInfo(long idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
-    void newCookiesHaveToBeSet();
+    void newCookieHasToBeSet();
     void downloadTheseStickersIfNeeded(QStringList listOfStickersToCheck);
     void downloadTheseNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesToCheck);
     void downloadTheseAvatarsIfNeeded(QStringList listOfAvatarsUsed);
@@ -89,7 +89,7 @@ private:
     getTopicMessagesClass* getTopicMessages;
     messageActionsClass* messageActions;
     modelInfoStruct baseModelInfo;
-    QString websiteOfCookies;
+    QString websiteOfCookie;
     QList<QPair<QString, QString>> listOfInput;
     const QList<QString>* listOfIgnoredPseudo;
     const QList<pseudoWithColorStruct>* listOfColorPseudo;

@@ -18,7 +18,7 @@ class sendMessagesClass : public QWidget
 public:
     explicit sendMessagesClass(QWidget* parent = nullptr);
     void doStuffBeforeQuit();
-    void postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString>>& listOfInput);
+    void postMessage(QString pseudoUsed, QString topicLink, const QNetworkCookie& connectCookie, const QList<QPair<QString, QString>>& listOfInput);
     void clearMessageLine();
     void settingsChanged();
     void styleChanged();
@@ -45,7 +45,7 @@ private:
     QPushButton* sendButton;
     QNetworkReply* replyForSendMessage = nullptr;
     QNetworkAccessManager* networkManager;
-    QList<QNetworkCookie> cookieListForPostMsg;
+    QNetworkCookie connectCookieForPostMsg;
     QString dataForEditLastMessage;
     bool isInEdit = false;
     bool inSending = false;

@@ -122,15 +122,15 @@ void showForumClass::setForumLink(QString newForumLink)
     }
 }
 
-void showForumClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies)
+void showForumClass::setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie)
 {
-    currentCookieList = newCookies;
-    websiteOfCookies = newWebsiteOfCookies;
+    currentConnectCookie = newConnectCookie;
+    websiteOfCookie = newWebsiteOfCookie;
     if(networkManager != nullptr)
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + websiteOfCookies));
+        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("http://" + websiteOfCookie));
     }
 }
 
@@ -332,7 +332,7 @@ void showForumClass::startGetListOfTopic()
     {
         if(itsNewManager == true)
         {
-            setNewCookies(currentCookieList, websiteOfCookies);
+            setNewCookie(currentConnectCookie, websiteOfCookie);
         }
 
         if(forumLink.isEmpty() == false)
@@ -437,7 +437,7 @@ void showForumClass::createContextMenu(const QPoint& thisPoint)
         }
         else if(actionSelected == actionOpenInNavigator)
         {
-            utilityTool::openLinkInBrowser(this, useInternalNavigatorForLinks, oldListOfTopicLink.at(indexSelected.row()), currentCookieList);
+            utilityTool::openLinkInBrowser(this, useInternalNavigatorForLinks, oldListOfTopicLink.at(indexSelected.row()), currentConnectCookie);
         }
     }
 }

@@ -1,8 +1,11 @@
 #include <QMessageBox>
 #include <QNetworkCookieJar>
 #include <QUrl>
+#include <QList>
+#include <QPair>
 
 #include "messageActions.hpp"
+#include "utilityTool.hpp"
 
 messageActionsClass::messageActionsClass(QWidget* newParent) : QObject(newParent)
 {
@@ -32,22 +35,22 @@ void messageActionsClass::setNewAjaxInfo(ajaxInfoStruct newAjaxInfo)
     ajaxInfo = newAjaxInfo;
 }
 
-void messageActionsClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies)
+void messageActionsClass::setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie)
 {
-    currentCookieList = newCookies;
-    websiteOfCookies = newWebsiteOfCookies;
+    currentConnectCookie = newConnectCookie;
+    websiteOfCookie = newWebsiteOfCookie;
 
     if(networkManager != nullptr)
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + websiteOfCookies));
+        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("http://" + websiteOfCookie));
     }
 }
 
-const QList<QNetworkCookie>& messageActionsClass::getCookieList() const
+const QNetworkCookie& messageActionsClass::getConnectCookie() const
 {
-    return currentCookieList;
+    return currentConnectCookie;
 }
 
 bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
@@ -55,7 +58,7 @@ bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdi
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, websiteOfCookies);
+        setNewCookie(currentConnectCookie, websiteOfCookie);
     }
 
     if(ajaxInfo.list.isEmpty() == false)
@@ -96,7 +99,7 @@ void messageActionsClass::getQuoteInfo(QString idOfMessageQuoted, QString messag
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, websiteOfCookies);
+        setNewCookie(currentConnectCookie, websiteOfCookie);
     }
 
     if(ajaxInfo.list.isEmpty() == false && replyForQuoteInfo == nullptr)
@@ -128,7 +131,7 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, websiteOfCookies);
+        setNewCookie(currentConnectCookie, websiteOfCookie);
     }
 
     if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)

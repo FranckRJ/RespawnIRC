@@ -8,6 +8,7 @@
 #include "parsingTool.hpp"
 #include "shortcutTool.hpp"
 #include "settingTool.hpp"
+#include "utilityTool.hpp"
 
 sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 {
@@ -40,7 +41,7 @@ void sendMessagesClass::doStuffBeforeQuit()
     messageLine->doStuffBeforeQuit();
 }
 
-void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString>>& listOfInput)
+void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QNetworkCookie& connectCookie, const QList<QPair<QString, QString>>& listOfInput)
 {
     QString website = parsingTool::getWebsite(topicLink);
 
@@ -84,10 +85,10 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         QNetworkRequest request;
         QString data;
 
-        cookieListForPostMsg = listOfCookies;
+        connectCookieForPostMsg = connectCookie;
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://" + website));
+        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(connectCookieForPostMsg), QUrl("http://" + website));
 
         if(isInEdit == true)
         {

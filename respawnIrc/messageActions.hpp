@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QWidget>
 #include <QString>
-#include <QList>
 #include <QNetworkReply>
 #include <QNetworkCookie>
 #include <QNetworkAccessManager>
@@ -20,8 +19,8 @@ public:
     void updateSettingInfo();
     void setNewTopic(QString newTopicLink);
     void setNewAjaxInfo(ajaxInfoStruct newAjaxInfo);
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies);
-    const QList<QNetworkCookie>& getCookieList() const;
+    void setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie);
+    const QNetworkCookie& getConnectCookie() const;
     bool getEditInfo(long idOfMessageToEdit = 0, bool useMessageEdit = true);
     void getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted);
     void deleteMessage(QString idOfMessageDeleted);
@@ -34,8 +33,8 @@ signals:
     void setEditInfo(long idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
 private:
     QWidget* parent;
-    QList<QNetworkCookie> currentCookieList;
-    QString websiteOfCookies;
+    QNetworkCookie currentConnectCookie;
+    QString websiteOfCookie;
     QString websiteOfTopic;
     QNetworkAccessManager* networkManager;
     autoTimeoutReplyClass* timeoutForEditInfo;

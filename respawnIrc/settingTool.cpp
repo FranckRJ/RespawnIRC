@@ -193,19 +193,16 @@ QByteArray settingTool::getThisByteOption(QString optionName)
 QList<accountStruct> settingTool::getListOfAccount()
 {
     QList<accountStruct> listOfAccount;
-    QList<QNetworkCookie> listOfHelloCookie = createCookieListWithThisQVariantList(setting->value("listOfHelloCookie", QList<QVariant>()).toList());
     QList<QNetworkCookie> listOfConnectCookie = createCookieListWithThisQVariantList(setting->value("listOfConnectCookie", QList<QVariant>()).toList());
     QList<QString> listOfPseudo = createStringListWithThisQVariantList(setting->value("listOfPseudo", QList<QVariant>()).toList());
 
-    if(listOfHelloCookie.size() == listOfConnectCookie.size() && listOfConnectCookie.size() == listOfPseudo.size())
+    if(listOfConnectCookie.size() == listOfPseudo.size())
     {
         for(int i = 0; i < listOfPseudo.size(); ++i)
         {
             listOfAccount.push_back(accountStruct());
-            listOfHelloCookie[i].setExpirationDate(QDateTime::currentDateTime().addYears(8));
             listOfConnectCookie[i].setExpirationDate(QDateTime::currentDateTime().addYears(8));
-            listOfAccount.back().listOfCookie.append(listOfHelloCookie.at(i));
-            listOfAccount.back().listOfCookie.append(listOfConnectCookie.at(i));
+            listOfAccount.back().connectCookie = listOfConnectCookie.at(i);
             listOfAccount.back().pseudo = listOfPseudo.at(i);
         }
     }
@@ -279,28 +276,15 @@ void settingTool::saveThisOption(QString optionName, QVariant value)
 
 void settingTool::saveListOfAccount(QList<accountStruct>& newListOfAccount)
 {
-    QList<QNetworkCookie> listOfHelloCookie;
     QList<QNetworkCookie> listOfConnectCookie;
     QList<QString> listOfPseudo;
 
     for(const accountStruct& thisAccout : newListOfAccount)
     {
-        for(const QNetworkCookie& thisCookie : thisAccout.listOfCookie)
-        {
-            if(thisCookie.name() == "dlrowolleh")
-            {
-                listOfHelloCookie.push_back(thisCookie);
-            }
-            else if(thisCookie.name() == "coniunctio")
-            {
-                listOfConnectCookie.push_back(thisCookie);
-            }
-        }
-
+        listOfConnectCookie.push_back(thisAccout.connectCookie);
         listOfPseudo.push_back(thisAccout.pseudo);
     }
 
-    setting->setValue("listOfHelloCookie", createQVariantListWithThisList(listOfHelloCookie));
     setting->setValue("listOfConnectCookie", createQVariantListWithThisList(listOfConnectCookie));
     setting->setValue("listOfPseudo", createQVariantListWithThisList(listOfPseudo));
 }

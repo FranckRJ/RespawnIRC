@@ -68,7 +68,7 @@ respawnIrcClass::respawnIrcClass(QWidget* parent) : QWidget(parent)
     connect(tabViewTopicInfos, &tabViewTopicInfosClass::quoteThisMessage, sendMessages, &sendMessagesClass::quoteThisMessage);
     connect(tabViewTopicInfos, &tabViewTopicInfosClass::addToBlacklist, this, &respawnIrcClass::addThisPeudoToBlacklist);
     connect(tabViewTopicInfos, &tabViewTopicInfosClass::editThisMessage, this, &respawnIrcClass::setEditMessage);
-    connect(tabViewTopicInfos, &tabViewTopicInfosClass::newCookiesHaveToBeSet, this, &respawnIrcClass::setNewCookiesForPseudo);
+    connect(tabViewTopicInfos, &tabViewTopicInfosClass::newCookieHasToBeSet, this, &respawnIrcClass::setNewCookieForPseudo);
 
     loadSettings();
 
@@ -127,20 +127,20 @@ multiTypeTextBoxClass* respawnIrcClass::getMessageLine()
 
 void respawnIrcClass::showWebNavigator()
 {
-    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, tabViewTopicInfos->getTopicLinkLastPageOfCurrentTab(), tabViewTopicInfos->getListOfCookiesOfCurrentTab());
+    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, tabViewTopicInfos->getTopicLinkLastPageOfCurrentTab(), {tabViewTopicInfos->getConnectCookieOfCurrentTab()});
     myWebNavigator->exec();
 }
 
 void respawnIrcClass::showWebNavigatorAtMP()
 {
-    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, "http://www.jeuxvideo.com/messages-prives/boite-reception.php", tabViewTopicInfos->getListOfCookiesOfCurrentTab());
+    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, "http://www.jeuxvideo.com/messages-prives/boite-reception.php", {tabViewTopicInfos->getConnectCookieOfCurrentTab()});
     myWebNavigator->exec();
 }
 
 void respawnIrcClass::showConnect()
 {
     connectWindowClass* myConnectWindow = new connectWindowClass(this);
-    connect(myConnectWindow, &connectWindowClass::newCookiesAvailable, this, &respawnIrcClass::setNewCookies);
+    connect(myConnectWindow, &connectWindowClass::newCookieAvailable, this, &respawnIrcClass::setNewCookie);
     myConnectWindow->exec();
 }
 
@@ -148,8 +148,8 @@ void respawnIrcClass::showAccountListWindow()
 {
     accountListWindowClass* myAccountListWindow = new accountListWindowClass(&listOfAccount, this);
     connect(myAccountListWindow, &accountListWindowClass::listHasChanged, this, &respawnIrcClass::saveListOfAccount);
-    connect(myAccountListWindow, &accountListWindowClass::useThisAccount, this, &respawnIrcClass::setNewCookies);
-    connect(myAccountListWindow, &accountListWindowClass::useThisAccountForOneTopic, this, &respawnIrcClass::setNewCookiesForCurrentTopic);
+    connect(myAccountListWindow, &accountListWindowClass::useThisAccount, this, &respawnIrcClass::setNewCookie);
+    connect(myAccountListWindow, &accountListWindowClass::useThisAccountForOneTopic, this, &respawnIrcClass::setNewCookieForCurrentTopic);
     connect(myAccountListWindow, &accountListWindowClass::eraseThisPseudo, this, &respawnIrcClass::disconnectFromThisPseudo);
     myAccountListWindow->exec();
 }
@@ -244,16 +244,16 @@ void respawnIrcClass::goToCurrentForum()
 
 void respawnIrcClass::disconnectFromAllTabs()
 {
-    currentCookieList = QList<QNetworkCookie>();
+    currentConnectCookie = QNetworkCookie();
     pseudoOfUser = "";
-    tabViewTopicInfos->setNewCookies(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::REMEMBER);
+    tabViewTopicInfos->setNewCookie(currentConnectCookie, pseudoOfUser, typeOfSaveForPseudo::REMEMBER);
     settingTool::saveThisOption("pseudo", pseudoOfUser);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
 void respawnIrcClass::disconnectFromCurrentTab()
 {
-    tabViewTopicInfos->setNewCookiesForCurrentTab(QList<QNetworkCookie>(), "", typeOfSaveForPseudo::REMEMBER);
+    tabViewTopicInfos->setNewCookieForCurrentTab(QNetworkCookie(), "", typeOfSaveForPseudo::REMEMBER);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
@@ -278,7 +278,7 @@ void respawnIrcClass::reloadTheme()
 void respawnIrcClass::messageHaveToBePosted()
 {
     sendMessages->postMessage(tabViewTopicInfos->getPseudoUsedOfCurrentTab(), tabViewTopicInfos->getTopicLinkFirstPageOfCurrentTab(),
-                             tabViewTopicInfos->getListOfCookiesOfCurrentTab(), tabViewTopicInfos->getListOfInputsOfCurrentTab());
+                             tabViewTopicInfos->getConnectCookieOfCurrentTab(), tabViewTopicInfos->getListOfInputsOfCurrentTab());
 }
 
 void respawnIrcClass::editLastMessage()
@@ -411,7 +411,7 @@ void respawnIrcClass::loadSettings()
     {
         if(pseudoOfUser.toLower() == listOfAccount.at(i).pseudo.toLower())
         {
-            setNewCookies(listOfAccount.at(i).listOfCookie, pseudoOfUser, false, false);
+            setNewCookie(listOfAccount.at(i).connectCookie, pseudoOfUser, false, false);
             break;
         }
         else if(i == listOfAccount.size() - 1)
@@ -534,11 +534,11 @@ void respawnIrcClass::disconnectFromThisPseudo(QString thisPseudo)
 {
     if(pseudoOfUser.toLower() == thisPseudo.toLower())
     {
-        currentCookieList = QList<QNetworkCookie>();
+        currentConnectCookie = QNetworkCookie();
         pseudoOfUser = "";
     }
 
-    tabViewTopicInfos->setNewCookies(currentCookieList, pseudoOfUser, typeOfSaveForPseudo::DEFAULT, thisPseudo);
+    tabViewTopicInfos->setNewCookie(currentConnectCookie, pseudoOfUser, typeOfSaveForPseudo::DEFAULT, thisPseudo);
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
@@ -640,18 +640,18 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     }
 }
 
-void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo)
+void respawnIrcClass::setNewCookie(QNetworkCookie newConnectCookie, QString newPseudoOfUser, bool saveAccountList, bool savePseudo)
 {
-    if(newCookies.isEmpty() == false)
+    if(newConnectCookie.value().isEmpty() == false)
     {
-        currentCookieList = newCookies;
+        currentConnectCookie = newConnectCookie;
         pseudoOfUser = newPseudoOfUser;
-        tabViewTopicInfos->setNewCookies(currentCookieList, pseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::DEFAULT : typeOfSaveForPseudo::DONT_REMEMBER));
+        tabViewTopicInfos->setNewCookie(currentConnectCookie, pseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::DEFAULT : typeOfSaveForPseudo::DONT_REMEMBER));
         setNewNumberOfConnectedAndPseudoUsed();
 
         if(saveAccountList == true)
         {
-            accountListWindowClass::addOrUpdateAcountInThisList(currentCookieList, pseudoOfUser, &listOfAccount);
+            accountListWindowClass::addOrUpdateAcountInThisList(currentConnectCookie, pseudoOfUser, &listOfAccount);
             settingTool::saveListOfAccount(listOfAccount);
         }
 
@@ -662,19 +662,19 @@ void respawnIrcClass::setNewCookies(QList<QNetworkCookie> newCookies, QString ne
     }
 }
 
-void respawnIrcClass::setNewCookiesForCurrentTopic(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool savePseudo)
+void respawnIrcClass::setNewCookieForCurrentTopic(QNetworkCookie newConnectCookie, QString newPseudoOfUser, bool savePseudo)
 {
-    tabViewTopicInfos->setNewCookiesForCurrentTab(newCookies, newPseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::REMEMBER : typeOfSaveForPseudo::DONT_REMEMBER));
+    tabViewTopicInfos->setNewCookieForCurrentTab(newConnectCookie, newPseudoOfUser, (savePseudo == true ? typeOfSaveForPseudo::REMEMBER : typeOfSaveForPseudo::DONT_REMEMBER));
     setNewNumberOfConnectedAndPseudoUsed();
 }
 
-void respawnIrcClass::setNewCookiesForPseudo(QString pseudo, const QList<QNetworkCookie>& cookiesForPseudo)
+void respawnIrcClass::setNewCookieForPseudo(QString pseudo, const QNetworkCookie& cookieForPseudo)
 {
     for(accountStruct& thisAccout : listOfAccount)
     {
         if(thisAccout.pseudo.toLower() == pseudo.toLower())
         {
-            thisAccout.listOfCookie = cookiesForPseudo;
+            thisAccout.connectCookie = cookieForPseudo;
             saveListOfAccount();
             break;
         }

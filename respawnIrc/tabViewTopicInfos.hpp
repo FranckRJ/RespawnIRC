@@ -24,8 +24,8 @@ public:
     void updateSettings();
     void updateSettingInfoForList();
     void setNewTheme(QString newThemeName);
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave, QString forThisPseudo = "");
-    void setNewCookiesForCurrentTab(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave);
+    void setNewCookie(QNetworkCookie newConnectCookie, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave, QString forThisPseudo = "");
+    void setNewCookieForCurrentTab(QNetworkCookie newConnectCookie, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave);
     bool getEditInfoForCurrentTab(long idOfMessageToEdit, bool useMessageEdit);
     void selectThisTab(int number);
     void addNewTabWithPseudo(QString useThisPseudo);
@@ -36,7 +36,7 @@ public:
     QString getPseudoUsedOfCurrentTab() const;
     QString getMessageStatusOfCurrentTab() const;
     QString getNumberOfConnectedAndMPOfCurrentTab() const;
-    const QList<QNetworkCookie>& getListOfCookiesOfCurrentTab() const;
+    const QNetworkCookie& getConnectCookieOfCurrentTab() const;
     const QList<QPair<QString, QString>>& getListOfInputsOfCurrentTab() const;
     void setBufferForTopicLinkFirstPage(QString topicLink, int idOfTab);
 public slots:
@@ -54,7 +54,7 @@ private slots:
     void removeTab(int index);
     void tabHasMoved(int indexFrom, int indexTo);
     void setNewTopicName(QString topicName);
-    void setNewCookiesForPseudo();
+    void setNewCookieForPseudo();
     void warnUserForNewMessages();
     void downloadStickersIfNeeded(QStringList listOfStickersNeedToBeCheck);
     void downloadNoelshackImagesIfNeeded(QStringList listOfNoelshackImagesNeedToBeCheck);
@@ -70,14 +70,14 @@ signals:
     void quoteThisMessage(QString messageToQuote);
     void addToBlacklist(QString pseudoToBlacklist);
     void editThisMessage(long idOfMessageEdit, bool useMessageEdit);
-    void newCookiesHaveToBeSet(QString pseudo, const QList<QNetworkCookie>& cookiesForPseudo);
+    void newCookieHasToBeSet(QString pseudo, const QNetworkCookie& connectCookieForPseudo);
 private:
     QTabWidget* tabList;
     QList<containerForTopicsInfosClass*> listOfContainerForTopicsInfos;
     const QList<QString>* listOfIgnoredPseudo;
     const QList<pseudoWithColorStruct>* listOfColorPseudo;
     const QList<accountStruct>* listOfAccount;
-    QList<QNetworkCookie> generalCookieList;
+    QNetworkCookie generalConnectCookie;
     QString generalPseudoToUse;
     QPixmap alertImage;
     imageDownloadToolClass* imageDownloadTool;

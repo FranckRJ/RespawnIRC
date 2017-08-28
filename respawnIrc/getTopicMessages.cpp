@@ -3,6 +3,7 @@
 #include <QVector>
 
 #include "getTopicMessages.hpp"
+#include "utilityTool.hpp"
 
 getTopicMessagesClass::getTopicMessagesClass(QObject* parent) : QObject(parent)
 {
@@ -60,10 +61,10 @@ void getTopicMessagesClass::setNewTopic(QString newTopicLink, bool getFirstMessa
     startGetMessage();
 }
 
-void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages)
+void getTopicMessagesClass::setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie, QString newPseudoOfUser, bool updateMessages)
 {
-    currentCookieList = newCookies;
-    websiteOfCookies = newWebsiteOfCookies;
+    currentConnectCookie = newConnectCookie;
+    websiteOfCookie = newWebsiteOfCookie;
     pseudoOfUser = newPseudoOfUser;
 
     if(networkManager != nullptr)
@@ -72,7 +73,7 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
         {
             networkManager->clearAccessCache();
             networkManager->setCookieJar(new QNetworkCookieJar(this));
-            networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + websiteOfCookies));
+            networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("http://" + websiteOfCookie));
 
             if(updateMessages == true)
             {
@@ -81,7 +82,7 @@ void getTopicMessagesClass::setNewCookies(QList<QNetworkCookie> newCookies, QStr
         }
         else
         {
-            needToSetCookies = true;
+            needToSetCookie = true;
         }
     }
 }
@@ -202,7 +203,7 @@ void getTopicMessagesClass::analyzeMessages()
         return;
     }
 
-    if(currentCookieList.isEmpty() == false)
+    if(currentConnectCookie.value().isEmpty() == false)
     {
         emit newNumberOfConnectedAndMP(parsingTool::getNumberOfConnected(listOfPageSource[firstValidePageNumber]),
                                        parsingTool::getNumberOfMp(listOfPageSource[firstValidePageNumber]), false);
@@ -317,7 +318,7 @@ void getTopicMessagesClass::analyzeMessages()
         }
     }
 
-    if(currentCookieList.isEmpty() == false && needToSetCookies == false)
+    if(currentConnectCookie.value().isEmpty() == false && needToSetCookie == false)
     {
         ajaxInfo = parsingTool::getAjaxInfo(listOfPageSource[firstValidePageNumber]);
         parsingTool::getListOfHiddenInputFromThisForm(listOfPageSource[firstValidePageNumber], "form-post-topic", listOfInput);
@@ -385,10 +386,10 @@ void getTopicMessagesClass::getMessages()
             }
         }
 
-        if(itsNewManager == true || needToSetCookies == true)
+        if(itsNewManager == true || needToSetCookie == true)
         {
-            setNewCookies(currentCookieList, websiteOfCookies, pseudoOfUser, false);
-            needToSetCookies = false;
+            setNewCookie(currentConnectCookie, websiteOfCookie, pseudoOfUser, false);
+            needToSetCookie = false;
         }
 
         retrievesMessage = true;

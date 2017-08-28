@@ -52,7 +52,7 @@ showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, con
     connect(getTopicMessages, &getTopicMessagesClass::newMessageStatus, this, &showTopicClass::setMessageStatus);
     connect(getTopicMessages, &getTopicMessagesClass::newNumberOfConnectedAndMP, this, &showTopicClass::setNumberOfConnectedAndMP);
     connect(getTopicMessages, &getTopicMessagesClass::newNameForTopic, this, &showTopicClass::setTopicName);
-    connect(getTopicMessages, &getTopicMessagesClass::newCookiesHaveToBeSet, this, &showTopicClass::setCookiesFromRequest);
+    connect(getTopicMessages, &getTopicMessagesClass::newCookieHasToBeSet, this, &showTopicClass::setCookieFromRequest);
     connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicClass::downloadTheseStickersIfNeeded);
     connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicClass::downloadTheseNoelshackImagesIfNeeded);
     connect(getTopicMessages, &getTopicMessagesClass::newLinkForTopic, this, &showTopicClass::setUpdatedTopicLink);
@@ -121,9 +121,9 @@ QString showTopicClass::getPseudoUsed() const
     return pseudoOfUser;
 }
 
-const QList<QNetworkCookie>& showTopicClass::getListOfCookies() const
+const QNetworkCookie& showTopicClass::getConnectCookie() const
 {
-    return messageActions->getCookieList();
+    return messageActions->getConnectCookie();
 }
 
 bool showTopicClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
@@ -147,9 +147,9 @@ bool showTopicClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
     return false;
 }
 
-void showTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages)
+void showTopicClass::setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie, QString newPseudoOfUser, bool updateMessages)
 {
-    websiteOfCookies = newWebsiteOfCookies;
+    websiteOfCookie = newWebsiteOfCookie;
     pseudoOfUser = newPseudoOfUser;
     expForColorPseudo.setPattern("");
     newPseudoOfUser.replace("[", "\\[").replace("]", "\\]");
@@ -159,10 +159,10 @@ void showTopicClass::setNewCookies(QList<QNetworkCookie> newCookies, QString new
     }
     listOfInput.clear();
     currentErrorStreak = 0;
-    messageActions->setNewCookies(newCookies, newWebsiteOfCookies);
+    messageActions->setNewCookie(newConnectCookie, newWebsiteOfCookie);
 
-    QMetaObject::invokeMethod(getTopicMessages, "setNewCookies", Qt::QueuedConnection,
-                              Q_ARG(QList<QNetworkCookie>, newCookies), Q_ARG(QString, websiteOfCookies), Q_ARG(QString, pseudoOfUser), Q_ARG(bool, updateMessages));
+    QMetaObject::invokeMethod(getTopicMessages, "setNewCookie", Qt::QueuedConnection,
+                              Q_ARG(QNetworkCookie, newConnectCookie), Q_ARG(QString, websiteOfCookie), Q_ARG(QString, pseudoOfUser), Q_ARG(bool, updateMessages));
 }
 
 void showTopicClass::setNewTheme(QString newThemeName)
@@ -406,7 +406,7 @@ void showTopicClass::linkClicked(const QUrl& link)
     }
     else
     {
-        utilityTool::openLinkInBrowser(this, useInternalNavigatorForLinks, link.toString(), messageActions->getCookieList());
+        utilityTool::openLinkInBrowser(this, useInternalNavigatorForLinks, link.toString(), messageActions->getConnectCookie());
     }
 }
 
@@ -441,7 +441,7 @@ void showTopicClass::createContextMenu(const QPoint& thisPoint)
 
     if(contextMenu->exec(messagesBox->viewport()->mapToGlobal(thisPoint)) == actionToAdd)
     {
-        utilityTool::openLinkInBrowser(this, (useInternalNavigatorForLinks == false), anchorOfContextMenu, messageActions->getCookieList());
+        utilityTool::openLinkInBrowser(this, (useInternalNavigatorForLinks == false), anchorOfContextMenu, messageActions->getConnectCookie());
     }
 
     contextMenu->deleteLater();
@@ -707,7 +707,7 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
                 if(ignoreNetworkError == false)
                 {
                     QString oldPseudo = pseudoOfUser;
-                    setNewCookies(QList<QNetworkCookie>(), websiteOfCookies, "");
+                    setNewCookie(QNetworkCookie(), websiteOfCookie, "");
                     QMessageBox::warning(this, "Erreur sur " + topicName + " avec " + oldPseudo,
                                        "Le compte semble invalide, veuillez vous déconnecter de l'onglet puis vous y reconnecter (sans supprimer le compte de la liste des comptes).\n"
                                        "Si le problème persiste, redémarrez RespawnIRC ou supprimez le pseudo de la liste des comptes et ajoutez-le à nouveau.\n\n"
@@ -788,12 +788,12 @@ void showTopicClass::setTopicName(QString newTopicName)
     emit newNameForTopic(topicName);
 }
 
-void showTopicClass::setCookiesFromRequest(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser)
+void showTopicClass::setCookieFromRequest(QNetworkCookie newConnectCookie, QString currentPseudoOfUser)
 {
     if(currentPseudoOfUser == pseudoOfUser)
     {
-        setNewCookies(newListOfCookies, websiteOfCookies, pseudoOfUser, false);
-        emit newCookiesHaveToBeSet();
+        setNewCookie(newConnectCookie, websiteOfCookie, pseudoOfUser, false);
+        emit newCookieHasToBeSet();
     }
 }
 
