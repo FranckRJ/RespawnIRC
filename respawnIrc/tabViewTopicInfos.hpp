@@ -49,6 +49,7 @@ private:
     const containerForTopicsInfosClass* getConstCurrentWidget() const;
     containerForTopicsInfosClass* getCurrentWidget();
     void addOrUpdateAvatarRuleForImageDownloader();
+    void addOrUpdateNoelshackRuleForImageDownloader();
 private slots:
     void currentTabChanged(int newIndex);
     void addNewTabWithTopic(QString newTopicLink);
@@ -85,6 +86,8 @@ private:
     QString currentThemeName;
     int typeOfImageRefresh;
     int avatarSize = -1;
+    int noelshackImageWidth = -1;
+    int noelshackImageHeight = -1;
 };
 
 #endif

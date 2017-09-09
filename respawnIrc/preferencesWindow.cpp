@@ -268,6 +268,7 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     QVBoxLayout* vboxNoelshack = new QVBoxLayout();
     vboxNoelshack->addWidget(makeNewCheckBox("Afficher les miniatures noelshack", "downloadNoelshackImages"));
     vboxNoelshack->addWidget(makeNewCheckBox("Cacher les images nuisibles", "hideUglyImages"));
+    vboxNoelshack->addWidget(makeNewCheckBox("Améliorer le redimensionnement des miniatures noelshack", "smartNoelshackResizing"));
     vboxNoelshack->addLayout(makeNewSpinBox("Largeur des miniatures noelshack", "noelshackImageWidth"));
     vboxNoelshack->addLayout(makeNewSpinBox("Hauteur des miniatures noelshack", "noelshackImageHeight"));
     vboxNoelshack->addStretch(1);
@@ -277,7 +278,7 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
 
     QVBoxLayout* vboxAvatar = new QVBoxLayout();
     vboxAvatar->addLayout(makeNewSpinBox("Taille des avatars, si supporté par le thème", "avatarSize"));
-    vboxAvatar->addWidget(makeNewCheckBox("Améliorer le redimensionnement des avatars", "smartAvatarResizing"));
+    vboxAvatar->addWidget(makeNewCheckBox("Améliorer le redimensionnement des avatars\n(obligatoire pour le faire fonctionner avec certains thèmes)", "smartAvatarResizing"));
     /*TODO: vboxAvatar->addWidget(makeNewCheckBox("Télécharger les avatars en HD", "downloadHighDefAvatar"));*/
     vboxAvatar->addStretch(1);
     groupBoxAvatar->setLayout(vboxAvatar);

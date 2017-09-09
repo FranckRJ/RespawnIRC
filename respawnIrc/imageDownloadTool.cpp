@@ -15,7 +15,8 @@ imageDownloadToolClass::imageDownloadToolClass(QObject* parent) : QObject(parent
 }
 
 void imageDownloadToolClass::addOrUpdateRule(QString ruleName, QString directoryPath, bool isInTmpDir, bool alwaysCheckBeforeDL,
-                                     QString baseUrl, QString appendAfterName, bool takeOnlyFileNameForSave, int preferedImageWidth, int preferedImageHeight)
+                                             QString baseUrl, QString appendAfterName, bool takeOnlyFileNameForSave, int preferedImageWidth,
+                                             int preferedImageHeight, bool keepAspectRatio)
 {
     imageDownloadRuleStruct newRule;
 
@@ -27,6 +28,7 @@ void imageDownloadToolClass::addOrUpdateRule(QString ruleName, QString directory
     newRule.takeOnlyFileNameForSave = takeOnlyFileNameForSave;
     newRule.preferedImageWidth = preferedImageWidth;
     newRule.preferedImageHeight = preferedImageHeight;
+    newRule.keepAspectRatio = keepAspectRatio;
 
     listOfRulesForImage[ruleName] = newRule;
     listOfExistingsImageForRules[ruleName] = QStringList();
@@ -147,7 +149,7 @@ int imageDownloadToolClass::getNumberOfDownloadRemaining()
     return listOfImagesUrlNeedDownload.size();
 }
 
-bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, imageDownloadRuleStruct thisRule, QString ruleName)
+bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, const imageDownloadRuleStruct& thisRule, QString ruleName)
 {
     QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingsImageForRules.find(ruleName);
 
@@ -256,8 +258,9 @@ void imageDownloadToolClass::analyzeLatestImageDownloaded()
                 {
                     QImage image;
                     image.loadFromData(imageInBytes);
-                    image = image.scaled(ruleIte.value().preferedImageWidth, ruleIte.value().preferedImageHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-                    image.save(&newImageFile, "jpeg", 100);
+                    image = image.scaled(ruleIte.value().preferedImageWidth, ruleIte.value().preferedImageHeight,
+                                         ((ruleIte.value().keepAspectRatio == true) ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio), Qt::SmoothTransformation);
+                    image.save(&newImageFile, 0, 100);
                 }
                 else
                 {

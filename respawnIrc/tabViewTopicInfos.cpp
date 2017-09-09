@@ -21,8 +21,6 @@ tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIg
     tabList->setTabsClosable(true);
     tabList->setMovable(true);
     alertImage.load(QCoreApplication::applicationDirPath() + "/resources/alert.png");
-    imageDownloadTool->addOrUpdateRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
-    imageDownloadTool->addOrUpdateRule("noelshack", "/img/", true);
 
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
     mainLayout->addWidget(tabList);
@@ -36,7 +34,9 @@ tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIg
     connect(imageDownloadTool, &imageDownloadToolClass::oneDownloadFinished, this, &tabViewTopicInfosClass::updateImagesIfNeeded);
 
     updateSettings();
+    imageDownloadTool->addOrUpdateRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
     addOrUpdateAvatarRuleForImageDownloader();
+    addOrUpdateNoelshackRuleForImageDownloader();
 }
 
 void tabViewTopicInfosClass::doStuffBeforeQuit()
@@ -76,15 +76,21 @@ void tabViewTopicInfosClass::doStuffBeforeQuit()
 void tabViewTopicInfosClass::updateSettings()
 {
     int oldAvatarSize = avatarSize;
+    int oldNoelshackImageWidth = noelshackImageWidth;
+    int oldNoelshackImageHeight = noelshackImageHeight;
 
-    avatarSize = (settingTool::getThisBoolOption("smartAvatarResizing") ? settingTool::getThisIntOption("avatarSize").value : 0);
+    avatarSize = ((settingTool::getThisBoolOption("smartAvatarResizing") == true) ? settingTool::getThisIntOption("avatarSize").value : 0);
+    noelshackImageWidth = ((settingTool::getThisBoolOption("smartNoelshackResizing") == true) ? settingTool::getThisIntOption("noelshackImageWidth").value : 0);
+    noelshackImageHeight = ((settingTool::getThisBoolOption("smartNoelshackResizing") == true) ? settingTool::getThisIntOption("noelshackImageHeight").value : 0);
     typeOfImageRefresh = settingTool::getThisIntOption("typeOfImageRefresh").value;
 
-    if(avatarSize != oldAvatarSize && oldAvatarSize != -1)
+    if((avatarSize != oldAvatarSize && oldAvatarSize != -1) || (noelshackImageWidth != oldNoelshackImageWidth && oldNoelshackImageWidth != -1) ||
+       (noelshackImageHeight != oldNoelshackImageHeight && oldNoelshackImageHeight != -1))
     {
         QString themeImgDir = styleTool::getImagePathOfThemeIfExist(currentThemeName);
         imageDownloadTool->resetCache();
         addOrUpdateAvatarRuleForImageDownloader();
+        addOrUpdateNoelshackRuleForImageDownloader();
 
         for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
         {
@@ -304,7 +310,12 @@ containerForTopicsInfosClass* tabViewTopicInfosClass::getCurrentWidget()
 
 void tabViewTopicInfosClass::addOrUpdateAvatarRuleForImageDownloader()
 {
-    imageDownloadTool->addOrUpdateRule("avatar", "/vtr/", true, false, "http://", "", false, avatarSize, avatarSize);
+    imageDownloadTool->addOrUpdateRule("avatar", "/vtr/", true, false, "http://", "", false, avatarSize, avatarSize, true);
+}
+
+void tabViewTopicInfosClass::addOrUpdateNoelshackRuleForImageDownloader()
+{
+    imageDownloadTool->addOrUpdateRule("noelshack", "/img/", true, false, "", "", false, noelshackImageWidth, noelshackImageHeight, false);
 }
 
 void tabViewTopicInfosClass::currentTabChanged(int newIndex)

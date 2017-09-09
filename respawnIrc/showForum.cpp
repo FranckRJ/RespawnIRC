@@ -15,6 +15,8 @@ namespace
 {
     //pourquoi j'utilise des qscopedpointer au lieu des std::unique_ptr ? Je sais plus, je crois
     //que c'est à cause d'un problème d'ordre d'appel de constructeur/destructeur ou j'sais plus quoi
+    //EDIT: Nan ça c'est la raison pour laquelle j'utilise des pointeurs, j'utilise les QScopedPointer
+    //pour garder une cohérence en utilisant uniquement les classes Qt si possible etc
     QScopedPointer<QPixmap> pinnedOnTagImage;
     QScopedPointer<QPixmap> pinnedOffTagImage;
     QScopedPointer<QPixmap> hotTagImage;

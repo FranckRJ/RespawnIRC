@@ -66,6 +66,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["betterCodeTag"] = true;
     listOfDefaultBoolOption["smartAvatarResizing"] = true;
     listOfDefaultBoolOption["downloadHighDefAvatar"] = false;
+    listOfDefaultBoolOption["smartNoelshackResizing"] = true;
     listOfDefaultIntOption["updateTopicTime"].value = 7500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 2000;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;
@@ -115,7 +116,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].minValue = 1;
     listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].maxValue = 15;
     listOfDefaultIntOption["avatarSize"].value = 30;
-    listOfDefaultIntOption["avatarSize"].minValue = 1;
+    listOfDefaultIntOption["avatarSize"].minValue = 0;
     listOfDefaultIntOption["avatarSize"].maxValue = 300;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";

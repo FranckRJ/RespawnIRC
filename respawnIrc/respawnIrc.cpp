@@ -611,7 +611,7 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
         }
         newBoolOptions.erase(boolIte);
     }
-    if((boolIte = newBoolOptions.find("smartAvatarResizing")) != newBoolOptions.end())
+    if((boolIte = newBoolOptions.find("smartAvatarResizing")) != newBoolOptions.end() || (boolIte = newBoolOptions.find("smartNoelshackResizing")) != newBoolOptions.end())
     {
         if(tabViewTopicAlreadyUpdated == false)
         {
@@ -649,6 +649,15 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
         newIntOptions.erase(intIte);
     }
     if((intIte = newIntOptions.find("avatarSize")) != newIntOptions.end())
+    {
+        if(tabViewTopicAlreadyUpdated == false)
+        {
+            tabViewTopicInfos->updateSettings();
+            tabViewTopicAlreadyUpdated = true;
+            reloadForAllTopicNeeded = true;
+        }
+    }
+    if((intIte = newIntOptions.find("noelshackImageWidth")) != newIntOptions.end() || (intIte = newIntOptions.find("noelshackImageHeight")) != newIntOptions.end())
     {
         if(tabViewTopicAlreadyUpdated == false)
         {
