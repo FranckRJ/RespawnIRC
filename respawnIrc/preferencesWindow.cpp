@@ -41,7 +41,7 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     mainWidget->addTab(createWidgetForMainTab(), "Général");
     mainWidget->addTab(createWidgetForMessagesTab(), "Messages");
     mainWidget->addTab(createWidgetForTopicListTab(), "Liste des topics");
-    mainWidget->addTab(createWidgetForImageTab(), "Image");
+    mainWidget->addTab(createWidgetForImageTab(), "Images");
 
     if(settingTool::getThisBoolOption("fastModeEnbled") == true)
     {
@@ -274,12 +274,12 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     vboxNoelshack->addStretch(1);
     groupBoxNoelshack->setLayout(vboxNoelshack);
 
-    QGroupBox* groupBoxAvatar = new QGroupBox("Avatar", this);
+    QGroupBox* groupBoxAvatar = new QGroupBox("Avatars", this);
 
     QVBoxLayout* vboxAvatar = new QVBoxLayout();
     vboxAvatar->addLayout(makeNewSpinBox("Taille des avatars, si supporté par le thème", "avatarSize"));
     vboxAvatar->addWidget(makeNewCheckBox("Améliorer le redimensionnement des avatars\n(obligatoire pour le faire fonctionner avec certains thèmes)", "smartAvatarResizing"));
-    /*TODO: vboxAvatar->addWidget(makeNewCheckBox("Télécharger les avatars en HD", "downloadHighDefAvatar"));*/
+    vboxAvatar->addWidget(makeNewCheckBox("Télécharger les avatars en HD", "downloadHighDefAvatar"));
     vboxAvatar->addStretch(1);
     groupBoxAvatar->setLayout(vboxAvatar);
 
@@ -287,7 +287,7 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     mainLayout->addWidget(groupBoxGeneral, 0, 0, 1, 2);
     mainLayout->addWidget(groupBoxStickers, 1, 0);
     mainLayout->addWidget(groupBoxNoelshack, 1, 1);
-    mainLayout->addWidget(groupBoxAvatar, 2, 0);
+    mainLayout->addWidget(groupBoxAvatar, 2, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     QVBoxLayout* realMainLayout = new QVBoxLayout();

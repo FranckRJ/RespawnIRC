@@ -213,6 +213,7 @@ void showTopicClass::updateSettingInfo()
     warnOnFirstTime = settingTool::getThisBoolOption("warnOnFirstTime");
     realTypeOfEdit = settingTool::getThisIntOption("typeOfEdit").value;
     useInternalNavigatorForLinks = settingTool::getThisBoolOption("useInternalNavigatorForLinks");
+    downloadHighDefAvatar = settingTool::getThisBoolOption("downloadHighDefAvatar");
 
     messageActions->updateSettingInfo();
 
@@ -652,9 +653,16 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
 
         if(showAvatars == true && currentMessage.avatarLink.isEmpty() == false)
         {
-            newMessageToAppend.replace("<%AVATAR_LINK%>", "vtr/" + currentMessage.avatarLink);
+            QString avatarLinkToUse = currentMessage.avatarLink;
+
+            if(downloadHighDefAvatar == true)
+            {
+                avatarLinkToUse = parsingTool::normalAvatarLinkToHDLink(avatarLinkToUse);
+            }
+
+            newMessageToAppend.replace("<%AVATAR_LINK%>", "vtr/" + avatarLinkToUse);
             newMessageToAppend.replace("<%AVATAR_SIZE%>", QString::number(avatarSize));
-            listOfAvatarsUsed.append(currentMessage.avatarLink);
+            listOfAvatarsUsed.append(avatarLinkToUse);
         }
 
         if(appendHrAtEndOfFirstMessage == true)

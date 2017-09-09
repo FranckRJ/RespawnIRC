@@ -528,6 +528,19 @@ QString parsingTool::jvfLinkToJvcLink(const QString& jvfTopicLink)
     }
 }
 
+QString parsingTool::normalAvatarLinkToHDLink(const QString& avatarLink)
+{
+    QString newAvatarLink = avatarLink;
+    int sizePos = avatarLink.indexOf("-sm");
+
+    if(sizePos != -1)
+    {
+        newAvatarLink.replace(sizePos, 3, "-md");
+    }
+
+    return newAvatarLink;
+}
+
 QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers)
 {
     QString extraTableStyle;

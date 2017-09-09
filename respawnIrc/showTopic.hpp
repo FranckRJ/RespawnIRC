@@ -122,6 +122,7 @@ private:
     bool warnWhenEdit;
     bool warnOnFirstTime;
     bool useInternalNavigatorForLinks;
+    bool downloadHighDefAvatar;
     long idOfLastMessageOfUser = 0;
     int realTypeOfEdit;
     int currentTypeOfEdit;

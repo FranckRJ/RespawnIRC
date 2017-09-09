@@ -33,7 +33,7 @@ tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIg
     connect(tabList->tabBar(), &QTabBar::tabMoved, this, &tabViewTopicInfosClass::tabHasMoved);
     connect(imageDownloadTool, &imageDownloadToolClass::oneDownloadFinished, this, &tabViewTopicInfosClass::updateImagesIfNeeded);
 
-    updateSettings();
+    updateSettings(true);
     imageDownloadTool->addOrUpdateRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
     addOrUpdateAvatarRuleForImageDownloader();
     addOrUpdateNoelshackRuleForImageDownloader();
@@ -73,19 +73,21 @@ void tabViewTopicInfosClass::doStuffBeforeQuit()
     imageDownloadTool->deleteCache();
 }
 
-void tabViewTopicInfosClass::updateSettings()
+void tabViewTopicInfosClass::updateSettings(bool firstTimeUpdate)
 {
     int oldAvatarSize = avatarSize;
     int oldNoelshackImageWidth = noelshackImageWidth;
     int oldNoelshackImageHeight = noelshackImageHeight;
+    bool oldDownloadHighDefAvatar = downloadHighDefAvatar;
 
     avatarSize = ((settingTool::getThisBoolOption("smartAvatarResizing") == true) ? settingTool::getThisIntOption("avatarSize").value : 0);
     noelshackImageWidth = ((settingTool::getThisBoolOption("smartNoelshackResizing") == true) ? settingTool::getThisIntOption("noelshackImageWidth").value : 0);
     noelshackImageHeight = ((settingTool::getThisBoolOption("smartNoelshackResizing") == true) ? settingTool::getThisIntOption("noelshackImageHeight").value : 0);
+    downloadHighDefAvatar = settingTool::getThisBoolOption("downloadHighDefAvatar");
     typeOfImageRefresh = settingTool::getThisIntOption("typeOfImageRefresh").value;
 
-    if((avatarSize != oldAvatarSize && oldAvatarSize != -1) || (noelshackImageWidth != oldNoelshackImageWidth && oldNoelshackImageWidth != -1) ||
-       (noelshackImageHeight != oldNoelshackImageHeight && oldNoelshackImageHeight != -1))
+    if(firstTimeUpdate == false && (avatarSize != oldAvatarSize || noelshackImageWidth != oldNoelshackImageWidth ||
+                                    noelshackImageHeight != oldNoelshackImageHeight || downloadHighDefAvatar != oldDownloadHighDefAvatar))
     {
         QString themeImgDir = styleTool::getImagePathOfThemeIfExist(currentThemeName);
         imageDownloadTool->resetCache();

@@ -117,7 +117,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].maxValue = 15;
     listOfDefaultIntOption["avatarSize"].value = 30;
     listOfDefaultIntOption["avatarSize"].minValue = 0;
-    listOfDefaultIntOption["avatarSize"].maxValue = 300;
+    listOfDefaultIntOption["avatarSize"].maxValue = 700;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 

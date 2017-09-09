@@ -21,7 +21,7 @@ public:
     explicit tabViewTopicInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo,
                            const QList<accountStruct>* newListOfAccount, QWidget* parent = nullptr);
     void doStuffBeforeQuit();
-    void updateSettings();
+    void updateSettings(bool firstTimeUpdate = false);
     void updateSettingInfoForList();
     void setNewTheme(QString newThemeName);
     void setNewCookie(QNetworkCookie newConnectCookie, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave, QString forThisPseudo = "");
@@ -84,10 +84,12 @@ private:
     QPixmap alertImage;
     imageDownloadToolClass* imageDownloadTool;
     QString currentThemeName;
+    bool downloadHighDefAvatar;
     int typeOfImageRefresh;
-    int avatarSize = -1;
-    int noelshackImageWidth = -1;
-    int noelshackImageHeight = -1;
+    int avatarSize;
+    int noelshackImageWidth;
+    int noelshackImageHeight;
+
 };
 
 #endif
