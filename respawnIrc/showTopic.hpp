@@ -51,6 +51,7 @@ public:
     void setNewTopic(QString newTopic);
     void updateSettingInfo();
     void addSearchPath(QString newSearchPath);
+    void resetSearchPath();
     void relayoutDocumentHack();
 private:
     void addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID);
@@ -128,6 +129,7 @@ private:
     int numberOfMessageShowedFirstTime;
     int numberOfErrorsBeforeWarning;
     int topicNameMaxSize = 45;
+    int avatarSize;
 };
 
 #endif

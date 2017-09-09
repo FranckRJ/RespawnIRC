@@ -556,6 +556,7 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     QMap<QString, bool>::iterator boolIte;
     QMap<QString, int>::iterator intIte;
     bool sendMessageAlreadyUpdated = false;
+    bool tabViewTopicAlreadyUpdated = false;
     bool reloadForAllTopicNeeded = false;
 
     for(boolIte = newBoolOptions.begin(); boolIte != newBoolOptions.end(); ++boolIte)
@@ -610,6 +611,24 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
         }
         newBoolOptions.erase(boolIte);
     }
+    if((boolIte = newBoolOptions.find("smartAvatarResizing")) != newBoolOptions.end())
+    {
+        if(tabViewTopicAlreadyUpdated == false)
+        {
+            tabViewTopicInfos->updateSettings();
+            tabViewTopicAlreadyUpdated = true;
+            reloadForAllTopicNeeded = true;
+        }
+    }
+    if((boolIte = newBoolOptions.find("downloadHighDefAvatar")) != newBoolOptions.end())
+    {
+        if(tabViewTopicAlreadyUpdated == false)
+        {
+            tabViewTopicInfos->updateSettings();
+            tabViewTopicAlreadyUpdated = true;
+            reloadForAllTopicNeeded = true;
+        }
+    }
 
     if((intIte = newIntOptions.find("textBoxSize")) != newIntOptions.end())
     {
@@ -622,8 +641,21 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
     }
     if((intIte = newIntOptions.find("typeOfImageRefresh")) != newIntOptions.end())
     {
-        tabViewTopicInfos->updateSettings();
+        if(tabViewTopicAlreadyUpdated == false)
+        {
+            tabViewTopicInfos->updateSettings();
+            tabViewTopicAlreadyUpdated = true;
+        }
         newIntOptions.erase(intIte);
+    }
+    if((intIte = newIntOptions.find("avatarSize")) != newIntOptions.end())
+    {
+        if(tabViewTopicAlreadyUpdated == false)
+        {
+            tabViewTopicInfos->updateSettings();
+            tabViewTopicAlreadyUpdated = true;
+            reloadForAllTopicNeeded = true;
+        }
     }
     if((intIte = newIntOptions.find("typeOfEdit")) != newIntOptions.end())
     {

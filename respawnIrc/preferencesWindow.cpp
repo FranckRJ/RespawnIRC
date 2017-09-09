@@ -263,7 +263,7 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     vboxStickers->addStretch(1);
     groupBoxStickers->setLayout(vboxStickers);
 
-    QGroupBox* groupBoxOtherNoelshack = new QGroupBox("Noelshack", this);
+    QGroupBox* groupBoxNoelshack = new QGroupBox("Noelshack", this);
 
     QVBoxLayout* vboxNoelshack = new QVBoxLayout();
     vboxNoelshack->addWidget(makeNewCheckBox("Afficher les miniatures noelshack", "downloadNoelshackImages"));
@@ -271,12 +271,22 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     vboxNoelshack->addLayout(makeNewSpinBox("Largeur des miniatures noelshack", "noelshackImageWidth"));
     vboxNoelshack->addLayout(makeNewSpinBox("Hauteur des miniatures noelshack", "noelshackImageHeight"));
     vboxNoelshack->addStretch(1);
-    groupBoxOtherNoelshack->setLayout(vboxNoelshack);
+    groupBoxNoelshack->setLayout(vboxNoelshack);
+
+    QGroupBox* groupBoxAvatar = new QGroupBox("Avatar", this);
+
+    QVBoxLayout* vboxAvatar = new QVBoxLayout();
+    vboxAvatar->addLayout(makeNewSpinBox("Taille des avatars, si supporté par le thème", "avatarSize"));
+    vboxAvatar->addWidget(makeNewCheckBox("Améliorer le redimensionnement des avatars", "smartAvatarResizing"));
+    /*TODO: vboxAvatar->addWidget(makeNewCheckBox("Télécharger les avatars en HD", "downloadHighDefAvatar"));*/
+    vboxAvatar->addStretch(1);
+    groupBoxAvatar->setLayout(vboxAvatar);
 
     QGridLayout* mainLayout = new QGridLayout();
     mainLayout->addWidget(groupBoxGeneral, 0, 0, 1, 2);
     mainLayout->addWidget(groupBoxStickers, 1, 0);
-    mainLayout->addWidget(groupBoxOtherNoelshack, 1, 1);
+    mainLayout->addWidget(groupBoxNoelshack, 1, 1);
+    mainLayout->addWidget(groupBoxAvatar, 2, 0);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     QVBoxLayout* realMainLayout = new QVBoxLayout();

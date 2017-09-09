@@ -48,6 +48,7 @@ public slots:
 private:
     const containerForTopicsInfosClass* getConstCurrentWidget() const;
     containerForTopicsInfosClass* getCurrentWidget();
+    void addOrUpdateAvatarRuleForImageDownloader();
 private slots:
     void currentTabChanged(int newIndex);
     void addNewTabWithTopic(QString newTopicLink);
@@ -83,6 +84,7 @@ private:
     imageDownloadToolClass* imageDownloadTool;
     QString currentThemeName;
     int typeOfImageRefresh;
+    int avatarSize = -1;
 };
 
 #endif

@@ -21,9 +21,8 @@ tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIg
     tabList->setTabsClosable(true);
     tabList->setMovable(true);
     alertImage.load(QCoreApplication::applicationDirPath() + "/resources/alert.png");
-    imageDownloadTool->addRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
-    imageDownloadTool->addRule("noelshack", "/img/", true);
-    imageDownloadTool->addRule("avatar", "/vtr/", true, false, "http://");
+    imageDownloadTool->addOrUpdateRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
+    imageDownloadTool->addOrUpdateRule("noelshack", "/img/", true);
 
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
     mainLayout->addWidget(tabList);
@@ -37,6 +36,7 @@ tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIg
     connect(imageDownloadTool, &imageDownloadToolClass::oneDownloadFinished, this, &tabViewTopicInfosClass::updateImagesIfNeeded);
 
     updateSettings();
+    addOrUpdateAvatarRuleForImageDownloader();
 }
 
 void tabViewTopicInfosClass::doStuffBeforeQuit()
@@ -70,11 +70,29 @@ void tabViewTopicInfosClass::doStuffBeforeQuit()
 
     settingTool::saveListOfTopicLink(listOfTopicLink);
     settingTool::saveListOfPseudoForTopic(listOfPseudoForTopic);
+    imageDownloadTool->deleteCache();
 }
 
 void tabViewTopicInfosClass::updateSettings()
 {
+    int oldAvatarSize = avatarSize;
+
+    avatarSize = (settingTool::getThisBoolOption("smartAvatarResizing") ? settingTool::getThisIntOption("avatarSize").value : 0);
     typeOfImageRefresh = settingTool::getThisIntOption("typeOfImageRefresh").value;
+
+    if(avatarSize != oldAvatarSize && oldAvatarSize != -1)
+    {
+        QString themeImgDir = styleTool::getImagePathOfThemeIfExist(currentThemeName);
+        imageDownloadTool->resetCache();
+        addOrUpdateAvatarRuleForImageDownloader();
+
+        for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
+        {
+            thisContainer->getShowTopic().resetSearchPath();
+            thisContainer->getShowTopic().addSearchPath(imageDownloadTool->getPathOfTmpDir());
+            thisContainer->getShowTopic().addSearchPath(themeImgDir);
+        }
+    }
 }
 
 void tabViewTopicInfosClass::updateSettingInfoForList()
@@ -94,13 +112,12 @@ void tabViewTopicInfosClass::setNewTheme(QString newThemeName)
 
     for(containerForTopicsInfosClass*& thisContainer : listOfContainerForTopicsInfos)
     {
+        thisContainer->getShowTopic().resetSearchPath();
         thisContainer->setNewThemeForInfo(currentThemeName);
         thisContainer->setNewTopicForInfo(thisContainer->getTopicLinkFirstPage());
 
-        if(themeImgDir.isEmpty() == false)
-        {
-            thisContainer->getShowTopic().addSearchPath(themeImgDir);
-        }
+        thisContainer->getShowTopic().addSearchPath(imageDownloadTool->getPathOfTmpDir());
+        thisContainer->getShowTopic().addSearchPath(themeImgDir);
     }
 }
 
@@ -173,10 +190,7 @@ void tabViewTopicInfosClass::addNewTabWithPseudo(QString useThisPseudo)
     }
 
     listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(imageDownloadTool->getPathOfTmpDir());
-    if(themeImgDir.isEmpty() == false)
-    {
-        listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(themeImgDir);
-    }
+    listOfContainerForTopicsInfos.back()->getShowTopic().addSearchPath(themeImgDir);
 
     connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newMessageStatus, this, &tabViewTopicInfosClass::newMessageStatus);
     connect(&listOfContainerForTopicsInfos.back()->getShowTopic(), &showTopicClass::newNumberOfConnectedAndMP, this, &tabViewTopicInfosClass::newNumberOfConnectedAndMP);
@@ -286,6 +300,11 @@ const containerForTopicsInfosClass* tabViewTopicInfosClass::getConstCurrentWidge
 containerForTopicsInfosClass* tabViewTopicInfosClass::getCurrentWidget()
 {
     return listOfContainerForTopicsInfos.at(tabList->currentIndex());
+}
+
+void tabViewTopicInfosClass::addOrUpdateAvatarRuleForImageDownloader()
+{
+    imageDownloadTool->addOrUpdateRule("avatar", "/vtr/", true, false, "http://", "", false, avatarSize, avatarSize);
 }
 
 void tabViewTopicInfosClass::currentTabChanged(int newIndex)

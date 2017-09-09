@@ -28,8 +28,8 @@ showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, con
     messagesBox->setReadOnly(true);
     messagesBox->setOpenExternalLinks(false);
     messagesBox->setOpenLinks(false);
-    messagesBox->setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
     messagesBox->setContextMenuPolicy(Qt::CustomContextMenu);
+    resetSearchPath();
 
     updateSettingInfo();
     currentTypeOfEdit = realTypeOfEdit;
@@ -201,6 +201,7 @@ void showTopicClass::updateSettingInfo()
     showDeleteButton = settingTool::getThisBoolOption("showDeleteButton");
     showSignatures = settingTool::getThisBoolOption("showSignatures");
     showAvatars = settingTool::getThisBoolOption("showAvatars");
+    avatarSize = settingTool::getThisIntOption("avatarSize").value;
     ignoreNetworkError = settingTool::getThisBoolOption("ignoreNetworkError");
     colorModoAndAdminPseudo = settingTool::getThisBoolOption("colorModoAndAdminPseudo");
     colorPEMT = settingTool::getThisBoolOption("colorPEMT");
@@ -251,13 +252,21 @@ void showTopicClass::updateSettingInfo()
 
 void showTopicClass::addSearchPath(QString newSearchPath)
 {
-    QStringList currentSearchPaths = messagesBox->searchPaths();
-
-    if(currentSearchPaths.indexOf(newSearchPath) == -1)
+    if(newSearchPath.isEmpty() == false)
     {
-        currentSearchPaths.append(newSearchPath);
-        messagesBox->setSearchPaths(currentSearchPaths);
+        QStringList currentSearchPaths = messagesBox->searchPaths();
+
+        if(currentSearchPaths.indexOf(newSearchPath) == -1)
+        {
+            currentSearchPaths.append(newSearchPath);
+            messagesBox->setSearchPaths(currentSearchPaths);
+        }
     }
+}
+
+void showTopicClass::resetSearchPath()
+{
+    messagesBox->setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
 }
 
 void showTopicClass::relayoutDocumentHack()
@@ -644,6 +653,7 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
         if(showAvatars == true && currentMessage.avatarLink.isEmpty() == false)
         {
             newMessageToAppend.replace("<%AVATAR_LINK%>", "vtr/" + currentMessage.avatarLink);
+            newMessageToAppend.replace("<%AVATAR_SIZE%>", QString::number(avatarSize));
             listOfAvatarsUsed.append(currentMessage.avatarLink);
         }
 
