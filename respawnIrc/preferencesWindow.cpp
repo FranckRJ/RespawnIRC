@@ -274,6 +274,13 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     vboxNoelshack->addStretch(1);
     groupBoxNoelshack->setLayout(vboxNoelshack);
 
+    QGroupBox* groupBoxSmiley = new QGroupBox("Smileys", this);
+
+    QVBoxLayout* vboxSmiley = new QVBoxLayout();
+    vboxSmiley->addWidget(makeNewCheckBox("Remplacer les smileys par du texte", "smileyToText"));
+    vboxSmiley->addStretch(1);
+    groupBoxSmiley->setLayout(vboxSmiley);
+
     QGroupBox* groupBoxAvatar = new QGroupBox("Avatars", this);
 
     QVBoxLayout* vboxAvatar = new QVBoxLayout();
@@ -287,6 +294,7 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     mainLayout->addWidget(groupBoxGeneral, 0, 0, 1, 2);
     mainLayout->addWidget(groupBoxStickers, 1, 0);
     mainLayout->addWidget(groupBoxNoelshack, 1, 1);
+    mainLayout->addWidget(groupBoxSmiley, 2, 0);
     mainLayout->addWidget(groupBoxAvatar, 2, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 

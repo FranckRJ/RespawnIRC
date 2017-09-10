@@ -230,6 +230,7 @@ void showTopicClass::updateSettingInfo()
     settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingTool::getThisIntOption("noelshackImageWidth").value;
     settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingTool::getThisIntOption("noelshackImageHeight").value;
     settingsForMessageParsing.infoForMessageParsing.hideUglyImages = settingTool::getThisBoolOption("hideUglyImages");
+    settingsForMessageParsing.infoForMessageParsing.smileyToText = settingTool::getThisBoolOption("smileyToText");
     if(settingTool::getThisBoolOption("fastModeEnbled") == false)
     {
         intSettingStruct updateTopicTimeSetting = settingTool::getThisIntOption("updateTopicTime");

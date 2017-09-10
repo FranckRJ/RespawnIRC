@@ -53,6 +53,7 @@ struct infoForMessageParsingStruct
     bool showStickers;
     bool hideUglyImages;
     bool stickerToSmiley;
+    bool smileyToText;
     int stickersSize;
     int nbMaxQuote;
     bool betterQuote;

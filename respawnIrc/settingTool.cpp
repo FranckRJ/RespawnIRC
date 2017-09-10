@@ -67,6 +67,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["smartAvatarResizing"] = true;
     listOfDefaultBoolOption["downloadHighDefAvatar"] = false;
     listOfDefaultBoolOption["smartNoelshackResizing"] = true;
+    listOfDefaultBoolOption["smileyToText"] = false;
     listOfDefaultIntOption["updateTopicTime"].value = 7500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 2000;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;
