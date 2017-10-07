@@ -34,7 +34,8 @@ SOURCES += \
     manageShortcutWindow.cpp \
     addShortcutWindow.cpp \
     utilityTool.cpp \
-    addCookieWindow.cpp
+    addCookieWindow.cpp \
+    clickableLabel.cpp
 
 QT += \
     network \
@@ -78,7 +79,8 @@ HEADERS += \
     manageShortcutWindow.hpp \
     addShortcutWindow.hpp \
     utilityTool.hpp \
-    addCookieWindow.hpp
+    addCookieWindow.hpp \
+    clickableLabel.hpp
 
 RC_FILE = respawnIrc.rc
 

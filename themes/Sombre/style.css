@@ -138,6 +138,11 @@ QSplitter::handle
 	margin-right: 4px;
 }
 
+QScrollArea, QWidget#stickerTypeList
+{
+	background: #444444;
+}
+
 QScrollBar
 {
 	background: #444444;
