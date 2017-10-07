@@ -25,7 +25,9 @@ void customWebViewClass::contextMenuEvent(QContextMenuEvent* event)
     const QList<QAction*> actions = menu->actions();
     for(QAction* thisAction : actions)
     {
-        if(thisAction->toolTip() != page()->action(QWebEnginePage::Reload)->toolTip() && thisAction->toolTip() != page()->action(QWebEnginePage::CopyLinkToClipboard)->toolTip())
+        if(thisAction->toolTip() != page()->action(QWebEnginePage::Reload)->toolTip() &&
+           thisAction->toolTip() != page()->action(QWebEnginePage::CopyLinkToClipboard)->toolTip() &&
+           thisAction->toolTip() != page()->action(QWebEnginePage::OpenLinkInThisWindow)->toolTip())
         {
             menu->removeAction(thisAction);
         }
