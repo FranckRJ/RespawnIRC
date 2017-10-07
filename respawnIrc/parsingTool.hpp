@@ -76,7 +76,6 @@ namespace parsingTool
     QString getVersionChangelog(const QString& source);
     void getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString>>& listOfInput);
     bool getTopicLocked(const QString& source);
-    QString getCaptchaLink(const QString& source);
     QString getErrorMessage(const QString& source, QString defaultError = "Le message n'a pas été envoyé.");
     QString getErrorMessageInJSON(const QString& source, bool needToParseAsAjaxMessage = true, QString defaultError = "Le message n'a pas été envoyé.");
     QString getNextPageOfTopic(const QString& source, const QString& website);

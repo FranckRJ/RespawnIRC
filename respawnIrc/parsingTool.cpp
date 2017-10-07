@@ -23,7 +23,6 @@ namespace
     const QRegularExpression expForFormConnect(R"rgx((<form role="form" class="form-connect-jv" method="post" action="".*?>.*?</form>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForInput(R"rgx(<input ([^=]*)="([^"]*)" ([^=]*)="([^"]*)" ([^=]*)="([^"]*)"/>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicLocked(R"rgx(<div class="message-lock-topic">)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForCaptcha(R"rgx(<img src="([^"]*)" alt=[^>]*>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForError(R"rgx(<div class="alert-row">([^<]*)</div>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForErrorInJSON(R"rgx("erreur":\["([^"]*)")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForCurrentPage(R"rgx(<span class="page-active">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
@@ -291,11 +290,6 @@ void parsingTool::getListOfHiddenInputFromThisForm(const QString& source, QStrin
 bool parsingTool::getTopicLocked(const QString& source)
 {
     return expForTopicLocked.match(source).hasMatch();
-}
-
-QString parsingTool::getCaptchaLink(const QString& source)
-{
-    return expForCaptcha.match(source).captured(1);
 }
 
 QString parsingTool::getErrorMessage(const QString& source, QString defaultError)
