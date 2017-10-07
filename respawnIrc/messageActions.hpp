@@ -30,7 +30,7 @@ private slots:
     void analyzeDeleteInfo();
 signals:
     void quoteThisMessage(QString messageToQuote);
-    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
+    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, QString infoToSend, bool useMessageEdit);
 private:
     QWidget* parent;
     QNetworkCookie currentConnectCookie;

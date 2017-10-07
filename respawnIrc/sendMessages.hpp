@@ -31,7 +31,7 @@ public:
     void setMultilineEdit(bool newVal);
 public slots:
     void quoteThisMessage(QString messageToQuote);
-    void setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
+    void setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString error, QString infoToSend, bool useMessageEdit);
 private:
     QString buildDataWithThisListOfInput(const QList<QPair<QString, QString>>& listOfInput) const;
 private slots:

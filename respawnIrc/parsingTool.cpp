@@ -25,6 +25,7 @@ namespace
     const QRegularExpression expForTopicLocked(R"rgx(<div class="message-lock-topic">)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForCaptcha(R"rgx(<img src="([^"]*)" alt=[^>]*>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForError(R"rgx(<div class="alert-row">([^<]*)</div>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForErrorInJSON(R"rgx("erreur":\["([^"]*)")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForCurrentPage(R"rgx(<span class="page-active">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForPageLink(R"rgx(<span><a href="([^"]*)" class="lien-jv">([^<]*)</a></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNameOfTopic(R"rgx(<span id="bloc-title-forum">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
@@ -297,17 +298,38 @@ QString parsingTool::getCaptchaLink(const QString& source)
     return expForCaptcha.match(source).captured(1);
 }
 
-QString parsingTool::getErrorMessage(const QString& source)
+QString parsingTool::getErrorMessage(const QString& source, QString defaultError)
 {
     QRegularExpressionMatch match = expForError.match(source);
 
     if(match.hasMatch() == true)
     {
-        return expForError.match(source).captured(1);
+        return match.captured(1);
     }
     else
     {
-        return "Le message n'a pas été envoyé.";
+        return defaultError;
+    }
+}
+
+QString parsingTool::getErrorMessageInJSON(const QString& source, bool needToParseAsAjaxMessage, QString defaultError)
+{
+    QRegularExpressionMatch match = expForErrorInJSON.match(source);
+
+    if(match.hasMatch() == true)
+    {
+        QString tmpError = match.captured(1);
+
+        if(needToParseAsAjaxMessage == true)
+        {
+            tmpError = parsingAjaxMessages(tmpError);
+        }
+
+        return specialCharToNormalChar(tmpError);
+    }
+    else
+    {
+        return defaultError;
     }
 }
 

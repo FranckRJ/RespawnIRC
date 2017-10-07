@@ -72,7 +72,6 @@ bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdi
             urlToGet = "http://" + websiteOfTopic + "/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfMessageToEdit) + "&" + ajaxInfo.list + "&action=get";
             requestForEditInfo = parsingTool::buildRequestWithThisUrl(urlToGet);
             oldAjaxInfo = ajaxInfo;
-            ajaxInfo.list.clear();
             oldUseMessageEdit = useMessageEdit;
             replyForEditInfo = timeoutForEditInfo->resetReply(networkManager->get(requestForEditInfo));
 
@@ -158,6 +157,7 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
 
 void messageActionsClass::analyzeEditInfo()
 {
+    QString error;
     QString message;
     QString dataToSend = oldAjaxInfo.list + "&action=post";
     QList<QPair<QString, QString>> listOfEditInput;
@@ -173,6 +173,7 @@ void messageActionsClass::analyzeEditInfo()
 
     source = parsingTool::parsingAjaxMessages(source);
     message = parsingTool::getMessageEdit(source);
+    error = parsingTool::getErrorMessageInJSON(source, false, "Impossible d'éditer ce message.");
     parsingTool::getListOfHiddenInputFromThisForm(source, "form-post-topic", listOfEditInput);
 
     for(const QPair<QString, QString>& thisInput : listOfEditInput)
@@ -180,7 +181,7 @@ void messageActionsClass::analyzeEditInfo()
         dataToSend += "&" + thisInput.first + "=" + thisInput.second;
     }
 
-    emit setEditInfo(oldIdOfMessageToEdit, message, dataToSend, oldUseMessageEdit);
+    emit setEditInfo(oldIdOfMessageToEdit, message, error, dataToSend, oldUseMessageEdit);
 
     replyForEditInfo = nullptr;
 }

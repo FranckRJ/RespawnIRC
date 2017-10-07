@@ -75,7 +75,7 @@ signals:
     void newMessageStatus();
     void newNumberOfConnectedAndMP();
     void newMPAreAvailables(int newNumber, QString withThisPseudo);
-    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
+    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, QString infoToSend, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
     void newCookieHasToBeSet();

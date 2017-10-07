@@ -68,7 +68,7 @@ signals:
     void newNumberOfConnectedAndMP();
     void newMPAreAvailables(int newNumber, QString withThisPseudo);
     void newMessagesAvailable();
-    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit);
+    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, QString infoToSend, bool useMessageEdit);
     void quoteThisMessage(QString messageToQuote);
     void addToBlacklist(QString pseudoToBlacklist);
     void editThisMessage(long idOfMessageEdit, bool useMessageEdit);
