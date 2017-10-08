@@ -17,6 +17,8 @@ class selectStickerWindowClass : public QDialog
     Q_OBJECT
 public:
     explicit selectStickerWindowClass(QWidget* parent);
+protected:
+    void showEvent(QShowEvent* event) override;
 private:
     clickableLabelClass* createQLabelForStickerTypeWithThesesInfos(QString imageName, QWidget* parent);
     void loadAndUseListOfStickers(int stickerType);
@@ -24,8 +26,8 @@ private:
 private slots:
     void linkClicked(const QUrl& link);
     void createContextMenu(const QPoint& thisPoint);
-    void scrollBarSizeChanged();
     void labelClicked(Qt::MouseButton buttonClicked, int labelID);
+    void saveLastStickerTypeUsedValueChanged(bool newVal);
 signals:
     void addThisSticker(QString stringSticker);
 private:
@@ -33,6 +35,7 @@ private:
     QScrollArea* stickerTypeListscrollArea;
     QVector<clickableLabelClass*> listOfLabels;
     int oldLabelSelected = 1;
+    bool firstTimeShowed = true;
 };
 
 #endif

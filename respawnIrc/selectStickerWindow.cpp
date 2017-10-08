@@ -1,4 +1,5 @@
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QStringList>
 #include <QCoreApplication>
 #include <QDir>
@@ -7,12 +8,14 @@
 #include <QPixmap>
 #include <QPalette>
 #include <QLabel>
+#include <QCheckBox>
 
 #include "selectStickerWindow.hpp"
+#include "settingTool.hpp"
 
 namespace
 {
-    QVector<QString> listOfStickerTypeContent = QVector<QString>(20);
+    QVector<QString> listOfStickerTypeContent;
 }
 
 selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
@@ -53,7 +56,7 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1ntq.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1o33.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1ptd.png", mainWidgetOfStickerTypeList));
-    labelClicked(Qt::LeftButton, oldLabelSelected);
+    listOfStickerTypeContent.resize(listOfLabels.size());
 
     layoutOfStickerTypeList->setMargin(1);
     layoutOfStickerTypeList->setSpacing(0);
@@ -69,21 +72,54 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
     stickerLayout->setMargin(0);
     stickerLayout->setSpacing(0);
 
-    QLabel* stickerInfoLabel = new QLabel("Clique droit pour fermer la fenêtre.", this);
-    stickerInfoLabel->setMargin(5);
+    QCheckBox* saveLastStickerTypeUsedCheckbox = new QCheckBox("Sauvegarder le dernier type de sticker utilisé", this);
+    QLabel* stickerInfoLabel = new QLabel("(clique droit pour fermer la fenêtre)", this);
+
+    saveLastStickerTypeUsedCheckbox->setChecked(settingTool::getThisBoolOption("saveLastStickerTypeUsed"));
+
+    QHBoxLayout* bottomLayout = new QHBoxLayout();
+    bottomLayout->addWidget(saveLastStickerTypeUsedCheckbox);
+    bottomLayout->addStretch(1);
+    bottomLayout->addWidget(stickerInfoLabel);
+    bottomLayout->setMargin(5);
 
     QVBoxLayout* mainLayout = new QVBoxLayout();
     mainLayout->addLayout(stickerLayout, 1);
-    mainLayout->addWidget(stickerInfoLabel);
+    mainLayout->addLayout(bottomLayout);
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
+
+    if(saveLastStickerTypeUsedCheckbox->isChecked() == true)
+    {
+        oldLabelSelected = settingTool::getThisIntOption("lastTypeOfStickerUsed").value;
+
+        if(oldLabelSelected < 0)
+        {
+            oldLabelSelected = 0;
+        }
+        else if(oldLabelSelected >= listOfLabels.size())
+        {
+            oldLabelSelected = listOfLabels.size() - 1;
+        }
+    }
 
     setLayout(mainLayout);
     setWindowTitle("Choisir un sticker");
 
     connect(stickerBrowser, &QTextBrowser::customContextMenuRequested, this, &selectStickerWindowClass::createContextMenu);
     connect(stickerBrowser, &QTextBrowser::anchorClicked, this, &selectStickerWindowClass::linkClicked);
-    connect(stickerBrowser->verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
+    connect(saveLastStickerTypeUsedCheckbox, &QCheckBox::toggled, this, &selectStickerWindowClass::saveLastStickerTypeUsedValueChanged);
+}
+
+void selectStickerWindowClass::showEvent(QShowEvent* event)
+{
+    QDialog::showEvent(event);
+
+    if(firstTimeShowed == true)
+    {
+        labelClicked(Qt::LeftButton, oldLabelSelected);
+        firstTimeShowed = false;
+    }
 }
 
 clickableLabelClass* selectStickerWindowClass::createQLabelForStickerTypeWithThesesInfos(QString imageName, QWidget* parent)
@@ -487,13 +523,6 @@ void selectStickerWindowClass::createContextMenu(const QPoint& thisPoint)
     close();
 }
 
-void selectStickerWindowClass::scrollBarSizeChanged()
-{
-    stickerBrowser->verticalScrollBar()->setValue(stickerBrowser->verticalScrollBar()->maximum() / 2);
-
-    disconnect(stickerBrowser->verticalScrollBar(), &QScrollBar::valueChanged, this, &selectStickerWindowClass::scrollBarSizeChanged);
-}
-
 void selectStickerWindowClass::labelClicked(Qt::MouseButton buttonClicked, int labelID)
 {
     if(buttonClicked == Qt::LeftButton && labelID >= 0 && labelID < listOfLabels.size())
@@ -508,9 +537,15 @@ void selectStickerWindowClass::labelClicked(Qt::MouseButton buttonClicked, int l
         stickerTypeListscrollArea->ensureWidgetVisible(listOfLabels.at(labelID), 0, 0);
         loadAndUseListOfStickers(labelID);
         oldLabelSelected = labelID;
+        settingTool::saveThisOption("lastTypeOfStickerUsed", oldLabelSelected);
     }
     else if (buttonClicked == Qt::RightButton)
     {
         close();
     }
+}
+
+void selectStickerWindowClass::saveLastStickerTypeUsedValueChanged(bool newVal)
+{
+    settingTool::saveThisOption("saveLastStickerTypeUsed", newVal);
 }

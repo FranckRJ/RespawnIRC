@@ -68,6 +68,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["downloadHighDefAvatar"] = false;
     listOfDefaultBoolOption["smartNoelshackResizing"] = true;
     listOfDefaultBoolOption["smileyToText"] = false;
+    listOfDefaultBoolOption["saveLastStickerTypeUsed"] = true;
     listOfDefaultIntOption["updateTopicTime"].value = 7500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 2000;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;
@@ -119,6 +120,9 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["avatarSize"].value = 30;
     listOfDefaultIntOption["avatarSize"].minValue = 0;
     listOfDefaultIntOption["avatarSize"].maxValue = 700;
+    listOfDefaultIntOption["lastTypeOfStickerUsed"].value = 1;
+    listOfDefaultIntOption["lastTypeOfStickerUsed"].minValue = 0;
+    listOfDefaultIntOption["lastTypeOfStickerUsed"].maxValue = 0;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 
