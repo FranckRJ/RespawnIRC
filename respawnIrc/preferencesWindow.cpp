@@ -41,7 +41,7 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     mainWidget->addTab(createWidgetForMainTab(), "Général");
     mainWidget->addTab(createWidgetForMessagesTab(), "Messages");
     mainWidget->addTab(createWidgetForTopicListTab(), "Liste des topics");
-    mainWidget->addTab(createWidgetForImageTab(), "Image");
+    mainWidget->addTab(createWidgetForImageTab(), "Images");
 
     if(settingTool::getThisBoolOption("fastModeEnbled") == true)
     {
@@ -211,6 +211,7 @@ QWidget* preferenceWindowClass::createWidgetForTopicListTab()
     vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics multipages", "showHotTagOnTopicInTopicList"));
     vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics fermés", "showLockTagOnTopicInTopicList"));
     vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics résolus", "showResolvedTagOnTopicInTopicList"));
+    vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics supprimés", "showGhostTagOnTopicInTopicList"));
     vboxTopicTag->addWidget(makeNewCheckBox("Afficher une balise pour les topics normaux", "showNormalTagOnTopicInTopicList"));
     vboxTopicTag->addWidget(makeNewCheckBox("Utiliser des icônes au lieu des balises", "useIconInsteadOfTagInTopicList"));
     vboxTopicTag->addStretch(1);
@@ -262,20 +263,39 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     vboxStickers->addStretch(1);
     groupBoxStickers->setLayout(vboxStickers);
 
-    QGroupBox* groupBoxOtherNoelshack = new QGroupBox("Noelshack", this);
+    QGroupBox* groupBoxNoelshack = new QGroupBox("Noelshack", this);
 
     QVBoxLayout* vboxNoelshack = new QVBoxLayout();
     vboxNoelshack->addWidget(makeNewCheckBox("Afficher les miniatures noelshack", "downloadNoelshackImages"));
     vboxNoelshack->addWidget(makeNewCheckBox("Cacher les images nuisibles", "hideUglyImages"));
+    vboxNoelshack->addWidget(makeNewCheckBox("Améliorer le redimensionnement des miniatures noelshack", "smartNoelshackResizing"));
     vboxNoelshack->addLayout(makeNewSpinBox("Largeur des miniatures noelshack", "noelshackImageWidth"));
     vboxNoelshack->addLayout(makeNewSpinBox("Hauteur des miniatures noelshack", "noelshackImageHeight"));
     vboxNoelshack->addStretch(1);
-    groupBoxOtherNoelshack->setLayout(vboxNoelshack);
+    groupBoxNoelshack->setLayout(vboxNoelshack);
+
+    QGroupBox* groupBoxSmiley = new QGroupBox("Smileys", this);
+
+    QVBoxLayout* vboxSmiley = new QVBoxLayout();
+    vboxSmiley->addWidget(makeNewCheckBox("Remplacer les smileys par du texte", "smileyToText"));
+    vboxSmiley->addStretch(1);
+    groupBoxSmiley->setLayout(vboxSmiley);
+
+    QGroupBox* groupBoxAvatar = new QGroupBox("Avatars", this);
+
+    QVBoxLayout* vboxAvatar = new QVBoxLayout();
+    vboxAvatar->addLayout(makeNewSpinBox("Taille des avatars, si supporté par le thème", "avatarSize"));
+    vboxAvatar->addWidget(makeNewCheckBox("Améliorer le redimensionnement des avatars\n(obligatoire pour le faire fonctionner avec certains thèmes)", "smartAvatarResizing"));
+    vboxAvatar->addWidget(makeNewCheckBox("Télécharger les avatars en HD", "downloadHighDefAvatar"));
+    vboxAvatar->addStretch(1);
+    groupBoxAvatar->setLayout(vboxAvatar);
 
     QGridLayout* mainLayout = new QGridLayout();
     mainLayout->addWidget(groupBoxGeneral, 0, 0, 1, 2);
     mainLayout->addWidget(groupBoxStickers, 1, 0);
-    mainLayout->addWidget(groupBoxOtherNoelshack, 1, 1);
+    mainLayout->addWidget(groupBoxNoelshack, 1, 1);
+    mainLayout->addWidget(groupBoxSmiley, 2, 0);
+    mainLayout->addWidget(groupBoxAvatar, 2, 1);
     mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     QVBoxLayout* realMainLayout = new QVBoxLayout();

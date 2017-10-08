@@ -53,6 +53,7 @@ struct infoForMessageParsingStruct
     bool showStickers;
     bool hideUglyImages;
     bool stickerToSmiley;
+    bool smileyToText;
     int stickersSize;
     int nbMaxQuote;
     bool betterQuote;
@@ -75,8 +76,8 @@ namespace parsingTool
     QString getVersionChangelog(const QString& source);
     void getListOfHiddenInputFromThisForm(const QString& source, QString formName, QList<QPair<QString, QString>>& listOfInput);
     bool getTopicLocked(const QString& source);
-    QString getCaptchaLink(const QString& source);
-    QString getErrorMessage(const QString& source);
+    QString getErrorMessage(const QString& source, QString defaultError = "Le message n'a pas été envoyé.");
+    QString getErrorMessageInJSON(const QString& source, bool needToParseAsAjaxMessage = true, QString defaultError = "Le message n'a pas été envoyé.");
     QString getNextPageOfTopic(const QString& source, const QString& website);
     QString getLastPageOfTopic(const QString& source, const QString& website);
     QString getFirstPageOfTopic(const QString& topicLink);
@@ -89,6 +90,7 @@ namespace parsingTool
     QString getForumOfTopic(const QString& topicLink);
     QString getForumName(const QString& source);
     QString jvfLinkToJvcLink(const QString& jvfTopicLink);
+    QString normalAvatarLinkToHDLink(const QString& avatarLink);
     QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers = true);
     QString parsingAjaxMessages(QString thisMessage);
     QString specialCharToNormalChar(QString thisMessage);

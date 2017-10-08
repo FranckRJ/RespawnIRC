@@ -13,11 +13,16 @@
 
 namespace
 {
+    //pourquoi j'utilise des qscopedpointer au lieu des std::unique_ptr ? Je sais plus, je crois
+    //que c'est à cause d'un problème d'ordre d'appel de constructeur/destructeur ou j'sais plus quoi
+    //EDIT: Nan ça c'est la raison pour laquelle j'utilise des pointeurs, j'utilise les QScopedPointer
+    //pour garder une cohérence en utilisant uniquement les classes Qt si possible etc
     QScopedPointer<QPixmap> pinnedOnTagImage;
     QScopedPointer<QPixmap> pinnedOffTagImage;
     QScopedPointer<QPixmap> hotTagImage;
     QScopedPointer<QPixmap> lockTagImage;
     QScopedPointer<QPixmap> resolvedTagImage;
+    QScopedPointer<QPixmap> ghostTagImage;
     QScopedPointer<QPixmap> normalTagImage;
 }
 
@@ -47,6 +52,11 @@ showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWid
     {
         resolvedTagImage.reset(new QPixmap);
         resolvedTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-resolu.png");
+    }
+    if(ghostTagImage.isNull() == true)
+    {
+        ghostTagImage.reset(new QPixmap);
+        ghostTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-ghost.png");
     }
     if(normalTagImage.isNull() == true)
     {
@@ -114,15 +124,15 @@ void showForumClass::setForumLink(QString newForumLink)
     }
 }
 
-void showForumClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies)
+void showForumClass::setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie)
 {
-    currentCookieList = newCookies;
-    websiteOfCookies = newWebsiteOfCookies;
+    currentConnectCookie = newConnectCookie;
+    websiteOfCookie = newWebsiteOfCookie;
     if(networkManager != nullptr)
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + websiteOfCookies));
+        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("http://" + websiteOfCookie));
     }
 }
 
@@ -142,6 +152,7 @@ void showForumClass::updateSettings()
     showHotTagOnTopic = settingTool::getThisBoolOption("showHotTagOnTopicInTopicList");
     showLockTagOnTopic = settingTool::getThisBoolOption("showLockTagOnTopicInTopicList");
     showResolvedTagOnTopic = settingTool::getThisBoolOption("showResolvedTagOnTopicInTopicList");
+    showGhostTagOnTopic = settingTool::getThisBoolOption("showGhostTagOnTopicInTopicList");
     showNormalTagOnTopic = settingTool::getThisBoolOption("showNormalTagOnTopicInTopicList");
     useIconInsteadOfTag = settingTool::getThisBoolOption("useIconInsteadOfTagInTopicList");
     topicNameMaxSize = settingTool::getThisIntOption("topicNameMaxSizeInTopicList").value;
@@ -245,6 +256,20 @@ QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& for
             }
         }
     }
+    else if(forThisTopic.topicType == "ghost")
+    {
+        if(showGhostTagOnTopic == true)
+        {
+            if(useIconInsteadOfTag == true)
+            {
+                newItem->setIcon(QIcon(*ghostTagImage));
+            }
+            else
+            {
+                currentTopicName = "[S] " + currentTopicName;
+            }
+        }
+    }
     else
     {
         if(showNormalTagOnTopic == true)
@@ -309,7 +334,7 @@ void showForumClass::startGetListOfTopic()
     {
         if(itsNewManager == true)
         {
-            setNewCookies(currentCookieList, websiteOfCookies);
+            setNewCookie(currentConnectCookie, websiteOfCookie);
         }
 
         if(forumLink.isEmpty() == false)
@@ -414,7 +439,7 @@ void showForumClass::createContextMenu(const QPoint& thisPoint)
         }
         else if(actionSelected == actionOpenInNavigator)
         {
-            utilityTool::openLinkInBrowser(this, useInternalNavigatorForLinks, oldListOfTopicLink.at(indexSelected.row()), currentCookieList);
+            utilityTool::openLinkInBrowser(this, useInternalNavigatorForLinks, oldListOfTopicLink.at(indexSelected.row()), currentConnectCookie);
         }
     }
 }

@@ -9,15 +9,19 @@
 #include <QString>
 #include <QList>
 #include <QMap>
+#include <QScopedPointer>
 
 struct imageDownloadRuleStruct
 {
     QString directoryPath;
     QString appendAfterName;
     QString baseUrl;
-    bool isInTmpDir = false;
-    bool alwaysCheckBeforeDL = false;
-    bool takeOnlyFileNameForSave = false;
+    bool isInTmpDir;
+    bool alwaysCheckBeforeDL;
+    bool takeOnlyFileNameForSave;
+    bool keepAspectRatio;
+    int preferedImageWidth;
+    int preferedImageHeight;
 };
 
 struct infoForDownloadImageStruct
@@ -31,13 +35,16 @@ class imageDownloadToolClass : public QObject
     Q_OBJECT
 public:
     explicit imageDownloadToolClass(QObject* parent = nullptr);
-    void addRule(QString ruleName, QString directoryPath, bool isInTmpDir = false, bool alwaysCheckBeforeDL = false,
-                 QString baseUrl = "", QString appendAfetName = "", bool takeOnlyFileNameForSave = false);
+    void addOrUpdateRule(QString ruleName, QString directoryPath, bool isInTmpDir = false, bool alwaysCheckBeforeDL = false,
+                         QString baseUrl = "", QString appendAfterName = "", bool takeOnlyFileNameForSave = false,
+                         int preferedImageWidth = 0, int preferedImageHeight = 0, bool keepAspectRatio = true);
     void checkAndStartDownloadMissingImages(QStringList listOfImagesUrlToCheck, QString ruleName);
+    void resetCache();
+    void deleteCache();
     QString getPathOfTmpDir();
     int getNumberOfDownloadRemaining();
 private:
-    bool checkIfImageUrlExist(QString imageUrl, imageDownloadRuleStruct thisRule, QString ruleName);
+    bool checkIfImageUrlExist(QString imageUrl, const imageDownloadRuleStruct& thisRule, QString ruleName);
     void startDownloadMissingImages();
     QString convertUrlToFilePath(QString thisUrl);
     QString removeLastLevelOfFilePath(QString thisPath);
@@ -52,7 +59,8 @@ private:
     QMap<QString, imageDownloadRuleStruct> listOfRulesForImage;
     QMap<QString, QStringList> listOfExistingsImageForRules;
     QList<infoForDownloadImageStruct> listOfImagesUrlNeedDownload;
-    QTemporaryDir tmpDir;
+    QScopedPointer<QTemporaryDir> tmpDir;
+    bool cacheHasBeenResetDuringDownlaod = false;
 };
 
 #endif

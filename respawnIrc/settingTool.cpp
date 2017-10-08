@@ -56,13 +56,19 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["showHotTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showLockTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showResolvedTagOnTopicInTopicList"] = true;
+    listOfDefaultBoolOption["showGhostTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["showNormalTagOnTopicInTopicList"] = true;
     listOfDefaultBoolOption["useIconInsteadOfTagInTopicList"] = true;
     listOfDefaultBoolOption["fastModeEnbled"] = false;
-    listOfDefaultBoolOption["beepForNewMP"] = false;
+    listOfDefaultBoolOption["beepForNewMP"] = true;
     listOfDefaultBoolOption["hideUglyImages"] = false;
     listOfDefaultBoolOption["useInternalNavigatorForLinks"] = false;
     listOfDefaultBoolOption["betterCodeTag"] = true;
+    listOfDefaultBoolOption["smartAvatarResizing"] = true;
+    listOfDefaultBoolOption["downloadHighDefAvatar"] = false;
+    listOfDefaultBoolOption["smartNoelshackResizing"] = true;
+    listOfDefaultBoolOption["smileyToText"] = false;
+    listOfDefaultBoolOption["saveLastStickerTypeUsed"] = true;
     listOfDefaultIntOption["updateTopicTime"].value = 7500;
     listOfDefaultIntOption["updateTopicTime"].minValue = 2000;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;
@@ -84,7 +90,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["nbOfMessagesSend"].value = 0;
     listOfDefaultIntOption["nbOfMessagesSend"].minValue = 0;
     listOfDefaultIntOption["nbOfMessagesSend"].maxValue = 0;
-    listOfDefaultIntOption["typeOfImageRefresh"].value = 1;
+    listOfDefaultIntOption["typeOfImageRefresh"].value = 2;
     listOfDefaultIntOption["typeOfImageRefresh"].minValue = 0;
     listOfDefaultIntOption["typeOfImageRefresh"].maxValue = 2;
     listOfDefaultIntOption["noelshackImageWidth"].value = 68;
@@ -99,7 +105,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["updateTopicListTime"].value = 15000;
     listOfDefaultIntOption["updateTopicListTime"].minValue = 4000;
     listOfDefaultIntOption["updateTopicListTime"].maxValue = 60000;
-    listOfDefaultIntOption["typeOfEdit"].value = 0;
+    listOfDefaultIntOption["typeOfEdit"].value = 2;
     listOfDefaultIntOption["typeOfEdit"].minValue = 0;
     listOfDefaultIntOption["typeOfEdit"].maxValue = 2;
     listOfDefaultIntOption["topicNameMaxSizeInTopicList"].value = 35;
@@ -111,6 +117,12 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].value = 8;
     listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].minValue = 1;
     listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].maxValue = 15;
+    listOfDefaultIntOption["avatarSize"].value = 30;
+    listOfDefaultIntOption["avatarSize"].minValue = 0;
+    listOfDefaultIntOption["avatarSize"].maxValue = 700;
+    listOfDefaultIntOption["lastTypeOfStickerUsed"].value = 1;
+    listOfDefaultIntOption["lastTypeOfStickerUsed"].minValue = 0;
+    listOfDefaultIntOption["lastTypeOfStickerUsed"].maxValue = 0;
     listOfDefaultStringOption["pseudo"] = "";
     listOfDefaultStringOption["themeUsed"] = "";
 
@@ -192,19 +204,16 @@ QByteArray settingTool::getThisByteOption(QString optionName)
 QList<accountStruct> settingTool::getListOfAccount()
 {
     QList<accountStruct> listOfAccount;
-    QList<QNetworkCookie> listOfHelloCookie = createCookieListWithThisQVariantList(setting->value("listOfHelloCookie", QList<QVariant>()).toList());
     QList<QNetworkCookie> listOfConnectCookie = createCookieListWithThisQVariantList(setting->value("listOfConnectCookie", QList<QVariant>()).toList());
     QList<QString> listOfPseudo = createStringListWithThisQVariantList(setting->value("listOfPseudo", QList<QVariant>()).toList());
 
-    if(listOfHelloCookie.size() == listOfConnectCookie.size() && listOfConnectCookie.size() == listOfPseudo.size())
+    if(listOfConnectCookie.size() == listOfPseudo.size())
     {
         for(int i = 0; i < listOfPseudo.size(); ++i)
         {
             listOfAccount.push_back(accountStruct());
-            listOfHelloCookie[i].setExpirationDate(QDateTime::currentDateTime().addYears(8));
             listOfConnectCookie[i].setExpirationDate(QDateTime::currentDateTime().addYears(8));
-            listOfAccount.back().listOfCookie.append(listOfHelloCookie.at(i));
-            listOfAccount.back().listOfCookie.append(listOfConnectCookie.at(i));
+            listOfAccount.back().connectCookie = listOfConnectCookie.at(i);
             listOfAccount.back().pseudo = listOfPseudo.at(i);
         }
     }
@@ -278,28 +287,15 @@ void settingTool::saveThisOption(QString optionName, QVariant value)
 
 void settingTool::saveListOfAccount(QList<accountStruct>& newListOfAccount)
 {
-    QList<QNetworkCookie> listOfHelloCookie;
     QList<QNetworkCookie> listOfConnectCookie;
     QList<QString> listOfPseudo;
 
     for(const accountStruct& thisAccout : newListOfAccount)
     {
-        for(const QNetworkCookie& thisCookie : thisAccout.listOfCookie)
-        {
-            if(thisCookie.name() == "dlrowolleh")
-            {
-                listOfHelloCookie.push_back(thisCookie);
-            }
-            else if(thisCookie.name() == "coniunctio")
-            {
-                listOfConnectCookie.push_back(thisCookie);
-            }
-        }
-
+        listOfConnectCookie.push_back(thisAccout.connectCookie);
         listOfPseudo.push_back(thisAccout.pseudo);
     }
 
-    setting->setValue("listOfHelloCookie", createQVariantListWithThisList(listOfHelloCookie));
     setting->setValue("listOfConnectCookie", createQVariantListWithThisList(listOfConnectCookie));
     setting->setValue("listOfPseudo", createQVariantListWithThisList(listOfPseudo));
 }

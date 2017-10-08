@@ -58,12 +58,12 @@ QString containerForTopicsInfosClass::getTopicLinkFirstPage() const
     }
 }
 
-void containerForTopicsInfosClass::setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave)
+void containerForTopicsInfosClass::setNewCookieForInfo(QNetworkCookie newConnectCookie, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave)
 {
     pseudoTypeOfSave = newTypeOfSave;
 
-    showTopic->setNewCookies(newCookies, "www.jeuxvideo.com", newPseudoOfUser);
-    showForum->setNewCookies(newCookies, "www.jeuxvideo.com");
+    showTopic->setNewCookie(newConnectCookie, "www.jeuxvideo.com", newPseudoOfUser);
+    showForum->setNewCookie(newConnectCookie, "www.jeuxvideo.com");
 }
 
 void containerForTopicsInfosClass::setBufferForTopicLinkFirstPage(QString newLink)

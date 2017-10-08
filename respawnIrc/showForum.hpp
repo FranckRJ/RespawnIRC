@@ -25,7 +25,7 @@ public:
     explicit showForumClass(QString currentThemeName, QWidget* parent = nullptr);
     bool getLoadNeeded() const;
     void setForumLink(QString newForumLink);
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies);
+    void setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie);
     void setNewTheme(QString newThemeName);
     void updateSettings();
 private:
@@ -48,8 +48,8 @@ private:
     autoTimeoutReplyClass* timeoutForReply;
     QNetworkReply* reply = nullptr;
     QNetworkAccessManager* networkManager;
-    QList<QNetworkCookie> currentCookieList;
-    QString websiteOfCookies;
+    QNetworkCookie currentConnectCookie;
+    QString websiteOfCookie;
     QList<QString> listOfLink;
     modelInfoStruct baseModelInfo;
     bool showNumberOfMessages;
@@ -59,6 +59,7 @@ private:
     bool showHotTagOnTopic;
     bool showLockTagOnTopic;
     bool showResolvedTagOnTopic;
+    bool showGhostTagOnTopic;
     bool showNormalTagOnTopic;
     bool useIconInsteadOfTag;
     bool useInternalNavigatorForLinks;

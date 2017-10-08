@@ -23,8 +23,8 @@ namespace
     const QRegularExpression expForFormConnect(R"rgx((<form role="form" class="form-connect-jv" method="post" action="".*?>.*?</form>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForInput(R"rgx(<input ([^=]*)="([^"]*)" ([^=]*)="([^"]*)" ([^=]*)="([^"]*)"/>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicLocked(R"rgx(<div class="message-lock-topic">)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForCaptcha(R"rgx(<img src="([^"]*)" alt=[^>]*>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForError(R"rgx(<div class="alert-row">([^<]*)</div>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForErrorInJSON(R"rgx("erreur":\["([^"]*)")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForCurrentPage(R"rgx(<span class="page-active">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForPageLink(R"rgx(<span><a href="([^"]*)" class="lien-jv">([^<]*)</a></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNameOfTopic(R"rgx(<span id="bloc-title-forum">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
@@ -292,22 +292,38 @@ bool parsingTool::getTopicLocked(const QString& source)
     return expForTopicLocked.match(source).hasMatch();
 }
 
-QString parsingTool::getCaptchaLink(const QString& source)
-{
-    return expForCaptcha.match(source).captured(1);
-}
-
-QString parsingTool::getErrorMessage(const QString& source)
+QString parsingTool::getErrorMessage(const QString& source, QString defaultError)
 {
     QRegularExpressionMatch match = expForError.match(source);
 
     if(match.hasMatch() == true)
     {
-        return expForError.match(source).captured(1);
+        return match.captured(1);
     }
     else
     {
-        return "Le message n'a pas été envoyé.";
+        return defaultError;
+    }
+}
+
+QString parsingTool::getErrorMessageInJSON(const QString& source, bool needToParseAsAjaxMessage, QString defaultError)
+{
+    QRegularExpressionMatch match = expForErrorInJSON.match(source);
+
+    if(match.hasMatch() == true)
+    {
+        QString tmpError = match.captured(1);
+
+        if(needToParseAsAjaxMessage == true)
+        {
+            tmpError = parsingAjaxMessages(tmpError);
+        }
+
+        return specialCharToNormalChar(tmpError);
+    }
+    else
+    {
+        return defaultError;
     }
 }
 
@@ -528,6 +544,19 @@ QString parsingTool::jvfLinkToJvcLink(const QString& jvfTopicLink)
     }
 }
 
+QString parsingTool::normalAvatarLinkToHDLink(const QString& avatarLink)
+{
+    QString newAvatarLink = avatarLink;
+    int sizePos = avatarLink.indexOf("-sm");
+
+    if(sizePos != -1)
+    {
+        newAvatarLink.replace(sizePos, 3, "-md");
+    }
+
+    return newAvatarLink;
+}
+
 QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers)
 {
     QString extraTableStyle;
@@ -573,7 +602,15 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
         replaceWithCapNumber(thisMessage, expForStickers, 2, "<img width=" + QString::number(infoForParsing.stickersSize) + " height=" + QString::number(infoForParsing.stickersSize) + " src=\"resources/stickers/", ".png\" />");
     }
 
-    replaceWithCapNumber(thisMessage, expForSmiley, 2, "<img src=\"resources/smileys/", "\" />");
+    if(infoForParsing.smileyToText == true)
+    {
+        replaceWithCapNumber(thisMessage, expForSmiley, 3);
+    }
+    else
+    {
+        replaceWithCapNumber(thisMessage, expForSmiley, 2, "<img src=\"resources/smileys/", "\" />");
+    }
+
     replaceWithCapNumber(thisMessage, expForYoutubeVideo, 2, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://youtu.be/", "\">http://youtu.be/", 2, "</a>");
     replaceWithCapNumber(thisMessage, expForJvcLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");

@@ -21,7 +21,7 @@ public:
     showTopicClass& getShowTopic();
     typeOfSaveForPseudo getPseudoTypeOfSave() const;
     QString getTopicLinkFirstPage() const;
-    void setNewCookiesForInfo(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave);
+    void setNewCookieForInfo(QNetworkCookie newConnectCookie, QString newPseudoOfUser, typeOfSaveForPseudo newTypeOfSave);
     void setBufferForTopicLinkFirstPage(QString newLink);
     void updateSettingsForInfo();
     void setNewThemeForInfo(QString newThemeName);

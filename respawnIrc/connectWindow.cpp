@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 
 #include "connectWindow.hpp"
-#include "addCookiesWindow.hpp"
+#include "addCookieWindow.hpp"
 #include "addPseudoWindow.hpp"
 #include "parsingTool.hpp"
 
@@ -17,7 +17,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     QLabel* labForPseudo = new QLabel("Entrez le pseudo avec lequel vous voulez vous connecter :", this);
     QLabel* labForButton = new QLabel("Une fois connecté, cliquez ici :", this);
     buttonShowWebView = new QPushButton("Afficher la page de connexion", this);
-    QPushButton* buttonAddCookies = new QPushButton("Ajouter des cookies", this);
+    QPushButton* buttonAddCookie = new QPushButton("Ajouter le cookie", this);
     QPushButton* buttonValidate = new QPushButton("Valider", this);
     QPushButton* buttonHelp = new QPushButton("Aide pour se connecter", this);
     pseudoLine = new QLineEdit(this);
@@ -27,7 +27,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     buttonValidate->setDefault(true);
 
     QHBoxLayout* bottomLayout = new QHBoxLayout;
-    bottomLayout->addWidget(buttonAddCookies);
+    bottomLayout->addWidget(buttonAddCookie);
     bottomLayout->addWidget(labForPseudo);
     bottomLayout->addWidget(pseudoLine);
     bottomLayout->addWidget(labForButton, 1, Qt::AlignRight);
@@ -56,7 +56,7 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : Q
     setWindowTitle("Page de connexion");
 
     connect(buttonShowWebView, &QPushButton::clicked, this, &connectWindowClass::addWebView);
-    connect(buttonAddCookies, &QPushButton::clicked, this, &connectWindowClass::showAddCookiesWindow);
+    connect(buttonAddCookie, &QPushButton::clicked, this, &connectWindowClass::showAddCookieWindow);
     connect(buttonValidate, &QPushButton::clicked, this, &connectWindowClass::valideConnect);
     connect(buttonHelp, &QPushButton::clicked, this, &connectWindowClass::showHelpConnect);
 }
@@ -84,48 +84,38 @@ void connectWindowClass::addWebView()
 
 void connectWindowClass::checkThisCookie(QNetworkCookie cookie)
 {
-    if(cookie.name() == "dlrowolleh" || cookie.name() == "coniunctio")
+    if(cookie.name() == "coniunctio")
     {
-        for(int j = 0; j < cookieList.size(); ++j)
-        {
-            if(cookieList.at(j).name() == cookie.name())
-            {
-                cookieList.removeAt(j);
-                break;
-            }
-        }
         cookie.setExpirationDate(QDateTime::currentDateTime().addYears(8));
-        cookieList.append(cookie);
+        connectCookie = cookie;
     }
 
     adjustSize();
 }
 
-void connectWindowClass::showAddCookiesWindow()
+void connectWindowClass::showAddCookieWindow()
 {
-    addCookiesWindowClass* myAddCookiesWindow = new addCookiesWindowClass(this);
-    connect(myAddCookiesWindow, &addCookiesWindowClass::newCookiesAvailable, this, &connectWindowClass::addCookiesManually);
-    myAddCookiesWindow->exec();
+    addCookieWindowClass* myAddCookieWindow = new addCookieWindowClass(this);
+    connect(myAddCookieWindow, &addCookieWindowClass::newCookieAvailable, this, &connectWindowClass::addCookieManually);
+    myAddCookieWindow->exec();
 }
 
-void connectWindowClass::addCookiesManually(QString newHelloCookie, QString newConnectCookie)
+void connectWindowClass::addCookieManually(QString newConnectCookie)
 {
-    cookieList.clear();
-    cookieList.append(QNetworkCookie("dlrowolleh", newHelloCookie.toStdString().c_str()));
-    cookieList.append(QNetworkCookie("coniunctio", newConnectCookie.toStdString().c_str()));
+    connectCookie = QNetworkCookie("coniunctio", newConnectCookie.toStdString().c_str());
 }
 
 void connectWindowClass::valideConnect()
 {
-    if(addPseudoWindowClass::pseudoIsValide(pseudoLine->text()) == true && cookieList.size() >= 2)
+    if(addPseudoWindowClass::pseudoIsValide(pseudoLine->text()) == true && connectCookie.value().isEmpty() == false)
     {
-        emit newCookiesAvailable(cookieList, pseudoLine->text(), rememberBox->isChecked(), rememberBox->isChecked());
+        emit newCookieAvailable(connectCookie, pseudoLine->text(), rememberBox->isChecked(), rememberBox->isChecked());
         close();
         return;
     }
     else
     {
-        if(cookieList.size() < 2)
+        if(connectCookie.value().isEmpty() == true)
         {
             QMessageBox::warning(this, "Erreur", "Vous ne vous êtes pas connecté.");
         }
@@ -139,7 +129,7 @@ void connectWindowClass::valideConnect()
 void connectWindowClass::showHelpConnect()
 {
     QMessageBox::information(this, "Aide", "Pour vous connecter, veuillez suivre ces étapes :\n"
-                           "1 - cliquez sur le bouton \"Afficher la page de connexion\", si le logiciel crash vous devrez ajouter les cookies manuellement (voir dernière ligne de cette aide).\n"
+                           "1 - cliquez sur le bouton \"Afficher la page de connexion\", si le logiciel crash vous devrez ajouter le cookie manuellement (voir dernière ligne de cette aide).\n"
                            "2 - connectez-vous sur JVC avec votre pseudo.\n"
                            "3 - cliquez sur le bouton \"VALIDER\" qui possède un fond vert sur la page de JVC, attendez que la page d'accueil ait fini de charger puis "
                            "passez à l'étape suivante.\n"
@@ -149,6 +139,6 @@ void connectWindowClass::showHelpConnect()
                            "- si après avoir cliqué sur \"Afficher la page de connexion\" vous ne voyez pas la page de connexion, agrandissez la fenêtre.\n"
                            "- il est possible que juste après vous être connecté vous ne puissiez pas utiliser votre pseudo, "
                            "dans ce cas relancez RespawnIRC.\n"
-                           "- si vous ne voyez pas le captcha (ou si vous ne pouvez pas le remplir) cliquez sur le bouton \"Ajouter des cookies\" "
-                           "afin d'ajouter manuellement les cookies, après cela, passez directement à l'étape 4.");
+                           "- si vous ne voyez pas le captcha (ou si vous ne pouvez pas le remplir) cliquez sur le bouton \"Ajouter le cookie\" "
+                           "afin d'ajouter manuellement le cookie de connexion, après cela, passez directement à l'étape 4.");
 }

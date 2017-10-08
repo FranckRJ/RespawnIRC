@@ -23,7 +23,6 @@ SOURCES += \
     getTopicMessages.cpp \
     preferencesWindow.cpp \
     shortcutTool.cpp \
-    addCookiesWindow.cpp \
     imageDownloadTool.cpp \
     webNavigator.cpp \
     customWebView.cpp \
@@ -34,7 +33,9 @@ SOURCES += \
     tabViewTopicInfos.cpp \
     manageShortcutWindow.cpp \
     addShortcutWindow.cpp \
-    utilityTool.cpp
+    utilityTool.cpp \
+    addCookieWindow.cpp \
+    clickableLabel.cpp
 
 QT += \
     network \
@@ -66,7 +67,6 @@ HEADERS += \
     getTopicMessages.hpp \
     preferencesWindow.hpp \
     shortcutTool.hpp \
-    addCookiesWindow.hpp \
     imageDownloadTool.hpp \
     webNavigator.hpp \
     customWebView.hpp \
@@ -78,7 +78,9 @@ HEADERS += \
     tabViewTopicInfos.hpp \
     manageShortcutWindow.hpp \
     addShortcutWindow.hpp \
-    utilityTool.hpp
+    utilityTool.hpp \
+    addCookieWindow.hpp \
+    clickableLabel.hpp
 
 RC_FILE = respawnIrc.rc
 

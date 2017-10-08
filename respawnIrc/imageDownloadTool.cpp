@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QIODevice>
+#include <QImage>
 
 #include "imageDownloadTool.hpp"
 #include "parsingTool.hpp"
@@ -10,10 +11,12 @@
 imageDownloadToolClass::imageDownloadToolClass(QObject* parent) : QObject(parent)
 {
     networkManager = new QNetworkAccessManager(this);
+    tmpDir.reset(new QTemporaryDir());
 }
 
-void imageDownloadToolClass::addRule(QString ruleName, QString directoryPath, bool isInTmpDir, bool alwaysCheckBeforeDL,
-                                     QString baseUrl, QString appendAfetName, bool takeOnlyFileNameForSave)
+void imageDownloadToolClass::addOrUpdateRule(QString ruleName, QString directoryPath, bool isInTmpDir, bool alwaysCheckBeforeDL,
+                                             QString baseUrl, QString appendAfterName, bool takeOnlyFileNameForSave, int preferedImageWidth,
+                                             int preferedImageHeight, bool keepAspectRatio)
 {
     imageDownloadRuleStruct newRule;
 
@@ -21,15 +24,18 @@ void imageDownloadToolClass::addRule(QString ruleName, QString directoryPath, bo
     newRule.baseUrl = baseUrl;
     newRule.isInTmpDir = isInTmpDir;
     newRule.alwaysCheckBeforeDL = alwaysCheckBeforeDL;
-    newRule.appendAfterName = appendAfetName;
+    newRule.appendAfterName = appendAfterName;
     newRule.takeOnlyFileNameForSave = takeOnlyFileNameForSave;
+    newRule.preferedImageWidth = preferedImageWidth;
+    newRule.preferedImageHeight = preferedImageHeight;
+    newRule.keepAspectRatio = keepAspectRatio;
 
     listOfRulesForImage[ruleName] = newRule;
     listOfExistingsImageForRules[ruleName] = QStringList();
 
     if(newRule.alwaysCheckBeforeDL == true)
     {
-        QString basePath = (newRule.isInTmpDir == true ? tmpDir.path() : QCoreApplication::applicationDirPath());
+        QString basePath = (newRule.isInTmpDir == true ? tmpDir->path() : QCoreApplication::applicationDirPath());
         QDir imageDir(basePath + newRule.directoryPath);
         QStringList listOfImagesInDir;
 
@@ -62,7 +68,7 @@ void imageDownloadToolClass::checkAndStartDownloadMissingImages(QStringList list
     {
         return;
     }
-    if(ruleIte.value().isInTmpDir == true && tmpDir.isValid() == false)
+    if(ruleIte.value().isInTmpDir == true && tmpDir->isValid() == false)
     {
         return;
     }
@@ -85,9 +91,57 @@ void imageDownloadToolClass::checkAndStartDownloadMissingImages(QStringList list
     startDownloadMissingImages();
 }
 
+void imageDownloadToolClass::resetCache()
+{
+    tmpDir.reset(new QTemporaryDir());
+
+    for(QMap<QString, imageDownloadRuleStruct>::const_iterator ite = listOfRulesForImage.constBegin(); ite != listOfRulesForImage.end(); ++ite)
+    {
+        if(ite.value().isInTmpDir == true)
+        {
+            QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingsImageForRules.find(ite.key());
+
+            if(listOfImagesIte != listOfExistingsImageForRules.end())
+            {
+                listOfImagesIte.value().clear();
+            }
+        }
+    }
+
+    if(listOfImagesUrlNeedDownload.isEmpty() == false)
+    {
+        cacheHasBeenResetDuringDownlaod = true;
+
+        if(listOfImagesUrlNeedDownload.size() > 1)
+        {
+            QList<infoForDownloadImageStruct>::iterator ite = listOfImagesUrlNeedDownload.begin();
+            ++ite;
+            while(ite != listOfImagesUrlNeedDownload.end())
+            {
+                QMap<QString, imageDownloadRuleStruct>::iterator ruleIte = listOfRulesForImage.find(ite->ruleForImage);
+
+                if(ruleIte != listOfRulesForImage.end())
+                {
+                    if(ruleIte->isInTmpDir == true)
+                    {
+                        listOfImagesUrlNeedDownload.erase(ite++);
+                        continue;
+                    }
+                }
+                ++ite;
+            }
+        }
+    }
+}
+
+void imageDownloadToolClass::deleteCache()
+{
+    tmpDir.reset();
+}
+
 QString imageDownloadToolClass::getPathOfTmpDir()
 {
-    return tmpDir.path();
+    return tmpDir->path();
 }
 
 int imageDownloadToolClass::getNumberOfDownloadRemaining()
@@ -95,7 +149,7 @@ int imageDownloadToolClass::getNumberOfDownloadRemaining()
     return listOfImagesUrlNeedDownload.size();
 }
 
-bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, imageDownloadRuleStruct thisRule, QString ruleName)
+bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, const imageDownloadRuleStruct& thisRule, QString ruleName)
 {
     QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingsImageForRules.find(ruleName);
 
@@ -118,7 +172,7 @@ bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, imageDownloa
 
     if(thisRule.alwaysCheckBeforeDL == true)
     {
-        QString basePath = (thisRule.isInTmpDir == true ? tmpDir.path() : QCoreApplication::applicationDirPath());
+        QString basePath = (thisRule.isInTmpDir == true ? tmpDir->path() : QCoreApplication::applicationDirPath());
         QString pathFile = (thisRule.takeOnlyFileNameForSave == true ? getOnlyLevelOfFilePath(imageUrl) : imageUrl);
         QFileInfo imageFile(basePath + thisRule.directoryPath + convertUrlToFilePath(pathFile) + thisRule.appendAfterName);
 
@@ -186,21 +240,33 @@ void imageDownloadToolClass::analyzeLatestImageDownloaded()
 
     if(ruleIte != listOfRulesForImage.end() && listOfImagesIte != listOfExistingsImageForRules.end())
     {
-        if(reply->isReadable() == true && (ruleIte.value().isInTmpDir == false || tmpDir.isValid() == true))
+        if(reply->isReadable() == true && (ruleIte.value().isInTmpDir == false || (tmpDir->isValid() == true && cacheHasBeenResetDuringDownlaod == false)))
         {
             QByteArray imageInBytes = reply->readAll();
             if(imageInBytes.length() > 150)
             {
-                QFile newImage;
+                QFile newImageFile;
                 QDir newDir;
-                QString basePath = (ruleIte.value().isInTmpDir == true ? tmpDir.path() : QCoreApplication::applicationDirPath());
+                QString basePath = (ruleIte.value().isInTmpDir == true ? tmpDir->path() : QCoreApplication::applicationDirPath());
                 QString pathFile = (ruleIte.value().takeOnlyFileNameForSave == true ? getOnlyLevelOfFilePath(listOfImagesUrlNeedDownload.front().linkOfImage) : listOfImagesUrlNeedDownload.front().linkOfImage);
                 QString imagePath = (basePath + ruleIte.value().directoryPath + convertUrlToFilePath(pathFile) + ruleIte.value().appendAfterName);
                 newDir.mkpath(removeLastLevelOfFilePath(imagePath));
-                newImage.setFileName(imagePath);
-                newImage.open(QIODevice::WriteOnly);
-                newImage.write(imageInBytes);
-                newImage.close();
+                newImageFile.setFileName(imagePath);
+                newImageFile.open(QIODevice::WriteOnly);
+
+                if(ruleIte.value().preferedImageWidth > 0 && ruleIte.value().preferedImageHeight > 0)
+                {
+                    QImage image;
+                    image.loadFromData(imageInBytes);
+                    image = image.scaled(ruleIte.value().preferedImageWidth, ruleIte.value().preferedImageHeight,
+                                         ((ruleIte.value().keepAspectRatio == true) ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio), Qt::SmoothTransformation);
+                    image.save(&newImageFile, 0, 100);
+                }
+                else
+                {
+                    newImageFile.write(imageInBytes);
+                }
+                newImageFile.close();
             }
             listOfImagesIte.value().append(convertUrlToFilePath(listOfImagesUrlNeedDownload.front().linkOfImage));
         }
@@ -208,6 +274,7 @@ void imageDownloadToolClass::analyzeLatestImageDownloaded()
     reply->deleteLater();
 
     listOfImagesUrlNeedDownload.pop_front();
+    cacheHasBeenResetDuringDownlaod = false;
     reply = nullptr;
 
     emit oneDownloadFinished();

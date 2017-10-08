@@ -7,7 +7,6 @@
 #include <QWebEngineView>
 #include <QLineEdit>
 #include <QCheckBox>
-#include <QList>
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QString>
@@ -20,14 +19,14 @@ public:
 private slots:
     void addWebView();
     void checkThisCookie(QNetworkCookie cookie);
-    void showAddCookiesWindow();
-    void addCookiesManually(QString newHelloCookie, QString newConnectCookie);
+    void showAddCookieWindow();
+    void addCookieManually(QString newConnectCookie);
     void valideConnect();
     void showHelpConnect();
 signals:
-    void newCookiesAvailable(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
+    void newCookieAvailable(QNetworkCookie newConnectCookie, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
 private:
-    QList<QNetworkCookie> cookieList;
+    QNetworkCookie connectCookie;
     QWebEngineView* webView = nullptr;
     QPushButton* buttonShowWebView;
     QVBoxLayout* mainLayout;

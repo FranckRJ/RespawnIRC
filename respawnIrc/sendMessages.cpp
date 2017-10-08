@@ -8,6 +8,7 @@
 #include "parsingTool.hpp"
 #include "shortcutTool.hpp"
 #include "settingTool.hpp"
+#include "utilityTool.hpp"
 
 sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
 {
@@ -40,7 +41,7 @@ void sendMessagesClass::doStuffBeforeQuit()
     messageLine->doStuffBeforeQuit();
 }
 
-void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QList<QNetworkCookie>& listOfCookies, const QList<QPair<QString, QString>>& listOfInput)
+void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const QNetworkCookie& connectCookie, const QList<QPair<QString, QString>>& listOfInput)
 {
     QString website = parsingTool::getWebsite(topicLink);
 
@@ -84,10 +85,10 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         QNetworkRequest request;
         QString data;
 
-        cookieListForPostMsg = listOfCookies;
+        connectCookieForPostMsg = connectCookie;
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(cookieListForPostMsg, QUrl("http://" + website));
+        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(connectCookieForPostMsg), QUrl("http://" + website));
 
         if(isInEdit == true)
         {
@@ -221,7 +222,7 @@ void sendMessagesClass::quoteThisMessage(QString messageToQuote)
     messageLine->setFocus();
 }
 
-void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString infoToSend, bool useMessageEdit)
+void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString error, QString infoToSend, bool useMessageEdit)
 {
     if(messageEdit.isEmpty() == false)
     {
@@ -236,7 +237,7 @@ void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messa
     }
     else
     {
-        QMessageBox::warning(this, "Erreur", "Impossible d'éditer ce message.");
+        QMessageBox::warning(this, "Erreur", error);
         setIsInEdit(false);
     }
 
@@ -291,7 +292,8 @@ void sendMessagesClass::deleteReplyForSendMessage()
         }
     }
     else if(source.contains("<div class=\"alert-row\"> Le captcha est invalide. </div>") == true ||
-            (isInEdit == true && source.startsWith("{\"erreur\":[\"Le captcha est incorrect.\"]") == true))
+            (isInEdit == true && (source.startsWith("{\"erreur\":[\"Le captcha est incorrect.\"") == true ||
+                                  source.startsWith("{\"erreur\":[\"Le captcha est invalide.\"") == true)))
     {
         QMessageBox::warning(this, "Erreur", "Depuis la mise à jour de JVC les captchas ne sont plus supportés, "
                                            "veuillez attendre quelques secondes avant d'envoyer votre message.");
@@ -299,7 +301,14 @@ void sendMessagesClass::deleteReplyForSendMessage()
     }
     else
     {
-        QMessageBox::warning(this, "Erreur", parsingTool::getErrorMessage(source));
+        if(isInEdit == true)
+        {
+            QMessageBox::warning(this, "Erreur", parsingTool::getErrorMessageInJSON(source));
+        }
+        else
+        {
+            QMessageBox::warning(this, "Erreur", parsingTool::getErrorMessage(source));
+        }
         dontEraseEditMessage = true;
     }
 

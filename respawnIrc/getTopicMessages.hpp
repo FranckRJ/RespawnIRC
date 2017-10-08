@@ -34,7 +34,7 @@ public:
     explicit getTopicMessagesClass(QObject* parent = nullptr);
 public slots:
     void setNewTopic(QString newTopicLink, bool getFirstMessage);
-    void setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies, QString newPseudoOfUser, bool updateMessages);
+    void setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie, QString newPseudoOfUser, bool updateMessages);
     void settingsChanged(settingsForMessageParsingStruct newSettings);
     void startGetMessage();
 private:
@@ -46,7 +46,7 @@ signals:
     void newMessagesAreAvailable(QList<messageStruct> listOfNewMessages, QList<QPair<QString, QString>> newListOfInput,
                                  ajaxInfoStruct newAjaxInfo, QString fromThisTopic, bool listIsReallyEmpty);
     void newNameForTopic(QString newName);
-    void newCookiesHaveToBeSet(QList<QNetworkCookie> newListOfCookies, QString currentPseudoOfUser);
+    void newCookieHasToBeSet(QNetworkCookie newConnectCookie, QString currentPseudoOfUser);
     void newMessageStatus(QString newStatus);
     void newNumberOfConnectedAndMP(QString newNumberConnected, int newNumberMP, bool forceSet);
     void newLinkForTopic(QString newTopicLink);
@@ -56,8 +56,8 @@ private:
     QNetworkAccessManager* networkManager;
     QVector<autoTimeoutReplyClass*> listOfTimeoutForReplys;
     QVector<QNetworkReply*> listOfReplys;
-    QList<QNetworkCookie> currentCookieList;
-    QString websiteOfCookies;
+    QNetworkCookie currentConnectCookie;
+    QString websiteOfCookie;
     QMap<long, QString> listOfEdit;
     QTimer* timerForGetMessage;
     QString topicLink;
@@ -69,7 +69,7 @@ private:
     bool firstTimeGetMessages = true;
     bool needToGetMessages = false;
     bool retrievesMessage = false;
-    bool needToSetCookies = false;
+    bool needToSetCookie = false;
     long idOfLastMessage = 0;
     int numberOfPagesToDownload = 2;
 };

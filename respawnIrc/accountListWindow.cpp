@@ -44,7 +44,7 @@ accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAc
     connect(buttonLoginOneTopic, &QPushButton::clicked, this, &accountListWindowClass::connectToOneTopicWithThisAccount);
 }
 
-void accountListWindowClass::addOrUpdateAcountInThisList(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, QList<accountStruct>* thisList)
+void accountListWindowClass::addOrUpdateAcountInThisList(QNetworkCookie newConnectCookie, QString newPseudoOfUser, QList<accountStruct>* thisList)
 {
     accountStruct* accountToChange = nullptr;
 
@@ -62,7 +62,7 @@ void accountListWindowClass::addOrUpdateAcountInThisList(QList<QNetworkCookie> n
         accountToChange = &thisList->back();
     }
 
-    accountToChange->listOfCookie = newCookies;
+    accountToChange->connectCookie = newConnectCookie;
     accountToChange->pseudo = newPseudoOfUser;
 }
 
@@ -82,15 +82,15 @@ void accountListWindowClass::updateList()
 void accountListWindowClass::showConnectWindow()
 {
     connectWindowClass* myConnectWindow = new connectWindowClass(this, false);
-    connect(myConnectWindow, &connectWindowClass::newCookiesAvailable, this, &accountListWindowClass::addAccount);
+    connect(myConnectWindow, &connectWindowClass::newCookieAvailable, this, &accountListWindowClass::addAccount);
     myConnectWindow->exec();
 }
 
-void accountListWindowClass::addAccount(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveInfo)
+void accountListWindowClass::addAccount(QNetworkCookie newConnectCookie, QString newPseudoOfUser, bool saveInfo)
 {
     (void) saveInfo;
 
-    addOrUpdateAcountInThisList(newCookies, newPseudoOfUser, listOfAccount);
+    addOrUpdateAcountInThisList(newConnectCookie, newPseudoOfUser, listOfAccount);
     updateList();
 }
 
@@ -108,7 +108,7 @@ void accountListWindowClass::connectWithThisAccount()
 {
     if(viewListOfAccount->currentIndex().row() != -1)
     {
-        emit useThisAccount(listOfAccount->at(viewListOfAccount->currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount->currentIndex().row()).pseudo, false, rememberBox->isChecked());
+        emit useThisAccount(listOfAccount->at(viewListOfAccount->currentIndex().row()).connectCookie, listOfAccount->at(viewListOfAccount->currentIndex().row()).pseudo, false, rememberBox->isChecked());
         close();
     }
 }
@@ -117,7 +117,7 @@ void accountListWindowClass::connectToOneTopicWithThisAccount()
 {
     if(viewListOfAccount->currentIndex().row() != -1)
     {
-        emit useThisAccountForOneTopic(listOfAccount->at(viewListOfAccount->currentIndex().row()).listOfCookie, listOfAccount->at(viewListOfAccount->currentIndex().row()).pseudo, rememberBox->isChecked());
+        emit useThisAccountForOneTopic(listOfAccount->at(viewListOfAccount->currentIndex().row()).connectCookie, listOfAccount->at(viewListOfAccount->currentIndex().row()).pseudo, rememberBox->isChecked());
         close();
     }
 }

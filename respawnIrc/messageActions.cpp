@@ -1,8 +1,11 @@
 #include <QMessageBox>
 #include <QNetworkCookieJar>
 #include <QUrl>
+#include <QList>
+#include <QPair>
 
 #include "messageActions.hpp"
+#include "utilityTool.hpp"
 
 messageActionsClass::messageActionsClass(QWidget* newParent) : QObject(newParent)
 {
@@ -32,22 +35,22 @@ void messageActionsClass::setNewAjaxInfo(ajaxInfoStruct newAjaxInfo)
     ajaxInfo = newAjaxInfo;
 }
 
-void messageActionsClass::setNewCookies(QList<QNetworkCookie> newCookies, QString newWebsiteOfCookies)
+void messageActionsClass::setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie)
 {
-    currentCookieList = newCookies;
-    websiteOfCookies = newWebsiteOfCookies;
+    currentConnectCookie = newConnectCookie;
+    websiteOfCookie = newWebsiteOfCookie;
 
     if(networkManager != nullptr)
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(newCookies, QUrl("http://" + websiteOfCookies));
+        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("http://" + websiteOfCookie));
     }
 }
 
-const QList<QNetworkCookie>& messageActionsClass::getCookieList() const
+const QNetworkCookie& messageActionsClass::getConnectCookie() const
 {
-    return currentCookieList;
+    return currentConnectCookie;
 }
 
 bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
@@ -55,7 +58,7 @@ bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdi
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, websiteOfCookies);
+        setNewCookie(currentConnectCookie, websiteOfCookie);
     }
 
     if(ajaxInfo.list.isEmpty() == false)
@@ -69,7 +72,6 @@ bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdi
             urlToGet = "http://" + websiteOfTopic + "/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfMessageToEdit) + "&" + ajaxInfo.list + "&action=get";
             requestForEditInfo = parsingTool::buildRequestWithThisUrl(urlToGet);
             oldAjaxInfo = ajaxInfo;
-            ajaxInfo.list.clear();
             oldUseMessageEdit = useMessageEdit;
             replyForEditInfo = timeoutForEditInfo->resetReply(networkManager->get(requestForEditInfo));
 
@@ -96,7 +98,7 @@ void messageActionsClass::getQuoteInfo(QString idOfMessageQuoted, QString messag
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, websiteOfCookies);
+        setNewCookie(currentConnectCookie, websiteOfCookie);
     }
 
     if(ajaxInfo.list.isEmpty() == false && replyForQuoteInfo == nullptr)
@@ -128,7 +130,7 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
     if(networkManager == nullptr)
     {
         networkManager = new QNetworkAccessManager(this);
-        setNewCookies(currentCookieList, websiteOfCookies);
+        setNewCookie(currentConnectCookie, websiteOfCookie);
     }
 
     if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)
@@ -155,6 +157,7 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
 
 void messageActionsClass::analyzeEditInfo()
 {
+    QString error;
     QString message;
     QString dataToSend = oldAjaxInfo.list + "&action=post";
     QList<QPair<QString, QString>> listOfEditInput;
@@ -170,6 +173,7 @@ void messageActionsClass::analyzeEditInfo()
 
     source = parsingTool::parsingAjaxMessages(source);
     message = parsingTool::getMessageEdit(source);
+    error = parsingTool::getErrorMessageInJSON(source, false, "Impossible d'éditer ce message.");
     parsingTool::getListOfHiddenInputFromThisForm(source, "form-post-topic", listOfEditInput);
 
     for(const QPair<QString, QString>& thisInput : listOfEditInput)
@@ -177,7 +181,7 @@ void messageActionsClass::analyzeEditInfo()
         dataToSend += "&" + thisInput.first + "=" + thisInput.second;
     }
 
-    emit setEditInfo(oldIdOfMessageToEdit, message, dataToSend, oldUseMessageEdit);
+    emit setEditInfo(oldIdOfMessageToEdit, message, error, dataToSend, oldUseMessageEdit);
 
     replyForEditInfo = nullptr;
 }

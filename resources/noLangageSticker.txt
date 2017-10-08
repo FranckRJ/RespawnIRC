@@ -8,3 +8,4 @@
 1n1n 1n1n-fr
 1n1m 1n1m-fr
 1n1p 1n1p-fr
+zuc zuc-fr
