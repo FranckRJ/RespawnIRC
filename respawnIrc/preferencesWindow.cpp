@@ -270,7 +270,6 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     vboxNoelshack->addWidget(makeNewCheckBox("Cacher les images nuisibles", "hideUglyImages"));
     vboxNoelshack->addWidget(makeNewCheckBox("Améliorer le redimensionnement des miniatures noelshack", "smartNoelshackResizing"));
     vboxNoelshack->addLayout(makeNewSpinBox("Largeur des miniatures noelshack", "noelshackImageWidth"));
-    vboxNoelshack->addLayout(makeNewSpinBox("Hauteur des miniatures noelshack", "noelshackImageHeight"));
     vboxNoelshack->addStretch(1);
     groupBoxNoelshack->setLayout(vboxNoelshack);
 

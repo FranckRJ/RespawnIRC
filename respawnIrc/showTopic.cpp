@@ -228,7 +228,7 @@ void showTopicClass::updateSettingInfo()
     settingsForMessageParsing.downloadMissingStickers = settingTool::getThisBoolOption("downloadMissingStickers");
     settingsForMessageParsing.downloadNoelshackImages = settingTool::getThisBoolOption("downloadNoelshackImages");
     settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingTool::getThisIntOption("noelshackImageWidth").value;
-    settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingTool::getThisIntOption("noelshackImageHeight").value;
+    settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = utilityTool::roundToInt(settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth * 0.75);
     settingsForMessageParsing.infoForMessageParsing.hideUglyImages = settingTool::getThisBoolOption("hideUglyImages");
     settingsForMessageParsing.infoForMessageParsing.smileyToText = settingTool::getThisBoolOption("smileyToText");
     if(settingTool::getThisBoolOption("fastModeEnbled") == false)

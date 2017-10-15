@@ -88,8 +88,6 @@ private:
     int typeOfImageRefresh;
     int avatarSize;
     int noelshackImageWidth;
-    int noelshackImageHeight;
-
 };
 
 #endif

@@ -5,6 +5,7 @@
 #include "tabViewTopicInfos.hpp"
 #include "styleTool.hpp"
 #include "settingTool.hpp"
+#include "utilityTool.hpp"
 
 tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo,
                                                const QList<accountStruct>* newListOfAccount, QWidget* parent) : QWidget(parent)
@@ -77,17 +78,15 @@ void tabViewTopicInfosClass::updateSettings(bool firstTimeUpdate)
 {
     int oldAvatarSize = avatarSize;
     int oldNoelshackImageWidth = noelshackImageWidth;
-    int oldNoelshackImageHeight = noelshackImageHeight;
     bool oldDownloadHighDefAvatar = downloadHighDefAvatar;
 
     avatarSize = ((settingTool::getThisBoolOption("smartAvatarResizing") == true) ? settingTool::getThisIntOption("avatarSize").value : 0);
     noelshackImageWidth = ((settingTool::getThisBoolOption("smartNoelshackResizing") == true) ? settingTool::getThisIntOption("noelshackImageWidth").value : 0);
-    noelshackImageHeight = ((settingTool::getThisBoolOption("smartNoelshackResizing") == true) ? settingTool::getThisIntOption("noelshackImageHeight").value : 0);
     downloadHighDefAvatar = settingTool::getThisBoolOption("downloadHighDefAvatar");
     typeOfImageRefresh = settingTool::getThisIntOption("typeOfImageRefresh").value;
 
     if(firstTimeUpdate == false && (avatarSize != oldAvatarSize || noelshackImageWidth != oldNoelshackImageWidth ||
-                                    noelshackImageHeight != oldNoelshackImageHeight || downloadHighDefAvatar != oldDownloadHighDefAvatar))
+                                    downloadHighDefAvatar != oldDownloadHighDefAvatar))
     {
         QString themeImgDir = styleTool::getImagePathOfThemeIfExist(currentThemeName);
         imageDownloadTool->resetCache();
@@ -317,7 +316,7 @@ void tabViewTopicInfosClass::addOrUpdateAvatarRuleForImageDownloader()
 
 void tabViewTopicInfosClass::addOrUpdateNoelshackRuleForImageDownloader()
 {
-    imageDownloadTool->addOrUpdateRule("noelshack", "/img/", true, false, "", "", false, noelshackImageWidth, noelshackImageHeight, false);
+    imageDownloadTool->addOrUpdateRule("noelshack", "/img/", true, false, "", "", false, noelshackImageWidth, utilityTool::roundToInt(noelshackImageWidth * 0.75), false);
 }
 
 void tabViewTopicInfosClass::currentTabChanged(int newIndex)

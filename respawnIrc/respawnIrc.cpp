@@ -657,7 +657,7 @@ void respawnIrcClass::setTheseOptions(QMap<QString, bool> newBoolOptions, QMap<Q
             reloadForAllTopicNeeded = true;
         }
     }
-    if((intIte = newIntOptions.find("noelshackImageWidth")) != newIntOptions.end() || (intIte = newIntOptions.find("noelshackImageHeight")) != newIntOptions.end())
+    if((intIte = newIntOptions.find("noelshackImageWidth")) != newIntOptions.end())
     {
         if(tabViewTopicAlreadyUpdated == false)
         {
