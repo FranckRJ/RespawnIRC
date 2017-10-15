@@ -7,10 +7,8 @@
 #include "addShortcutWindow.hpp"
 
 addShortcutWindowClass::addShortcutWindowClass(QWidget* parent, QString currentBase, QString currentReplacement) :
-    QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+    baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     QLabel* baseLabel = new QLabel("Base :", this);
     baseLine = new QLineEdit(this);
     QLabel* replacementLabel = new QLabel("Remplacement :", this);

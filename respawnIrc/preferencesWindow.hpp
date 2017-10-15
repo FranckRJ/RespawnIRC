@@ -1,7 +1,6 @@
 #ifndef PREFERENCEWINDOW_HPP
 #define PREFERENCEWINDOW_HPP
 
-#include <QDialog>
 #include <QMap>
 #include <QString>
 #include <QWidget>
@@ -11,7 +10,9 @@
 #include <QSpinBox>
 #include <QComboBox>
 
-class preferenceWindowClass : public QDialog
+#include "baseDialog.hpp"
+
+class preferenceWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

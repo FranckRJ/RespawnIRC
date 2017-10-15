@@ -2,7 +2,6 @@
 #define CONNECTWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QNetworkCookie>
 #include <QLineEdit>
 #include <QCheckBox>
@@ -10,7 +9,9 @@
 #include <QNetworkReply>
 #include <QWebView>
 
-class connectWindowClass : public QDialog
+#include "baseDialog.hpp"
+
+class connectWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

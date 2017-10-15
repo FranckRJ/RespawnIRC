@@ -18,10 +18,8 @@ namespace
     const int REPLACEMENT_NUMBER = 1;
 }
 
-manageShortcutWindowClass::manageShortcutWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+manageShortcutWindowClass::manageShortcutWindowClass(QWidget* parent) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     shortcutsListView = new QTreeView(this);
     shortcutsItemModel = new QStandardItemModel(shortcutsListView);
     shortcutsListView->setModel(shortcutsItemModel);

@@ -8,9 +8,8 @@
 #include "preferencesWindow.hpp"
 #include "settingTool.hpp"
 
-preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+preferenceWindowClass::preferenceWindowClass(QWidget* parent) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
     expertMode = settingTool::getThisBoolOption("expertMode");
 
     typeOfPageLoad = new QComboBox(this);

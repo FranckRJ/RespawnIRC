@@ -58,7 +58,8 @@ SOURCES += \
     addShortcutWindow.cpp \
     utilityTool.cpp \
     addCookieWindow.cpp \
-    clickableLabel.cpp
+    clickableLabel.cpp \
+    baseDialog.cpp
 
 HEADERS += \
     mainWindow.hpp \
@@ -97,4 +98,5 @@ HEADERS += \
     addShortcutWindow.hpp \
     utilityTool.hpp \
     addCookieWindow.hpp \
-    clickableLabel.hpp
+    clickableLabel.hpp \
+    baseDialog.hpp

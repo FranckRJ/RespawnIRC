@@ -2,11 +2,12 @@
 #define ADDSHORTCUTWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QLineEdit>
 #include <QString>
 
-class addShortcutWindowClass : public QDialog
+#include "baseDialog.hpp"
+
+class addShortcutWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

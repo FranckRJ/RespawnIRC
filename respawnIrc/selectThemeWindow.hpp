@@ -2,16 +2,16 @@
 #define SELECTTHEMEWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QListView>
 #include <QStringListModel>
 #include <QModelIndex>
 #include <QLabel>
 #include <QString>
 
+#include "baseDialog.hpp"
 #include "viewThemeInfos.hpp"
 
-class selectThemeWindowClass : public QDialog
+class selectThemeWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

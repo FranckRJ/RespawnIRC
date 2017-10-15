@@ -18,10 +18,8 @@ namespace
     QVector<QString> listOfStickerTypeContent;
 }
 
-selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     stickerBrowser = new QTextBrowser(this);
 
     stickerBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -113,7 +111,7 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
 
 void selectStickerWindowClass::showEvent(QShowEvent* event)
 {
-    QDialog::showEvent(event);
+    baseDialogClass::showEvent(event);
 
     if(firstTimeShowed == true)
     {

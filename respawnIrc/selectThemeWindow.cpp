@@ -8,10 +8,8 @@
 
 #include "selectThemeWindow.hpp"
 
-selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWidget* parent) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     QLabel* labTheme = new QLabel("Thème actuel :", this);
     QPushButton* buttonSelect = new QPushButton("Sélectionner ce thème", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);

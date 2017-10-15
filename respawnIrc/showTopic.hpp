@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <QNetworkAccessManager>
 #include <QPoint>
+#include <QShowEvent>
 
 #include "colorPseudoListWindow.hpp"
 #include "getTopicMessages.hpp"

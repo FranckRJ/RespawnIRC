@@ -2,17 +2,18 @@
 #define WEBNAVIGATOR_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QNetworkCookie>
 #include <QLineEdit>
 #include <QList>
 #include <QString>
 #include <QUrl>
 #include <QProgressBar>
+#include <QPushButton>
 
+#include "baseDialog.hpp"
 #include "customWebView.hpp"
 
-class webNavigatorClass : public QDialog
+class webNavigatorClass : public baseDialogClass
 {
     Q_OBJECT
 public:

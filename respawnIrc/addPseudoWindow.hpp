@@ -2,11 +2,12 @@
 #define ADDPSEUDOWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QLineEdit>
 #include <QString>
 
-class addPseudoWindowClass : public QDialog
+#include "baseDialog.hpp"
+
+class addPseudoWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

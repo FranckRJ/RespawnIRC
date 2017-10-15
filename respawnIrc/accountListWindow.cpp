@@ -6,10 +6,8 @@
 #include "accountListWindow.hpp"
 #include "connectWindow.hpp"
 
-accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAccount, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+accountListWindowClass::accountListWindowClass(QList<accountStruct>* newListOfAccount, QWidget* parent) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     QLabel* labRemember = new QLabel("Se souvenir :", this);
     QPushButton* buttonAddAccount = new QPushButton("Ajouter", this);
     QPushButton* buttonRemoveAccount = new QPushButton("Supprimer", this);

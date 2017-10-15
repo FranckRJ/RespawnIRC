@@ -7,10 +7,8 @@
 #include "selectTopicWindow.hpp"
 #include "parsingTool.hpp"
 
-selectTopicWindowClass::selectTopicWindowClass(QString currentTopic, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+selectTopicWindowClass::selectTopicWindowClass(QString currentTopic, QWidget* parent) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     QLabel* labTopic = new QLabel("Topic :", this);
     QPushButton* buttonSelect = new QPushButton("Choisir ce topic", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);

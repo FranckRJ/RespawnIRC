@@ -2,11 +2,12 @@
 #define ADDCOOKIEWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QLineEdit>
 #include <QString>
 
-class addCookieWindowClass : public QDialog
+#include "baseDialog.hpp"
+
+class addCookieWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

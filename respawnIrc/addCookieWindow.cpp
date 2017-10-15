@@ -8,10 +8,8 @@
 #include "addCookieWindow.hpp"
 #include "styleTool.hpp"
 
-addCookieWindowClass::addCookieWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+addCookieWindowClass::addCookieWindowClass(QWidget* parent) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     QLabel* labConnect = new QLabel("Cookie \"coniunctio\" :", this);
     QLabel* labHelp = new QLabel("Pour de l'aide concernant l'ajout manuel du cookie, veuillez consulter le "
                                  "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"https://github.com/FranckRJ/RespawnIRC/wiki/Ajouter-manuellement-des-cookies\">wiki</a>.", this);
