@@ -276,6 +276,17 @@ void showTopicClass::relayoutDocumentHack()
     messagesBox->setLineWrapColumnOrWidth(messagesBox->lineWrapColumnOrWidth());
 }
 
+void showTopicClass::showEvent(QShowEvent* event)
+{
+    QWidget::showEvent(event);
+
+    if(firstTimeShowed == true)
+    {
+        messagesBox->verticalScrollBar()->setValue(messagesBox->verticalScrollBar()->maximum());
+        firstTimeShowed = false;
+    }
+}
+
 void showTopicClass::addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID)
 {
     messageInfoForEditStruct newInfos;

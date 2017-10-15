@@ -53,6 +53,8 @@ public:
     void addSearchPath(QString newSearchPath);
     void resetSearchPath();
     void relayoutDocumentHack();
+protected:
+    void showEvent(QShowEvent* event) override;
 private:
     void addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID);
     void editThisMessageOfMessagesBox(QString newMessage, long messageID);
@@ -104,6 +106,7 @@ private:
     QString lastDate;
     QString numberOfConnected;
     messageStruct firstMessageOfTopic;
+    bool firstTimeShowed = true;
     bool showQuoteButton;
     bool disableSelfQuoteButton;
     bool showBlacklistButton;
