@@ -61,6 +61,7 @@ private:
     void editThisMessageOfMessagesBox(QString newMessage, long messageID);
     QString getColorOfThisPseudo(QString pseudo);
     void setTopicToErrorMode();
+    void replaceTextOrRemoveIt(QString& messageToChange, const QString& oldString, const QString& newString, bool itsAReplace);
 private slots:
     void linkClicked(const QUrl& link);
     void createContextMenu(const QPoint& thisPoint);

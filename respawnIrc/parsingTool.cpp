@@ -429,16 +429,20 @@ QList<messageStruct> parsingTool::getListOfEntireMessagesWithoutMessagePars(cons
 
     for(const QString& thisMessage : listOfEntireMessage)
     {
+        QRegularExpressionMatch matchForPseudo = expForPseudo.match(thisMessage);
+        QRegularExpressionMatch matchForDate = expForDate.match(thisMessage);
+        QRegularExpressionMatch matchForEdit = expForEdit.match(thisMessage);
+
         listOfMessages.push_back(messageStruct());
         listOfMessages.back().idOfMessage = expForMessageID.match(thisMessage).captured(1).toLong();
         listOfMessages.back().avatarLink = expForAvatars.match(thisMessage).captured(2);
-        listOfMessages.back().pseudoInfo.pseudoName = expForPseudo.match(thisMessage).captured(2);
-        listOfMessages.back().pseudoInfo.pseudoType = expForPseudo.match(thisMessage).captured(1);
-        listOfMessages.back().date = expForDate.match(thisMessage).captured(3);
-        listOfMessages.back().wholeDate = expForDate.match(thisMessage).captured(2);
+        listOfMessages.back().pseudoInfo.pseudoName = matchForPseudo.captured(2);
+        listOfMessages.back().pseudoInfo.pseudoType = matchForPseudo.captured(1);
+        listOfMessages.back().date = matchForDate.captured(3);
+        listOfMessages.back().wholeDate = matchForDate.captured(2);
         listOfMessages.back().message = expForMessage.match(thisMessage).captured(1);
-        listOfMessages.back().lastTimeEdit = expForEdit.match(thisMessage).captured(1);
-        listOfMessages.back().lastTimeEditHourOnly = expForEdit.match(thisMessage).captured(2);
+        listOfMessages.back().lastTimeEdit = matchForEdit.captured(1);
+        listOfMessages.back().lastTimeEditHourOnly = matchForEdit.captured(2);
         listOfMessages.back().signature = expForSignature.match(thisMessage).captured(1);
 
         if(listOfMessages.back().pseudoInfo.pseudoName.isEmpty() == true)

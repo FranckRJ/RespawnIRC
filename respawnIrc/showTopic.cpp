@@ -402,6 +402,19 @@ void showTopicClass::setTopicToErrorMode()
     }
 }
 
+void showTopicClass::replaceTextOrRemoveIt(QString& messageToChange, const QString& oldString,
+                                          const QString& newString, bool itsAReplace)
+{
+    if(itsAReplace)
+    {
+        messageToChange.replace(oldString, newString);
+    }
+    else
+    {
+        messageToChange.remove(oldString);
+    }
+}
+
 void showTopicClass::linkClicked(const QUrl& link)
 {
     QString linkInString = link.toDisplayString();
@@ -612,46 +625,26 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
             }
         }
 
-        if(showQuoteButton == true && (disableSelfQuoteButton == false || pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower()))
-        {
-            newMessageToAppend.replace("<%BUTTON_QUOTE%>", baseModelInfo.quoteModel);
-        }
+        replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_QUOTE%>", baseModelInfo.quoteModel,
+                              showQuoteButton == true && (disableSelfQuoteButton == false || pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower()));
+        replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_EDIT%>", baseModelInfo.editModel,
+                              pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower() && showEditButton == true);
+        replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_DELETE%>", baseModelInfo.deleteModel,
+                              pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower() && showDeleteButton == true);
+        replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel,
+                              pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower() && showBlacklistButton == true);
 
-        if(pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower())
-        {
-            if(showEditButton == true)
-            {
-                newMessageToAppend.replace("<%BUTTON_EDIT%>", baseModelInfo.editModel);
-            }
-            if(showDeleteButton == true)
-            {
-                newMessageToAppend.replace("<%BUTTON_DELETE%>", baseModelInfo.deleteModel);
-            }
-        }
-        else if(showBlacklistButton == true)
-        {
-            newMessageToAppend.replace("<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel);
-        }
-
-        if(showSignatures == true && currentMessage.signature.isEmpty() == false)
-        {
-            newMessageToAppend.replace("<%SIGNATURE_MODEL%>", baseModelInfo.signatureModel);
-        }
-
-        if(showAvatars == true && currentMessage.avatarLink.isEmpty() == false)
-        {
-            newMessageToAppend.replace("<%AVATAR_MODEL%>", baseModelInfo.avatarModel);
-        }
+        replaceTextOrRemoveIt(newMessageToAppend, "<%SIGNATURE_MODEL%>", baseModelInfo.signatureModel,
+                              showSignatures == true && currentMessage.signature.isEmpty() == false);
+        replaceTextOrRemoveIt(newMessageToAppend, "<%AVATAR_MODEL%>", baseModelInfo.avatarModel,
+                              showAvatars == true && currentMessage.avatarLink.isEmpty() == false);
+        replaceTextOrRemoveIt(newMessageToAppend, "<%EDITDATE_MODEL%>", baseModelInfo.editDateModel,
+                              currentMessage.lastTimeEdit.isEmpty() == false);
 
         if(colorUserPseudoInMessages == true && pseudoOfUser.isEmpty() == false)
         {
             parsingTool::replaceWithCapNumber(currentMessage.message, expForColorPseudo, 0,
                                                    "<span style=\"color: " + baseModelInfo.userPseudoColor + ";\">", "</span>");
-        }
-
-        if(currentMessage.lastTimeEdit.isEmpty() == false)
-        {
-            newMessageToAppend.replace("<%EDITDATE_MODEL%>", baseModelInfo.editDateModel);
         }
 
         newMessageToAppend.replace("<%DATE_COLOR%>", colorOfDate);
@@ -665,10 +658,8 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
         newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", currentMessage.pseudoInfo.pseudoName);
         newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", currentMessage.message);
 
-        if(showSignatures == true && currentMessage.signature.isEmpty() == false)
-        {
-            newMessageToAppend.replace("<%SIGNATURE_SIGNATURE%>", currentMessage.signature);
-        }
+        replaceTextOrRemoveIt(newMessageToAppend, "<%SIGNATURE_SIGNATURE%>", currentMessage.signature,
+                              showSignatures == true && currentMessage.signature.isEmpty() == false);
 
         if(showAvatars == true && currentMessage.avatarLink.isEmpty() == false)
         {
@@ -682,6 +673,11 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
             newMessageToAppend.replace("<%AVATAR_LINK%>", "vtr/" + avatarLinkToUse);
             newMessageToAppend.replace("<%AVATAR_SIZE%>", QString::number(avatarSize));
             listOfAvatarsUsed.append(avatarLinkToUse);
+        }
+        else
+        {
+            newMessageToAppend.remove("<%AVATAR_LINK%>");
+            newMessageToAppend.remove("<%AVATAR_SIZE%>");
         }
 
         if(appendHrAtEndOfFirstMessage == true)
