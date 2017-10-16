@@ -86,6 +86,8 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
 
     listOfInfos.push_back("(&eacute;dit&eacute; le <%EDITDATE_ALL%>)"); //edit date model
 
+    listOfInfos.push_back("darkgray"); //selected sticker type color
+
     if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -132,6 +134,8 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
     colorInfoForMessageAndOther.codeTagBackgroundColor = listOfLine.at(22);
 
     modelInfo.editDateModel = listOfLine.at(23);
+
+    colorInfoForMessageAndOther.selectedStickerTypeColor = listOfLine.at(24);
 
     return modelInfo;
 }

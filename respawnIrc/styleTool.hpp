@@ -33,6 +33,7 @@ struct colorInfoForMessageAndOtherStruct
     QString editMessageColor;
     QString navigatorProgressBarColor;
     QString codeTagBackgroundColor;
+    QString selectedStickerTypeColor;
 };
 
 namespace styleTool

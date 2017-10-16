@@ -9,9 +9,11 @@
 #include <QPalette>
 #include <QLabel>
 #include <QCheckBox>
+#include <QColor>
 
 #include "selectStickerWindow.hpp"
 #include "settingTool.hpp"
+#include "styleTool.hpp"
 
 namespace
 {
@@ -451,7 +453,7 @@ void selectStickerWindowClass::labelClicked(Qt::MouseButton buttonClicked, int l
         tmpPalette.setColor(QPalette::Background, Qt::transparent);
         listOfLabels.at(oldLabelSelected)->setPalette(tmpPalette);
 
-        tmpPalette.setColor(QPalette::Background, Qt::darkGray);
+        tmpPalette.setColor(QPalette::Background, QColor(styleTool::getColorInfo().selectedStickerTypeColor));
         listOfLabels.at(labelID)->setPalette(tmpPalette);
         stickerTypeListscrollArea->ensureWidgetVisible(listOfLabels.at(labelID), 0, 0);
         loadAndUseListOfStickers(labelID);
