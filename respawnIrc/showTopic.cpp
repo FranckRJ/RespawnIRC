@@ -649,11 +649,18 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
                                                    "<span style=\"color: " + baseModelInfo.userPseudoColor + ";\">", "</span>");
         }
 
+        if(currentMessage.lastTimeEdit.isEmpty() == false)
+        {
+            newMessageToAppend.replace("<%EDITDATE_MODEL%>", baseModelInfo.editDateModel);
+        }
+
         newMessageToAppend.replace("<%DATE_COLOR%>", colorOfDate);
         newMessageToAppend.replace("<%PSEUDO_LOWER%>", currentMessage.pseudoInfo.pseudoName.toLower());
         newMessageToAppend.replace("<%ID_MESSAGE%>", QString::number(currentMessage.idOfMessage));
         newMessageToAppend.replace("<%DATE_MESSAGE%>", currentMessage.date);
         newMessageToAppend.replace("<%DATE_STRING%>", currentMessage.wholeDate);
+        newMessageToAppend.replace("<%EDITDATE_ALL%>", currentMessage.lastTimeEdit);
+        newMessageToAppend.replace("<%EDITDATE_HOUR%>", currentMessage.lastTimeEditHourOnly);
         newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
         newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", currentMessage.pseudoInfo.pseudoName);
         newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", currentMessage.message);

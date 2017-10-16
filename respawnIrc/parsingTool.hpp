@@ -25,6 +25,7 @@ struct messageStruct
     QString wholeDate;
     QString message;
     QString lastTimeEdit;
+    QString lastTimeEditHourOnly;
     QString signature;
     QString avatarLink;
     bool operator<(const messageStruct& otherStruct) const

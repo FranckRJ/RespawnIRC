@@ -458,7 +458,7 @@ void selectStickerWindowClass::labelClicked(Qt::MouseButton buttonClicked, int l
         oldLabelSelected = labelID;
         settingTool::saveThisOption("lastTypeOfStickerUsed", oldLabelSelected);
     }
-    else if (buttonClicked == Qt::RightButton)
+    else if(buttonClicked == Qt::RightButton)
     {
         close();
     }
