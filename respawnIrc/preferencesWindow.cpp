@@ -35,7 +35,6 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : baseDialogClass(
     realMainLayout->addWidget(mainWidget);
     realMainLayout->addLayout(buttonLayout);
     realMainLayout->setMargin(5);
-    realMainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     mainWidget->addTab(createWidgetForMainTab(), "Général");
     mainWidget->addTab(createWidgetForMessagesTab(), "Messages");
@@ -54,6 +53,12 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : baseDialogClass(
     connect(buttonOK, &QPushButton::clicked, this, &preferenceWindowClass::applySettingsAndClose);
     connect(buttonCancel, &QPushButton::clicked, this, &preferenceWindowClass::close);
     connect(buttonApply, &QPushButton::clicked, this, &preferenceWindowClass::applySettings);
+}
+
+void preferenceWindowClass::showEvent(QShowEvent* event)
+{
+    baseDialogClass::showEvent(event);
+    layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 QWidget* preferenceWindowClass::createWidgetForMainTab()

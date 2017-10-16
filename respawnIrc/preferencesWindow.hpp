@@ -9,6 +9,7 @@
 #include <QHBoxLayout>
 #include <QSpinBox>
 #include <QComboBox>
+#include <QShowEvent>
 
 #include "baseDialog.hpp"
 
@@ -17,6 +18,8 @@ class preferenceWindowClass : public baseDialogClass
     Q_OBJECT
 public:
     explicit preferenceWindowClass(QWidget* parent);
+protected:
+    void showEvent(QShowEvent* event) override;
 private:
     QWidget* createWidgetForMainTab();
     QWidget* createWidgetForMessagesTab();
