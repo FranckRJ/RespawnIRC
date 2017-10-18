@@ -15,32 +15,37 @@ baseDialogClass::baseDialogClass(QWidget* parent) :
 void baseDialogClass::showEvent(QShowEvent* event)
 {
     (void) event;
-    static int margin = 15;
 
-    QRect parentWindowGeometry = parentWidget()->window()->geometry();
-    QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int dialogWidth = width() + 2;
-    int dialogHeight = height() + 2;
-    int dialogXPos = parentWindowGeometry.left() + (parentWindowGeometry.width() / 2) - (dialogWidth / 2);
-    int dialogYPos = parentWindowGeometry.top() + (parentWindowGeometry.height() / 2) - (dialogHeight / 2);
+    if(firstTimeDialogIsShowed == true)
+    {
+        static int margin = 15;
 
-    if(dialogXPos < margin)
-    {
-        dialogXPos = margin;
-    }
-    else if(dialogXPos + dialogWidth + margin > screenGeometry.width())
-    {
-        dialogXPos = screenGeometry.width() - dialogWidth - margin;
-    }
+        QRect parentWindowGeometry = parentWidget()->window()->geometry();
+        QRect screenGeometry = QApplication::desktop()->screenGeometry();
+        int dialogWidth = width() + 2;
+        int dialogHeight = height() + 2;
+        int dialogXPos = parentWindowGeometry.left() + (parentWindowGeometry.width() / 2) - (dialogWidth / 2);
+        int dialogYPos = parentWindowGeometry.top() + (parentWindowGeometry.height() / 2) - (dialogHeight / 2);
 
-    if(dialogYPos < margin)
-    {
-        dialogYPos = margin;
-    }
-    else if(dialogYPos + dialogHeight + margin > screenGeometry.height())
-    {
-        dialogYPos = screenGeometry.height() - dialogHeight - margin;
-    }
+        if(dialogXPos < margin)
+        {
+            dialogXPos = margin;
+        }
+        else if(dialogXPos + dialogWidth + margin > screenGeometry.width())
+        {
+            dialogXPos = screenGeometry.width() - dialogWidth - margin;
+        }
 
-    setGeometry(dialogXPos, dialogYPos, dialogWidth, dialogHeight);
+        if(dialogYPos < margin)
+        {
+            dialogYPos = margin;
+        }
+        else if(dialogYPos + dialogHeight + margin > screenGeometry.height())
+        {
+            dialogYPos = screenGeometry.height() - dialogHeight - margin;
+        }
+
+        setGeometry(dialogXPos, dialogYPos, dialogWidth, dialogHeight);
+        firstTimeDialogIsShowed = false;
+    }
 }

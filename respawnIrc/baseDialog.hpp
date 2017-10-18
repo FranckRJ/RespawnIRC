@@ -12,6 +12,8 @@ public:
     virtual ~baseDialogClass() {}
 protected:
     void showEvent(QShowEvent* event) override;
+private:
+    bool firstTimeDialogIsShowed = true;
 };
 
 #endif
