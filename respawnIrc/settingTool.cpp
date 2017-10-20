@@ -69,7 +69,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultBoolOption["smartNoelshackResizing"] = true;
     listOfDefaultBoolOption["smileyToText"] = false;
     listOfDefaultBoolOption["saveLastStickerTypeUsed"] = true;
-    listOfDefaultIntOption["updateTopicTime"].value = 7500;
+    listOfDefaultIntOption["updateTopicTime"].value = 10000;
     listOfDefaultIntOption["updateTopicTime"].minValue = 2000;
     listOfDefaultIntOption["updateTopicTime"].maxValue = 60000;
     listOfDefaultIntOption["numberOfMessageShowedFirstTime"].value = 10;
@@ -96,13 +96,10 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["noelshackImageWidth"].value = 68;
     listOfDefaultIntOption["noelshackImageWidth"].minValue = 0;
     listOfDefaultIntOption["noelshackImageWidth"].maxValue = 1000;
-    listOfDefaultIntOption["noelshackImageHeight"].value = 51;
-    listOfDefaultIntOption["noelshackImageHeight"].minValue = 0;
-    listOfDefaultIntOption["noelshackImageHeight"].maxValue = 1000;
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].value = 5;
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].minValue = 1;
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].maxValue = 25;
-    listOfDefaultIntOption["updateTopicListTime"].value = 15000;
+    listOfDefaultIntOption["updateTopicListTime"].value = 20000;
     listOfDefaultIntOption["updateTopicListTime"].minValue = 4000;
     listOfDefaultIntOption["updateTopicListTime"].maxValue = 60000;
     listOfDefaultIntOption["typeOfEdit"].value = 2;
@@ -114,7 +111,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["numberOfPageToLoadForOpti"].value = 1;
     listOfDefaultIntOption["numberOfPageToLoadForOpti"].minValue = 0;
     listOfDefaultIntOption["numberOfPageToLoadForOpti"].maxValue = 1;
-    listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].value = 8;
+    listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].value = 6;
     listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].minValue = 1;
     listOfDefaultIntOption["numberOfMessagesForOptimizationStart"].maxValue = 15;
     listOfDefaultIntOption["avatarSize"].value = 30;

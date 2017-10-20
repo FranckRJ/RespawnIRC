@@ -2,30 +2,30 @@
 #define CONNECTWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QNetworkCookie>
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QString>
-#include <QList>
 #include <QNetworkReply>
 #include <QWebView>
 
-class connectWindowClass : public QDialog
+#include "baseDialog.hpp"
+
+class connectWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:
     explicit connectWindowClass(QWidget* parent, bool showRemeberBox = true);
 private slots:
     void newPageLoaded(QNetworkReply* reply);
-    void showAddCookiesWindow();
-    void addCookiesManually(QString newHelloCookie, QString newConnectCookie);
+    void showAddCookieWindow();
+    void addCookieManually(QString newConnectCookie);
     void valideConnect();
     void showHelpConnect();
 signals:
-    void newCookiesAvailable(QList<QNetworkCookie> newCookies, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
+    void newCookieAvailable(QNetworkCookie newConnectCookie, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
 private:
-    QList<QNetworkCookie> cookieList;
+    QNetworkCookie connectCookie;
     QWebView* webView;
     QLineEdit* pseudoLine;
     QCheckBox* rememberBox;

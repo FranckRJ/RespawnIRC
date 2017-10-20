@@ -19,6 +19,7 @@ struct modelInfoStruct
     QString modoPseudoColor;
     QString adminPseudoColor;
     QString pemtDateColor;
+    QString editDateModel;
 };
 
 struct colorInfoForMessageAndOtherStruct
@@ -32,6 +33,7 @@ struct colorInfoForMessageAndOtherStruct
     QString editMessageColor;
     QString navigatorProgressBarColor;
     QString codeTagBackgroundColor;
+    QString selectedStickerTypeColor;
 };
 
 namespace styleTool

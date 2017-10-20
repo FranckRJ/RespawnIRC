@@ -42,7 +42,7 @@ namespace
     const QRegularExpression expForPseudo(R"rgx(<span class="JvCare [^ ]* bloc-pseudo-msg text-([^"]*)" target="_blank">[^a-zA-Z0-9_\[\]-]*([a-zA-Z0-9_\[\]-]*)[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForDate(R"rgx(<div class="bloc-date-msg">([^<]*<span class="JvCare [^ ]* lien-jv" target="_blank">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMessage(R"rgx(<div class="bloc-contenu"><div class="txt-msg  text-[^-]*-forum ">((.*?)(?=<div class="info-edition-msg">)|(.*?)(?=<div class="signature-msg)|(.*)))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForEdit(R"rgx(<div class="info-edition-msg">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* [0-9:]*) par <span)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForEdit(R"rgx(<div class="info-edition-msg">Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)) par <span)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSignature(R"rgx(<div class="signature-msg[^"]*">(.*?)</div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForTopicLinkNumber(R"rgx((http://([^/]*)/forums/[^-]*-([^-]*)-([^-]*)-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^\.]*\.htm))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForForumName(R"rgx(<title>(.*?)- jeuxvideo\.com</title>)rgx", configDependentVar::regexpBaseOptions);
@@ -429,15 +429,20 @@ QList<messageStruct> parsingTool::getListOfEntireMessagesWithoutMessagePars(cons
 
     for(const QString& thisMessage : listOfEntireMessage)
     {
+        QRegularExpressionMatch matchForPseudo = expForPseudo.match(thisMessage);
+        QRegularExpressionMatch matchForDate = expForDate.match(thisMessage);
+        QRegularExpressionMatch matchForEdit = expForEdit.match(thisMessage);
+
         listOfMessages.push_back(messageStruct());
         listOfMessages.back().idOfMessage = expForMessageID.match(thisMessage).captured(1).toLong();
         listOfMessages.back().avatarLink = expForAvatars.match(thisMessage).captured(2);
-        listOfMessages.back().pseudoInfo.pseudoName = expForPseudo.match(thisMessage).captured(2);
-        listOfMessages.back().pseudoInfo.pseudoType = expForPseudo.match(thisMessage).captured(1);
-        listOfMessages.back().date = expForDate.match(thisMessage).captured(3);
-        listOfMessages.back().wholeDate = expForDate.match(thisMessage).captured(2);
-        listOfMessages.back().message = expForMessage.match(thisMessage).captured(1);
-        listOfMessages.back().lastTimeEdit = expForEdit.match(thisMessage).captured(1);
+        listOfMessages.back().pseudoInfo.pseudoName = matchForPseudo.captured(2);
+        listOfMessages.back().pseudoInfo.pseudoType = matchForPseudo.captured(1);
+        listOfMessages.back().date = matchForDate.captured(3);
+        listOfMessages.back().wholeDate = matchForDate.captured(2);
+        listOfMessages.back().message = makeBasicPreParseOfMessage(expForMessage.match(thisMessage).captured(1));
+        listOfMessages.back().lastTimeEdit = matchForEdit.captured(1);
+        listOfMessages.back().lastTimeEditHourOnly = matchForEdit.captured(2);
         listOfMessages.back().signature = expForSignature.match(thisMessage).captured(1);
 
         if(listOfMessages.back().pseudoInfo.pseudoName.isEmpty() == true)
@@ -566,9 +571,6 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
         extraTableStyle += "background: " + styleTool::getColorInfo().quoteBackgroundColor + ";color: " + styleTool::getColorInfo().quoteTextColor + ";";
     }
 
-    thisMessage.remove(expForAd);
-    thisMessage.replace("\r", "");
-
     if(infoForParsing.betterCodeTag == true)
     {
         replaceWithCapNumber(thisMessage, expForCodeBlock, 1, "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;background-color: " + styleTool::getColorInfo().codeTagBackgroundColor + ";\"><tr><td><code style=\"white-space: pre-wrap\">", "</code></td></tr></table>", -1, "", std::bind(stringModificatorMakeCodeBlockGreatAgain, std::placeholders::_1));
@@ -640,18 +642,11 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
         replaceWithCapNumber(thisMessage, expForNoelshack, 3, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 3, "</a>");
     }
 
-    removeAllOverlySpoils(thisMessage);
     replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleTool::getColorInfo().spoilColor + "; background-color: " + styleTool::getColorInfo().spoilColor + ";\">", "</span>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
     replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleTool::getColorInfo().spoilColor + "; background-color: " + styleTool::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", std::bind(stringModificatorMakeLinkIfPossible, std::placeholders::_1));
 
-    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<blockquote>");
     removeAllOverlyQuote(thisMessage, infoForParsing.nbMaxQuote);
-
-    thisMessage.replace("<ul class=\"liste-default-jv\">", "<br /><br /><ul>");
-    thisMessage.replace("<ol class=\"liste-default-jv\">", "<br /><br /><ol>");
-    thisMessage.replace("</ul>", "<ul><br /><br />");
-    thisMessage.replace("</ol>", "<ol><br /><br />");
 
     thisMessage.replace(QRegularExpression(R"rgx((<br /> *){0,2}</p> *<p>( *<br />){0,2})rgx"), "<br /><br />");
     thisMessage.replace(QRegularExpression(R"rgx(<br /> *<(/)?p> *<br />)rgx"), "<br /><br />");
@@ -664,11 +659,6 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
     {
         thisMessage.replace(QRegularExpression(R"rgx((<br /> *)*(<(/)?table[^>]*>)( *<br />)*)rgx"), "\\2");
     }
-
-    thisMessage.replace("<br /><br /><ul>", "<ul>");
-    thisMessage.replace("<br /><br /><ol>", "<ol>");
-    thisMessage.replace("<ul><br /><br />", "</ul>");
-    thisMessage.replace("<ol><br /><br />", "</ol>");
 
     thisMessage.replace("<blockquote>", "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\" style=\"margin-top: 5px;margin-bottom: 5px;border-color: " + styleTool::getColorInfo().quoteBorderColor + ";" + extraTableStyle + "\"><tr><td>");
     thisMessage.replace("</blockquote>", "</td></tr></table>");
@@ -684,6 +674,30 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
     {
         thisMessage.remove(thisMessage.size() - 6, 6);
         thisMessage = thisMessage.trimmed();
+    }
+
+    return thisMessage;
+}
+
+QString parsingTool::makeBasicPreParseOfMessage(QString thisMessage)
+{
+    thisMessage.remove(expForAd);
+    thisMessage.replace("\r", "");
+
+    removeAllOverlySpoils(thisMessage);
+    thisMessage.replace("<blockquote class=\"blockquote-jv\">", "<blockquote>");
+
+    if(thisMessage.contains("<li>") == true)
+    {
+        thisMessage.replace(QRegularExpression(R"rgx(<(ul|ol)[^>]*>)rgx"), "<p>");
+        thisMessage.replace("</ul>", "</p>");
+        thisMessage.replace("</ol>", "</p>");
+        thisMessage.replace("<li><p><li>", "<li><li>");
+        thisMessage.replace("<li><p><li>", "<li><li>");
+        thisMessage.replace("<li>", " • ");
+        thisMessage.replace("</li></p></li>", "</li>");
+        thisMessage.replace("</li></p></li>", "</li>");
+        thisMessage.replace("</li>", "<br />");
     }
 
     return thisMessage;

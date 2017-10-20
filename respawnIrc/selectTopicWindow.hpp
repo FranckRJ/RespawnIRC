@@ -2,11 +2,12 @@
 #define SELECTTOPICWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QLineEdit>
 #include <QString>
 
-class selectTopicWindowClass : public QDialog
+#include "baseDialog.hpp"
+
+class selectTopicWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

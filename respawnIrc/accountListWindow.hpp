@@ -2,7 +2,6 @@
 #define ACCOUNTLISTWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QNetworkCookie>
 #include <QList>
 #include <QString>
@@ -10,13 +9,15 @@
 #include <QStringListModel>
 #include <QCheckBox>
 
+#include "baseDialog.hpp"
+
 struct accountStruct
 {
     QString pseudo;
     QNetworkCookie connectCookie;
 };
 
-class accountListWindowClass : public QDialog
+class accountListWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

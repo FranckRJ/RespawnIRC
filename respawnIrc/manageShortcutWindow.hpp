@@ -2,12 +2,13 @@
 #define MANAGESHORTCUTWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QTextEdit>
 #include <QTreeView>
 #include <QStandardItemModel>
 
-class manageShortcutWindowClass : public QDialog
+#include "baseDialog.hpp"
+
+class manageShortcutWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

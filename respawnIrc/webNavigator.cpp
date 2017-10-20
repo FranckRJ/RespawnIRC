@@ -1,6 +1,5 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QPushButton>
 #include <QWebEngineProfile>
 #include <QWebEnginePage>
 #include <QWebEngineCookieStore>
@@ -12,9 +11,10 @@
 #include "webNavigator.hpp"
 #include "styleTool.hpp"
 
-webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> cookiesList) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> cookiesList) :
+    baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlag(Qt::WindowMaximizeButtonHint, true);
 
     QWebEngineProfile* customProfile = new QWebEngineProfile(this);
     QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);

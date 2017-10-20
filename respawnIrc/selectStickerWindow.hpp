@@ -2,17 +2,18 @@
 #define SELECTSTICKERWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QTextBrowser>
 #include <QUrl>
 #include <QPoint>
 #include <QString>
 #include <QVector>
 #include <QScrollArea>
+#include <QShowEvent>
 
-#include <clickableLabel.hpp>
+#include "baseDialog.hpp"
+#include "clickableLabel.hpp"
 
-class selectStickerWindowClass : public QDialog
+class selectStickerWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

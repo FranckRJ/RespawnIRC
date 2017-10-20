@@ -1,3 +1,26 @@
+QT += \
+    core \
+    gui \
+    network \
+    widgets \
+    multimedia \
+    webenginewidgets
+
+TARGET = RespawnIRC
+TEMPLATE = app
+
+DEFINES += QT_DEPRECATED_WARNINGS
+
+RC_FILE = respawnIrc.rc
+
+QMAKE_CXXFLAGS_RELEASE += -O2
+
+CONFIG += c++11
+
+LIBS += -L$$PWD/../hunspell/lib/ -llibhunspell
+INCLUDEPATH += $$PWD/../hunspell/include
+DEPENDPATH += $$PWD/../hunspell/include
+
 SOURCES += \
     main.cpp \
     mainWindow.cpp \
@@ -35,13 +58,8 @@ SOURCES += \
     addShortcutWindow.cpp \
     utilityTool.cpp \
     addCookieWindow.cpp \
-    clickableLabel.cpp
-
-QT += \
-    network \
-    widgets \
-    multimedia \
-    webenginewidgets
+    clickableLabel.cpp \
+    baseDialog.cpp
 
 HEADERS += \
     mainWindow.hpp \
@@ -80,15 +98,5 @@ HEADERS += \
     addShortcutWindow.hpp \
     utilityTool.hpp \
     addCookieWindow.hpp \
-    clickableLabel.hpp
-
-RC_FILE = respawnIrc.rc
-
-QMAKE_CXXFLAGS_RELEASE += -O2
-
-CONFIG += c++11
-
-LIBS += -L$$PWD/../hunspell/lib/ -llibhunspell
-
-INCLUDEPATH += $$PWD/../hunspell/include
-DEPENDPATH += $$PWD/../hunspell/include
+    clickableLabel.hpp \
+    baseDialog.hpp

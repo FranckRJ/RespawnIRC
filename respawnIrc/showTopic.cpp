@@ -228,7 +228,7 @@ void showTopicClass::updateSettingInfo()
     settingsForMessageParsing.downloadMissingStickers = settingTool::getThisBoolOption("downloadMissingStickers");
     settingsForMessageParsing.downloadNoelshackImages = settingTool::getThisBoolOption("downloadNoelshackImages");
     settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth = settingTool::getThisIntOption("noelshackImageWidth").value;
-    settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = settingTool::getThisIntOption("noelshackImageHeight").value;
+    settingsForMessageParsing.infoForMessageParsing.noelshackImageHeight = utilityTool::roundToInt(settingsForMessageParsing.infoForMessageParsing.noelshackImageWidth * 0.75);
     settingsForMessageParsing.infoForMessageParsing.hideUglyImages = settingTool::getThisBoolOption("hideUglyImages");
     settingsForMessageParsing.infoForMessageParsing.smileyToText = settingTool::getThisBoolOption("smileyToText");
     if(settingTool::getThisBoolOption("fastModeEnbled") == false)
@@ -274,6 +274,17 @@ void showTopicClass::resetSearchPath()
 void showTopicClass::relayoutDocumentHack()
 {
     messagesBox->setLineWrapColumnOrWidth(messagesBox->lineWrapColumnOrWidth());
+}
+
+void showTopicClass::showEvent(QShowEvent* event)
+{
+    QWidget::showEvent(event);
+
+    if(firstTimeShowed == true)
+    {
+        messagesBox->verticalScrollBar()->setValue(messagesBox->verticalScrollBar()->maximum());
+        firstTimeShowed = false;
+    }
 }
 
 void showTopicClass::addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID)
@@ -388,6 +399,19 @@ void showTopicClass::setTopicToErrorMode()
     else
     {
         setMessageStatus("Erreur, impossible de récupérer les messages.");
+    }
+}
+
+void showTopicClass::replaceTextOrRemoveIt(QString& messageToChange, const QString& oldString,
+                                          const QString& newString, bool itsAReplace)
+{
+    if(itsAReplace)
+    {
+        messageToChange.replace(oldString, newString);
+    }
+    else
+    {
+        messageToChange.remove(oldString);
     }
 }
 
@@ -601,36 +625,21 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
             }
         }
 
-        if(showQuoteButton == true && (disableSelfQuoteButton == false || pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower()))
-        {
-            newMessageToAppend.replace("<%BUTTON_QUOTE%>", baseModelInfo.quoteModel);
-        }
+        replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_QUOTE%>", baseModelInfo.quoteModel,
+                              showQuoteButton == true && (disableSelfQuoteButton == false || pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower()));
+        replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_EDIT%>", baseModelInfo.editModel,
+                              pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower() && showEditButton == true);
+        replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_DELETE%>", baseModelInfo.deleteModel,
+                              pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower() && showDeleteButton == true);
+        replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel,
+                              pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower() && showBlacklistButton == true);
 
-        if(pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower())
-        {
-            if(showEditButton == true)
-            {
-                newMessageToAppend.replace("<%BUTTON_EDIT%>", baseModelInfo.editModel);
-            }
-            if(showDeleteButton == true)
-            {
-                newMessageToAppend.replace("<%BUTTON_DELETE%>", baseModelInfo.deleteModel);
-            }
-        }
-        else if(showBlacklistButton == true)
-        {
-            newMessageToAppend.replace("<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel);
-        }
-
-        if(showSignatures == true && currentMessage.signature.isEmpty() == false)
-        {
-            newMessageToAppend.replace("<%SIGNATURE_MODEL%>", baseModelInfo.signatureModel);
-        }
-
-        if(showAvatars == true && currentMessage.avatarLink.isEmpty() == false)
-        {
-            newMessageToAppend.replace("<%AVATAR_MODEL%>", baseModelInfo.avatarModel);
-        }
+        replaceTextOrRemoveIt(newMessageToAppend, "<%SIGNATURE_MODEL%>", baseModelInfo.signatureModel,
+                              showSignatures == true && currentMessage.signature.isEmpty() == false);
+        replaceTextOrRemoveIt(newMessageToAppend, "<%AVATAR_MODEL%>", baseModelInfo.avatarModel,
+                              showAvatars == true && currentMessage.avatarLink.isEmpty() == false);
+        replaceTextOrRemoveIt(newMessageToAppend, "<%EDITDATE_MODEL%>", baseModelInfo.editDateModel,
+                              currentMessage.lastTimeEdit.isEmpty() == false);
 
         if(colorUserPseudoInMessages == true && pseudoOfUser.isEmpty() == false)
         {
@@ -643,14 +652,14 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
         newMessageToAppend.replace("<%ID_MESSAGE%>", QString::number(currentMessage.idOfMessage));
         newMessageToAppend.replace("<%DATE_MESSAGE%>", currentMessage.date);
         newMessageToAppend.replace("<%DATE_STRING%>", currentMessage.wholeDate);
+        newMessageToAppend.replace("<%EDITDATE_ALL%>", currentMessage.lastTimeEdit);
+        newMessageToAppend.replace("<%EDITDATE_HOUR%>", currentMessage.lastTimeEditHourOnly);
         newMessageToAppend.replace("<%PSEUDO_COLOR%>", colorOfPseudo);
         newMessageToAppend.replace("<%PSEUDO_PSEUDO%>", currentMessage.pseudoInfo.pseudoName);
         newMessageToAppend.replace("<%MESSAGE_MESSAGE%>", currentMessage.message);
 
-        if(showSignatures == true && currentMessage.signature.isEmpty() == false)
-        {
-            newMessageToAppend.replace("<%SIGNATURE_SIGNATURE%>", currentMessage.signature);
-        }
+        replaceTextOrRemoveIt(newMessageToAppend, "<%SIGNATURE_SIGNATURE%>", currentMessage.signature,
+                              showSignatures == true && currentMessage.signature.isEmpty() == false);
 
         if(showAvatars == true && currentMessage.avatarLink.isEmpty() == false)
         {
@@ -664,6 +673,11 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
             newMessageToAppend.replace("<%AVATAR_LINK%>", "vtr/" + avatarLinkToUse);
             newMessageToAppend.replace("<%AVATAR_SIZE%>", QString::number(avatarSize));
             listOfAvatarsUsed.append(avatarLinkToUse);
+        }
+        else
+        {
+            newMessageToAppend.remove("<%AVATAR_LINK%>");
+            newMessageToAppend.remove("<%AVATAR_SIZE%>");
         }
 
         if(appendHrAtEndOfFirstMessage == true)

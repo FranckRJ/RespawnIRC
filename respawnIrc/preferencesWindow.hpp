@@ -1,7 +1,6 @@
 #ifndef PREFERENCEWINDOW_HPP
 #define PREFERENCEWINDOW_HPP
 
-#include <QDialog>
 #include <QMap>
 #include <QString>
 #include <QWidget>
@@ -10,12 +9,17 @@
 #include <QHBoxLayout>
 #include <QSpinBox>
 #include <QComboBox>
+#include <QShowEvent>
 
-class preferenceWindowClass : public QDialog
+#include "baseDialog.hpp"
+
+class preferenceWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:
     explicit preferenceWindowClass(QWidget* parent);
+protected:
+    void showEvent(QShowEvent* event) override;
 private:
     QWidget* createWidgetForMainTab();
     QWidget* createWidgetForMessagesTab();

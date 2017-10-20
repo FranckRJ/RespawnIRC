@@ -28,3 +28,9 @@ QList<QNetworkCookie> utilityTool::cookieToCookieList(const QNetworkCookie& conn
         return {connectCookie};
     }
 }
+
+//blabla inutile je sais mais c'est plus beau
+int utilityTool::roundToInt(double number)
+{
+    return (number + 0.5);
+}

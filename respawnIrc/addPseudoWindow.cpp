@@ -7,10 +7,8 @@
 
 #include "addPseudoWindow.hpp"
 
-addPseudoWindowClass::addPseudoWindowClass(QWidget* parent, QString currentPseudo) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+addPseudoWindowClass::addPseudoWindowClass(QWidget* parent, QString currentPseudo) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     QLabel* labPseudo = new QLabel("Pseudo :", this);
     QPushButton* buttonValide = new QPushButton("Valider", this);
     QPushButton* buttonCancel = new QPushButton("Annuler", this);

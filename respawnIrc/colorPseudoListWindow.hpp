@@ -2,11 +2,12 @@
 #define COLORPSEUDOLISTWINDOW_HPP
 
 #include <QWidget>
-#include <QDialog>
 #include <QString>
 #include <QList>
 #include <QListView>
 #include <QStringListModel>
+
+#include "baseDialog.hpp"
 
 struct pseudoWithColorStruct
 {
@@ -16,7 +17,7 @@ struct pseudoWithColorStruct
     int blue;
 };
 
-class colorPseudoListWindowClass : public QDialog
+class colorPseudoListWindowClass : public baseDialogClass
 {
     Q_OBJECT
 public:

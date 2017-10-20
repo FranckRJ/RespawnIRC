@@ -291,9 +291,8 @@ void sendMessagesClass::deleteReplyForSendMessage()
             ++nbOfMessagesSend;
         }
     }
-    else if(source.contains("<div class=\"alert-row\"> Le captcha est invalide. </div>") == true ||
-            (isInEdit == true && (source.startsWith("{\"erreur\":[\"Le captcha est incorrect.\"") == true ||
-                                  source.startsWith("{\"erreur\":[\"Le captcha est invalide.\"") == true)))
+    else if(parsingTool::getErrorMessage(source, "").contains("captcha") == true ||
+            (isInEdit == true && parsingTool::getErrorMessageInJSON(source, true, "").contains("captcha") == true))
     {
         QMessageBox::warning(this, "Erreur", "Depuis la mise à jour de JVC les captchas ne sont plus supportés, "
                                            "veuillez attendre quelques secondes avant d'envoyer votre message.");

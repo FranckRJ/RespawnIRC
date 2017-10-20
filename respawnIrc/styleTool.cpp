@@ -53,9 +53,9 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
     modelInfoStruct modelInfo;
     QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/modelInfo.cfg");
 
-    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"quote:<%ID_MESSAGE%>:[<%DATE_MESSAGE%>] <<%PSEUDO_PSEUDO%>>\">[C]</a> ");
-    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"blacklist:<%PSEUDO_LOWER%>\">[B]</a> ");
-    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"edit:<%ID_MESSAGE%>\">[E]</a> ");
+    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"quote:<%ID_MESSAGE%>:[<%DATE_MESSAGE%>] <<%PSEUDO_PSEUDO%>>\">[C]</a> "); //quote button model
+    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"blacklist:<%PSEUDO_LOWER%>\">[B]</a> "); //blacklist button model
+    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"edit:<%ID_MESSAGE%>\">[E]</a> "); //edit button model
     listOfInfos.push_back("black"); //normal date color
     listOfInfos.push_back("green"); //edited date color
     listOfInfos.push_back("dimgrey"); //normal pseudo color
@@ -73,16 +73,20 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
     listOfInfos.push_back("rgba(100, 100, 100, 0.25)"); //quote background color
     listOfInfos.push_back("black"); //quote text color
 
-    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"delete:<%ID_MESSAGE%>\">[S]</a> ");
+    listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"delete:<%ID_MESSAGE%>\">[S]</a> "); //delete button model
 
     listOfInfos.push_back("green"); //edit message color
 
-    listOfInfos.push_back("<hr><span style=\"font-size: 1px;\"><br></span><i><%SIGNATURE_SIGNATURE%></i>");
-    listOfInfos.push_back("<i><%MESSAGE_TO_UPDATE%></i>");
-    listOfInfos.push_back("<img width=60 height=60 src=\"<%AVATAR_LINK%>\">");
+    listOfInfos.push_back("<hr><span style=\"font-size: 1px;\"><br></span><i><%SIGNATURE_SIGNATURE%></i>"); //signature model
+    listOfInfos.push_back("<i><%MESSAGE_TO_UPDATE%></i>"); //update message edit model
+    listOfInfos.push_back("<img width=60 height=60 src=\"<%AVATAR_LINK%>\">"); //avatar model
 
     listOfInfos.push_back("blue"); //navigator progressbar color
-    listOfInfos.push_back("#F2F2F2"); //code tag background color
+    listOfInfos.push_back("#F2F2F2"); //code tag background colors
+
+    listOfInfos.push_back("(&eacute;dit&eacute; le <%EDITDATE_ALL%>)"); //edit date model
+
+    listOfInfos.push_back("darkgray"); //selected sticker type color
 
     if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
@@ -128,6 +132,10 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
 
     colorInfoForMessageAndOther.navigatorProgressBarColor = listOfLine.at(21);
     colorInfoForMessageAndOther.codeTagBackgroundColor = listOfLine.at(22);
+
+    modelInfo.editDateModel = listOfLine.at(23);
+
+    colorInfoForMessageAndOther.selectedStickerTypeColor = listOfLine.at(24);
 
     return modelInfo;
 }

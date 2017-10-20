@@ -4,16 +4,15 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QDateTime>
 
 #include "connectWindow.hpp"
 #include "addCookieWindow.hpp"
 #include "addPseudoWindow.hpp"
 #include "parsingTool.hpp"
 
-connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     QLabel* labForPseudo = new QLabel("Entrez le pseudo avec lequel vous voulez vous connecter :", this);
     QLabel* labForButton = new QLabel("Une fois connecté, cliquez ici :", this);
     buttonShowWebView = new QPushButton("Afficher la page de connexion", this);

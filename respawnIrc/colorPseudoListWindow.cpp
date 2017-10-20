@@ -7,10 +7,9 @@
 #include "colorPseudoListWindow.hpp"
 #include "addPseudoWindow.hpp"
 
-colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+colorPseudoListWindowClass::colorPseudoListWindowClass(QList<pseudoWithColorStruct>* newListOfColorPseudo, QWidget* parent) :
+    baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     QPushButton* buttonAddPseudo = new QPushButton("Ajouter", this);
     QPushButton* buttonEditPseudo = new QPushButton("Editer", this);
     QPushButton* buttonRemovePseudo = new QPushButton("Supprimer", this);

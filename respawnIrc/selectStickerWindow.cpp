@@ -9,19 +9,19 @@
 #include <QPalette>
 #include <QLabel>
 #include <QCheckBox>
+#include <QColor>
 
 #include "selectStickerWindow.hpp"
 #include "settingTool.hpp"
+#include "styleTool.hpp"
 
 namespace
 {
     QVector<QString> listOfStickerTypeContent;
 }
 
-selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     stickerBrowser = new QTextBrowser(this);
 
     stickerBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -38,7 +38,6 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
 
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("sticker.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/zuc-fr.png", mainWidgetOfStickerTypeList));
-    layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1li4.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1jnd.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1kgu.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1kkh.png", mainWidgetOfStickerTypeList));
@@ -49,11 +48,8 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1lm9.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1nub.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1ltd.png", mainWidgetOfStickerTypeList));
-    layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1mir.png", mainWidgetOfStickerTypeList));
-    layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1n28.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1n1p-fr.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1n2c.png", mainWidgetOfStickerTypeList));
-    layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1ntq.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1o33.png", mainWidgetOfStickerTypeList));
     layoutOfStickerTypeList->addWidget(createQLabelForStickerTypeWithThesesInfos("stickers/1ptd.png", mainWidgetOfStickerTypeList));
     listOfStickerTypeContent.resize(listOfLabels.size());
@@ -113,7 +109,7 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : QDialog(pa
 
 void selectStickerWindowClass::showEvent(QShowEvent* event)
 {
-    QDialog::showEvent(event);
+    baseDialogClass::showEvent(event);
 
     if(firstTimeShowed == true)
     {
@@ -190,25 +186,6 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
             }
             case 2:
             {
-                //lapin
-                generateAndInsertStickerCode("1jc3-en.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1jc3-fr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1jc5.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1jcg.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1jch.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1jcl.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1leb.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1lej-en.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1lej-fr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1leq-en.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1leq-fr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1li3.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1li4.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1li5.png", listOfStickerTypeContent[stickerType]);
-                break;
-            }
-            case 3:
-            {
                 //bourge
                 generateAndInsertStickerCode("1jnc.png", listOfStickerTypeContent[stickerType]);
                 generateAndInsertStickerCode("1jnd.png", listOfStickerTypeContent[stickerType]);
@@ -220,7 +197,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1jnj.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 4:
+            case 3:
             {
                 //lama
                 generateAndInsertStickerCode("1kgu.png", listOfStickerTypeContent[stickerType]);
@@ -233,7 +210,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1kh1.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 5:
+            case 4:
             {
                 //hap
                 generateAndInsertStickerCode("1kkg.png", listOfStickerTypeContent[stickerType]);
@@ -246,7 +223,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1kkn.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 6:
+            case 5:
             {
                 //noel
                 generateAndInsertStickerCode("1kko.png", listOfStickerTypeContent[stickerType]);
@@ -259,7 +236,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1kkv.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 7:
+            case 6:
             {
                 //chat
                 generateAndInsertStickerCode("1kky.png", listOfStickerTypeContent[stickerType]);
@@ -278,7 +255,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1klb.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 8:
+            case 7:
             {
                 //orc
                 generateAndInsertStickerCode("1lga.png", listOfStickerTypeContent[stickerType]);
@@ -291,7 +268,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1lgh.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 9:
+            case 8:
             {
                 //dom
                 generateAndInsertStickerCode("1ljj.png", listOfStickerTypeContent[stickerType]);
@@ -309,7 +286,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1rzw.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 10:
+            case 9:
             {
                 //aventurier
                 generateAndInsertStickerCode("1lm9.png", listOfStickerTypeContent[stickerType]);
@@ -322,7 +299,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1lmg.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 11:
+            case 10:
             {
                 //saumon
                 generateAndInsertStickerCode("1lmh.png", listOfStickerTypeContent[stickerType]);
@@ -349,7 +326,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1nub.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 12:
+            case 11:
             {
                 //bureau
                 generateAndInsertStickerCode("1lt7.png", listOfStickerTypeContent[stickerType]);
@@ -362,46 +339,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1lte.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 13:
-            {
-                //xmen
-                generateAndInsertStickerCode("1mid-fr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mie-fr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mif.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mig-fr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mih-fr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mii-fr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mij-fr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mik.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mil.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mim.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1min.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mio.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mip.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1miq.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mir.png", listOfStickerTypeContent[stickerType]);
-                break;
-            }
-            case 14:
-            {
-                //xbox
-                generateAndInsertStickerCode("1my4.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1my5.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1my6.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1my7.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1my8.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1my9.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mya.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1myb.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1myc.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1myd.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1mye.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1myf.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1myx.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1n28.png", listOfStickerTypeContent[stickerType]);
-                break;
-            }
-            case 15:
+            case 12:
             {
                 //foot
                 generateAndInsertStickerCode("1n1m-de.png", listOfStickerTypeContent[stickerType]);
@@ -435,7 +373,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1n1t-it.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 16:
+            case 13:
             {
                 //store
                 generateAndInsertStickerCode("1n2c.png", listOfStickerTypeContent[stickerType]);
@@ -451,24 +389,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1n2o.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 17:
-            {
-                //brice
-                generateAndInsertStickerCode("1ntp.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1ntq.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1ntr.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1nts.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1ntt.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1ntu.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1ntv.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1ntw.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1ntx.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1nty.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1ntz.png", listOfStickerTypeContent[stickerType]);
-                generateAndInsertStickerCode("1nu0.png", listOfStickerTypeContent[stickerType]);
-                break;
-            }
-            case 18:
+            case 14:
             {
                 //pixel
                 generateAndInsertStickerCode("1o2k.png", listOfStickerTypeContent[stickerType]);
@@ -481,7 +402,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
                 generateAndInsertStickerCode("1o67.png", listOfStickerTypeContent[stickerType]);
                 break;
             }
-            case 19:
+            case 15:
             {
                 //gym
                 generateAndInsertStickerCode("1ptd.png", listOfStickerTypeContent[stickerType]);
@@ -532,14 +453,14 @@ void selectStickerWindowClass::labelClicked(Qt::MouseButton buttonClicked, int l
         tmpPalette.setColor(QPalette::Background, Qt::transparent);
         listOfLabels.at(oldLabelSelected)->setPalette(tmpPalette);
 
-        tmpPalette.setColor(QPalette::Background, Qt::darkGray);
+        tmpPalette.setColor(QPalette::Background, QColor(styleTool::getColorInfo().selectedStickerTypeColor));
         listOfLabels.at(labelID)->setPalette(tmpPalette);
         stickerTypeListscrollArea->ensureWidgetVisible(listOfLabels.at(labelID), 0, 0);
         loadAndUseListOfStickers(labelID);
         oldLabelSelected = labelID;
         settingTool::saveThisOption("lastTypeOfStickerUsed", oldLabelSelected);
     }
-    else if (buttonClicked == Qt::RightButton)
+    else if(buttonClicked == Qt::RightButton)
     {
         close();
     }

@@ -25,6 +25,7 @@ struct messageStruct
     QString wholeDate;
     QString message;
     QString lastTimeEdit;
+    QString lastTimeEditHourOnly;
     QString signature;
     QString avatarLink;
     bool operator<(const messageStruct& otherStruct) const
@@ -92,6 +93,7 @@ namespace parsingTool
     QString jvfLinkToJvcLink(const QString& jvfTopicLink);
     QString normalAvatarLinkToHDLink(const QString& avatarLink);
     QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers = true);
+    QString makeBasicPreParseOfMessage(QString thisMessage);
     QString parsingAjaxMessages(QString thisMessage);
     QString specialCharToNormalChar(QString thisMessage);
     QNetworkRequest buildRequestWithThisUrl(QString url);

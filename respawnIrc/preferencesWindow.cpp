@@ -8,9 +8,8 @@
 #include "preferencesWindow.hpp"
 #include "settingTool.hpp"
 
-preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+preferenceWindowClass::preferenceWindowClass(QWidget* parent) : baseDialogClass(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
     expertMode = settingTool::getThisBoolOption("expertMode");
 
     typeOfPageLoad = new QComboBox(this);
@@ -36,7 +35,6 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     realMainLayout->addWidget(mainWidget);
     realMainLayout->addLayout(buttonLayout);
     realMainLayout->setMargin(5);
-    realMainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     mainWidget->addTab(createWidgetForMainTab(), "Général");
     mainWidget->addTab(createWidgetForMessagesTab(), "Messages");
@@ -55,6 +53,12 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : QDialog(parent, 
     connect(buttonOK, &QPushButton::clicked, this, &preferenceWindowClass::applySettingsAndClose);
     connect(buttonCancel, &QPushButton::clicked, this, &preferenceWindowClass::close);
     connect(buttonApply, &QPushButton::clicked, this, &preferenceWindowClass::applySettings);
+}
+
+void preferenceWindowClass::showEvent(QShowEvent* event)
+{
+    baseDialogClass::showEvent(event);
+    layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 QWidget* preferenceWindowClass::createWidgetForMainTab()
@@ -270,7 +274,6 @@ QWidget* preferenceWindowClass::createWidgetForImageTab()
     vboxNoelshack->addWidget(makeNewCheckBox("Cacher les images nuisibles", "hideUglyImages"));
     vboxNoelshack->addWidget(makeNewCheckBox("Améliorer le redimensionnement des miniatures noelshack", "smartNoelshackResizing"));
     vboxNoelshack->addLayout(makeNewSpinBox("Largeur des miniatures noelshack", "noelshackImageWidth"));
-    vboxNoelshack->addLayout(makeNewSpinBox("Hauteur des miniatures noelshack", "noelshackImageHeight"));
     vboxNoelshack->addStretch(1);
     groupBoxNoelshack->setLayout(vboxNoelshack);
 

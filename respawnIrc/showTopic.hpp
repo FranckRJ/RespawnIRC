@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <QNetworkAccessManager>
 #include <QPoint>
+#include <QShowEvent>
 
 #include "colorPseudoListWindow.hpp"
 #include "getTopicMessages.hpp"
@@ -53,11 +54,14 @@ public:
     void addSearchPath(QString newSearchPath);
     void resetSearchPath();
     void relayoutDocumentHack();
+protected:
+    void showEvent(QShowEvent* event) override;
 private:
     void addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID);
     void editThisMessageOfMessagesBox(QString newMessage, long messageID);
     QString getColorOfThisPseudo(QString pseudo);
     void setTopicToErrorMode();
+    void replaceTextOrRemoveIt(QString& messageToChange, const QString& oldString, const QString& newString, bool itsAReplace);
 private slots:
     void linkClicked(const QUrl& link);
     void createContextMenu(const QPoint& thisPoint);
@@ -104,6 +108,7 @@ private:
     QString lastDate;
     QString numberOfConnected;
     messageStruct firstMessageOfTopic;
+    bool firstTimeShowed = true;
     bool showQuoteButton;
     bool disableSelfQuoteButton;
     bool showBlacklistButton;
