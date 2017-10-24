@@ -18,7 +18,7 @@ void baseDialogClass::showEvent(QShowEvent* event)
 
     if(firstTimeDialogIsShowed == true)
     {
-        static int margin = 15;
+        static const int margin = 15;
 
         QRect parentWindowGeometry = parentWidget()->window()->geometry();
         QRect screenGeometry = QApplication::desktop()->screenGeometry();
