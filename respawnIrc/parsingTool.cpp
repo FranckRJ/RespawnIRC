@@ -48,7 +48,7 @@ namespace
     const QRegularExpression expForForumName(R"rgx(<title>(.*?)- jeuxvideo\.com</title>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvfLink(R"rgx(http://jvforum\.fr/([^/]*)/([^-]*)-([^/]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSmiley(R"rgx(<img src="http(s)?://image\.jeuxvideo\.com/smileys_img/([^"]*)" alt="[^"]*" data-code="([^"]*)" title="[^"]*" [^>]*>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="(http://jv\.stkr\.fr/p[^/]*/([^"]*))".*?/>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="([^"]*)".*?/>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForLongLink(R"rgx(<span class="JvCare [^"]*"[^i]*itle="([^"]*)">[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForShortLink(R"rgx(<span class="JvCare [^"]*" rel="nofollow[^"]*" target="_blank">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcLink(R"rgx(<a href="([^"]*)"( )?( title="[^"]*")?>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
@@ -89,6 +89,20 @@ namespace
         {
             baseMessage = "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"" + baseMessage + "\">" + baseMessage + "</a>";
         }
+        return baseMessage;
+    }
+
+    QString stringModificatorUrlToStickerId(QString baseMessage)
+    {
+        if(baseMessage.endsWith("/"))
+        {
+            baseMessage.remove(baseMessage.size() - 1, 1);
+        }
+        if(baseMessage.contains("/"))
+        {
+            baseMessage.remove(0, baseMessage.lastIndexOf("/") + 1);
+        }
+
         return baseMessage;
     }
 
@@ -598,10 +612,10 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
     {
         if(infoForParsing.listOfStickersUsed != nullptr && reallyDownloadStickers == true)
         {
-            infoForParsing.listOfStickersUsed->append(getListOfThisCapNumber(thisMessage, expForStickers, 2, false));
+            infoForParsing.listOfStickersUsed->append(getListOfThisCapNumber(thisMessage, expForStickers, 1, false));
         }
 
-        replaceWithCapNumber(thisMessage, expForStickers, 2, "<img width=" + QString::number(infoForParsing.stickersSize) + " height=" + QString::number(infoForParsing.stickersSize) + " src=\"resources/stickers/", ".png\" />");
+        replaceWithCapNumber(thisMessage, expForStickers, 1, "<img width=" + QString::number(infoForParsing.stickersSize) + " height=" + QString::number(infoForParsing.stickersSize) + " src=\"resources/stickers/", ".png\" />", -1, "", std::bind(stringModificatorUrlToStickerId, std::placeholders::_1));
     }
 
     if(infoForParsing.smileyToText == true)

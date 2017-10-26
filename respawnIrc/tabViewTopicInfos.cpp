@@ -35,7 +35,7 @@ tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIg
     connect(imageDownloadTool, &imageDownloadToolClass::oneDownloadFinished, this, &tabViewTopicInfosClass::updateImagesIfNeeded);
 
     updateSettings(true);
-    imageDownloadTool->addOrUpdateRule("sticker", "/resources/stickers/", false, true, "http://jv.stkr.fr/p/", ".png", true);
+    imageDownloadTool->addOrUpdateRule("sticker", "/resources/stickers/", false, true, "", ".png", true);
     addOrUpdateAvatarRuleForImageDownloader();
     addOrUpdateNoelshackRuleForImageDownloader();
 }
