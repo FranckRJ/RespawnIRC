@@ -15,8 +15,8 @@ void shortcutTool::initializeAllShortcutsRules()
 {
     listOfShortcutRules.clear();
     loadShortcutRule("shortcut");
-    loadShortcutRule("noLangageSticker", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/)rgx", R"rgx(".*?/>)rgx", "<img class=\"img-stickers\" src=\"http://jv.stkr.fr/p/", "\"/>", true);
-    loadShortcutRule("stickerToSmiley", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/)rgx", R"rgx(".*?/>)rgx", "<img src=\"resources/smileys/", "\"/>", true);
+    loadShortcutRule("noLangageSticker", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/([A-Za-z0-9]*/)?)rgx", R"rgx(".*?/>)rgx", "<img class=\"img-stickers\" src=\"http://jv.stkr.fr/p/", "\"/>", true);
+    loadShortcutRule("stickerToSmiley", R"rgx(<img class="img-stickers" src="http://jv\.stkr\.fr/p[^/]*/([A-Za-z0-9]*/)?)rgx", R"rgx(".*?/>)rgx", "<img src=\"resources/smileys/", "\"/>", true);
 }
 
 void shortcutTool::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew, bool useRegex)

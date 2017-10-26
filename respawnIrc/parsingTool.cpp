@@ -48,36 +48,36 @@ namespace
     const QRegularExpression expForForumName(R"rgx(<title>(.*?)- jeuxvideo\.com</title>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvfLink(R"rgx(http://jvforum\.fr/([^/]*)/([^-]*)-([^/]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSmiley(R"rgx(<img src="http(s)?://image\.jeuxvideo\.com/smileys_img/([^"]*)" alt="[^"]*" data-code="([^"]*)" title="[^"]*" [^>]*>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="(http://jv\.stkr\.fr/p[^/]*/([^"]*))".*?/>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="([^"]*)".*?/>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForLongLink(R"rgx(<span class="JvCare [^"]*"[^i]*itle="([^"]*)">[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForShortLink(R"rgx(<span class="JvCare [^"]*" rel="nofollow[^"]*" target="_blank">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcLink(R"rgx(<a href="([^"]*)"( )?( title="[^"]*")?>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNoelshack(R"rgx(<span class="JvCare[^>]*><img class="img-shack".*?src="http(s)?://([^"]*)" alt="([^"]*)"[^>]*></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForYoutubeVideo(R"rgx(<div class="player-contenu"><div class="[^"]*"><iframe .*? src="http(s)?://www\.youtube\.com/embed/([^"]*)"[^>]*></iframe></div></div>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForSpoilLine(R"rgx(<span class="bloc-spoil-jv en-ligne">.*?<span class="contenu-spoil">(.*?)</span></span>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForSpoilBlock(R"rgx(<span class="bloc-spoil-jv">.*?<span class="contenu-spoil">(.*?)</span></span>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForSpoilLine(R"rgx(<div class="bloc-spoil-jv en-ligne">.*?<div class="contenu-spoil">(.*?)</div></div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForSpoilBlock(R"rgx(<div class="bloc-spoil-jv">.*?<div class="contenu-spoil">(.*?)</div></div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForCodeBlock(R"rgx(<pre class="pre-jv"><code class="code-jv">([^<]*)</code></pre>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForCodeLine(R"rgx(<code class="code-jv">(.*?)</code>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForAllJVCare(R"rgx(<span class="JvCare [^"]*">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForUnicodeInText(R"rgx(\\u([a-zA-Z0-9]{4}))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForOverlyQuote(R"rgx(<(/)?blockquote>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForOverlySpoils(R"rgx((<span class="bloc-spoil-jv[^"]*">.*?<span class="contenu-spoil">|</span></span>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForOverlySpoils(R"rgx((<div class="bloc-spoil-jv[^"]*">.*?<div class="contenu-spoil">|</div></div>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForUglyImage(R"rgx(issou|risit|jesus|picsart|chancla)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAd(R"rgx(<ins[^>]*></ins>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForWebsite(R"rgx(http://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
     QString userAgentToUse = "RespatatouilleIRC";
 
-    QString stringModificatorRemoveFirstAndLastP(QString baseMessage)
+    QString stringModificatorRemoveFirstsAndLastsPAndBr(QString baseMessage)
     {
         baseMessage = baseMessage.trimmed();
-        while(baseMessage.startsWith("<p>") == true)
+        while(baseMessage.startsWith("<p>") == true || baseMessage.startsWith("<br />") == true)
         {
-            baseMessage.remove(0, 3);
+            baseMessage.remove(0, baseMessage.indexOf(">") + 1);
             baseMessage = baseMessage.trimmed();
         }
-        while(baseMessage.endsWith("</p>") == true)
+        while(baseMessage.endsWith("</p>") == true || baseMessage.endsWith("<br />") == true)
         {
-            baseMessage.remove(baseMessage.size() - 4, 4);
+            baseMessage.remove(baseMessage.lastIndexOf("<"), baseMessage.size());
             baseMessage = baseMessage.trimmed();
         }
         return baseMessage;
@@ -89,6 +89,20 @@ namespace
         {
             baseMessage = "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"" + baseMessage + "\">" + baseMessage + "</a>";
         }
+        return baseMessage;
+    }
+
+    QString stringModificatorUrlToStickerId(QString baseMessage)
+    {
+        if(baseMessage.endsWith("/"))
+        {
+            baseMessage.remove(baseMessage.size() - 1, 1);
+        }
+        if(baseMessage.contains("/"))
+        {
+            baseMessage.remove(0, baseMessage.lastIndexOf("/") + 1);
+        }
+
         return baseMessage;
     }
 
@@ -598,10 +612,10 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
     {
         if(infoForParsing.listOfStickersUsed != nullptr && reallyDownloadStickers == true)
         {
-            infoForParsing.listOfStickersUsed->append(getListOfThisCapNumber(thisMessage, expForStickers, 2, false));
+            infoForParsing.listOfStickersUsed->append(getListOfThisCapNumber(thisMessage, expForStickers, 1, false));
         }
 
-        replaceWithCapNumber(thisMessage, expForStickers, 2, "<img width=" + QString::number(infoForParsing.stickersSize) + " height=" + QString::number(infoForParsing.stickersSize) + " src=\"resources/stickers/", ".png\" />");
+        replaceWithCapNumber(thisMessage, expForStickers, 1, "<img width=" + QString::number(infoForParsing.stickersSize) + " height=" + QString::number(infoForParsing.stickersSize) + " src=\"resources/stickers/", ".png\" />", -1, "", std::bind(stringModificatorUrlToStickerId, std::placeholders::_1));
     }
 
     if(infoForParsing.smileyToText == true)
@@ -642,8 +656,8 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
         replaceWithCapNumber(thisMessage, expForNoelshack, 3, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 3, "</a>");
     }
 
-    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleTool::getColorInfo().spoilColor + "; background-color: " + styleTool::getColorInfo().spoilColor + ";\">", "</span>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
-    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleTool::getColorInfo().spoilColor + "; background-color: " + styleTool::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", std::bind(stringModificatorRemoveFirstAndLastP, std::placeholders::_1));
+    replaceWithCapNumber(thisMessage, expForSpoilLine, 1, "<span style=\"color: " + styleTool::getColorInfo().spoilColor + "; background-color: " + styleTool::getColorInfo().spoilColor + ";\">", "</span>", -1, "", std::bind(stringModificatorRemoveFirstsAndLastsPAndBr, std::placeholders::_1));
+    replaceWithCapNumber(thisMessage, expForSpoilBlock, 1, "<p><span style=\"color: " + styleTool::getColorInfo().spoilColor + "; background-color: " + styleTool::getColorInfo().spoilColor + ";\">", "</span></p>", -1, "", std::bind(stringModificatorRemoveFirstsAndLastsPAndBr, std::placeholders::_1));
     replaceWithCapNumber(thisMessage, expForAllJVCare, 1, "", "", -1, "", std::bind(stringModificatorMakeLinkIfPossible, std::placeholders::_1));
 
     removeAllOverlyQuote(thisMessage, infoForParsing.nbMaxQuote);
@@ -826,7 +840,7 @@ void parsingTool::removeAllOverlySpoils(QString& source)
 
     while(spoilOverlyMatcher.hasMatch() == true)
     {
-        bool itsEndingTag = (spoilOverlyMatcher.captured() == "</span></span>");
+        bool itsEndingTag = (spoilOverlyMatcher.captured() == "</div></div>");
 
         if(itsEndingTag == false)
         {
