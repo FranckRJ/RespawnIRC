@@ -6,7 +6,7 @@ Pour plus d'infos, le site : https://pijon.fr/RespawnIRC/.
 
 ## Compilation
 
-Il est fortement recommandé d'utiliser les sources de la dernière release (https://github.com/FranckRJ/RespawnIRC/releases/latest dans la partie download en bas) plutôt que les sources de la branche master pour compiler RespawnIRC.  
+Il est fortement recommandé d'utiliser les sources de la branche master pour compiler RespawnIRC, vous pouvez utiliser les sources de la branche dev mais celle-ci peut être moins stable, considérez-la comme une version bêta du logiciel.  
 Pour connaître les modifications à apporter au programme selon votre compilateur/version de Qt, référez-vous au wiki : https://github.com/FranckRJ/RespawnIRC/wiki/Compiler-selon-sa-configuration.  
 Pour compiler RespawnIRC vous devrez d'abord compiler Hunspell, pour ce faire référez-vous au wiki : https://github.com/FranckRJ/RespawnIRC/wiki/Compiler-Hunspell.
 
@@ -16,9 +16,9 @@ Pour Windows le plus simple reste de télécharger la dernière version de Qt (h
 
 ### Linux
 
-Pour Linux, il vous suffit d'installer les paquets `qt5-default qtmultimedia5-dev` ainsi que `libqt5webkit5-dev` si vous utilisez webkit ou `qt5-webengine` (nom de paquet à vérifier) si vous utilisez webengine, le programme utilise webengine par défaut, si vous l'avez modifié pour utiliser les fichiers .old à la place des fichiers normaux vous utilisez webkit. Ensuite, vous n'avez plus qu'à vous rendre dans le dossier `respawnIrc` qui contient le .pro et exécuter ces commandes :
+Pour Linux, il vous suffit d'installer les paquets `qt5-default qtmultimedia5-dev` ainsi que `qtwebengine5-dev` si vous utilisez webengine ou `libqt5webkit5-dev` si vous utilisez webkit (ce sont les noms des paquets pour Debian, si vous utilisez une autre distribution les noms peuvent changer), le programme utilise webengine par défaut, si vous l'avez modifié pour utiliser les fichiers .old à la place des fichiers normaux vous utilisez webkit. Ensuite, vous n'avez plus qu'à vous rendre dans le dossier `respawnIrc` qui contient le .pro et exécuter ces commandes :
 
     qmake
     make
 
-Un fichier `respawnIrc` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` et `themes`) et exécutez-le.
+Un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` et `themes`) et exécutez-le.
