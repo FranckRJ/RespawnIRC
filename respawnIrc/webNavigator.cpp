@@ -12,10 +12,8 @@
 #include "styleTool.hpp"
 
 webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> cookiesList) :
-    baseDialogClass(parent)
+    baseDialogClass(parent, Qt::WindowMaximizeButtonHint)
 {
-    setWindowFlag(Qt::WindowMaximizeButtonHint, true);
-
     QWebEngineProfile* customProfile = new QWebEngineProfile(this);
     QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
 

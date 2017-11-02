@@ -4,8 +4,8 @@
 
 #include "baseDialog.hpp"
 
-baseDialogClass::baseDialogClass(QWidget* parent) :
-    QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
+baseDialogClass::baseDialogClass(QWidget* parent, Qt::WindowFlags newWindowFlags) :
+    QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | newWindowFlags)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 }

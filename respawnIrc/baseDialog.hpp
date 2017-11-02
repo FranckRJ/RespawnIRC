@@ -8,7 +8,7 @@
 class baseDialogClass : public QDialog
 {
 public:
-    baseDialogClass(QWidget* parent);
+    baseDialogClass(QWidget* parent, Qt::WindowFlags newWindowFlags = Qt::WindowFlags());
     virtual ~baseDialogClass() {}
 protected:
     void showEvent(QShowEvent* event) override;
