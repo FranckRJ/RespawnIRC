@@ -57,7 +57,7 @@ private:
     QNetworkAccessManager* networkManager;
     QNetworkReply* reply = nullptr;
     QMap<QString, imageDownloadRuleStruct> listOfRulesForImage;
-    QMap<QString, QStringList> listOfExistingsImageForRules;
+    QMap<QString, QStringList> listOfExistingImagesForRules;
     QList<infoForDownloadImageStruct> listOfImagesUrlNeedDownload;
     QScopedPointer<QTemporaryDir> tmpDir;
     bool cacheHasBeenResetDuringDownlaod = false;
