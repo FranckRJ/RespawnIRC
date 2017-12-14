@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QIODevice>
 #include <QImage>
+#include <QByteArray>
 
 #include "imageDownloadTool.hpp"
 #include "parsingTool.hpp"
@@ -31,7 +32,7 @@ void imageDownloadToolClass::addOrUpdateRule(QString ruleName, QString directory
     newRule.keepAspectRatio = keepAspectRatio;
 
     listOfRulesForImage[ruleName] = newRule;
-    listOfExistingsImageForRules[ruleName] = QStringList();
+    listOfExistingImagesForRules[ruleName] = QStringList();
 
     if(newRule.alwaysCheckBeforeDL == true)
     {
@@ -56,7 +57,7 @@ void imageDownloadToolClass::addOrUpdateRule(QString ruleName, QString directory
             thisImage = convertUrlToFilePath(thisImage);
         }
 
-        listOfExistingsImageForRules[ruleName].append(listOfImagesInDir);
+        listOfExistingImagesForRules[ruleName].append(listOfImagesInDir);
     }
 }
 
@@ -99,9 +100,9 @@ void imageDownloadToolClass::resetCache()
     {
         if(ite.value().isInTmpDir == true)
         {
-            QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingsImageForRules.find(ite.key());
+            QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingImagesForRules.find(ite.key());
 
-            if(listOfImagesIte != listOfExistingsImageForRules.end())
+            if(listOfImagesIte != listOfExistingImagesForRules.end())
             {
                 listOfImagesIte.value().clear();
             }
@@ -151,9 +152,9 @@ int imageDownloadToolClass::getNumberOfDownloadRemaining()
 
 bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, const imageDownloadRuleStruct& thisRule, QString ruleName)
 {
-    QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingsImageForRules.find(ruleName);
+    QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingImagesForRules.find(ruleName);
 
-    if(listOfImagesIte == listOfExistingsImageForRules.end())
+    if(listOfImagesIte == listOfExistingImagesForRules.end())
     {
         return true;
     }
@@ -236,14 +237,17 @@ QString imageDownloadToolClass::getOnlyLevelOfFilePath(QString thisPath)
 void imageDownloadToolClass::analyzeLatestImageDownloaded()
 {
     QMap<QString, imageDownloadRuleStruct>::iterator ruleIte = listOfRulesForImage.find(listOfImagesUrlNeedDownload.front().ruleForImage);
-    QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingsImageForRules.find(listOfImagesUrlNeedDownload.front().ruleForImage);
+    QMap<QString, QStringList>::iterator listOfImagesIte = listOfExistingImagesForRules.find(listOfImagesUrlNeedDownload.front().ruleForImage);
 
-    if(ruleIte != listOfRulesForImage.end() && listOfImagesIte != listOfExistingsImageForRules.end())
+    if(ruleIte != listOfRulesForImage.end() && listOfImagesIte != listOfExistingImagesForRules.end())
     {
         if(reply->isReadable() == true && (ruleIte.value().isInTmpDir == false || (tmpDir->isValid() == true && cacheHasBeenResetDuringDownlaod == false)))
         {
+            QImage image;
             QByteArray imageInBytes = reply->readAll();
-            if(imageInBytes.length() > 150)
+            bool imageIsValide = image.loadFromData(imageInBytes);
+
+            if(imageIsValide == true)
             {
                 QFile newImageFile;
                 QDir newDir;
@@ -256,8 +260,6 @@ void imageDownloadToolClass::analyzeLatestImageDownloaded()
 
                 if(ruleIte.value().preferedImageWidth > 0 && ruleIte.value().preferedImageHeight > 0)
                 {
-                    QImage image;
-                    image.loadFromData(imageInBytes);
                     image = image.scaled(ruleIte.value().preferedImageWidth, ruleIte.value().preferedImageHeight,
                                          ((ruleIte.value().keepAspectRatio == true) ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio), Qt::SmoothTransformation);
                     image.save(&newImageFile, 0, 100);
@@ -266,9 +268,10 @@ void imageDownloadToolClass::analyzeLatestImageDownloaded()
                 {
                     newImageFile.write(imageInBytes);
                 }
+
                 newImageFile.close();
+                listOfImagesIte.value().append(convertUrlToFilePath(listOfImagesUrlNeedDownload.front().linkOfImage));
             }
-            listOfImagesIte.value().append(convertUrlToFilePath(listOfImagesUrlNeedDownload.front().linkOfImage));
         }
     }
     reply->deleteLater();
