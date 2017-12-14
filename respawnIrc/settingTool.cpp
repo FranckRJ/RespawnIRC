@@ -100,7 +100,7 @@ void settingTool::initializeDefaultListsOption()
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].minValue = 1;
     listOfDefaultIntOption["numberOfErrorsBeforeWarning"].maxValue = 25;
     listOfDefaultIntOption["updateTopicListTime"].value = 20000;
-    listOfDefaultIntOption["updateTopicListTime"].minValue = 4000;
+    listOfDefaultIntOption["updateTopicListTime"].minValue = 5000;
     listOfDefaultIntOption["updateTopicListTime"].maxValue = 60000;
     listOfDefaultIntOption["typeOfEdit"].value = 2;
     listOfDefaultIntOption["typeOfEdit"].minValue = 0;
