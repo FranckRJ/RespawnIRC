@@ -11,7 +11,7 @@
 highlighterClass::highlighterClass(QTextDocument* parent) : QSyntaxHighlighter(parent)
 {
     spellCheckFormat.setUnderlineColor(QColor(styleTool::getColorInfo().underlineColor));
-    spellCheckFormat.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
+    spellCheckFormat.setUnderlineStyle(QTextCharFormat::SingleUnderline);
     setDic("");
 }
 
