@@ -15,7 +15,7 @@ namespace
     const QRegularExpression expForAjaxHash(R"rgx(<input type="hidden" name="ajax_hash_liste_messages" id="ajax_hash_liste_messages" value="([^"]*)" />)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAjaxModTimestamp(R"rgx(<input type="hidden" name="ajax_timestamp_moderation_forum" id="ajax_timestamp_moderation_forum" value="([^"]*)" />)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAjaxModHash(R"rgx(<input type="hidden" name="ajax_hash_moderation_forum" id="ajax_hash_moderation_forum" value="([^"]*)" />)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForMessageEdit(R"rgx(<textarea tabindex="3" class="area-editor" name="text_commentaire" id="text_commentaire" placeholder="[^"]*">([^<]*)</textarea>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForMessageEdit(R"rgx(<textarea((.*?)(?=id="text_commentaire")|(.*?)(?=>))id="text_commentaire"[^>]*>(.*?)</textarea>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMessageQuote(R"rgx("txt":"(.*)"})rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForVersionName(R"rgx("tag_name"[^"]*:[^"]*"([^"]*)")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForVersionChangelog(R"rgx("body"[^"]*:[^"]*"(.*)")rgx", configDependentVar::regexpBaseOptions);
@@ -54,7 +54,7 @@ namespace
     const QRegularExpression expForJvcLink(R"rgx(<a href="([^"]*)"( )?( title="[^"]*")?>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNoelshack(R"rgx(<span class="JvCare[^>]*><img class="img-shack".*?src="http(s)?://([^"]*)" alt="([^"]*)"[^>]*></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForYoutubeVideo(R"rgx(<div class="player-contenu"><div class="[^"]*"><iframe .*? src="http(s)?://www\.youtube\.com/embed/([^"]*)"[^>]*></iframe></div></div>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForJvcVideo(R"rgx(<div class=\"player-contenu\">.*?</div>[^<]*</div>[^<]*</div>[^<]*</div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForJvcVideo(R"rgx(<div class="player-contenu">.*?</div>[^<]*</div>[^<]*</div>[^<]*</div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForSpoilLine(R"rgx(<div class="bloc-spoil-jv en-ligne">.*?<div class="contenu-spoil">(.*?)</div></div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForSpoilBlock(R"rgx(<div class="bloc-spoil-jv">.*?<div class="contenu-spoil">(.*?)</div></div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForCodeBlock(R"rgx(<pre class="pre-jv"><code class="code-jv">([^<]*)</code></pre>)rgx", configDependentVar::regexpBaseOptions);
@@ -210,7 +210,7 @@ ajaxInfoStruct parsingTool::getAjaxInfo(const QString& source)
 
 QString parsingTool::getMessageEdit(const QString& source)
 {
-    return specialCharToNormalChar(expForMessageEdit.match(source).captured(1));
+    return specialCharToNormalChar(expForMessageEdit.match(source).captured(4));
 }
 
 QString parsingTool::getMessageQuote(const QString& source)
