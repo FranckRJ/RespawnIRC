@@ -15,7 +15,7 @@ namespace
     const QRegularExpression expForAjaxHash(R"rgx(<input type="hidden" name="ajax_hash_liste_messages" id="ajax_hash_liste_messages" value="([^"]*)" />)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAjaxModTimestamp(R"rgx(<input type="hidden" name="ajax_timestamp_moderation_forum" id="ajax_timestamp_moderation_forum" value="([^"]*)" />)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAjaxModHash(R"rgx(<input type="hidden" name="ajax_hash_moderation_forum" id="ajax_hash_moderation_forum" value="([^"]*)" />)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForMessageEdit(R"rgx(<textarea((.*?)(?=id="text_commentaire")|(.*?)(?=>))id="text_commentaire"[^>]*>(.*?)</textarea>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForMessageEdit(R"rgx(<textarea((.*?)(?=id="text_commentaire")|(.*?)(?=>))id="text_commentaire"[^>]*>(.*?)</textarea>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForMessageQuote(R"rgx("txt":"(.*)"})rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForVersionName(R"rgx("tag_name"[^"]*:[^"]*"([^"]*)")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForVersionChangelog(R"rgx("body"[^"]*:[^"]*"(.*)")rgx", configDependentVar::regexpBaseOptions);
