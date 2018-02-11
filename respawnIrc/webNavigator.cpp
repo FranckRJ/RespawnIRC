@@ -11,7 +11,7 @@
 #include "webNavigator.hpp"
 #include "styleTool.hpp"
 
-webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> cookiesList) :
+webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> jvcCookiesList) :
     baseDialogClass(parent, Qt::WindowMaximizeButtonHint)
 {
     QWebEngineProfile* customProfile = new QWebEngineProfile(this);
@@ -62,8 +62,9 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     setWindowTitle("RespawnIRC Navigator");
 
     webView->setPage(customPage);
-    for(const QNetworkCookie& thisCookie : cookiesList)
+    for(QNetworkCookie thisCookie : jvcCookiesList)
     {
+        thisCookie.setDomain("www.jeuxvideo.com");
         webView->page()->profile()->cookieStore()->setCookie(thisCookie);
     }
 
