@@ -55,14 +55,14 @@ namespace
     const QRegularExpression expForNoelshack(R"rgx(<span class="JvCare[^>]*><img class="img-shack".*?src="http(s)?://([^"]*)" alt="([^"]*)"[^>]*></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForYoutubeVideo(R"rgx(<div class="player-contenu"><div class="[^"]*"><iframe .*? src="http(s)?://www\.youtube\.com/embed/([^"]*)"[^>]*></iframe></div></div>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcVideo(R"rgx(<div class="player-contenu">.*?</div>[^<]*</div>[^<]*</div>[^<]*</div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForSpoilLine(R"rgx(<div class="bloc-spoil-jv en-ligne">.*?<div class="contenu-spoil">(.*?)</div></div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForSpoilLine(R"rgx(<span class="bloc-spoil-jv en-ligne">.*?<span class="contenu-spoil">(.*?)</span></span>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForSpoilBlock(R"rgx(<div class="bloc-spoil-jv">.*?<div class="contenu-spoil">(.*?)</div></div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForCodeBlock(R"rgx(<pre class="pre-jv"><code class="code-jv">([^<]*)</code></pre>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForCodeLine(R"rgx(<code class="code-jv">(.*?)</code>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForAllJVCare(R"rgx(<span class="JvCare [^"]*">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForUnicodeInText(R"rgx(\\u([a-zA-Z0-9]{4}))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForOverlyQuote(R"rgx(<(/)?blockquote>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForOverlySpoils(R"rgx((<div class="bloc-spoil-jv[^"]*">.*?<div class="contenu-spoil">|</div></div>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForOverlySpoils(R"rgx((<(span|div) class="bloc-spoil-jv[^"]*">.*?<(span|div) class="contenu-spoil">|</span></span>|</div></div>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForUglyImage(R"rgx(issou|risit|jesus|picsart|chancla)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAd(R"rgx(<ins[^>]*></ins>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForWebsite(R"rgx(http://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
@@ -842,7 +842,7 @@ void parsingTool::removeAllOverlySpoils(QString& source)
 
     while(spoilOverlyMatcher.hasMatch() == true)
     {
-        bool itsEndingTag = (spoilOverlyMatcher.captured() == "</div></div>");
+        bool itsEndingTag = spoilOverlyMatcher.captured().startsWith("</");
 
         if(itsEndingTag == false)
         {
