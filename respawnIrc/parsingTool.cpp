@@ -50,19 +50,19 @@ namespace
     const QRegularExpression expForSmiley(R"rgx(<img src="http(s)?://image\.jeuxvideo\.com/smileys_img/([^"]*)" alt="[^"]*" data-code="([^"]*)" title="[^"]*" [^>]*>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="([^"]*)".*?/>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForLongLink(R"rgx(<span class="JvCare [^"]*"[^i]*itle="([^"]*)">[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForShortLink(R"rgx(<span class="JvCare [^"]*" rel="nofollow[^"]*" target="_blank">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForShortLink(R"rgx(<span class="JvCare [^"]*"[^>]*?target="_blank">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcLink(R"rgx(<a href="([^"]*)"( )?( title="[^"]*")?>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNoelshack(R"rgx(<span class="JvCare[^>]*><img class="img-shack".*?src="http(s)?://([^"]*)" alt="([^"]*)"[^>]*></span>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForYoutubeVideo(R"rgx(<div class="player-contenu"><div class="[^"]*"><iframe .*? src="http(s)?://www\.youtube\.com/embed/([^"]*)"[^>]*></iframe></div></div>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForEmbedVideo(R"rgx(<div class="player-contenu"><div class="[^"]*"><iframe.*?src="([^"]*)"[^>]*></iframe></div></div>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcVideo(R"rgx(<div class="player-contenu">.*?</div>[^<]*</div>[^<]*</div>[^<]*</div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForSpoilLine(R"rgx(<div class="bloc-spoil-jv en-ligne">.*?<div class="contenu-spoil">(.*?)</div></div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForSpoilLine(R"rgx(<span class="bloc-spoil-jv en-ligne">.*?<span class="contenu-spoil">(.*?)</span></span>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForSpoilBlock(R"rgx(<div class="bloc-spoil-jv">.*?<div class="contenu-spoil">(.*?)</div></div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForCodeBlock(R"rgx(<pre class="pre-jv"><code class="code-jv">([^<]*)</code></pre>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForCodeLine(R"rgx(<code class="code-jv">(.*?)</code>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForAllJVCare(R"rgx(<span class="JvCare [^"]*">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForUnicodeInText(R"rgx(\\u([a-zA-Z0-9]{4}))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForOverlyQuote(R"rgx(<(/)?blockquote>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForOverlySpoils(R"rgx((<div class="bloc-spoil-jv[^"]*">.*?<div class="contenu-spoil">|</div></div>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForOverlySpoils(R"rgx((<(span|div) class="bloc-spoil-jv[^"]*">.*?<(span|div) class="contenu-spoil">|</span></span>|</div></div>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForUglyImage(R"rgx(issou|risit|jesus|picsart|chancla)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAd(R"rgx(<ins[^>]*></ins>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForWebsite(R"rgx(http://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
@@ -628,7 +628,7 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
         replaceWithCapNumber(thisMessage, expForSmiley, 2, "<img src=\"resources/smileys/", "\" />");
     }
 
-    replaceWithCapNumber(thisMessage, expForYoutubeVideo, 2, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://youtu.be/", "\">http://youtu.be/", 2, "</a>");
+    replaceWithCapNumber(thisMessage, expForEmbedVideo, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForJvcVideo, -1, "[[Vidéo non supportée par le logiciel]]");
     replaceWithCapNumber(thisMessage, expForJvcLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
@@ -842,7 +842,7 @@ void parsingTool::removeAllOverlySpoils(QString& source)
 
     while(spoilOverlyMatcher.hasMatch() == true)
     {
-        bool itsEndingTag = (spoilOverlyMatcher.captured() == "</div></div>");
+        bool itsEndingTag = spoilOverlyMatcher.captured().startsWith("</");
 
         if(itsEndingTag == false)
         {
