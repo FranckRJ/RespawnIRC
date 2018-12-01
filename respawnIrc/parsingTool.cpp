@@ -2,6 +2,7 @@
 #include <QRegularExpressionMatchIterator>
 #include <QUrl>
 #include <QtGlobal>
+#include <algorithm>
 
 #include "parsingTool.hpp"
 #include "styleTool.hpp"
@@ -474,7 +475,7 @@ QList<messageStruct> parsingTool::getListOfEntireMessagesWithoutMessagePars(cons
 
     if(sortNeeded == true)
     {
-        qSort(listOfMessages);
+        std::sort(listOfMessages.begin(), listOfMessages.end());
     }
 
     return listOfMessages;
@@ -736,7 +737,7 @@ QString parsingTool::parsingAjaxMessages(QString thisMessage)
     {
         QRegularExpressionMatch match = matchIterator.next();
 
-        thisMessage.replace(match.capturedStart(0) + lenghtChanged, match.capturedLength(0), QChar(match.captured(1).toUpper().toUInt(0, 16)));
+        thisMessage.replace(match.capturedStart(0) + lenghtChanged, match.capturedLength(0), QChar(match.captured(1).toUpper().toUInt(nullptr, 16)));
         lenghtChanged -= match.capturedLength(0);
         lenghtChanged += 1;
     }
