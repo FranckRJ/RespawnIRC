@@ -1,7 +1,8 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QAction>
-#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>
@@ -149,7 +150,7 @@ mainWindowClass::mainWindowClass()
     if(settingTool::getThisBoolOption("saveWindowGeometry") == false ||
             settingTool::getThisByteOption("windowGeometry").isEmpty() == true)
     {
-        resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
+        resize(QGuiApplication::primaryScreen()->availableSize() * 0.7);
     }
     else
     {

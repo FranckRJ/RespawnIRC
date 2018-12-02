@@ -1,5 +1,6 @@
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QRect>
 
 #include "baseDialog.hpp"
@@ -21,28 +22,28 @@ void baseDialogClass::showEvent(QShowEvent* event)
         static const int margin = 15;
 
         QRect parentWindowGeometry = parentWidget()->window()->geometry();
-        QRect screenGeometry = QApplication::desktop()->screenGeometry();
+        QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
         int dialogWidth = width() + 2;
         int dialogHeight = height() + 2;
         int dialogXPos = parentWindowGeometry.left() + (parentWindowGeometry.width() / 2) - (dialogWidth / 2);
         int dialogYPos = parentWindowGeometry.top() + (parentWindowGeometry.height() / 2) - (dialogHeight / 2);
 
-        if(dialogXPos < margin)
+        if(dialogXPos - margin < screenGeometry.left())
         {
-            dialogXPos = margin;
+            dialogXPos = screenGeometry.left() + margin;
         }
-        else if(dialogXPos + dialogWidth + margin > screenGeometry.width())
+        else if(dialogXPos + dialogWidth + margin > screenGeometry.left() + screenGeometry.width())
         {
-            dialogXPos = screenGeometry.width() - dialogWidth - margin;
+            dialogXPos = screenGeometry.left() + screenGeometry.width() - dialogWidth - margin;
         }
 
-        if(dialogYPos < margin)
+        if(dialogYPos - margin < screenGeometry.top())
         {
-            dialogYPos = margin;
+            dialogYPos = screenGeometry.top() + margin;
         }
-        else if(dialogYPos + dialogHeight + margin > screenGeometry.height())
+        else if(dialogYPos + dialogHeight + margin > screenGeometry.top() + screenGeometry.height())
         {
-            dialogYPos = screenGeometry.height() - dialogHeight - margin;
+            dialogYPos = screenGeometry.top() + screenGeometry.height() - dialogHeight - margin;
         }
 
         setGeometry(dialogXPos, dialogYPos, dialogWidth, dialogHeight);
