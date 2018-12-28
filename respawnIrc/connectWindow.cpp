@@ -89,7 +89,11 @@ void connectWindowClass::checkThisCookie(QNetworkCookie cookie)
         connectCookie = cookie;
     }
 
-    adjustSize();
+    if(firstTimeAdjustSize == true)
+    {
+        adjustSize();
+        firstTimeAdjustSize = false;
+    }
 }
 
 void connectWindowClass::showAddCookieWindow()
