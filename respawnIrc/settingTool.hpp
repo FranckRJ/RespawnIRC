@@ -42,7 +42,7 @@ namespace settingTool
     QList<QString> createStringListWithThisQVariantList(QList<QVariant> list);
     QList<QNetworkCookie> createCookieListWithThisQVariantList(QList<QVariant> list);
     void forceSync();
-    static const int fastModeSpeedRefresh = 1000;
+    static const int fastModeSpeedRefresh = 1'000;
 }
 
 #endif

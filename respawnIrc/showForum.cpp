@@ -74,7 +74,7 @@ showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWid
     listViewOfTopic->setEditTriggers(QAbstractItemView::NoEditTriggers);
     listViewOfTopic->setContextMenuPolicy(Qt::CustomContextMenu);
     timerForGetList->setTimerType(Qt::CoarseTimer);
-    timerForGetList->setInterval(15000);
+    timerForGetList->setInterval(15'000);
     updateSettings();
     setNewTheme(currentThemeName);
 
