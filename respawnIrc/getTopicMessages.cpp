@@ -12,7 +12,7 @@ getTopicMessagesClass::getTopicMessagesClass(QObject* parent) : QObject(parent)
     timerForGetMessage = new QTimer(this);
 
     timerForGetMessage->setTimerType(Qt::CoarseTimer);
-    timerForGetMessage->setInterval(7500);
+    timerForGetMessage->setInterval(7'500);
     timerForGetMessage->stop();
 
     connect(timerForGetMessage, &QTimer::timeout, this, &getTopicMessagesClass::getMessages);
