@@ -21,9 +21,6 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
     QSettings setting(QCoreApplication::applicationDirPath() + "/config.ini", QSettings::IniFormat);
 
-    qsrand(QTime::currentTime().msecsSinceStartOfDay());
-    parsingTool::generateNewUserAgent();
-
     settingTool::setSettings(&setting);
     settingTool::initializeDefaultListsOption();
     shortcutTool::initializeAllShortcutsRules();
