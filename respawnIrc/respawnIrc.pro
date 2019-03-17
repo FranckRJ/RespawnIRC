@@ -14,13 +14,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 RC_FILE = respawnIrc.rc
 
 CONFIG += c++14
+CONFIG += strict_c++
 
-#Probablement inutile mais msvc est tout bugé (macro __cplusplus à 199711) et je veux être certain d'utiliser c++14.
-msvc:QMAKE_CXXFLAGS += /std:c++14
-gcc:QMAKE_CXXFLAGS += -std=c++14
-
-msvc:QMAKE_CXXFLAGS_RELEASE += /O2
-gcc:QMAKE_CXXFLAGS_RELEASE += -O2
+QMAKE_CXXFLAGS_RELEASE += -O2
 
 LIBS += -L$$PWD/../hunspell/lib/ -llibhunspell
 INCLUDEPATH += $$PWD/../hunspell/include
