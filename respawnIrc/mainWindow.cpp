@@ -151,6 +151,7 @@ mainWindowClass::mainWindowClass()
             settingTool::getThisByteOption("windowGeometry").isEmpty() == true)
     {
         resize(QGuiApplication::primaryScreen()->availableSize() * 0.7);
+        setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(), QGuiApplication::primaryScreen()->availableGeometry()));
     }
     else
     {
