@@ -69,13 +69,14 @@ void connectWindowClass::addWebView()
 
         webView = new QWebEngineView(this);
 
+        webView->setBaseSize(800, 600);
         webView->setPage(customPage);
         webView->load(QUrl("https://www.jeuxvideo.com/login"));
 
         mainLayout->removeWidget(buttonShowWebView);
         buttonShowWebView->setEnabled(false);
         buttonShowWebView->setVisible(false);
-        mainLayout->insertWidget(0, webView);
+        mainLayout->insertWidget(0, webView, 1);
 
         connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);
     }

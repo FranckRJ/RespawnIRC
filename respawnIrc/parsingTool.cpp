@@ -67,7 +67,7 @@ namespace
     const QRegularExpression expForUglyImage(R"rgx(issou|risit|jesus|picsart|chancla)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAd(R"rgx(<ins[^>]*></ins>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForWebsite(R"rgx(http://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
-    QString userAgentToUse = "RespatatouilleIRC";
+    QString userAgentToUse = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0";
 
     QString stringModificatorRemoveFirstsAndLastsPAndBr(QString baseMessage)
     {
@@ -129,44 +129,6 @@ namespace
             baseMessage.remove(baseMessage.size() - 1, 1);
         }
         return baseMessage.replace("\n", "<br />");
-    }
-}
-
-void parsingTool::generateNewUserAgent()
-{
-    QStringList allStringForGeneration;
-    int lastMessageId = qrand() % 3;
-
-    allStringForGeneration.append("RespawnIRC");
-    allStringForGeneration.append("jeuxvideo.com");
-
-    if(lastMessageId == 0)
-    {
-        allStringForGeneration.append("laissez moi fonctionner");
-    }
-    else if(lastMessageId == 1)
-    {
-        allStringForGeneration.append("je suis gentil");
-    }
-    else
-    {
-        allStringForGeneration.append("fonctionne optimal");
-    }
-
-    userAgentToUse.clear();
-
-    while(allStringForGeneration.isEmpty() == false)
-    {
-        int currentString = qrand() % allStringForGeneration.size();
-        int currentChar = qrand() % allStringForGeneration.at(currentString).size();
-
-        userAgentToUse += allStringForGeneration.at(currentString).at(currentChar);
-        allStringForGeneration[currentString].remove(currentChar, 1);
-
-        if(allStringForGeneration.at(currentString).isEmpty() == true)
-        {
-            allStringForGeneration.removeAt(currentString);
-        }
     }
 }
 

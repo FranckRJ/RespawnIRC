@@ -155,7 +155,7 @@ void showTopicClass::setNewCookie(QNetworkCookie newConnectCookie, QString newWe
     newPseudoOfUser.replace("[", "\\[").replace("]", "\\]");
     if(newPseudoOfUser.isEmpty() == false)
     {
-        expForColorPseudo.setPattern("\\b" + newPseudoOfUser + "\\b(?![^<>]*(>|</a>))");
+        expForColorPseudo.setPattern("(?<!\\w)" + newPseudoOfUser + "(?!\\w)(?![^<>]*(>|</a>))");
     }
     listOfInput.clear();
     currentErrorStreak = 0;
