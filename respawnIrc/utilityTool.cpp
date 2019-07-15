@@ -29,8 +29,18 @@ QList<QNetworkCookie> utilityTool::cookieToCookieList(const QNetworkCookie& conn
     }
 }
 
+QNetworkCookie utilityTool::createWebNotifierCookie()
+{
+    QNetworkCookie webNotifierCookie("euconsent", "set");
+
+    webNotifierCookie.setDomain("www.jeuxvideo.com");
+    webNotifierCookie.setExpirationDate(QDateTime::currentDateTime().addYears(8));
+
+    return webNotifierCookie;
+}
+
 //blabla inutile je sais mais c'est plus beau
 int utilityTool::roundToInt(double number)
 {
-    return (number + 0.5);
+    return static_cast<int>(number + 0.5);
 }

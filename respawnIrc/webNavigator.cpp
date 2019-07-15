@@ -10,6 +10,7 @@
 
 #include "webNavigator.hpp"
 #include "styleTool.hpp"
+#include "utilityTool.hpp"
 
 webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> jvcCookiesList) :
     baseDialogClass(parent, Qt::WindowMaximizeButtonHint)
@@ -68,6 +69,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
         thisCookie.setDomain("www.jeuxvideo.com");
         webView->page()->profile()->cookieStore()->setCookie(thisCookie);
     }
+    webView->page()->profile()->cookieStore()->setCookie(utilityTool::createWebNotifierCookie());
 
     if(startUrl.isEmpty() == true)
     {

@@ -10,6 +10,7 @@
 #include "addCookieWindow.hpp"
 #include "addPseudoWindow.hpp"
 #include "parsingTool.hpp"
+#include "utilityTool.hpp"
 
 connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : baseDialogClass(parent)
 {
@@ -80,6 +81,7 @@ void connectWindowClass::addWebView()
 
         webView->setBaseSize(800, 600);
         webView->setPage(customPage);
+        webView->page()->profile()->cookieStore()->setCookie(utilityTool::createWebNotifierCookie());
         webView->load(QUrl("https://www.jeuxvideo.com/login"));
 
         mainLayout->removeWidget(buttonShowWebView);
