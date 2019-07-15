@@ -60,14 +60,23 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : b
     connect(buttonHelp, &QPushButton::clicked, this, &connectWindowClass::showHelpConnect);
 }
 
+connectWindowClass::~connectWindowClass()
+{
+    if(webView != nullptr)
+    {
+        delete webView->page();
+    }
+}
+
 void connectWindowClass::addWebView()
 {
     if(webView == nullptr)
     {
         QWebEngineProfile* customProfile = new QWebEngineProfile(this);
-        QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
+        QWebEnginePage* customPage;
 
         webView = new QWebEngineView(this);
+        customPage = new QWebEnginePage(customProfile, webView);
 
         webView->setBaseSize(800, 600);
         webView->setPage(customPage);

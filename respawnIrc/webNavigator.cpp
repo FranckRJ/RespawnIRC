@@ -15,7 +15,6 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     baseDialogClass(parent, Qt::WindowMaximizeButtonHint)
 {
     QWebEngineProfile* customProfile = new QWebEngineProfile(this);
-    QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
 
     QMenuBar* mainMenuBar = new QMenuBar(this);
     QPushButton* goButton = new QPushButton("Go", this);
@@ -62,6 +61,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     setLayout(mainLayout);
     setWindowTitle("RespawnIRC Navigator");
 
+    QWebEnginePage* customPage = new QWebEnginePage(customProfile, webView);
     webView->setPage(customPage);
     for(QNetworkCookie thisCookie : jvcCookiesList)
     {
@@ -83,6 +83,11 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     connect(goButton, &QPushButton::clicked, this, &webNavigatorClass::goToUrl);
     connect(backwardButton, &QPushButton::clicked, webView, &customWebViewClass::back);
     connect(forwardButton, &QPushButton::clicked, webView, &customWebViewClass::forward);
+}
+
+webNavigatorClass::~webNavigatorClass()
+{
+    delete webView->page();
 }
 
 void webNavigatorClass::changeUrl(QUrl newUrl)

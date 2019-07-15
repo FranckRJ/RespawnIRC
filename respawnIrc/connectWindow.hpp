@@ -17,6 +17,7 @@ class connectWindowClass : public baseDialogClass
     Q_OBJECT
 public:
     explicit connectWindowClass(QWidget* parent, bool showRemeberBox = true);
+    ~connectWindowClass();
 private slots:
     void addWebView();
     void checkThisCookie(QNetworkCookie cookie);
