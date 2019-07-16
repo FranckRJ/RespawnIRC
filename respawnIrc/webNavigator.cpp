@@ -38,7 +38,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     goButton->setAutoDefault(false);
     goButton->setMaximumWidth(goButton->fontMetrics().boundingRect(goButton->text()).width() + 20);
 
-    webView->setBaseSize(800, 600);
+    webView->resize(800, 600);
     webViewLoadBar->setMaximumHeight(1);
     webViewLoadBar->setTextVisible(false);
     webViewLoadBar->setStyleSheet("QProgressBar {border: 0px; background-color: transparent;} QProgressBar::chunk {background-color: " + styleTool::getColorInfo().navigatorProgressBarColor + ";}");

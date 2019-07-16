@@ -79,7 +79,6 @@ void connectWindowClass::addWebView()
         webView = new QWebEngineView(this);
         customPage = new QWebEnginePage(customProfile, webView);
 
-        webView->setBaseSize(800, 600);
         webView->setPage(customPage);
         webView->page()->profile()->cookieStore()->setCookie(utilityTool::createWebNotifierCookie());
         webView->load(QUrl("https://www.jeuxvideo.com/login"));
@@ -88,6 +87,7 @@ void connectWindowClass::addWebView()
         buttonShowWebView->setEnabled(false);
         buttonShowWebView->setVisible(false);
         mainLayout->insertWidget(0, webView, 1);
+        resize(width(), 600);
 
         connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);
     }
@@ -99,12 +99,6 @@ void connectWindowClass::checkThisCookie(QNetworkCookie cookie)
     {
         cookie.setExpirationDate(QDateTime::currentDateTime().addYears(8));
         connectCookie = cookie;
-    }
-
-    if(firstTimeAdjustSize == true)
-    {
-        adjustSize();
-        firstTimeAdjustSize = false;
     }
 }
 

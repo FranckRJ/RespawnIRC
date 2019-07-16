@@ -28,7 +28,6 @@ private slots:
 signals:
     void newCookieAvailable(QNetworkCookie newConnectCookie, QString newPseudoOfUser, bool saveAccountList, bool savePseudo);
 private:
-    bool firstTimeAdjustSize = true;
     QNetworkCookie connectCookie;
     QWebEngineView* webView = nullptr;
     QPushButton* buttonShowWebView;
