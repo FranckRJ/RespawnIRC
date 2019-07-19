@@ -24,7 +24,7 @@
 #include "styleTool.hpp"
 #include "configDependentVar.hpp"
 
-const QString respawnIrcClass::currentVersionName("v3.1.10");
+const QString respawnIrcClass::currentVersionName("v3.1.11");
 
 namespace
 {

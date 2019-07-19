@@ -10,12 +10,12 @@
 
 #include "webNavigator.hpp"
 #include "styleTool.hpp"
+#include "utilityTool.hpp"
 
 webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> jvcCookiesList) :
     baseDialogClass(parent, Qt::WindowMaximizeButtonHint)
 {
     QWebEngineProfile* customProfile = new QWebEngineProfile(this);
-    QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
 
     QMenuBar* mainMenuBar = new QMenuBar(this);
     QPushButton* goButton = new QPushButton("Go", this);
@@ -38,7 +38,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     goButton->setAutoDefault(false);
     goButton->setMaximumWidth(goButton->fontMetrics().boundingRect(goButton->text()).width() + 20);
 
-    webView->setBaseSize(800, 600);
+    webView->resize(800, 600);
     webViewLoadBar->setMaximumHeight(1);
     webViewLoadBar->setTextVisible(false);
     webViewLoadBar->setStyleSheet("QProgressBar {border: 0px; background-color: transparent;} QProgressBar::chunk {background-color: " + styleTool::getColorInfo().navigatorProgressBarColor + ";}");
@@ -62,12 +62,14 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     setLayout(mainLayout);
     setWindowTitle("RespawnIRC Navigator");
 
+    QWebEnginePage* customPage = new QWebEnginePage(customProfile, webView);
     webView->setPage(customPage);
     for(QNetworkCookie thisCookie : jvcCookiesList)
     {
         thisCookie.setDomain("www.jeuxvideo.com");
         webView->page()->profile()->cookieStore()->setCookie(thisCookie);
     }
+    webView->page()->profile()->cookieStore()->setCookie(utilityTool::createWebNotifierCookie());
 
     if(startUrl.isEmpty() == true)
     {
@@ -83,6 +85,11 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     connect(goButton, &QPushButton::clicked, this, &webNavigatorClass::goToUrl);
     connect(backwardButton, &QPushButton::clicked, webView, &customWebViewClass::back);
     connect(forwardButton, &QPushButton::clicked, webView, &customWebViewClass::forward);
+}
+
+webNavigatorClass::~webNavigatorClass()
+{
+    delete webView->page();
 }
 
 void webNavigatorClass::changeUrl(QUrl newUrl)

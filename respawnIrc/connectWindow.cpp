@@ -10,6 +10,7 @@
 #include "addCookieWindow.hpp"
 #include "addPseudoWindow.hpp"
 #include "parsingTool.hpp"
+#include "utilityTool.hpp"
 
 connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : baseDialogClass(parent)
 {
@@ -60,23 +61,33 @@ connectWindowClass::connectWindowClass(QWidget* parent, bool showRemeberBox) : b
     connect(buttonHelp, &QPushButton::clicked, this, &connectWindowClass::showHelpConnect);
 }
 
+connectWindowClass::~connectWindowClass()
+{
+    if(webView != nullptr)
+    {
+        delete webView->page();
+    }
+}
+
 void connectWindowClass::addWebView()
 {
     if(webView == nullptr)
     {
         QWebEngineProfile* customProfile = new QWebEngineProfile(this);
-        QWebEnginePage* customPage = new QWebEnginePage(customProfile, this);
+        QWebEnginePage* customPage;
 
         webView = new QWebEngineView(this);
+        customPage = new QWebEnginePage(customProfile, webView);
 
-        webView->setBaseSize(800, 600);
         webView->setPage(customPage);
+        webView->page()->profile()->cookieStore()->setCookie(utilityTool::createWebNotifierCookie());
         webView->load(QUrl("https://www.jeuxvideo.com/login"));
 
         mainLayout->removeWidget(buttonShowWebView);
         buttonShowWebView->setEnabled(false);
         buttonShowWebView->setVisible(false);
         mainLayout->insertWidget(0, webView, 1);
+        resize(width(), 600);
 
         connect(webView->page()->profile()->cookieStore(), &QWebEngineCookieStore::cookieAdded, this, &connectWindowClass::checkThisCookie);
     }
@@ -88,12 +99,6 @@ void connectWindowClass::checkThisCookie(QNetworkCookie cookie)
     {
         cookie.setExpirationDate(QDateTime::currentDateTime().addYears(8));
         connectCookie = cookie;
-    }
-
-    if(firstTimeAdjustSize == true)
-    {
-        adjustSize();
-        firstTimeAdjustSize = false;
     }
 }
 
