@@ -2,6 +2,10 @@
 
 Logiciel offrant une interface de client IRC pour les forums de jeuxvideo.com.
 
+Lien de téléchargement : https://github.com/FranckRJ/RespawnIRC/releases/latest.
+
+Message de présentation sur jeuxvideo.com : http://www.jeuxvideo.com/forums/42-1000021-40573812-1-0-1-0-pc-android-respawnirc.htm#post_731107420.
+
 Pour plus d'infos, le site : https://pijon.fr/RespawnIRC/.
 
 ## Compilation
