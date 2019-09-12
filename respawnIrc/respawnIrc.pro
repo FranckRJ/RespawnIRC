@@ -23,6 +23,7 @@ INCLUDEPATH += $$PWD/../hunspell/include
 DEPENDPATH += $$PWD/../hunspell/include
 
 SOURCES += \
+    customWebPage.cpp \
     main.cpp \
     mainWindow.cpp \
     respawnIrc.cpp \
@@ -63,6 +64,7 @@ SOURCES += \
     baseDialog.cpp
 
 HEADERS += \
+    customWebPage.hpp \
     mainWindow.hpp \
     respawnIrc.hpp \
     connectWindow.hpp \

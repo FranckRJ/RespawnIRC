@@ -20,7 +20,6 @@ public slots:
     void forward();
 protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
-    QWebEngineView* createWindow(QWebEnginePage::WebWindowType type) override;
 private slots:
     void newUrlVisited(const QUrl& thisUrl);
 private:

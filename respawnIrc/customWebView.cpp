@@ -37,12 +37,6 @@ void customWebViewClass::contextMenuEvent(QContextMenuEvent* event)
     menu->popup(event->globalPos());
 }
 
-QWebEngineView* customWebViewClass::createWindow(QWebEnginePage::WebWindowType type)
-{
-    (void)type;
-    return this;
-}
-
 void customWebViewClass::back()
 {
     if(canGoBack() == true)
@@ -65,6 +59,11 @@ void customWebViewClass::forward()
 
 void customWebViewClass::newUrlVisited(const QUrl& thisUrl)
 {
+    if (thisUrl.isEmpty() == true)
+    {
+        return;
+    }
+
     if(nextUrlChangeHasToBeSaved == false)
     {
         nextUrlChangeHasToBeSaved = true;
