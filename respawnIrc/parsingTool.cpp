@@ -50,9 +50,9 @@ namespace
     const QRegularExpression expForJvfLink(R"rgx(http://jvforum\.fr/([^/]*)/([^-]*)-([^/]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSmiley(R"rgx(<img src="http(s)?://image\.jeuxvideo\.com/smileys_img/([^"]*)" alt="[^"]*" data-code="([^"]*)" title="[^"]*" [^>]*>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="([^"]*)".*?/>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForLongLink(R"rgx(<span class="JvCare [^"]*"[^i]*itle="([^"]*)">[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForShortLink(R"rgx(<span class="JvCare [^"]*"[^>]*?target="_blank">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForJvcLink(R"rgx(<a href="([^"]*)"( )?( title="[^"]*")?>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForLongLink(R"rgx(<span +class="JvCare [^"]*"[^i]*itle="([^"]*)" *>[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForShortLink(R"rgx(<span +class="JvCare [^"]*"[^>]*?target="_blank" *>([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForJvcLink(R"rgx(<a +(title="[^"]*" )?href="([^"]*)"( title="[^"]*")? *>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNoelshack(R"rgx(<span class="JvCare[^>]*><img class="img-shack".*?src="http(s)?://([^"]*)" alt="([^"]*)"[^>]*></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForEmbedVideo(R"rgx(<div class="player-contenu"><div class="[^"]*"><iframe.*?src="([^"]*)"[^>]*></iframe></div></div>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcVideo(R"rgx(<div class="player-contenu">.*?<div class="player-jv" id="player-jv-([^-]*)-.*?</div>[^<]*</div>[^<]*</div>[^<]*</div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
@@ -591,9 +591,9 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
         replaceWithCapNumber(thisMessage, expForSmiley, 2, "<img src=\"resources/smileys/", "\" />");
     }
 
-    replaceWithCapNumber(thisMessage, expForEmbedVideo, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
-    replaceWithCapNumber(thisMessage, expForJvcVideo, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://www.jeuxvideo.com/videos/iframe/", "\">http://www.jeuxvideo.com/videos/iframe/", 1, "</a>");
-    replaceWithCapNumber(thisMessage, expForJvcLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
+    replaceWithCapNumber(thisMessage, expForEmbedVideo, 1, "<p><a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a></p>");
+    replaceWithCapNumber(thisMessage, expForJvcVideo, 1, "<p><a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://www.jeuxvideo.com/videos/iframe/", "\">http://www.jeuxvideo.com/videos/iframe/", 1, "</a></p>");
+    replaceWithCapNumber(thisMessage, expForJvcLink, 2, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 2, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
 
