@@ -370,7 +370,7 @@ void showForumClass::analyzeReply()
     }
     reply->deleteLater();
 
-    if(source.isEmpty() == true)
+    if(source.isEmpty() == true || source.contains("<meta http-equiv=\"refresh\"") == true)
     {
         if(locationHeader.startsWith("/forums/") == true)
         {
