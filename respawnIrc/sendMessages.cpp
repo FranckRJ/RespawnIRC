@@ -282,7 +282,7 @@ void sendMessagesClass::deleteReplyForSendMessage()
     replyForSendMessage->deleteLater();
     replyForSendMessage = nullptr;
 
-    if(source.isEmpty() == true || (isInEdit == true && source.startsWith("{\"erreur\":[]") == true))
+    if(source.isEmpty() == true || source.contains("<meta http-equiv=\"refresh\"") == true || (isInEdit == true && source.startsWith("{\"erreur\":[]") == true))
     {
         messageLine->clear();
 
