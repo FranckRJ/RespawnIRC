@@ -161,7 +161,7 @@ void getTopicMessagesClass::analyzeMessages()
                     locationHeader = listOfReplys[i]->rawHeader("Location");
                 }
 
-                if(firstValidePageNumber == -1 && listOfPageSource[i].isEmpty() == false)
+                if(firstValidePageNumber == -1 && listOfPageSource[i].isEmpty() == false && listOfPageSource[i].contains("<meta http-equiv=\"refresh\"") == false)
                 {
                     firstValidePageNumber = i;
                 }

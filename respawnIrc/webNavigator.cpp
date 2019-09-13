@@ -8,9 +8,11 @@
 #include <QAction>
 #include <QDesktopServices>
 
-#include "webNavigator.hpp"
+#include <functional>
+
 #include "styleTool.hpp"
 #include "utilityTool.hpp"
+#include "webNavigator.hpp"
 
 webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QNetworkCookie> jvcCookiesList) :
     baseDialogClass(parent, Qt::WindowMaximizeButtonHint)
@@ -62,8 +64,8 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     setLayout(mainLayout);
     setWindowTitle("RespawnIRC Navigator");
 
-    QWebEnginePage* customPage = new QWebEnginePage(customProfile, webView);
-    webView->setPage(customPage);
+    customWebPageClass* customPage = new customWebPageClass(customProfile, webView);
+    newPageAvailableCallback(customPage);
     for(QNetworkCookie thisCookie : jvcCookiesList)
     {
         thisCookie.setDomain("www.jeuxvideo.com");
@@ -76,8 +78,6 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
         startUrl = "http://www.jeuxvideo.com";
     }
 
-    webView->setUrl(QUrl(startUrl));
-
     connect(actionOpenInExternalNavigator, &QAction::triggered, this, &webNavigatorClass::openCurrentPageInExternalNavigator);
     connect(webView, &customWebViewClass::urlChanged, this, &webNavigatorClass::changeUrl);
     connect(webView, &customWebViewClass::loadProgress, this, &webNavigatorClass::handleLoadProgress);
@@ -85,11 +85,24 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     connect(goButton, &QPushButton::clicked, this, &webNavigatorClass::goToUrl);
     connect(backwardButton, &QPushButton::clicked, webView, &customWebViewClass::back);
     connect(forwardButton, &QPushButton::clicked, webView, &customWebViewClass::forward);
+
+    webView->setUrl(QUrl(startUrl));
 }
 
 webNavigatorClass::~webNavigatorClass()
 {
     delete webView->page();
+}
+
+void webNavigatorClass::newPageAvailableCallback(customWebPageClass* newPage)
+{
+    if (webView->page() != nullptr)
+    {
+        webView->page()->deleteLater();
+    }
+    newPage->setNewPageAvailableCallback(
+        std::bind(&webNavigatorClass::newPageAvailableCallback, this, std::placeholders::_1));
+    webView->setPage(newPage);
 }
 
 void webNavigatorClass::changeUrl(QUrl newUrl)

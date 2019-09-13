@@ -11,6 +11,7 @@
 #include <QPushButton>
 
 #include "baseDialog.hpp"
+#include "customWebPage.hpp"
 #include "customWebView.hpp"
 
 class webNavigatorClass : public baseDialogClass
@@ -19,11 +20,16 @@ class webNavigatorClass : public baseDialogClass
 public:
     explicit webNavigatorClass(QWidget* parent, QString startUrl = "", QList<QNetworkCookie> jvcCookiesList = QList<QNetworkCookie>());
     ~webNavigatorClass();
+
+private:
+    void newPageAvailableCallback(customWebPageClass* newPage);
+
 private slots:
     void changeUrl(QUrl newUrl);
     void handleLoadProgress(int progress);
     void goToUrl();
     void openCurrentPageInExternalNavigator() const;
+
 private:
     customWebViewClass* webView;
     QProgressBar* webViewLoadBar;
