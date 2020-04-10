@@ -33,7 +33,6 @@ QNetworkCookie utilityTool::createWebNotifierCookie()
 {
     QNetworkCookie webNotifierCookie("euconsent", "set");
 
-    webNotifierCookie.setDomain("www.jeuxvideo.com");
     webNotifierCookie.setExpirationDate(QDateTime::currentDateTime().addYears(8));
 
     return webNotifierCookie;

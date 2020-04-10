@@ -71,7 +71,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
         thisCookie.setDomain("www.jeuxvideo.com");
         webView->page()->profile()->cookieStore()->setCookie(thisCookie);
     }
-    webView->page()->profile()->cookieStore()->setCookie(utilityTool::createWebNotifierCookie());
+    webView->page()->profile()->cookieStore()->setCookie(utilityTool::createWebNotifierCookie(), QUrl("http://www.jeuxvideo.com"));
 
     if(startUrl.isEmpty() == true)
     {
