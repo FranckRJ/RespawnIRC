@@ -132,7 +132,7 @@ void showForumClass::setNewCookie(QNetworkCookie newConnectCookie, QString newWe
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("http://" + websiteOfCookie));
+        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("https://" + websiteOfCookie));
     }
 }
 
@@ -374,7 +374,7 @@ void showForumClass::analyzeReply()
     {
         if(locationHeader.startsWith("/forums/") == true)
         {
-            forumLink = "http://" + websiteOfForum + locationHeader;
+            forumLink = "https://" + websiteOfForum + locationHeader;
             reply = nullptr;
             startGetListOfTopic();
             return;

@@ -133,7 +133,7 @@ void respawnIrcClass::showWebNavigator()
 
 void respawnIrcClass::showWebNavigatorAtMP()
 {
-    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, "http://www.jeuxvideo.com/messages-prives/boite-reception.php", {tabViewTopicInfos->getConnectCookieOfCurrentTab()});
+    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, "https://www.jeuxvideo.com/messages-prives/boite-reception.php", {tabViewTopicInfos->getConnectCookieOfCurrentTab()});
     myWebNavigator->exec();
 }
 

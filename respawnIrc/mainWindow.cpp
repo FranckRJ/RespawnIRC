@@ -268,7 +268,7 @@ void mainWindowClass::doStuffBeforeQuit()
 
 void mainWindowClass::goToMp()
 {
-    QDesktopServices::openUrl(QUrl("http://www.jeuxvideo.com/messages-prives/boite-reception.php"));
+    QDesktopServices::openUrl(QUrl("https://www.jeuxvideo.com/messages-prives/boite-reception.php"));
 }
 
 void mainWindowClass::reloadShortcuts()

@@ -39,15 +39,15 @@ namespace
     const QRegularExpression expForTopicPseudoInfo(R"rgx(<span class="JvCare [^ ]* text-([^ ]*) topic-author)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicType(R"rgx(<img src="/img/forums/topic-(.*?)\.png" alt="[^"]*" title="[^"]*" class="topic-img")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMessageID(R"rgx(<div class="bloc-message-forum[^"]*" data-id="([^"]*)">)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForAvatars(R"rgx(<img src="[^"]*" data-srcset="(http:)?//([^"]*)" class="user-avatar-msg")rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForAvatars(R"rgx(<img src="[^"]*" data-srcset="(https?:)?//([^"]*)" class="user-avatar-msg")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForPseudo(R"rgx(<span class="JvCare [^ ]* bloc-pseudo-msg text-([^"]*)" target="_blank">[^a-zA-Z0-9_\[\]-]*([a-zA-Z0-9_\[\]-]*)[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForDate(R"rgx(<div class="bloc-date-msg">([^<]*<span class="JvCare [^ ]* lien-jv" target="_blank">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMessage(R"rgx(<div class="bloc-contenu">[^<]*<div class="txt-msg  text-[^-]*-forum ">((.*?)(?=<div class="info-edition-msg">)|(.*?)(?=<div class="signature-msg)|(.*)))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEdit(R"rgx(<div class="info-edition-msg">[^M]*Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)) par <span)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSignature(R"rgx(<div class="signature-msg[^"]*">(.*))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForTopicLinkNumber(R"rgx((http://([^/]*)/forums/[^-]*-([^-]*)-([^-]*)-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^\.]*\.htm))rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForTopicLinkNumber(R"rgx((https?://([^/]*)/forums/[^-]*-([^-]*)-([^-]*)-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^\.]*\.htm))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForForumName(R"rgx(<title>(.*?)- jeuxvideo\.com</title>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForJvfLink(R"rgx(http://jvforum\.fr/([^/]*)/([^-]*)-([^/]*))rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForJvfLink(R"rgx(https?://jvforum\.fr/([^/]*)/([^-]*)-([^/]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSmiley(R"rgx(<img src="http(s)?://image\.jeuxvideo\.com/smileys_img/([^"]*)" alt="[^"]*" data-code="([^"]*)" title="[^"]*" [^>]*>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForStickers(R"rgx(<img class="img-stickers" src="([^"]*)".*?/>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForLongLink(R"rgx(<span +class="JvCare [^"]*"[^i]*itle="([^"]*)"[^>]*>[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
@@ -66,7 +66,7 @@ namespace
     const QRegularExpression expForOverlySpoils(R"rgx((<(span|div) class="bloc-spoil-jv[^"]*">.*?<(span|div) class="contenu-spoil">|</span></span>|</div></div>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForUglyImage(R"rgx(issou|risit|jesus|picsart|chancla)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAd(R"rgx(<ins[^>]*></ins>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForWebsite(R"rgx(http://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForWebsite(R"rgx(https?://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
     QString userAgentToUse = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0";
 
     QString stringModificatorRemoveFirstsAndLastsPAndBr(QString baseMessage)
@@ -316,7 +316,7 @@ QString parsingTool::getNextPageOfTopic(const QString& source, const QString& we
         QRegularExpressionMatch matchForPageLink = matchIteratorForPgaeLink.next();
         if(matchForPageLink.captured(2).toInt() == currentPage + 1)
         {
-            return "http://" + website + matchForPageLink.captured(1);
+            return "https://" + website + matchForPageLink.captured(1);
         }
     }
 
@@ -336,7 +336,7 @@ QString parsingTool::getLastPageOfTopic(const QString& source, const QString& we
         if(matchForPageLink.captured(2).toInt() > currentPage)
         {
             currentPage = matchForPageLink.captured(2).toInt();
-            lastPage = "http://" + website + matchForPageLink.captured(1);
+            lastPage = "https://" + website + matchForPageLink.captured(1);
         }
     }
 
@@ -454,7 +454,7 @@ QList<topicStruct> parsingTool::getListOfTopic(const QString& source, const QStr
     {
         QRegularExpressionMatch matchForTopicNumberMessageAdm = expForTopicNumberMessageAdm.match(thisTopic);
         QString topicInfo = expForTopicNameAndLink.match(thisTopic).captured(1);
-        QString link = "http://" + website + topicInfo.left(topicInfo.indexOf("\""));
+        QString link = "https://" + website + topicInfo.left(topicInfo.indexOf("\""));
         QString name = topicInfo.right(topicInfo.size() - topicInfo.indexOf("title=\"") - 7);
         name.replace("&amp;", "&").replace("&quot;", "\"").replace("&#039;", "\'").replace("&lt;", "<").replace("&gt;", ">");
         listOfTopic.append(topicStruct());
@@ -482,7 +482,7 @@ QString parsingTool::getForumOfTopic(const QString& topicLink)
 
     if(infosMatcher.hasMatch() == true)
     {
-        return "http://" + infosMatcher.captured(2) + "/forums/0-" + infosMatcher.captured(3) + "-0-1-0-1-0-respawn-irc.htm";
+        return "https://" + infosMatcher.captured(2) + "/forums/0-" + infosMatcher.captured(3) + "-0-1-0-1-0-respawn-irc.htm";
     }
     else
     {
@@ -519,7 +519,7 @@ QString parsingTool::jvfLinkToJvcLink(const QString& jvfTopicLink)
             topicNumber.remove(0, 1);
         }
 
-        return "http://www.jeuxvideo.com/forums/" + tempo + "-" + forumNumber + "-" + topicNumber + "-1-0-1-0-" + nameOfTopic + ".htm";
+        return "https://www.jeuxvideo.com/forums/" + tempo + "-" + forumNumber + "-" + topicNumber + "-1-0-1-0-" + nameOfTopic + ".htm";
     }
     else
     {
@@ -592,7 +592,7 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
     }
 
     replaceWithCapNumber(thisMessage, expForEmbedVideo, 1, "<p><a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a></p>");
-    replaceWithCapNumber(thisMessage, expForJvcVideo, 1, "<p><a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"http://www.jeuxvideo.com/videos/iframe/", "\">http://www.jeuxvideo.com/videos/iframe/", 1, "</a></p>");
+    replaceWithCapNumber(thisMessage, expForJvcVideo, 1, "<p><a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"https://www.jeuxvideo.com/videos/iframe/", "\">https://www.jeuxvideo.com/videos/iframe/", 1, "</a></p>");
     replaceWithCapNumber(thisMessage, expForJvcLink, 2, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 2, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
@@ -608,7 +608,7 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
 
         for(QString& thisNoelshackImage : *infoForParsing.listOfNoelshackImageUsed)
         {
-            if(thisNoelshackImage.startsWith("http://") == false)
+            if(thisNoelshackImage.startsWith("http://") == false && thisNoelshackImage.startsWith("https://") == false)
             {
                 thisNoelshackImage = "http://" + thisNoelshackImage;
             }

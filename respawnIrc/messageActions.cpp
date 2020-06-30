@@ -44,7 +44,7 @@ void messageActionsClass::setNewCookie(QNetworkCookie newConnectCookie, QString 
     {
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("http://" + websiteOfCookie));
+        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("https://" + websiteOfCookie));
     }
 }
 
@@ -69,7 +69,7 @@ bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdi
             QNetworkRequest requestForEditInfo;
 
             oldIdOfMessageToEdit = idOfMessageToEdit;
-            urlToGet = "http://" + websiteOfTopic + "/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfMessageToEdit) + "&" + ajaxInfo.list + "&action=get";
+            urlToGet = "https://" + websiteOfTopic + "/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfMessageToEdit) + "&" + ajaxInfo.list + "&action=get";
             requestForEditInfo = parsingTool::buildRequestWithThisUrl(urlToGet);
             oldAjaxInfo = ajaxInfo;
             oldUseMessageEdit = useMessageEdit;
@@ -103,7 +103,7 @@ void messageActionsClass::getQuoteInfo(QString idOfMessageQuoted, QString messag
 
     if(ajaxInfo.list.isEmpty() == false && replyForQuoteInfo == nullptr)
     {
-        QNetworkRequest requestForQuoteInfo = parsingTool::buildRequestWithThisUrl("http://" + websiteOfTopic + "/forums/ajax_citation.php");
+        QNetworkRequest requestForQuoteInfo = parsingTool::buildRequestWithThisUrl("https://" + websiteOfTopic + "/forums/ajax_citation.php");
         QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo.list;
         lastMessageQuoted = messageQuoted;
         replyForQuoteInfo = timeoutForQuoteInfo->resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
@@ -135,7 +135,7 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
 
     if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)
     {
-        QNetworkRequest requestForDeleteInfo = parsingTool::buildRequestWithThisUrl("http://" + websiteOfTopic + "/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
+        QNetworkRequest requestForDeleteInfo = parsingTool::buildRequestWithThisUrl("https://" + websiteOfTopic + "/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
         replyForDeleteInfo = timeoutForDeleteInfo->resetReply(networkManager->get(requestForDeleteInfo));
 
         if(replyForDeleteInfo->isOpen() == true)
