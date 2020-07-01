@@ -73,7 +73,7 @@ void getTopicMessagesClass::setNewCookie(QNetworkCookie newConnectCookie, QStrin
         {
             networkManager->clearAccessCache();
             networkManager->setCookieJar(new QNetworkCookieJar(this));
-            networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("http://" + websiteOfCookie));
+            networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(newConnectCookie), QUrl("https://" + websiteOfCookie));
 
             if(updateMessages == true)
             {
@@ -187,7 +187,7 @@ void getTopicMessagesClass::analyzeMessages()
     {
         if(locationHeader.startsWith("/forums/") == true)
         {
-            QString locationHeaderTopicLink = "http://" + websiteOfTopic + locationHeader;
+            QString locationHeaderTopicLink = "https://" + websiteOfTopic + locationHeader;
             if(parsingTool::checkIfTopicAreSame(topicLink, locationHeaderTopicLink) == true)
             {
                 topicLink = locationHeaderTopicLink;

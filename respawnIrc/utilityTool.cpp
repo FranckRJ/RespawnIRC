@@ -29,13 +29,9 @@ QList<QNetworkCookie> utilityTool::cookieToCookieList(const QNetworkCookie& conn
     }
 }
 
-QNetworkCookie utilityTool::createWebNotifierCookie()
+void utilityTool::setupWebNotifierCookie(QWebEngineCookieStore& webEngineCookieStore)
 {
-    QNetworkCookie webNotifierCookie("euconsent", "set");
-
-    webNotifierCookie.setExpirationDate(QDateTime::currentDateTime().addYears(8));
-
-    return webNotifierCookie;
+    // pk sa marsh pa, ri1 ki marsh :-(
 }
 
 //blabla inutile je sais mais c'est plus beau

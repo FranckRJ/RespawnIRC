@@ -24,7 +24,7 @@
 #include "styleTool.hpp"
 #include "configDependentVar.hpp"
 
-const QString respawnIrcClass::currentVersionName("v3.1.13");
+const QString respawnIrcClass::currentVersionName("v3.1.14");
 
 namespace
 {
@@ -133,7 +133,7 @@ void respawnIrcClass::showWebNavigator()
 
 void respawnIrcClass::showWebNavigatorAtMP()
 {
-    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, "http://www.jeuxvideo.com/messages-prives/boite-reception.php", {tabViewTopicInfos->getConnectCookieOfCurrentTab()});
+    webNavigatorClass* myWebNavigator = new webNavigatorClass(this, "https://www.jeuxvideo.com/messages-prives/boite-reception.php", {tabViewTopicInfos->getConnectCookieOfCurrentTab()});
     myWebNavigator->exec();
 }
 
@@ -396,7 +396,7 @@ void respawnIrcClass::loadSettings()
 
     for(int i = 0; i < 10; ++i)
     {
-        vectorOfFavoriteLink.push_back(settingTool::getThisStringOption("favoriteLink" + QString::number(i)));
+        vectorOfFavoriteLink.push_back(settingTool::getThisStringOption("favoriteLink" + QString::number(i)).replace("http://", "https://"));
     }
 
     pseudoOfUser = settingTool::getThisStringOption("pseudo");

@@ -36,27 +36,27 @@ selectTopicWindowClass::selectTopicWindowClass(QString currentTopic, QWidget* pa
 
 QString selectTopicWindowClass::transformLinkIfNeeded(QString link) const
 {
-    if(link.startsWith("https://") == true)
+    if(link.startsWith("http://") == true)
     {
-        link.remove(link.indexOf("s"), 1);
+        link.insert(link.indexOf(":"), 's');
     }
 
-    if(link.startsWith("http://") == false)
+    if(link.startsWith("https://") == false)
     {
-        link.insert(0, "http://");
+        link.insert(0, "https://");
     }
 
-    if(link.startsWith("http://m.") == true)
+    if(link.startsWith("https://m.") == true)
     {
-        link.replace("http://m.", "http://www.");
+        link.replace("https://m.", "https://www.");
     }
-    else if(link.startsWith("http://jeuxvideo.com/") == true || link.startsWith("http://forumjv.com/") == true)
+    else if(link.startsWith("https://jeuxvideo.com/") == true || link.startsWith("https://forumjv.com/") == true)
     {
-        link.replace("http://", "http://www.");
+        link.replace("https://", "https://www.");
     }
 
-    if(link.startsWith("http://www.jeuxvideo.com/forums/") == false && link.startsWith("http://jvforum.fr/") == false
-       && link.startsWith("http://www.forumjv.com/forums/") == false)
+    if(link.startsWith("https://www.jeuxvideo.com/forums/") == false && link.startsWith("https://jvforum.fr/") == false
+       && link.startsWith("https://www.forumjv.com/forums/") == false)
     {
         return "";
     }
@@ -70,7 +70,7 @@ void selectTopicWindowClass::selectThisTopic()
 
     if(newLink.isEmpty() == false)
     {
-        if(newLink.startsWith("http://jvforum.fr/") == true)
+        if(newLink.startsWith("https://jvforum.fr/") == true)
         {
             emit newTopicSelected(parsingTool::jvfLinkToJvcLink(newLink));
         }

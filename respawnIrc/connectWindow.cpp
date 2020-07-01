@@ -80,7 +80,7 @@ void connectWindowClass::addWebView()
         customPage = new QWebEnginePage(customProfile, webView);
 
         webView->setPage(customPage);
-        webView->page()->profile()->cookieStore()->setCookie(utilityTool::createWebNotifierCookie(), QUrl("http://www.jeuxvideo.com"));
+        utilityTool::setupWebNotifierCookie(*(webView->page()->profile()->cookieStore()));
         webView->load(QUrl("https://www.jeuxvideo.com/login"));
 
         mainLayout->removeWidget(buttonShowWebView);

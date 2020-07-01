@@ -88,11 +88,11 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         connectCookieForPostMsg = connectCookie;
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
-        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(connectCookieForPostMsg), QUrl("http://" + website));
+        networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(connectCookieForPostMsg), QUrl("https://" + website));
 
         if(isInEdit == true)
         {
-            request = parsingTool::buildRequestWithThisUrl("http://" + website + "/forums/ajax_edit_message.php");
+            request = parsingTool::buildRequestWithThisUrl("https://" + website + "/forums/ajax_edit_message.php");
         }
         else
         {

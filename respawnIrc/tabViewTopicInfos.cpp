@@ -311,7 +311,7 @@ containerForTopicsInfosClass* tabViewTopicInfosClass::getCurrentWidget()
 
 void tabViewTopicInfosClass::addOrUpdateAvatarRuleForImageDownloader()
 {
-    imageDownloadTool->addOrUpdateRule("avatar", "/vtr/", true, false, "http://", "", false, avatarSize, avatarSize, true);
+    imageDownloadTool->addOrUpdateRule("avatar", "/vtr/", true, false, "https://", "", false, avatarSize, avatarSize, true);
 }
 
 void tabViewTopicInfosClass::addOrUpdateNoelshackRuleForImageDownloader()
