@@ -396,7 +396,7 @@ void respawnIrcClass::loadSettings()
 
     for(int i = 0; i < 10; ++i)
     {
-        vectorOfFavoriteLink.push_back(settingTool::getThisStringOption("favoriteLink" + QString::number(i)));
+        vectorOfFavoriteLink.push_back(settingTool::getThisStringOption("favoriteLink" + QString::number(i)).replace("http://", "https://"));
     }
 
     pseudoOfUser = settingTool::getThisStringOption("pseudo");
