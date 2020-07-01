@@ -274,6 +274,11 @@ QList<QString> settingTool::getListOfTopicLink()
         listOfTopicLink = createStringListWithThisQVariantList(setting->value("listOfTopicLink").toList());
     }
 
+    for(QString& topicLink : listOfTopicLink)
+    {
+        topicLink.replace("http://", "https://");
+    }
+
     return listOfTopicLink;
 }
 
