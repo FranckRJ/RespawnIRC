@@ -29,17 +29,17 @@ namespace
     const QRegularExpression expForCurrentPage(R"rgx(<span class="page-active">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForPageLink(R"rgx(<span><a href="([^"]*)" class="lien-jv">([^<]*)</a></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNameOfTopic(R"rgx(<span id="bloc-title-forum">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForNumberOfConnected(R"rgx(<span class="nb-connect-fofo">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForMpJvc(R"rgx(<div class=".*?account-mp.*?">[^<]*<span[^c]*class="jv-account-number-mp[^"]*".*?data-val="([^"]*)")rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForEntireMessage(R"rgx((<div class="bloc-message-forum[^"]*".*?)(<span id="post_[^"]*" class="bloc-message-forum-anchor">|<div class="bloc-outils-plus-modo bloc-outils-bottom">|<div class="bloc-pagi-default">))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForNumberOfConnected(R"rgx(<span class="nb-connect-fofo"><i class="icon-people"></i>([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForMpJvc(R"rgx(<div class=".*?headerAccount--pm.*?">[^<]*<span[^c]*class="headerAccount__pm[^"]*".*?data-val="([^"]*)")rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression expForEntireMessage(R"rgx((<div class="bloc-message-forum[^"]*".*?)(<span id="post_[^"]*" class="bloc-message-forum-anchor">|<div class="bloc-outils-plus-modo bloc-outils-bottom[^"]*">|<div class="bloc-pagi-default[^"]*">))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEntireTopic(R"rgx(<li class="[^"]*" data-id="[^"]*">.*?<span class="topic-subject">.*?</li>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForTopicNameAndLink(R"rgx(<a class="lien-jv topic-title[^"]*" href="([^"]*" title="[^"]*)"[^>]*>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicNumberMessage(R"rgx(<span class="topic-count">[^0-9]*([0-9]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicNumberMessageAdm(R"rgx(<span class="topic-count-adm">[^0-9]*([0-9]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicPseudoInfo(R"rgx(<span class="JvCare [^ ]* text-([^ ]*) topic-author)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForTopicType(R"rgx(<img src="/img/forums/topic-(.*?)\.png" alt="[^"]*" title="[^"]*" class="topic-img")rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForMessageID(R"rgx(<div class="bloc-message-forum[^"]*" data-id="([^"]*)">)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForAvatars(R"rgx(<img src="[^"]*" data-srcset="(https?:)?//([^"]*)" class="user-avatar-msg")rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForTopicType(R"rgx(<i title="[^"]*" class="[^ ]* ([^ ]*) topic-img")rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForMessageID(R"rgx(<div class="bloc-message-forum[^"]*" data-id="([0-9]*)[^"]*">)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForAvatars(R"rgx(<img src="[^"]*" data-src="(https?:)?//([^"]*)" class="user-avatar-msg js-lazy")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForPseudo(R"rgx(<span class="JvCare [^ ]* bloc-pseudo-msg text-([^"]*)" target="_blank">[^a-zA-Z0-9_\[\]-]*([a-zA-Z0-9_\[\]-]*)[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForDate(R"rgx(<div class="bloc-date-msg">([^<]*<span class="JvCare [^ ]* lien-jv" target="_blank">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMessage(R"rgx(<div class="bloc-contenu">[^<]*<div class="txt-msg  text-[^-]*-forum ">((.*?)(?=<div class="info-edition-msg">)|(.*?)(?=<div class="signature-msg)|(.*)))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
@@ -67,7 +67,7 @@ namespace
     const QRegularExpression expForUglyImage(R"rgx(issou|risit|jesus|picsart|chancla)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAd(R"rgx(<ins[^>]*></ins>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForWebsite(R"rgx(https?://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
-    QString userAgentToUse = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101 Firefox/79.0";
+    QString userAgentToUse = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0";
 
     QString stringModificatorRemoveFirstsAndLastsPAndBr(QString baseMessage)
     {
@@ -379,7 +379,7 @@ QString parsingTool::getNameOfTopic(const QString& source)
 
 QString parsingTool::getNumberOfConnected(const QString& source)
 {
-    return expForNumberOfConnected.match(source).captured(1);
+    return expForNumberOfConnected.match(source).captured(1).trimmed();
 }
 
 int parsingTool::getNumberOfMp(const QString& source)

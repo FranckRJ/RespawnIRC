@@ -186,11 +186,11 @@ QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& for
         currentTopicName.append(" (" + forThisTopic.numberOfMessage + ")");
     }
 
-    if(forThisTopic.topicType.startsWith("marque") == true)
+    if(forThisTopic.topicType.startsWith("topic-pin") == true)
     {
         if(showPinnedTagOnTopic == true)
         {
-            if(forThisTopic.topicType == "marque-on")
+            if(forThisTopic.topicType == "topic-pin-on")
             {
                 if(useIconInsteadOfTag == true)
                 {
@@ -201,7 +201,7 @@ QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& for
                     currentTopicName = "[EO] " + currentTopicName;
                 }
             }
-            else if(forThisTopic.topicType == "marque-off")
+            else if(forThisTopic.topicType == "topic-pin-off")
             {
                 if(useIconInsteadOfTag == true)
                 {
@@ -214,7 +214,7 @@ QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& for
             }
         }
     }
-    else if(forThisTopic.topicType == "dossier2")
+    else if(forThisTopic.topicType == "topic-folder2")
     {
         if(showHotTagOnTopic == true)
         {
@@ -228,7 +228,7 @@ QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& for
             }
         }
     }
-    else if(forThisTopic.topicType == "lock")
+    else if(forThisTopic.topicType == "topic-lock")
     {
         if(showLockTagOnTopic == true)
         {
@@ -242,7 +242,7 @@ QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& for
             }
         }
     }
-    else if(forThisTopic.topicType == "resolu")
+    else if(forThisTopic.topicType == "topic-resolved")
     {
         if(showResolvedTagOnTopic == true)
         {
@@ -256,7 +256,7 @@ QStandardItem* showForumClass::createItemDependingOnTopic(const topicStruct& for
             }
         }
     }
-    else if(forThisTopic.topicType == "ghost")
+    else if(forThisTopic.topicType == "topic-removed")
     {
         if(showGhostTagOnTopic == true)
         {
