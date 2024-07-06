@@ -24,7 +24,7 @@ namespace
     const QRegularExpression expForFormConnect(R"rgx((<form role="form" class="form-connect-jv" method="post" action="".*?>.*?</form>))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForInput(R"rgx(<input ([^=]*)="([^"]*)" ([^=]*)="([^"]*)" ([^=]*)="([^"]*)"/>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicLocked(R"rgx(<div class="message-lock-topic">)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForError(R"rgx(<div class="alert-row">([^<]*)</div>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForError(R"rgx(<div class="alert alert-danger[^"]*">.*?<p class="([^"]*)">([^<]*)</p>.*?</div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForErrorInJSON(R"rgx("erreur":\["([^"]*)")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForCurrentPage(R"rgx(<span class="page-active">([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForPageLink(R"rgx(<span><a href="([^"]*)" class="lien-jv">([^<]*)</a></span>)rgx", configDependentVar::regexpBaseOptions);
@@ -39,8 +39,8 @@ namespace
     const QRegularExpression expForTopicPseudoInfo(R"rgx(<span class="JvCare [^ ]* text-([^ ]*) topic-author)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForTopicType(R"rgx(<i title="[^"]*" class="[^ ]* ([^ ]*) topic-img")rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMessageID(R"rgx(<div class="bloc-message-forum[^"]*" data-id="([0-9]*)[^"]*">)rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForAvatars(R"rgx(<img src="[^"]*" data-src="(https?:)?//([^"]*)" class="user-avatar-msg js-lazy")rgx", configDependentVar::regexpBaseOptions);
-    const QRegularExpression expForPseudo(R"rgx(<span class="JvCare [^ ]* bloc-pseudo-msg text-([^"]*)" target="_blank">[^a-zA-Z0-9_\[\]-]*([a-zA-Z0-9_\[\]-]*)[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForAvatars(R"rgx(<img src="[^"]*" data-src="(https?:)?//([^"]*)" class="user-avatar-msg js-lazy avatar")rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForPseudo(R"rgx(<span class="JvCare [^ ]* bloc-pseudo-msg text-([^"]*)" target="_blank">[^a-zA-Z0-9_\[\]-]*([a-zA-Z0-9_\[\]-]*)(?:[^<]*<div class="bloc-genesis-pass"><i class="icon-nft-badge"></i> </div>)?[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForDate(R"rgx(<div class="bloc-date-msg">([^<]*<span class="JvCare [^ ]* lien-jv" target="_blank">)?[^a-zA-Z0-9]*([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForMessage(R"rgx(<div class="bloc-contenu">[^<]*<div class="txt-msg  text-[^-]*-forum ">((.*?)(?=<div class="info-edition-msg">)|(.*?)(?=<div class="signature-msg)|(.*)))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEdit(R"rgx(<div class="info-edition-msg">[^M]*Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)) par <span)rgx", configDependentVar::regexpBaseOptions);
@@ -53,6 +53,7 @@ namespace
     const QRegularExpression expForLongLink(R"rgx(<span +class="JvCare [^"]*"[^i]*itle="([^"]*)"[^>]*>[^<]*<i></i><span>[^<]*</span>[^<]*</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForShortLink(R"rgx(<span +class="JvCare [^"]*"[^>]*?target="_blank"[^>]*>([^<]*)</span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcLink(R"rgx(<a +(title="[^"]*" )?href="([^"]*)"( title="[^"]*")? *>.*?</a>)rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForAlloCineLink(R"rgx(<a +target="[^"]*" +title="[^"]*" +href="([^"]*)"[^>]*>[^<]*<i></i><span>[^<]*</span>[^<]*</a>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForNoelshack(R"rgx(<span class="JvCare[^>]*><img class="img-shack".*?src="http(s)?://([^"]*)" alt="([^"]*)"[^>]*></span>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForEmbedVideo(R"rgx(<div class="player-contenu"><div class="[^"]*"><iframe.*?src="([^"]*)"[^>]*></iframe></div></div>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvcVideo(R"rgx(<div class="player-contenu">.*?<div class="player-jv" id="player-jv-([^-]*)-.*?</div>[^<]*</div>[^<]*</div>[^<]*</div>)rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
@@ -67,7 +68,7 @@ namespace
     const QRegularExpression expForUglyImage(R"rgx(issou|risit|jesus|picsart|chancla)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForAd(R"rgx(<ins[^>]*></ins>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForWebsite(R"rgx(https?://([^/]*)/)rgx", configDependentVar::regexpBaseOptions);
-    QString userAgentToUse = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0";
+    QString userAgentToUse = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0";
 
     QString stringModificatorRemoveFirstsAndLastsPAndBr(QString baseMessage)
     {
@@ -276,7 +277,7 @@ QString parsingTool::getErrorMessage(const QString& source, QString defaultError
 
     if(match.hasMatch() == true)
     {
-        return match.captured(1);
+        return match.captured(2);
     }
     else
     {
@@ -594,6 +595,7 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
     replaceWithCapNumber(thisMessage, expForEmbedVideo, 1, "<p><a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a></p>");
     replaceWithCapNumber(thisMessage, expForJvcVideo, 1, "<p><a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"https://www.jeuxvideo.com/videos/iframe/", "\">https://www.jeuxvideo.com/videos/iframe/", 1, "</a></p>");
     replaceWithCapNumber(thisMessage, expForJvcLink, 2, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 2, "</a>");
+    replaceWithCapNumber(thisMessage, expForAlloCineLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForShortLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
     replaceWithCapNumber(thisMessage, expForLongLink, 1, "<a style=\"color: " + styleTool::getColorInfo().linkColor + ";\" href=\"", "\">", 1, "</a>");
 
@@ -610,7 +612,7 @@ QString parsingTool::parsingMessages(QString thisMessage, infoForMessageParsingS
         {
             if(thisNoelshackImage.startsWith("http://") == false && thisNoelshackImage.startsWith("https://") == false)
             {
-                thisNoelshackImage = "http://" + thisNoelshackImage;
+                thisNoelshackImage = "https://" + thisNoelshackImage;
             }
         }
 
