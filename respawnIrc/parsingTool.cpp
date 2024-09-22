@@ -45,7 +45,7 @@ namespace
     const QRegularExpression expForMessage(R"rgx(<div class="bloc-contenu">[^<]*<div class="txt-msg  text-[^-]*-forum ">((.*?)(?=<div class="info-edition-msg">)|(.*?)(?=<div class="signature-msg)|(.*)))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
     const QRegularExpression expForEdit(R"rgx(<div class="info-edition-msg">[^M]*Message édité le ([^ ]* [^ ]* [^ ]* [^ ]* ([0-9:]*)) par <span)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSignature(R"rgx(<div class="signature-msg[^"]*">(.*))rgx", configDependentVar::regexpBaseOptions | QRegularExpression::DotMatchesEverythingOption);
-    const QRegularExpression expForTopicLinkNumber(R"rgx((https?://([^/]*)/forums/[^-]*-([^-]*)-([^-]*)-)([^-]*)(-[^-]*-[^-]*-[^-]*-[^\.]*\.htm))rgx", configDependentVar::regexpBaseOptions);
+    const QRegularExpression expForTopicLinkNumber(R"rgx((?<beforeTopicPage>https?://(?<domain>[^/]*)/forums/(?<mode>[^-]*)-(?<forumId>[^-]*)-(?<topicId>[^-]*)-)(?<topicPage>[^-]*)(?<afterTopicPage>-[^-]*-[^-]*-[^-]*-[^\.]*\.htm))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForForumName(R"rgx(<title>(.*?)- jeuxvideo\.com</title>)rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForJvfLink(R"rgx(https?://jvforum\.fr/([^/]*)/([^-]*)-([^/]*))rgx", configDependentVar::regexpBaseOptions);
     const QRegularExpression expForSmiley(R"rgx(<img src="http(s)?://image\.jeuxvideo\.com/smileys_img/([^"]*)" alt="[^"]*" data-code="([^"]*)" title="[^"]*" [^>]*>)rgx", configDependentVar::regexpBaseOptions);
@@ -140,9 +140,17 @@ bool parsingTool::checkIfTopicAreSame(const QString& firstTopic, const QString& 
 
     if(matcherForFirstTopic.hasMatch() == true && matcherForSecondTopic.hasMatch() == true)
     {
-        return matcherForFirstTopic.captured(2) == matcherForSecondTopic.captured(2) &&
-               matcherForFirstTopic.captured(3) == matcherForSecondTopic.captured(3) &&
-               matcherForFirstTopic.captured(4) == matcherForSecondTopic.captured(4);
+        // Bug apparu en 2024 : les topics pré-Respawn sont affichés avec une URL en mode 42 au lieu de 1 sur la liste des sujets
+        if ((matcherForFirstTopic.captured("mode") == "1"  && matcherForSecondTopic.captured("mode") == "42")
+         || (matcherForFirstTopic.captured("mode") == "42" && matcherForSecondTopic.captured("mode") == "1"))
+        {
+            return matcherForFirstTopic.captured("domain") == matcherForSecondTopic.captured("domain") &&
+                   matcherForFirstTopic.captured("forumId") == matcherForSecondTopic.captured("forumId");
+        }
+
+        return matcherForFirstTopic.captured("domain") == matcherForSecondTopic.captured("domain") &&
+               matcherForFirstTopic.captured("forumId") == matcherForSecondTopic.captured("forumId") &&
+               matcherForFirstTopic.captured("topicId") == matcherForSecondTopic.captured("topicId");
     }
     else
     {
@@ -350,7 +358,7 @@ QString parsingTool::getFirstPageOfTopic(const QString& topicLink)
 
     if(matchForFirstPage.hasMatch() == true)
     {
-        return matchForFirstPage.captured(1) + "1" + matchForFirstPage.captured(6);
+        return matchForFirstPage.captured("beforeTopicPage") + "1" + matchForFirstPage.captured("afterTopicPage");
     }
     else
     {
@@ -361,11 +369,11 @@ QString parsingTool::getFirstPageOfTopic(const QString& topicLink)
 QString parsingTool::getBeforeLastPageOfTopic(const QString& topicLink)
 {
     QRegularExpressionMatch matchForBeforeLastPage = expForTopicLinkNumber.match(topicLink);
-    QString pageNumber = matchForBeforeLastPage.captured(5);
+    QString pageNumber = matchForBeforeLastPage.captured("topicPage");
 
     if(pageNumber.isEmpty() == false && pageNumber != "1")
     {
-        return matchForBeforeLastPage.captured(1) + QString::number(pageNumber.toInt() - 1) + matchForBeforeLastPage.captured(6);
+        return matchForBeforeLastPage.captured("beforeTopicPage") + QString::number(pageNumber.toInt() - 1) + matchForBeforeLastPage.captured("afterTopicPage");
     }
     else
     {
@@ -483,7 +491,7 @@ QString parsingTool::getForumOfTopic(const QString& topicLink)
 
     if(infosMatcher.hasMatch() == true)
     {
-        return "https://" + infosMatcher.captured(2) + "/forums/0-" + infosMatcher.captured(3) + "-0-1-0-1-0-respawn-irc.htm";
+        return "https://" + infosMatcher.captured("domain") + "/forums/0-" + infosMatcher.captured("forumId") + "-0-1-0-1-0-respawn-irc.htm";
     }
     else
     {
