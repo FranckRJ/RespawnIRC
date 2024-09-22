@@ -20,9 +20,21 @@ Pour Windows le plus simple reste de télécharger la dernière version de Qt (h
 
 ### Linux
 
-Pour Linux, il vous suffit d'installer les paquets `qt5-default qtmultimedia5-dev` ainsi que `qtwebengine5-dev` si vous utilisez webengine ou `libqt5webkit5-dev` si vous utilisez webkit (ce sont les noms des paquets pour Debian, si vous utilisez une autre distribution les noms peuvent changer), le programme utilise webengine par défaut, si vous l'avez modifié pour utiliser les fichiers .old à la place des fichiers normaux vous utilisez webkit. Ensuite, vous n'avez plus qu'à vous rendre dans le dossier `respawnIrc` qui contient le .pro et exécuter ces commandes :
+Pour Linux, installez les paquets `qt5-default qtmultimedia5-dev libhunspell-dev` ainsi que `qtwebengine5-dev` si vous utilisez WebEngine (par défaut) ou `libqt5webkit5-dev` si vous utilisez WebKit (en utilisant les fichiers .old). Les noms des paquets sont ceux pour Debian, si vous utilisez une autre distribution ils peuvent changer.
+
+Rendez-vous ensuite dans le dossier `respawnIrc` et exécutez ces commandes :
 
     qmake
     make
 
-Un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` et `themes`) et exécutez-le.
+---
+
+Si vous obtenez l’erreur suivante :
+> /usr/bin/ld: cannot find -llibhunspell: No such file or directory
+> /usr/bin/ld: note to link with /usr/lib/gcc/x86_64-linux-gnu/12/../../../x86_64-linux-gnu/libhunspell.a use -l:libhunspell.a or rename it to liblibhunspell.a
+
+Changez `-llibhunspell` par `-lhunspell` dans `respawnIrc.pro`, puis réexécutez `qmake` et `make`.
+
+---
+
+Un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` et `themes`) avec `mv RespawnIRC ..` et exécutez-le.
