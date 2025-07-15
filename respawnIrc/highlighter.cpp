@@ -102,7 +102,7 @@ void highlighterClass::spellCheck(const QString& text)
         QString simplifiedText = text.simplified();
         if(simplifiedText.isEmpty() == false)
         {
-            QStringList checkList = simplifiedText.split(QRegExp(R"rgx([^\w'-]+)rgx"), QString::SkipEmptyParts);
+            QStringList checkList = simplifiedText.split(QRegExp(R"rgx([^\w'-]+)rgx"));
             for(QString thisString : checkList)
             {
                 while(thisString.startsWith('\'') == true || thisString.startsWith('-') == true)
