@@ -20,7 +20,7 @@ Pour Windows le plus simple reste de télécharger la dernière version de Qt (h
 
 ### Linux
 
-Pour Linux, installez les paquets `qt5-default qtmultimedia5-dev libhunspell-dev` ainsi que `qtwebengine5-dev` si vous utilisez WebEngine (par défaut) ou `libqt5webkit5-dev` si vous utilisez WebKit (en utilisant les fichiers .old). Les noms des paquets sont ceux pour Debian, si vous utilisez une autre distribution ils peuvent changer.
+Pour Linux, installez les paquets `qtbase5-dev qtmultimedia5-dev libhunspell-dev` ainsi que `qtwebengine5-dev` si vous utilisez WebEngine (par défaut) ou `libqt5webkit5-dev` si vous utilisez WebKit (en utilisant les fichiers .old). Les noms des paquets sont ceux pour Debian, si vous utilisez une autre distribution ils peuvent changer.
 
 Rendez-vous ensuite dans le dossier `respawnIrc` et exécutez ces commandes :
 
