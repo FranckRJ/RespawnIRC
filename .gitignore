@@ -1,3 +1,11 @@
 build-respawnIrc*
 hunspell/
 respawnIrc/respawnIrc.pro.user
+
+# Linux
+respawnIrc/*.o
+respawnIrc/moc_*.cpp
+respawnIrc/moc_predefs.h
+respawnIrc/Makefile
+respawnIrc/RespawnIRC
+respawnIrc/.qmake.stash
