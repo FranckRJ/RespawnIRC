@@ -29,12 +29,4 @@ Rendez-vous ensuite dans le dossier `respawnIrc` et exécutez ces commandes :
 
 ---
 
-Si vous obtenez l’erreur suivante :
-> /usr/bin/ld: cannot find -llibhunspell: No such file or directory
-> /usr/bin/ld: note to link with /usr/lib/gcc/x86_64-linux-gnu/12/../../../x86_64-linux-gnu/libhunspell.a use -l:libhunspell.a or rename it to liblibhunspell.a
-
-Changez `-llibhunspell` par `-lhunspell` dans `respawnIrc.pro`, puis réexécutez `qmake` et `make`.
-
----
-
 Un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` et `themes`) avec `mv RespawnIRC ..` et exécutez-le.
