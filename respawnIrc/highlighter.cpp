@@ -140,7 +140,7 @@ bool highlighterClass::checkWord(QString word)
 {
     if(spellChecker != nullptr && codec != nullptr)
     {
-        return spellChecker->spell(codec->fromUnicode(word).data());
+        return spellChecker->spell((std::string)codec->fromUnicode(word).data());
     }
     else
     {

@@ -151,20 +151,17 @@ QStringList spellTextEditClass::getWordPropositions(const QString word) const
     {
         QByteArray encodedString;
         encodedString = codecUsed->fromUnicode(word);
-        bool check = spellChecker->spell(encodedString.data());
+        bool check = spellChecker->spell((std::string)encodedString.data());
 
         if(check == false)
         {
-            char** listOfWord;
-            int numberOfSuggest = spellChecker->suggest(&listOfWord, encodedString.data());
-            if(numberOfSuggest > 0)
+            std::vector<std::string> suggestions = spellChecker->suggest((std::string)encodedString.data());
+            if(suggestions.size() > 0)
             {
-                for(int i = 0; i < numberOfSuggest; ++i)
+                for(const std::string& suggestion : suggestions)
                 {
-                    wordList.append(codecUsed->toUnicode(listOfWord[i]));
+                    wordList.append(codecUsed->toUnicode(suggestion.c_str()));
                 }
-
-                spellChecker->free_list(&listOfWord, numberOfSuggest);
             }
         }
     }
@@ -239,7 +236,7 @@ bool spellTextEditClass::checkWord(QString word) const
 {
     if(spellChecker != nullptr && codecUsed != nullptr)
     {
-        return spellChecker->spell(codecUsed->fromUnicode(word).data());
+        return spellChecker->spell((std::string)codecUsed->fromUnicode(word).data());
     }
     else
     {
