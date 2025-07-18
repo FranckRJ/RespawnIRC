@@ -726,6 +726,10 @@ QNetworkRequest parsingTool::buildRequestWithThisUrl(QString url)
 {
     QNetworkRequest request;
     request.setUrl(QUrl(url));
+
+    // HTTP/2 apaise les challenges Cloudflare
+    request.setAttribute(QNetworkRequest::Http2AllowedAttribute, true);
+
     request.setRawHeader("User-Agent", userAgentToUse.toUtf8());
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Cookie", "");
