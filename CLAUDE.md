@@ -94,6 +94,42 @@ anciennes traînent. Deux pièges rencontrés :
   (`...jpg"}"`). `normalizeLargeNoelshackImages()` la ramène à la forme normale.
 - JVC écrit `target="_blank""` avec un guillemet en trop dans les liens d'image.
 
+### Actions sur un message : ne rien reconstruire
+
+Chaque message du payload porte un objet `actions` (nul si on n'est pas connecté) qui
+dit **ce que le site autorise** et donne l'URL à appeler :
+
+```json
+"actions": {
+  "quote":  {"label": "Citer le message"},
+  "edit":   {"url": "/forums/message/edit?...&ajax_hash=..."},
+  "delete": {"url": "/forums/message/delete?ids=...&type=delete&ajax_hash=..."},
+  "blacklist": {"url": "..."}, "report": {"url": "..."}, "privateMessage": {"url": "..."}
+}
+```
+
+Deux pièges qui ont chacun causé un bug :
+
+- **Être l'auteur d'un message ne veut pas dire pouvoir l'éditer.** JVC ne fournit pas
+  toujours l'action `edit` sur nos propres messages (fenêtre d'édition fermée). Les
+  boutons éditer/supprimer se décident donc sur la présence de `editUrl`/`deleteUrl`,
+  pas sur une comparaison de pseudo.
+- **Le `ajax_hash` des URL d'action n'est pas `ajaxToken`.** Ce sont deux jetons
+  différents dans la même page. Il faut utiliser l'URL fournie telle quelle plutôt que
+  d'en fabriquer une avec un hash récupéré ailleurs.
+
+Ces URL sont relatives : `parsingTool::makeAbsoluteUrl` leur ajoute le domaine déduit
+du payload. `showTopic` garde texte source et URL d'action des messages affichés dans
+`listOfInfosForActions`.
+
+### Réponses aux actions
+
+`message/add`, `message/edit` et `message/delete` répondent en JSON. Le succès n'a pas
+une forme unique, alors que l'échec porte toujours un champ `erreur`/`errors` non vide :
+`parsingTool::getErrorOfMessageSending` considère donc que tout ce qui n'annonce pas
+d'erreur est passé. C'est l'inverse qui produisait le bug « le message n'a pas été
+envoyé » sur un message pourtant posté.
+
 ### Ce qui a disparu
 
 Ces URL renvoient maintenant 404 :
@@ -132,14 +168,28 @@ Pour ajouter une fixture : récupérer la page avec un programme Qt (cf. Cloudfl
 `testParsing.cpp`. Les fixtures actuelles sont figées dans le temps (juillet 2026),
 donc les valeurs attendues (nombre de messages, pseudos, ids) sont stables.
 
-## Ce qui n'a pas pu être vérifié
+## État des fonctions qui demandent d'être connecté
 
-Le cookie de connexion enregistré dans `config.ini` était expiré, donc **tout ce qui
-demande d'être connecté n'a pas été testé en vrai** : envoi d'un message, édition,
-suppression, nombre de MP, actions de modération. Ces parties ont été écrites d'après
-le payload et d'après l'implémentation Android, mais elles restent à confirmer avec un
-compte valide. Si l'envoi échoue, comparer avec `Utils.prepareMultipartFormForMessage`
-et `WebManager.sendRequest` côté Android.
+- **Envoi d'un message** : confirmé, le message part. Le faux « message non envoyé » qui
+  suivait est corrigé (lecture JSON de la réponse).
+- **Affichage du nombre de MP** : confirmé.
+- **Édition** : n'est plus proposée quand le site ne l'autorise pas. Le chemin d'envoi
+  d'une édition (POST multipart sur l'URL de `actions.edit`) n'a **pas** pu être essayé,
+  faute de message encore éditable au moment des tests.
+- **Suppression** : utilise maintenant l'URL fournie par le site, mais **pas testée**
+  (le bouton est masqué par défaut, `showDeleteButton` vaut `false`).
+
+Pour vérifier édition et suppression : poster un message, puis tenter tout de suite
+l'action avec `RESPAWNIRC_DEBUG=1`. Le log contient la requête (noms des champs
+seulement, jamais les valeurs des jetons) et la réponse du site. En cas d'échec,
+comparer avec `Utils.prepareMultipartFormForMessage` et `WebManager.sendRequest` côté
+Android.
+
+## Attention aux fixtures
+
+Ne **jamais** figer telle quelle une page récupérée en étant connecté : au-delà du
+payload, le HTML contient un `ajax_hash` de session. `tests/fixtures/topic-connecte.html.gz`
+est une page fabriquée à la main, avec des jetons factices, pour tester les actions.
 
 ## Conventions
 

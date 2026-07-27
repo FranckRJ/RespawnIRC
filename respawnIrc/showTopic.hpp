@@ -29,6 +29,13 @@ struct messageInfoForEditStruct
     int realPosition = 0;
 };
 
+struct infoForActionsOnMessageStruct
+{
+    QString rawMessage;
+    QString editUrl;
+    QString deleteUrl;
+};
+
 class showTopicClass : public QWidget
 {
     Q_OBJECT
@@ -80,7 +87,7 @@ signals:
     void newMessageStatus();
     void newNumberOfConnectedAndMP();
     void newMPAreAvailables(int newNumber, QString withThisPseudo);
-    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, bool useMessageEdit);
+    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, QString editUrl, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
     void newCookieHasToBeSet();
@@ -130,10 +137,11 @@ private:
     bool useInternalNavigatorForLinks;
     bool downloadHighDefAvatar;
     long idOfLastMessageOfUser = 0;
-    /* Texte source des messages affichés, pour pouvoir citer sans requête réseau.
-     * Limité aux messages récents pour ne pas grossir indéfiniment. */
-    QMap<long, QString> listOfRawMessages;
-    static const int maxNumberOfRawMessagesKept = 200;
+    /* Ce que le site nous a dit de chaque message affiché : son texte source (pour
+     * citer et éditer sans requête réseau) et les URL d'action qu'il autorise. Limité
+     * aux messages récents pour ne pas grossir indéfiniment. */
+    QMap<long, infoForActionsOnMessageStruct> listOfInfosForActions;
+    static const int maxNumberOfInfosForActionsKept = 200;
     int realTypeOfEdit;
     int currentTypeOfEdit;
     int currentErrorStreak = 0;

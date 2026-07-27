@@ -31,7 +31,7 @@ public:
     void setMultilineEdit(bool newVal);
 public slots:
     void quoteThisMessage(QString messageToQuote);
-    void setInfoForEditMessage(long idOfMessageEdit, QString messageEdit, QString error, bool useMessageEdit);
+    void setInfoForEditMessage(long idOfMessageEdit, QString messageEdit, QString error, QString editUrl, bool useMessageEdit);
 private:
     QList<QPair<QString, QString>> buildListOfFieldsForMessage(const QString& topicLink,
                                                                const QList<QPair<QString, QString>>& listOfInput) const;
@@ -50,6 +50,7 @@ private:
     bool isInEdit = false;
     bool inSending = false;
     bool changeColorOnEdit = false;
+    QString urlForEditLastMessage;
     long idOfLastMessageEdit = 0;
     int nbOfMessagesSend = 0;
 };

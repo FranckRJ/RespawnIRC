@@ -5,6 +5,7 @@
 #include <QUrl>
 
 #include "sendMessages.hpp"
+#include "logTool.hpp"
 #include "parsingTool.hpp"
 #include "shortcutTool.hpp"
 #include "settingTool.hpp"
@@ -94,7 +95,9 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
          * formulaire multipart. */
         if(isInEdit == true)
         {
-            request = parsingTool::buildRequestWithThisUrl("https://" + website + "/forums/message/edit");
+            request = parsingTool::buildRequestWithThisUrl(urlForEditLastMessage.isEmpty() == false
+                                                            ? urlForEditLastMessage
+                                                            : "https://" + website + "/forums/message/edit");
         }
         else
         {
@@ -104,8 +107,23 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         sendButton->setEnabled(false);
         inSending = true;
 
+        QList<QPair<QString, QString>> listOfField = buildListOfFieldsForMessage(topicLink, listOfInput);
         QByteArray boundaryUsed;
-        QByteArray data = parsingTool::buildMultipartFormData(buildListOfFieldsForMessage(topicLink, listOfInput), boundaryUsed);
+        QByteArray data = parsingTool::buildMultipartFormData(listOfField, boundaryUsed);
+
+        /* Les valeurs contiennent des jetons de session, on ne journalise que les noms
+         * des champs (et la taille du texte) pour pouvoir comparer avec ce qu'attend le
+         * site sans recopier de secret dans le fichier de log. */
+        QStringList namesOfFields;
+        for(const QPair<QString, QString>& thisField : listOfField)
+        {
+            namesOfFields.append(thisField.first + (thisField.first == "fs_version" || thisField.first == "group" ||
+                                                    thisField.first == "messageId" || thisField.first == "topicId" ||
+                                                    thisField.first == "forumId"
+                                                    ? "=" + thisField.second
+                                                    : "(" + QString::number(thisField.second.size()) + " car.)"));
+        }
+        qDebug(logNetwork) << "Envoi vers" << request.url().toDisplayString() << "- champs :" << namesOfFields.join(", ");
 
         request.setHeader(QNetworkRequest::ContentTypeHeader, "multipart/form-data; boundary=" + boundaryUsed);
         request.setHeader(QNetworkRequest::ContentLengthHeader, data.size());
@@ -223,7 +241,7 @@ void sendMessagesClass::quoteThisMessage(QString messageToQuote)
     messageLine->setFocus();
 }
 
-void sendMessagesClass::setInfoForEditMessage(long idOfMessageEdit, QString messageEdit, QString error, bool useMessageEdit)
+void sendMessagesClass::setInfoForEditMessage(long idOfMessageEdit, QString messageEdit, QString error, QString editUrl, bool useMessageEdit)
 {
     if(messageEdit.isEmpty() == false)
     {
@@ -234,6 +252,7 @@ void sendMessagesClass::setInfoForEditMessage(long idOfMessageEdit, QString mess
         }
         setIsInEdit(true);
         idOfLastMessageEdit = idOfMessageEdit;
+        urlForEditLastMessage = editUrl;
     }
     else
     {
@@ -268,25 +287,26 @@ void sendMessagesClass::deleteReplyForSendMessage()
 {
     bool dontEraseEditMessage = false;
     QString source;
-    if(replyForSendMessage->isReadable() == true)
+    int httpStatus = replyForSendMessage->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    bool replyIsUsable = (replyForSendMessage->isReadable() == true && replyForSendMessage->rawHeaderList().isEmpty() == false);
+
+    if(replyIsUsable == true)
     {
-        if(replyForSendMessage->rawHeaderList().isEmpty() == false)
-        {
-            source = replyForSendMessage->readAll();
-        }
-        else
-        {
-            source = "weshgrotavu";
-        }
+        source = replyForSendMessage->readAll();
     }
-    else
-    {
-        source = "lolmdr";
-    }
+
+    qDebug(logNetwork) << "Réponse à l'envoi d'un message (édition :" << isInEdit << ") - code" << httpStatus
+                       << "- erreur réseau" << replyForSendMessage->errorString() << "- corps :" << source.left(2000);
+
     replyForSendMessage->deleteLater();
     replyForSendMessage = nullptr;
 
-    if(source.isEmpty() == true || source.contains("<meta http-equiv=\"refresh\"") == true || (isInEdit == true && source.startsWith("{\"erreur\":[]") == true))
+    /* La réponse est du JSON depuis la refonte 2026 : c'est son contenu qui dit si
+     * l'envoi est passé, pas le simple fait qu'elle soit vide comme avant. */
+    QString error = (replyIsUsable == true ? parsingTool::getErrorOfMessageSending(source, httpStatus)
+                                           : "Le message n'a pas été envoyé, la réponse du site est illisible.");
+
+    if(error.isEmpty() == true)
     {
         messageLine->clear();
 
@@ -295,8 +315,7 @@ void sendMessagesClass::deleteReplyForSendMessage()
             ++nbOfMessagesSend;
         }
     }
-    else if(parsingTool::getErrorMessage(source, "").contains("captcha") == true ||
-            (isInEdit == true && parsingTool::getErrorMessageInJSON(source, true, "").contains("captcha") == true))
+    else if(error.contains("captcha") == true)
     {
         QMessageBox::warning(this, "Erreur", "Depuis la mise à jour de JVC les captchas ne sont plus supportés, "
                                            "veuillez attendre quelques secondes avant d'envoyer votre message.");
@@ -304,14 +323,8 @@ void sendMessagesClass::deleteReplyForSendMessage()
     }
     else
     {
-        if(isInEdit == true)
-        {
-            QMessageBox::warning(this, "Erreur", parsingTool::getErrorMessageInJSON(source));
-        }
-        else
-        {
-            QMessageBox::warning(this, "Erreur", parsingTool::getErrorMessage(source));
-        }
+        qWarning(logNetwork) << "Envoi refusé :" << error;
+        QMessageBox::warning(this, "Erreur", error);
         dontEraseEditMessage = true;
     }
 

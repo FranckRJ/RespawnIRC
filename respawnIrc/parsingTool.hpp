@@ -31,6 +31,11 @@ struct messageStruct
     QString lastTimeEditHourOnly;
     QString signature;
     QString avatarLink;
+    /* URL fournies par le site pour agir sur ce message, vides quand l'action n'est pas
+     * permise (message d'un autre, fenêtre d'édition dépassée, non connecté...). Elles
+     * embarquent leur propre jeton : il ne faut pas essayer de les reconstruire. */
+    QString editUrl;
+    QString deleteUrl;
     bool operator<(const messageStruct& otherStruct) const
     {
         return (idOfMessage < otherStruct.idOfMessage);
@@ -90,6 +95,7 @@ namespace parsingTool
     bool getTopicLocked(const QString& source);
     QString getErrorMessage(const QString& source, QString defaultError = "Le message n'a pas été envoyé.");
     QString getErrorMessageInJSON(const QString& source, bool needToParseAsAjaxMessage = true, QString defaultError = "Le message n'a pas été envoyé.");
+    QString getErrorOfMessageSending(const QString& source, int httpStatus);
     QString getNextPageOfTopic(const QString& source, const QString& website);
     QString getLastPageOfTopic(const QString& source, const QString& website);
     pagerInfoStruct getPagerInfo(const QString& source, const QString& website);
@@ -112,6 +118,7 @@ namespace parsingTool
     QString stateOfTopicToTopicType(const QString& stateTopic, const QString& stateIcon);
     QString removeSchemeOfUrl(const QString& url);
     QString getHourOfDate(const QString& wholeDate);
+    QString makeAbsoluteUrl(const QString& url, const QString& website);
     QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers = true);
     QString makeBasicPreParseOfMessage(QString thisMessage);
     QString parsingAjaxMessages(QString thisMessage);

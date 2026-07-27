@@ -142,15 +142,23 @@ bool showTopicClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
         /* Comme pour la citation, le texte source du message est déjà connu : l'API qui
          * servait à le redemander (ajax_edit_message.php) n'existe plus depuis la
          * refonte 2026 de jeuxvideo.com. */
-        QMap<long, QString>::const_iterator rawMessageIterator = listOfRawMessages.find(idOfMessageToUse);
+        QMap<long, infoForActionsOnMessageStruct>::const_iterator infoIterator = listOfInfosForActions.find(idOfMessageToUse);
 
-        if(rawMessageIterator == listOfRawMessages.end())
+        if(infoIterator == listOfInfosForActions.end())
         {
-            emit setEditInfo(idOfMessageToUse, "", "Impossible de récupérer ce message pour l'éditer.", useMessageEdit);
+            emit setEditInfo(idOfMessageToUse, "", "Impossible de récupérer ce message pour l'éditer.", "", useMessageEdit);
             return false;
         }
 
-        emit setEditInfo(idOfMessageToUse, rawMessageIterator.value(), "", useMessageEdit);
+        /* Sans URL d'édition, le site refusera de toute façon la modification : autant le
+         * dire tout de suite plutôt que d'envoyer une requête vouée à échouer. */
+        if(infoIterator.value().editUrl.isEmpty() == true)
+        {
+            emit setEditInfo(idOfMessageToUse, "", "Jeuxvideo.com ne permet pas (ou plus) de modifier ce message.", "", useMessageEdit);
+            return false;
+        }
+
+        emit setEditInfo(idOfMessageToUse, infoIterator.value().rawMessage, "", infoIterator.value().editUrl, useMessageEdit);
         return true;
     }
 
@@ -187,7 +195,7 @@ void showTopicClass::setNewTopic(QString newTopic)
     topicName.clear();
     lastDate.clear();
     listOfInfosForEdit.clear();
-    listOfRawMessages.clear();
+    listOfInfosForActions.clear();
     currentTypeOfEdit = realTypeOfEdit;
     firstMessageOfTopic.isFirstMessage = false;
     topicLinkLastPage = newTopic;
@@ -439,15 +447,15 @@ void showTopicClass::linkClicked(const QUrl& link)
 
         /* Depuis la refonte 2026 de jeuxvideo.com il n'y a plus d'API de citation :
          * le texte source vient du payload de la page, gardé de côté à l'affichage. */
-        QMap<long, QString>::const_iterator rawMessageIterator = listOfRawMessages.find(idOfMessageQuoted);
+        QMap<long, infoForActionsOnMessageStruct>::const_iterator infoIterator = listOfInfosForActions.find(idOfMessageQuoted);
 
-        if(rawMessageIterator == listOfRawMessages.end())
+        if(infoIterator == listOfInfosForActions.end())
         {
             QMessageBox::warning(this, "Erreur", "Erreur, impossible de citer ce message, réessayez.");
         }
         else
         {
-            emit quoteThisMessage(">" + headerOfQuote + "\n>" + parsingTool::quoteThisRawMessage(rawMessageIterator.value()));
+            emit quoteThisMessage(">" + headerOfQuote + "\n>" + parsingTool::quoteThisRawMessage(infoIterator.value().rawMessage));
         }
     }
     else if(linkInString.startsWith("blacklist"))
@@ -461,7 +469,19 @@ void showTopicClass::linkClicked(const QUrl& link)
     else if(linkInString.startsWith("delete"))
     {
         linkInString.remove(0, linkInString.indexOf(':') + 1);
-        messageActions->deleteMessage(linkInString);
+
+        /* L'URL de suppression porte son propre jeton, fourni par le site pour ce
+         * message précis : on ne la reconstruit pas. */
+        QMap<long, infoForActionsOnMessageStruct>::const_iterator infoIterator = listOfInfosForActions.find(linkInString.toLong());
+
+        if(infoIterator == listOfInfosForActions.end() || infoIterator.value().deleteUrl.isEmpty() == true)
+        {
+            QMessageBox::warning(this, "Erreur", "Jeuxvideo.com ne permet pas (ou plus) de supprimer ce message.");
+        }
+        else
+        {
+            messageActions->deleteMessage(infoIterator.value().deleteUrl);
+        }
     }
     else
     {
@@ -583,11 +603,14 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
         QString newMessageToAppend = baseModel;
         colorOfPseudo = getColorOfThisPseudo(currentMessage.pseudoInfo.pseudoName.toLower());
 
-        listOfRawMessages[currentMessage.idOfMessage] = currentMessage.messageRaw;
+        infoForActionsOnMessageStruct& infoForActions = listOfInfosForActions[currentMessage.idOfMessage];
+        infoForActions.rawMessage = currentMessage.messageRaw;
+        infoForActions.editUrl = currentMessage.editUrl;
+        infoForActions.deleteUrl = currentMessage.deleteUrl;
 
-        while(listOfRawMessages.size() > maxNumberOfRawMessagesKept)
+        while(listOfInfosForActions.size() > maxNumberOfInfosForActionsKept)
         {
-            listOfRawMessages.erase(listOfRawMessages.begin());
+            listOfInfosForActions.erase(listOfInfosForActions.begin());
         }
 
         if(listOfIgnoredPseudo->indexOf(currentMessage.pseudoInfo.pseudoName.toLower()) != -1)
@@ -658,10 +681,12 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
 
         replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_QUOTE%>", baseModelInfo.quoteModel,
                               showQuoteButton == true && (disableSelfQuoteButton == false || pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower()));
+        /* On ne propose éditer et supprimer que si le site les autorise pour ce message :
+         * être l'auteur ne suffit pas, JVC ferme par exemple l'édition passé un moment. */
         replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_EDIT%>", baseModelInfo.editModel,
-                              pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower() && showEditButton == true);
+                              showEditButton == true && currentMessage.editUrl.isEmpty() == false);
         replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_DELETE%>", baseModelInfo.deleteModel,
-                              pseudoOfUser.toLower() == currentMessage.pseudoInfo.pseudoName.toLower() && showDeleteButton == true);
+                              showDeleteButton == true && currentMessage.deleteUrl.isEmpty() == false);
         replaceTextOrRemoveIt(newMessageToAppend, "<%BUTTON_BLACKLIST%>", baseModelInfo.blacklistModel,
                               pseudoOfUser.toLower() != currentMessage.pseudoInfo.pseudoName.toLower() && showBlacklistButton == true);
 

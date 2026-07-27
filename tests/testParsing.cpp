@@ -378,6 +378,97 @@ namespace
                               QString("défaut"));
     }
 
+    void testVerdictOfMessageSending()
+    {
+        testTool::startGroup("Verdict d'envoi d'un message");
+
+        /* Le bug corrigé : une réponse JSON de succès était prise pour un échec, et le
+         * programme annonçait « le message n'a pas été envoyé » sur un message posté. */
+        testTool::checkEquals("liste d'erreurs vide = succès",
+                              parsingTool::getErrorOfMessageSending(R"({"erreur":[]})", 200), QString(""));
+        testTool::checkEquals("réponse de succès inconnue = succès",
+                              parsingTool::getErrorOfMessageSending(R"({"success":true,"id":123})", 200), QString(""));
+        testTool::checkEquals("message rendu renvoyé = succès",
+                              parsingTool::getErrorOfMessageSending(R"({"message":{"id":1,"renderedText":"<p>salut</p>"}})", 200), QString(""));
+        testTool::checkEquals("objet vide = succès",
+                              parsingTool::getErrorOfMessageSending("{}", 200), QString(""));
+        testTool::checkEquals("corps vide = succès",
+                              parsingTool::getErrorOfMessageSending("", 200), QString(""));
+        testTool::checkEquals("redirection = succès",
+                              parsingTool::getErrorOfMessageSending(R"(<meta http-equiv="refresh" content="0">)", 200), QString(""));
+
+        testTool::checkEquals("erreur en tableau",
+                              parsingTool::getErrorOfMessageSending(R"({"erreur":["Vous postez trop vite."]})", 200),
+                              QString("Vous postez trop vite."));
+        testTool::checkEquals("erreur en chaîne",
+                              parsingTool::getErrorOfMessageSending(R"({"errors":"Session expirée."})", 403),
+                              QString("Session expirée."));
+        testTool::checkContains("erreur échappée en JSON",
+                              parsingTool::getErrorOfMessageSending(R"({"erreur":["Message trop long \/ invalide"]})", 200),
+                              "Message trop long / invalide");
+
+        /* Un code d'erreur sans message reste une erreur, sinon on annoncerait un
+         * succès sur un refus silencieux. */
+        testTool::checkContains("échec HTTP sans message",
+                              parsingTool::getErrorOfMessageSending("{}", 500), "500");
+        testTool::checkEquals("succès HTTP sans message",
+                              parsingTool::getErrorOfMessageSending("{}", 201), QString(""));
+    }
+
+    void testActionsOnMessages()
+    {
+        testTool::startGroup("Actions permises sur un message");
+
+        /* Fixture fabriquée à la main, calquée sur une vraie page connectée : on ne peut
+         * pas figer une page connectée réelle dans le dépôt, elle contient des jetons de
+         * session. */
+        QString source = testTool::loadFixture("topic-connecte.html.gz");
+        QList<messageStruct> listOfMessages = parsingTool::getListOfEntireMessagesWithoutMessagePars(source);
+
+        testTool::checkEquals("nombre de messages", listOfMessages.size(), 3);
+
+        if(listOfMessages.size() < 3)
+        {
+            return;
+        }
+
+        testTool::checkEquals("aucune action sur le message d'un autre", listOfMessages[0].editUrl, QString(""));
+        testTool::checkEquals("pas de suppression sur le message d'un autre", listOfMessages[0].deleteUrl, QString(""));
+
+        /* Le cas qui faisait échouer l'édition : le message est à nous, mais le site n'en
+         * propose plus la modification. */
+        testTool::checkEquals("message à nous mais non modifiable", listOfMessages[1].editUrl, QString(""));
+        testTool::checkContains("message à nous supprimable", listOfMessages[1].deleteUrl,
+                                "https://www.jeuxvideo.com/forums/message/delete?ids=1000000002");
+
+        testTool::checkContains("message à nous modifiable", listOfMessages[2].editUrl,
+                                "https://www.jeuxvideo.com/forums/message/edit?id=1000000003");
+        testTool::checkContains("l'URL d'action garde son jeton", listOfMessages[2].editUrl, "ajax_hash=");
+
+        testTool::checkEquals("une URL déjà absolue n'est pas préfixée",
+                              parsingTool::makeAbsoluteUrl("https://www.forumjv.com/a", "www.jeuxvideo.com"),
+                              QString("https://www.forumjv.com/a"));
+        testTool::checkEquals("une URL relative prend le domaine du payload",
+                              parsingTool::makeAbsoluteUrl("/forums/message/delete", "www.forumjv.com"),
+                              QString("https://www.forumjv.com/forums/message/delete"));
+        testTool::checkEquals("une URL vide reste vide",
+                              parsingTool::makeAbsoluteUrl("", "www.jeuxvideo.com"), QString(""));
+
+        /* Déconnecté, le site ne donne aucune action : rien ne doit être proposé. */
+        QList<messageStruct> listOfMessagesLoggedOut =
+            parsingTool::getListOfEntireMessagesWithoutMessagePars(testTool::loadFixture("topic-page1.html.gz"));
+
+        bool noActionWhenLoggedOut = true;
+        for(const messageStruct& thisMessage : listOfMessagesLoggedOut)
+        {
+            if(thisMessage.editUrl.isEmpty() == false || thisMessage.deleteUrl.isEmpty() == false)
+            {
+                noActionWhenLoggedOut = false;
+            }
+        }
+        testTool::checkTrue("aucune action quand on n'est pas connecté", noActionWhenLoggedOut);
+    }
+
     void testPageWithoutMessages()
     {
         testTool::startGroup("Page sans message");
@@ -408,5 +499,7 @@ void runParsingTests()
     testQuoting();
     testMultipartFormData();
     testErrorMessages();
+    testVerdictOfMessageSending();
+    testActionsOnMessages();
     testPageWithoutMessages();
 }

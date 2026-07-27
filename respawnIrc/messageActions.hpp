@@ -21,7 +21,7 @@ public:
     void setNewAjaxInfo(ajaxInfoStruct newAjaxInfo);
     void setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie);
     const QNetworkCookie& getConnectCookie() const;
-    void deleteMessage(QString idOfMessageDeleted);
+    void deleteMessage(QString urlForDeletion);
 private slots:
     void analyzeDeleteInfo();
 private:

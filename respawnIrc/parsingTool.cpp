@@ -1,4 +1,6 @@
 #include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonParseError>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QRandomGenerator>
@@ -400,6 +402,79 @@ QString parsingTool::getErrorMessageInJSON(const QString& source, bool needToPar
     }
 }
 
+/* Depuis la refonte 2026, /forums/message/add et /forums/message/edit répondent en
+ * JSON. Le succès ne se présente pas toujours de la même façon (objet vide, liste
+ * d'erreurs vide, message rendu...), alors que l'échec, lui, est toujours signalé par
+ * un champ d'erreur non vide : on considère donc que tout ce qui n'annonce pas
+ * d'erreur est passé. C'est ce qui manquait pour ne plus crier à l'échec sur un
+ * message correctement posté.
+ *
+ * Retourne une chaîne vide si l'envoi a réussi, sinon le message d'erreur à afficher. */
+QString parsingTool::getErrorOfMessageSending(const QString& source, int httpStatus)
+{
+    /* Ancien comportement : une redirection signifiait que le message était passé. */
+    if(source.isEmpty() == true || source.contains("<meta http-equiv=\"refresh\"") == true)
+    {
+        return "";
+    }
+
+    QJsonParseError errorOfParse;
+    QJsonDocument document = QJsonDocument::fromJson(source.toUtf8(), &errorOfParse);
+
+    if(document.isObject() == true)
+    {
+        QJsonObject answer = document.object();
+        QStringList listOfErrors;
+
+        for(const QString& nameOfField : {"erreur", "erreurs", "error", "errors"})
+        {
+            QJsonValue valueOfField = answer.value(nameOfField);
+
+            if(valueOfField.isArray() == true)
+            {
+                for(const QJsonValue& thisError : valueOfField.toArray())
+                {
+                    if(thisError.toString().isEmpty() == false)
+                    {
+                        listOfErrors.append(thisError.toString());
+                    }
+                }
+            }
+            else if(valueOfField.isString() == true && valueOfField.toString().isEmpty() == false)
+            {
+                listOfErrors.append(valueOfField.toString());
+            }
+        }
+
+        if(listOfErrors.isEmpty() == false)
+        {
+            return specialCharToNormalChar(parsingAjaxMessages(listOfErrors.join("\n"))).trimmed();
+        }
+
+        if(httpStatus >= 400)
+        {
+            return "Le message n'a pas été envoyé, le site a répondu " + QString::number(httpStatus) + ".";
+        }
+
+        return "";
+    }
+
+    /* Réponse en HTML : c'est l'ancien format, on cherche l'encadré d'erreur. */
+    QString errorInHtml = getErrorMessage(source, "");
+
+    if(errorInHtml.isEmpty() == false)
+    {
+        return errorInHtml;
+    }
+
+    if(httpStatus >= 400)
+    {
+        return "Le message n'a pas été envoyé, le site a répondu " + QString::number(httpStatus) + ".";
+    }
+
+    return "";
+}
+
 QString parsingTool::getNextPageOfTopic(const QString& source, const QString& website)
 {
     pagerInfoStruct pagerInfo = getPagerInfo(source, website);
@@ -566,6 +641,15 @@ QList<messageStruct> parsingTool::getListOfEntireMessagesWithoutMessagePars(cons
         return listOfMessages;
     }
 
+    /* Les URL d'action sont relatives ; le domaine se déduit d'une des URL absolues du
+     * payload, pour rester correct sur les autres domaines que jeuxvideo.com. */
+    QString websiteOfPayload = getWebsite(payload.value("listMessageUrlUpdate").toString());
+
+    if(websiteOfPayload.isEmpty() == true)
+    {
+        websiteOfPayload = getWebsite(listMessage.first().toObject().value("publishedAuthorProfileUrl").toString());
+    }
+
     for(const QJsonValue& thisMessageValue : listMessage)
     {
         QJsonObject thisMessage = thisMessageValue.toObject();
@@ -581,6 +665,10 @@ QList<messageStruct> parsingTool::getListOfEntireMessagesWithoutMessagePars(cons
         newMessage.date = getHourOfDate(newMessage.wholeDate);
         newMessage.message = makeBasicPreParseOfMessage(thisMessage.value("renderedText").toString());
         newMessage.messageRaw = thisMessage.value("text").toString().replace("\r\n", "\n");
+
+        QJsonObject actionsOfMessage = thisMessage.value("actions").toObject();
+        newMessage.editUrl = makeAbsoluteUrl(actionsOfMessage.value("edit").toObject().value("url").toString(), websiteOfPayload);
+        newMessage.deleteUrl = makeAbsoluteUrl(actionsOfMessage.value("delete").toObject().value("url").toString(), websiteOfPayload);
         newMessage.signature = thisMessage.value("publishedAuthorSignatureRendered").toString();
 
         /* `updatedDate` est renseigné même quand le message n'a jamais été édité sur
@@ -727,6 +815,21 @@ QString parsingTool::stateOfTopicToTopicType(const QString& stateTopic, const QS
     }
 
     return "topic-folder";
+}
+
+QString parsingTool::makeAbsoluteUrl(const QString& url, const QString& website)
+{
+    if(url.isEmpty() == true || url.startsWith("http") == true)
+    {
+        return url;
+    }
+
+    if(website.isEmpty() == true)
+    {
+        return "https://www.jeuxvideo.com" + url;
+    }
+
+    return "https://" + website + url;
 }
 
 QString parsingTool::removeSchemeOfUrl(const QString& url)

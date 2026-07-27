@@ -6,6 +6,7 @@
 
 #include "messageActions.hpp"
 #include "utilityTool.hpp"
+#include "logTool.hpp"
 
 messageActionsClass::messageActionsClass(QWidget* newParent) : QObject(newParent)
 {
@@ -47,7 +48,10 @@ const QNetworkCookie& messageActionsClass::getConnectCookie() const
     return currentConnectCookie;
 }
 
-void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
+/* `urlForDeletion` vient directement du payload de la page (actions.delete.url du
+ * message) : elle embarque l'identifiant du message et le jeton attendu par le site,
+ * qui n'est pas celui utilisé ailleurs. */
+void messageActionsClass::deleteMessage(QString urlForDeletion)
 {
     if(networkManager == nullptr)
     {
@@ -55,11 +59,11 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
         setNewCookie(currentConnectCookie, websiteOfCookie);
     }
 
-    if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)
+    if(urlForDeletion.isEmpty() == false && replyForDeleteInfo == nullptr)
     {
-        /* modal_del_message.php a disparu avec la refonte 2026, remplacé par
-         * /forums/message/delete. */
-        QNetworkRequest requestForDeleteInfo = parsingTool::buildRequestWithThisUrl("https://" + websiteOfTopic + "/forums/message/delete?ids=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
+        QNetworkRequest requestForDeleteInfo = parsingTool::buildRequestWithThisUrl(urlForDeletion);
+        requestForDeleteInfo.setRawHeader("Accept", "application/json");
+        requestForDeleteInfo.setRawHeader("X-Requested-With", "XMLHttpRequest");
         replyForDeleteInfo = timeoutForDeleteInfo->resetReply(networkManager->get(requestForDeleteInfo));
 
         if(replyForDeleteInfo->isOpen() == true)
@@ -82,6 +86,7 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
 void messageActionsClass::analyzeDeleteInfo()
 {
     QString source;
+    int httpStatus = replyForDeleteInfo->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
     timeoutForDeleteInfo->resetReply();
 
@@ -93,10 +98,13 @@ void messageActionsClass::analyzeDeleteInfo()
 
     replyForDeleteInfo = nullptr;
 
-    if(source.startsWith("{\"erreur\":[]}") == false)
+    qDebug(logNetwork) << "Réponse à la suppression d'un message - code" << httpStatus << "- corps :" << source.left(1000);
+
+    QString error = parsingTool::getErrorOfMessageSending(source, httpStatus);
+
+    if(error.isEmpty() == false)
     {
-        source.remove(0, source.indexOf("[") + 2);
-        source.remove(source.lastIndexOf("]") - 1, 3);
-        QMessageBox::warning(parent, "Erreur", source);
+        qWarning(logNetwork) << "Suppression refusée :" << error;
+        QMessageBox::warning(parent, "Erreur", error);
     }
 }
