@@ -9,7 +9,7 @@ TEMPLATE = app
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += FIXTURES_PATH=\\\"$$PWD/fixtures\\\"
 
-LIBS += -lz
+include(../zlib.pri)
 
 INCLUDEPATH += $$PWD/../respawnIrc
 

@@ -19,10 +19,11 @@ CONFIG += strict_c++
 QMAKE_CXXFLAGS_RELEASE += -O2
 
 LIBS += -L$$PWD/../hunspell/lib/ -lhunspell
-# zlib sert à décompresser le payload JSON des pages de jeuxvideo.com
-LIBS += -lz
 INCLUDEPATH += $$PWD/../hunspell/include
 DEPENDPATH += $$PWD/../hunspell/include
+
+# zlib sert à décompresser le payload JSON des pages de jeuxvideo.com
+include(../zlib.pri)
 
 SOURCES += \
     customWebPage.cpp \

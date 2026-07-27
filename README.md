@@ -18,6 +18,8 @@ Pour compiler RespawnIRC vous devrez d'abord compiler Hunspell, pour ce faire r�
 
 Pour Windows le plus simple reste de télécharger la dernière version de Qt (http://www.qt.io/download-open-source/) contenant Qt Creator, les libs Qt et un compilateur, de se rendre dans le dossier `respawnIrc` et d'ouvrir le .pro avec Qt Creator puis de cliquer sur `compiler`. Un nouveau dossier devrait être créé à la racine du projet (là où se trouvent les dossiers `resources` et `themes`) et à l'intérieur de celui-ci se trouve un dossier `debug` ou `release` (selon comment vous avez compilé) contenant le .exe, déplacez-le dans la racine du projet et exécutez-le.
 
+En plus de Hunspell, RespawnIRC a besoin de zlib pour décompresser les pages de jeuxvideo.com. La plupart des toolchains MinGW, dont celle livrée avec Qt, en contiennent déjà une : dans ce cas il n'y a rien à faire. Sinon (avec MSVC notamment), compilez zlib et placez-la dans un dossier `zlib` à la racine du dépôt, à côté de `hunspell`, avec les en-têtes dans `zlib\include` et la bibliothèque dans `zlib\lib`. Si la bibliothèque obtenue ne porte pas le nom attendu (`zlib` avec MSVC, `z` ailleurs), son nom peut être précisé au moment de la configuration, par exemple `qmake ZLIB_LIB_NAME=zlibstatic`.
+
 ### Linux
 
 Pour Linux, installez les paquets `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine5-dev zlib1g-dev`. Les noms des paquets sont ceux pour Debian, si vous utilisez une autre distribution ils peuvent changer.

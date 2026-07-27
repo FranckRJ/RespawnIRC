@@ -1,5 +1,6 @@
 build-respawnIrc*
 hunspell/
+zlib/
 respawnIrc/respawnIrc.pro.user
 
 # Exécutable déplacé à la racine du projet
