@@ -8,6 +8,7 @@
 #include <QString>
 #include <QNetworkCookie>
 #include <QList>
+#include <QMap>
 #include <QPair>
 #include <QUrl>
 #include <QStringList>
@@ -79,7 +80,7 @@ signals:
     void newMessageStatus();
     void newNumberOfConnectedAndMP();
     void newMPAreAvailables(int newNumber, QString withThisPseudo);
-    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, QString infoToSend, bool useMessageEdit);
+    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
     void newCookieHasToBeSet();
@@ -129,6 +130,10 @@ private:
     bool useInternalNavigatorForLinks;
     bool downloadHighDefAvatar;
     long idOfLastMessageOfUser = 0;
+    /* Texte source des messages affichés, pour pouvoir citer sans requête réseau.
+     * Limité aux messages récents pour ne pas grossir indéfiniment. */
+    QMap<long, QString> listOfRawMessages;
+    static const int maxNumberOfRawMessagesKept = 200;
     int realTypeOfEdit;
     int currentTypeOfEdit;
     int currentErrorStreak = 0;

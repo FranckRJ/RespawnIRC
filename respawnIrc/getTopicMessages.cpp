@@ -4,6 +4,8 @@
 
 #include "getTopicMessages.hpp"
 #include "utilityTool.hpp"
+#include "logTool.hpp"
+#include "payloadTool.hpp"
 
 getTopicMessagesClass::getTopicMessagesClass(QObject* parent) : QObject(parent)
 {
@@ -157,6 +159,11 @@ void getTopicMessagesClass::analyzeMessages()
             {
                 listOfPageSource[i] = listOfReplys[i]->readAll();
 
+                qDebug(logNetwork) << "Page" << i << ":" << listOfReplys[i]->request().url().toDisplayString()
+                                   << "- code" << listOfReplys[i]->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+                                   << "- erreur" << listOfReplys[i]->error()
+                                   << "-" << listOfPageSource[i].size() << "caractères";
+
                 if(listOfReplys[i]->rawHeaderList().contains("cf-mitigated")) {
                     cloudflareChallengeEncountered = true;
                 }
@@ -171,6 +178,10 @@ void getTopicMessagesClass::analyzeMessages()
                     firstValidePageNumber = i;
                 }
             }
+            else
+            {
+                qWarning(logNetwork) << "Page" << i << "illisible :" << listOfReplys[i]->errorString();
+            }
 
             listOfPageUrl[i] = listOfReplys[i]->request().url().toDisplayString();
 
@@ -180,6 +191,7 @@ void getTopicMessagesClass::analyzeMessages()
     }
 
     if(cloudflareChallengeEncountered) {
+        qWarning(logNetwork) << "Challenge Cloudflare reçu pour" << topicLink;
         emit newMessageStatus("Entravé par Cloudflare.");
         return;
     }
@@ -195,6 +207,8 @@ void getTopicMessagesClass::analyzeMessages()
 
     if(firstValidePageNumber == -1)
     {
+        qWarning(logTopic) << "Aucune page exploitable pour" << topicLink << ", en-tête Location :" << locationHeader;
+
         if(locationHeader.startsWith("/forums/") == true)
         {
             QString locationHeaderTopicLink = "https://" + websiteOfTopic + locationHeader;
@@ -287,6 +301,8 @@ void getTopicMessagesClass::analyzeMessages()
 
         if(listOfEntireMessages.isEmpty() == true)
         {
+            qWarning(logTopic) << "Aucun message extrait de" << listOfPageSource.size() << "page(s) pour" << topicLink
+                               << "- payload présent :" << payloadTool::sourceContainsPayload(listOfPageSource[firstValidePageNumber]);
             emit newMessagesAreAvailable(QList<messageStruct>(), listOfInput, ajaxInfo, topicLink, true);
             retrievesMessage = false;
             return;

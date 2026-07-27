@@ -56,8 +56,6 @@ showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, con
     connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicClass::downloadTheseStickersIfNeeded);
     connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicClass::downloadTheseNoelshackImagesIfNeeded);
     connect(getTopicMessages, &getTopicMessagesClass::newLinkForTopic, this, &showTopicClass::setUpdatedTopicLink);
-    connect(messageActions, &messageActionsClass::quoteThisMessage, this, &showTopicClass::quoteThisMessage);
-    connect(messageActions, &messageActionsClass::setEditInfo, this, &showTopicClass::setEditInfo);
 }
 
 showTopicClass::~showTopicClass()
@@ -141,7 +139,19 @@ bool showTopicClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
             idOfMessageToUse = idOfMessageToEdit;
         }
 
-        return messageActions->getEditInfo(idOfMessageToUse, useMessageEdit);
+        /* Comme pour la citation, le texte source du message est déjà connu : l'API qui
+         * servait à le redemander (ajax_edit_message.php) n'existe plus depuis la
+         * refonte 2026 de jeuxvideo.com. */
+        QMap<long, QString>::const_iterator rawMessageIterator = listOfRawMessages.find(idOfMessageToUse);
+
+        if(rawMessageIterator == listOfRawMessages.end())
+        {
+            emit setEditInfo(idOfMessageToUse, "", "Impossible de récupérer ce message pour l'éditer.", useMessageEdit);
+            return false;
+        }
+
+        emit setEditInfo(idOfMessageToUse, rawMessageIterator.value(), "", useMessageEdit);
+        return true;
     }
 
     return false;
@@ -177,6 +187,7 @@ void showTopicClass::setNewTopic(QString newTopic)
     topicName.clear();
     lastDate.clear();
     listOfInfosForEdit.clear();
+    listOfRawMessages.clear();
     currentTypeOfEdit = realTypeOfEdit;
     firstMessageOfTopic.isFirstMessage = false;
     topicLinkLastPage = newTopic;
@@ -421,10 +432,23 @@ void showTopicClass::linkClicked(const QUrl& link)
 
     if(linkInString.startsWith("quote"))
     {
-        QString messageQuoted;
         linkInString.remove(0, linkInString.indexOf(':') + 1);
-        messageQuoted = linkInString.mid(linkInString.indexOf(':') + 1);
-        messageActions->getQuoteInfo(linkInString.left(linkInString.indexOf(':')), messageQuoted);
+
+        long idOfMessageQuoted = linkInString.left(linkInString.indexOf(':')).toLong();
+        QString headerOfQuote = QUrl::fromPercentEncoding(linkInString.mid(linkInString.indexOf(':') + 1).toUtf8());
+
+        /* Depuis la refonte 2026 de jeuxvideo.com il n'y a plus d'API de citation :
+         * le texte source vient du payload de la page, gardé de côté à l'affichage. */
+        QMap<long, QString>::const_iterator rawMessageIterator = listOfRawMessages.find(idOfMessageQuoted);
+
+        if(rawMessageIterator == listOfRawMessages.end())
+        {
+            QMessageBox::warning(this, "Erreur", "Erreur, impossible de citer ce message, réessayez.");
+        }
+        else
+        {
+            emit quoteThisMessage(">" + headerOfQuote + "\n>" + parsingTool::quoteThisRawMessage(rawMessageIterator.value()));
+        }
     }
     else if(linkInString.startsWith("blacklist"))
     {
@@ -558,6 +582,13 @@ void showTopicClass::analyzeMessages(QList<messageStruct> listOfNewMessages, QLi
     {
         QString newMessageToAppend = baseModel;
         colorOfPseudo = getColorOfThisPseudo(currentMessage.pseudoInfo.pseudoName.toLower());
+
+        listOfRawMessages[currentMessage.idOfMessage] = currentMessage.messageRaw;
+
+        while(listOfRawMessages.size() > maxNumberOfRawMessagesKept)
+        {
+            listOfRawMessages.erase(listOfRawMessages.begin());
+        }
 
         if(listOfIgnoredPseudo->indexOf(currentMessage.pseudoInfo.pseudoName.toLower()) != -1)
         {

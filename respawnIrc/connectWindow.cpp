@@ -81,7 +81,7 @@ void connectWindowClass::addWebView()
 
         webView->setPage(customPage);
         utilityTool::setupWebNotifierCookie(*(webView->page()->profile()->cookieStore()));
-        webView->load(QUrl("https://www.jeuxvideo.com/login"));
+        webView->load(QUrl("https://www.jeuxvideo.com/sso/login"));
 
         mainLayout->removeWidget(buttonShowWebView);
         buttonShowWebView->setEnabled(false);

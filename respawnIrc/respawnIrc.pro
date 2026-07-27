@@ -19,6 +19,8 @@ CONFIG += strict_c++
 QMAKE_CXXFLAGS_RELEASE += -O2
 
 LIBS += -L$$PWD/../hunspell/lib/ -lhunspell
+# zlib sert à décompresser le payload JSON des pages de jeuxvideo.com
+LIBS += -lz
 INCLUDEPATH += $$PWD/../hunspell/include
 DEPENDPATH += $$PWD/../hunspell/include
 
@@ -59,6 +61,8 @@ SOURCES += \
     manageShortcutWindow.cpp \
     addShortcutWindow.cpp \
     utilityTool.cpp \
+    logTool.cpp \
+    payloadTool.cpp \
     addCookieWindow.cpp \
     clickableLabel.cpp \
     baseDialog.cpp
@@ -100,6 +104,8 @@ HEADERS += \
     manageShortcutWindow.hpp \
     addShortcutWindow.hpp \
     utilityTool.hpp \
+    logTool.hpp \
+    payloadTool.hpp \
     addCookieWindow.hpp \
     clickableLabel.hpp \
     baseDialog.hpp

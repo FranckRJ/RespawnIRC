@@ -8,6 +8,7 @@
 #include <QtGlobal>
 
 #include "mainWindow.hpp"
+#include "logTool.hpp"
 #include "settingTool.hpp"
 #include "parsingTool.hpp"
 #include "getTopicMessages.hpp"
@@ -20,6 +21,8 @@ int main(int argc, char* argv[])
 
     QApplication app(argc, argv);
     QSettings setting(QCoreApplication::applicationDirPath() + "/config.ini", QSettings::IniFormat);
+
+    logTool::initialize();
 
     settingTool::setSettings(&setting);
     settingTool::initializeDefaultListsOption();

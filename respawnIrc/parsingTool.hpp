@@ -24,6 +24,9 @@ struct messageStruct
     QString date;
     QString wholeDate;
     QString message;
+    /* Le texte du message tel qu'il a été écrit, avant rendu HTML. Sert à citer sans
+     * avoir à le redemander au site. */
+    QString messageRaw;
     QString lastTimeEdit;
     QString lastTimeEditHourOnly;
     QString signature;
@@ -49,6 +52,15 @@ struct ajaxInfoStruct
     QString mod;
 };
 
+struct pagerInfoStruct
+{
+    int currentPage = 0;
+    int numberOfPages = 0;
+    /* Lien de n'importe quelle page du topic, pour pouvoir en reconstruire d'autres :
+     * le payload ne liste pas toutes les pages. */
+    QString linkOfAPage;
+};
+
 struct infoForMessageParsingStruct
 {
     bool showStickers;
@@ -70,8 +82,7 @@ namespace parsingTool
     void generateNewUserAgent();
     bool checkIfTopicAreSame(const QString& firstTopic, const QString& secondTopic);
     ajaxInfoStruct getAjaxInfo(const QString& source);
-    QString getMessageEdit(const QString& source);
-    QString getMessageQuote(const QString& source);
+    QString quoteThisRawMessage(QString rawMessage);
     QString getWebsite(const QString& topicLink);
     QString getVersionName(const QString& source);
     QString getVersionChangelog(const QString& source);
@@ -81,6 +92,8 @@ namespace parsingTool
     QString getErrorMessageInJSON(const QString& source, bool needToParseAsAjaxMessage = true, QString defaultError = "Le message n'a pas été envoyé.");
     QString getNextPageOfTopic(const QString& source, const QString& website);
     QString getLastPageOfTopic(const QString& source, const QString& website);
+    pagerInfoStruct getPagerInfo(const QString& source, const QString& website);
+    QString buildLinkForThisPage(const QString& linkOfAnyPage, int wantedPage);
     QString getFirstPageOfTopic(const QString& topicLink);
     QString getBeforeLastPageOfTopic(const QString& topicLink);
     QString getNameOfTopic(const QString& source);
@@ -89,9 +102,16 @@ namespace parsingTool
     QList<messageStruct> getListOfEntireMessagesWithoutMessagePars(const QString& source);
     QList<topicStruct> getListOfTopic(const QString& source, const QString& website);
     QString getForumOfTopic(const QString& topicLink);
+    QString getForumIdOfThisTopic(const QString& topicLink);
+    QString getTopicIdOfThisTopic(const QString& topicLink);
+    QByteArray buildMultipartFormData(const QList<QPair<QString, QString>>& listOfField, QByteArray& boundaryUsed);
     QString getForumName(const QString& source);
     QString jvfLinkToJvcLink(const QString& jvfTopicLink);
     QString normalAvatarLinkToHDLink(const QString& avatarLink);
+    QString roleToPseudoType(const QString& role);
+    QString stateOfTopicToTopicType(const QString& stateTopic, const QString& stateIcon);
+    QString removeSchemeOfUrl(const QString& url);
+    QString getHourOfDate(const QString& wholeDate);
     QString parsingMessages(QString thisMessage, infoForMessageParsingStruct infoForParsing, bool reallyDownloadStickers = true);
     QString makeBasicPreParseOfMessage(QString thisMessage);
     QString parsingAjaxMessages(QString thisMessage);

@@ -83,36 +83,37 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
     if(replyForSendMessage == nullptr && pseudoUsed.isEmpty() == false && topicLink.isEmpty() == false && sendButton->isEnabled() == true)
     {
         QNetworkRequest request;
-        QString data;
 
         connectCookieForPostMsg = connectCookie;
         networkManager->clearAccessCache();
         networkManager->setCookieJar(new QNetworkCookieJar(this));
         networkManager->cookieJar()->setCookiesFromUrl(utilityTool::cookieToCookieList(connectCookieForPostMsg), QUrl("https://" + website));
 
+        /* Depuis la refonte 2026 de jeuxvideo.com, on ne poste plus sur l'URL du topic
+         * avec un corps urlencodé, mais sur /forums/message/add (ou /edit) avec un
+         * formulaire multipart. */
         if(isInEdit == true)
         {
-            request = parsingTool::buildRequestWithThisUrl("https://" + website + "/forums/ajax_edit_message.php");
+            request = parsingTool::buildRequestWithThisUrl("https://" + website + "/forums/message/edit");
         }
         else
         {
-            request = parsingTool::buildRequestWithThisUrl(topicLink);
+            request = parsingTool::buildRequestWithThisUrl("https://" + website + "/forums/message/add");
         }
 
         sendButton->setEnabled(false);
         inSending = true;
 
-        if(isInEdit == false)
-        {
-            data = buildDataWithThisListOfInput(listOfInput);
-        }
-        else
-        {
-            data = "message_topic=" + QUrl::toPercentEncoding(shortcutTool::transformMessage(messageLine->text(), "shortcut"));
-            data += "&" + dataForEditLastMessage;
-        }
+        QByteArray boundaryUsed;
+        QByteArray data = parsingTool::buildMultipartFormData(buildListOfFieldsForMessage(topicLink, listOfInput), boundaryUsed);
 
-        replyForSendMessage = networkManager->post(request, data.toLatin1());
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "multipart/form-data; boundary=" + boundaryUsed);
+        request.setHeader(QNetworkRequest::ContentLengthHeader, data.size());
+        request.setRawHeader("Accept", "application/json");
+        request.setRawHeader("Accept-Language", "fr");
+        request.setRawHeader("X-Requested-With", "XMLHttpRequest");
+
+        replyForSendMessage = networkManager->post(request, data);
 
         if(replyForSendMessage->isOpen() == true)
         {
@@ -222,7 +223,7 @@ void sendMessagesClass::quoteThisMessage(QString messageToQuote)
     messageLine->setFocus();
 }
 
-void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messageEdit, QString error, QString infoToSend, bool useMessageEdit)
+void sendMessagesClass::setInfoForEditMessage(long idOfMessageEdit, QString messageEdit, QString error, bool useMessageEdit)
 {
     if(messageEdit.isEmpty() == false)
     {
@@ -231,7 +232,6 @@ void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messa
             messageLine->clear();
             messageLine->insertText(messageEdit);
         }
-        dataForEditLastMessage = "id_message=" + QString::number(idOfMessageEdit) + "&" + infoToSend;
         setIsInEdit(true);
         idOfLastMessageEdit = idOfMessageEdit;
     }
@@ -244,20 +244,24 @@ void sendMessagesClass::setInfoForEditMessage(int idOfMessageEdit, QString messa
     sendButton->setEnabled(true);
 }
 
-QString sendMessagesClass::buildDataWithThisListOfInput(const QList<QPair<QString, QString>>& listOfInput) const
+/* Champs attendus par /forums/message/add et /forums/message/edit : le texte, de quoi
+ * situer le message, puis les jetons de session récupérés dans le payload de la page
+ * (listOfInput). Pour une édition, `messageId` désigne le message modifié ; pour un
+ * nouveau message JVC attend la chaîne « undefined ». */
+QList<QPair<QString, QString>> sendMessagesClass::buildListOfFieldsForMessage(const QString& topicLink,
+                                                                             const QList<QPair<QString, QString>>& listOfInput) const
 {
-    QString data;
+    QList<QPair<QString, QString>> listOfField;
 
-    for(const QPair<QString, QString>& thisInput : listOfInput)
-    {
-        data += thisInput.first + "=" + thisInput.second + "&";
-    }
+    listOfField.append(QPair<QString, QString>("text", shortcutTool::transformMessage(messageLine->text(), "shortcut")));
+    listOfField.append(QPair<QString, QString>("topicId", parsingTool::getTopicIdOfThisTopic(topicLink)));
+    listOfField.append(QPair<QString, QString>("forumId", parsingTool::getForumIdOfThisTopic(topicLink)));
+    listOfField.append(QPair<QString, QString>("group", "1"));
+    listOfField.append(QPair<QString, QString>("messageId", (isInEdit == true ? QString::number(idOfLastMessageEdit) : QString("undefined"))));
 
-    data += "message_topic=" + QUrl::toPercentEncoding(shortcutTool::transformMessage(messageLine->text(), "shortcut"));
+    listOfField.append(listOfInput);
 
-    data += "&form_alias_rang=1";
-
-    return data;
+    return listOfField;
 }
 
 void sendMessagesClass::deleteReplyForSendMessage()
