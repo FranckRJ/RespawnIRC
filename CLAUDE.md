@@ -235,6 +235,11 @@ Ne **jamais** figer telle quelle une page récupérée en étant connecté : au-
 payload, le HTML contient un `ajax_hash` de session. `tests/fixtures/topic-connecte.html.gz`
 est une page fabriquée à la main, avec des jetons factices, pour tester les actions.
 
+De la même façon, aucune fixture ni aucun commentaire ne doit contenir le pseudo JVC
+du mainteneur, ni un chemin absolu de sa machine : les pseudos des fixtures sont des
+noms inventés (`MembreDeTest`, `AutreMembre`), et les ids de topic et de message qui
+les accompagnent sont eux aussi factices.
+
 ## Conventions
 
 - Commentaires et messages de commit en français, sans retour à la ligne manuel.
