@@ -402,6 +402,51 @@ QString parsingTool::getErrorMessageInJSON(const QString& source, bool needToPar
     }
 }
 
+/* Modifier un message se fait en deux temps : `actions.edit.url` est une URL à lire en
+ * GET (`/forums/message/edit/form-values?...`) qui renvoie le texte actuel et une
+ * session de formulaire dédiée (`fs_version` vaut « forum_edit_message » et non
+ * « topic_nouveau_message »), et c'est seulement ensuite qu'on poste la modification
+ * sur /forums/message/edit avec ces valeurs-là. Poster directement sur l'URL d'action
+ * répond 404 : ce n'est pas une cible d'envoi. */
+editFormValuesStruct parsingTool::getEditFormValues(const QString& source)
+{
+    editFormValuesStruct formValues;
+
+    QJsonDocument document = QJsonDocument::fromJson(source.toUtf8());
+
+    if(document.isObject() == false)
+    {
+        qWarning(logNetwork) << "Réponse illisible à la demande d'édition d'un message.";
+        return formValues;
+    }
+
+    QJsonObject answer = document.object();
+    QJsonObject formSession = answer.value("formSession").toObject();
+
+    if(formSession.isEmpty() == true)
+    {
+        return formValues;
+    }
+
+    for(auto ite = formSession.constBegin(); ite != formSession.constEnd(); ++ite)
+    {
+        formValues.listOfField.push_back(QPair<QString, QString>(ite.key(), ite.value().toVariant().toString()));
+    }
+
+    QString ajaxToken = answer.value("ajaxToken").toString();
+
+    if(ajaxToken.isEmpty() == false)
+    {
+        formValues.listOfField.push_back(QPair<QString, QString>("ajax_hash", ajaxToken));
+    }
+
+    formValues.text = answer.value("text").toString().replace("\r\n", "\n");
+    formValues.needsCaptcha = answer.value("needsCaptcha").toBool(false);
+    formValues.isValid = true;
+
+    return formValues;
+}
+
 /* Depuis la refonte 2026, /forums/message/add et /forums/message/edit répondent en
  * JSON. Le succès ne se présente pas toujours de la même façon (objet vide, liste
  * d'erreurs vide, message rendu...), alors que l'échec, lui, est toujours signalé par

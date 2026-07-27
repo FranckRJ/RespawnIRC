@@ -95,9 +95,7 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
          * formulaire multipart. */
         if(isInEdit == true)
         {
-            request = parsingTool::buildRequestWithThisUrl(urlForEditLastMessage.isEmpty() == false
-                                                            ? urlForEditLastMessage
-                                                            : "https://" + website + "/forums/message/edit");
+            request = parsingTool::buildRequestWithThisUrl("https://" + website + "/forums/message/edit");
         }
         else
         {
@@ -107,7 +105,8 @@ void sendMessagesClass::postMessage(QString pseudoUsed, QString topicLink, const
         sendButton->setEnabled(false);
         inSending = true;
 
-        QList<QPair<QString, QString>> listOfField = buildListOfFieldsForMessage(topicLink, listOfInput);
+        QList<QPair<QString, QString>> listOfField =
+            buildListOfFieldsForMessage(topicLink, (isInEdit == true ? listOfFieldForEditLastMessage : listOfInput));
         QByteArray boundaryUsed;
         QByteArray data = parsingTool::buildMultipartFormData(listOfField, boundaryUsed);
 
@@ -241,7 +240,8 @@ void sendMessagesClass::quoteThisMessage(QString messageToQuote)
     messageLine->setFocus();
 }
 
-void sendMessagesClass::setInfoForEditMessage(long idOfMessageEdit, QString messageEdit, QString error, QString editUrl, bool useMessageEdit)
+void sendMessagesClass::setInfoForEditMessage(long idOfMessageEdit, QString messageEdit, QString error,
+                                              QList<QPair<QString, QString>> listOfFieldForEdit, bool useMessageEdit)
 {
     if(messageEdit.isEmpty() == false)
     {
@@ -252,7 +252,7 @@ void sendMessagesClass::setInfoForEditMessage(long idOfMessageEdit, QString mess
         }
         setIsInEdit(true);
         idOfLastMessageEdit = idOfMessageEdit;
-        urlForEditLastMessage = editUrl;
+        listOfFieldForEditLastMessage = listOfFieldForEdit;
     }
     else
     {

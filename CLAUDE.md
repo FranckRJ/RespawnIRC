@@ -122,6 +122,32 @@ Ces URL sont relatives : `parsingTool::makeAbsoluteUrl` leur ajoute le domaine d
 du payload. `showTopic` garde texte source et URL d'action des messages affichés dans
 `listOfInfosForActions`.
 
+### Modifier un message : deux requêtes, deux sessions de formulaire
+
+`actions.edit.url` n'est **pas** une cible d'envoi (y poster répond 404), c'est une URL
+à lire en GET :
+
+```
+GET /forums/message/edit/form-values?id_message=<id>&ajax_hash=<ajaxToken>
+→ {"formSession":{...,"fs_version":"forum_edit_message"},"needsCaptcha":false,
+   "text":"<texte actuel>","ajaxToken":"..."}
+```
+
+Puis seulement :
+
+```
+POST /forums/message/edit   (multipart, comme message/add)
+    text, topicId, forumId, group, messageId
+    + les champs de la formSession renvoyée ci-dessus
+    + ajax_hash = ajaxToken renvoyé ci-dessus
+→ {"html":"<p>...</p>","formSession":{...}}   (pas de champ d'erreur = accepté)
+```
+
+Le point important : la `formSession` de l'édition vaut `fs_version:
+"forum_edit_message"`, alors que celle de la page vaut `topic_nouveau_message`.
+Réutiliser celle de la page ne marche pas. C'est `parsingTool::getEditFormValues` qui
+lit la première réponse, et `sendMessages` qui envoie la seconde.
+
 ### Réponses aux actions
 
 `message/add`, `message/edit` et `message/delete` répondent en JSON. Le succès n'a pas
@@ -173,17 +199,15 @@ donc les valeurs attendues (nombre de messages, pseudos, ids) sont stables.
 - **Envoi d'un message** : confirmé, le message part. Le faux « message non envoyé » qui
   suivait est corrigé (lecture JSON de la réponse).
 - **Affichage du nombre de MP** : confirmé.
-- **Édition** : n'est plus proposée quand le site ne l'autorise pas. Le chemin d'envoi
-  d'une édition (POST multipart sur l'URL de `actions.edit`) n'a **pas** pu être essayé,
-  faute de message encore éditable au moment des tests.
-- **Suppression** : utilise maintenant l'URL fournie par le site, mais **pas testée**
-  (le bouton est masqué par défaut, `showDeleteButton` vaut `false`).
+- **Édition** : les deux requêtes ont été confirmées à la main sur un vrai message (le
+  site a accepté la modification). Le parcours complet dans l'interface, lui, n'a pas
+  été rejoué faute de message encore éditable au moment des tests.
+- **Suppression** : utilise l'URL fournie par le site, mais **pas testée** (le bouton
+  est masqué par défaut, `showDeleteButton` vaut `false`).
 
-Pour vérifier édition et suppression : poster un message, puis tenter tout de suite
-l'action avec `RESPAWNIRC_DEBUG=1`. Le log contient la requête (noms des champs
-seulement, jamais les valeurs des jetons) et la réponse du site. En cas d'échec,
-comparer avec `Utils.prepareMultipartFormForMessage` et `WebManager.sendRequest` côté
-Android.
+Pour vérifier : poster un message, puis tenter l'action tout de suite avec
+`RESPAWNIRC_DEBUG=1`. Le log contient la requête (noms des champs seulement, jamais les
+valeurs des jetons) et la réponse du site.
 
 ## Attention aux fixtures
 

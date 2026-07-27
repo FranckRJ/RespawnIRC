@@ -87,7 +87,8 @@ signals:
     void newMessageStatus();
     void newNumberOfConnectedAndMP();
     void newMPAreAvailables(int newNumber, QString withThisPseudo);
-    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, QString editUrl, bool useMessageEdit);
+    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error,
+                     QList<QPair<QString, QString>> listOfFieldForEdit, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
     void newCookieHasToBeSet();

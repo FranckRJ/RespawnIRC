@@ -57,6 +57,16 @@ struct ajaxInfoStruct
     QString mod;
 };
 
+/* Ce que renvoie l'URL d'édition d'un message (actions.edit.url) : le texte à modifier
+ * et une session de formulaire propre à l'édition, différente de celle de la page. */
+struct editFormValuesStruct
+{
+    bool isValid = false;
+    bool needsCaptcha = false;
+    QString text;
+    QList<QPair<QString, QString>> listOfField;
+};
+
 struct pagerInfoStruct
 {
     int currentPage = 0;
@@ -96,6 +106,7 @@ namespace parsingTool
     QString getErrorMessage(const QString& source, QString defaultError = "Le message n'a pas été envoyé.");
     QString getErrorMessageInJSON(const QString& source, bool needToParseAsAjaxMessage = true, QString defaultError = "Le message n'a pas été envoyé.");
     QString getErrorOfMessageSending(const QString& source, int httpStatus);
+    editFormValuesStruct getEditFormValues(const QString& source);
     QString getNextPageOfTopic(const QString& source, const QString& website);
     QString getLastPageOfTopic(const QString& source, const QString& website);
     pagerInfoStruct getPagerInfo(const QString& source, const QString& website);

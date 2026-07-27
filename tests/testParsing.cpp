@@ -469,6 +469,47 @@ namespace
         testTool::checkTrue("aucune action quand on n'est pas connecté", noActionWhenLoggedOut);
     }
 
+    void testEditFormValues()
+    {
+        testTool::startGroup("Valeurs du formulaire d'édition");
+
+        /* Réponse réelle de /forums/message/edit/form-values, jetons remplacés. */
+        QString source = R"({"formSession":{"fs_session":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",)"
+                         R"("fs_timestamp":1785159300,"fs_version":"forum_edit_message",)"
+                         R"("fs_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb":"cccccccccccccccccccccccccccccccccccccccc"},)"
+                         R"("needsCaptcha":false,"text":"Ça va !","ajaxToken":"dddddddddddddddddddddddddddddddddddddddd"})";
+
+        editFormValuesStruct formValues = parsingTool::getEditFormValues(source);
+
+        testTool::checkTrue("les valeurs sont exploitables", formValues.isValid);
+        testTool::checkEquals("le texte à éditer", formValues.text, QString("Ça va !"));
+        testTool::checkEquals("pas de captcha", formValues.needsCaptcha, false);
+        /* Les quatre champs de formSession, plus ajax_hash. */
+        testTool::checkEquals("nombre de champs à renvoyer", formValues.listOfField.size(), 5);
+
+        QString versionOfForm;
+        QString ajaxHash;
+        for(const QPair<QString, QString>& thisField : formValues.listOfField)
+        {
+            if(thisField.first == "fs_version") { versionOfForm = thisField.second; }
+            if(thisField.first == "ajax_hash") { ajaxHash = thisField.second; }
+        }
+
+        /* La session d'édition n'est pas celle de la page : c'est ce qui manquait pour
+         * que le site accepte la modification. */
+        testTool::checkEquals("la session est celle de l'édition", versionOfForm, QString("forum_edit_message"));
+        testTool::checkEquals("le jeton ajax est repris", ajaxHash, QString("dddddddddddddddddddddddddddddddddddddddd"));
+
+        testTool::checkTrue("une réponse vide est rejetée", parsingTool::getEditFormValues("").isValid == false);
+        testTool::checkTrue("une page HTML est rejetée", parsingTool::getEditFormValues("<html>404</html>").isValid == false);
+        testTool::checkTrue("un JSON sans formSession est rejeté", parsingTool::getEditFormValues(R"({"text":"a"})").isValid == false);
+
+        /* Réponse réelle à l'envoi d'une modification acceptée. */
+        testTool::checkEquals("modification acceptée",
+                              parsingTool::getErrorOfMessageSending(R"({"html":"<p>ok<\/p>","formSession":{"fs_timestamp":0}})", 200),
+                              QString(""));
+    }
+
     void testPageWithoutMessages()
     {
         testTool::startGroup("Page sans message");
@@ -501,5 +542,6 @@ void runParsingTests()
     testErrorMessages();
     testVerdictOfMessageSending();
     testActionsOnMessages();
+    testEditFormValues();
     testPageWithoutMessages();
 }

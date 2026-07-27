@@ -56,6 +56,7 @@ showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, con
     connect(getTopicMessages, &getTopicMessagesClass::theseStickersAreUsed, this, &showTopicClass::downloadTheseStickersIfNeeded);
     connect(getTopicMessages, &getTopicMessagesClass::theseNoelshackImagesAreUsed, this, &showTopicClass::downloadTheseNoelshackImagesIfNeeded);
     connect(getTopicMessages, &getTopicMessagesClass::newLinkForTopic, this, &showTopicClass::setUpdatedTopicLink);
+    connect(messageActions, &messageActionsClass::setEditInfo, this, &showTopicClass::setEditInfo);
 }
 
 showTopicClass::~showTopicClass()
@@ -144,22 +145,16 @@ bool showTopicClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
          * refonte 2026 de jeuxvideo.com. */
         QMap<long, infoForActionsOnMessageStruct>::const_iterator infoIterator = listOfInfosForActions.find(idOfMessageToUse);
 
-        if(infoIterator == listOfInfosForActions.end())
-        {
-            emit setEditInfo(idOfMessageToUse, "", "Impossible de récupérer ce message pour l'éditer.", "", useMessageEdit);
-            return false;
-        }
-
         /* Sans URL d'édition, le site refusera de toute façon la modification : autant le
          * dire tout de suite plutôt que d'envoyer une requête vouée à échouer. */
-        if(infoIterator.value().editUrl.isEmpty() == true)
+        if(infoIterator == listOfInfosForActions.end() || infoIterator.value().editUrl.isEmpty() == true)
         {
-            emit setEditInfo(idOfMessageToUse, "", "Jeuxvideo.com ne permet pas (ou plus) de modifier ce message.", "", useMessageEdit);
+            emit setEditInfo(idOfMessageToUse, "", "Jeuxvideo.com ne permet pas (ou plus) de modifier ce message.",
+                             QList<QPair<QString, QString>>(), useMessageEdit);
             return false;
         }
 
-        emit setEditInfo(idOfMessageToUse, infoIterator.value().rawMessage, "", infoIterator.value().editUrl, useMessageEdit);
-        return true;
+        return messageActions->getEditInfo(idOfMessageToUse, infoIterator.value().editUrl, useMessageEdit);
     }
 
     return false;
