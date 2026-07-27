@@ -508,6 +508,15 @@ namespace
         testTool::checkEquals("modification acceptée",
                               parsingTool::getErrorOfMessageSending(R"({"html":"<p>ok<\/p>","formSession":{"fs_timestamp":0}})", 200),
                               QString(""));
+
+        /* Réponse réelle à une suppression acceptée : `errors` est vide et `success`
+         * ne doit surtout pas être pris pour un message d'erreur. */
+        testTool::checkEquals("suppression acceptée",
+                              parsingTool::getErrorOfMessageSending(R"({"errors":[],"success":["Le message #1 a été supprimé."]})", 200),
+                              QString(""));
+        testTool::checkEquals("suppression refusée",
+                              parsingTool::getErrorOfMessageSending(R"({"errors":["Action impossible."],"success":[]})", 200),
+                              QString("Action impossible."));
     }
 
     void testPageWithoutMessages()

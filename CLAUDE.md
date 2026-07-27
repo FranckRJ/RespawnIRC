@@ -148,6 +148,21 @@ Le point important : la `formSession` de l'édition vaut `fs_version:
 Réutiliser celle de la page ne marche pas. C'est `parsingTool::getEditFormValues` qui
 lit la première réponse, et `sendMessages` qui envoie la seconde.
 
+### Supprimer un message : POST, pas GET
+
+`actions.delete.url` s'appelle en **POST avec un corps vide** (tout est déjà dans
+l'URL : `ids`, `type`, `ajax_hash`). En GET, le site répond 404 — comme pour l'édition,
+l'apparence d'un lien ne veut pas dire qu'on peut l'ouvrir en GET.
+
+```
+POST /forums/message/delete?ids=<id>&type=delete&ajax_hash=<hash>
+→ {"errors":[],"success":["Le message #<id> a été supprimé."]}
+```
+
+`errors` vide vaut succès ; attention à ne pas confondre `success` avec un message
+d'erreur. La suppression étant irréversible et le lien minuscule, `showTopic` demande
+confirmation avant d'envoyer.
+
 ### Réponses aux actions
 
 `message/add`, `message/edit` et `message/delete` répondent en JSON. Le succès n'a pas
@@ -202,8 +217,13 @@ donc les valeurs attendues (nombre de messages, pseudos, ids) sont stables.
 - **Édition** : les deux requêtes ont été confirmées à la main sur un vrai message (le
   site a accepté la modification). Le parcours complet dans l'interface, lui, n'a pas
   été rejoué faute de message encore éditable au moment des tests.
-- **Suppression** : utilise l'URL fournie par le site, mais **pas testée** (le bouton
-  est masqué par défaut, `showDeleteButton` vaut `false`).
+- **Suppression** : la requête a été confirmée sur un vrai message (supprimé pour de
+  bon). Le parcours dans l'interface, boîte de confirmation comprise, n'a pas été
+  cliqué en vrai.
+
+`showDeleteButton` reste à `false` par défaut dans `settingTool.cpp`, choix du
+mainteneur d'origine depuis 2016. Une confirmation existe désormais avant l'envoi, donc
+le défaut pourrait être rediscuté, mais il n'a pas été changé.
 
 Pour vérifier : poster un message, puis tenter l'action tout de suite avec
 `RESPAWNIRC_DEBUG=1`. Le log contient la requête (noms des champs seulement, jamais les

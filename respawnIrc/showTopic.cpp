@@ -371,6 +371,31 @@ void showTopicClass::editThisMessageOfMessagesBox(QString newMessage, long messa
     }
 }
 
+/* La suppression est irréversible et le lien est un tout petit texte collé à « citer »
+ * et « éditer » : on rappelle le message visé avant de l'envoyer. */
+bool showTopicClass::askIfThisMessageHasToBeDeleted(const QString& rawMessage)
+{
+    const int maxSizeOfExtract = 200;
+    QString extractOfMessage = rawMessage.simplified();
+
+    if(extractOfMessage.size() > maxSizeOfExtract)
+    {
+        extractOfMessage = extractOfMessage.left(maxSizeOfExtract) + "...";
+    }
+
+    QMessageBox boxForConfirmation(this);
+    boxForConfirmation.setIcon(QMessageBox::Warning);
+    boxForConfirmation.setWindowTitle("Supprimer le message");
+    boxForConfirmation.setText("Supprimer ce message ? Cette action est irréversible.");
+    boxForConfirmation.setInformativeText(extractOfMessage.isEmpty() == true ? "(message vide)" : extractOfMessage);
+    boxForConfirmation.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+    boxForConfirmation.setButtonText(QMessageBox::Yes, "Supprimer");
+    boxForConfirmation.setButtonText(QMessageBox::Cancel, "Annuler");
+    boxForConfirmation.setDefaultButton(QMessageBox::Cancel);
+
+    return (boxForConfirmation.exec() == QMessageBox::Yes);
+}
+
 QString showTopicClass::getColorOfThisPseudo(QString pseudo)
 {
     for(const pseudoWithColorStruct& thisColor : *listOfColorPseudo)
@@ -473,7 +498,7 @@ void showTopicClass::linkClicked(const QUrl& link)
         {
             QMessageBox::warning(this, "Erreur", "Jeuxvideo.com ne permet pas (ou plus) de supprimer ce message.");
         }
-        else
+        else if(askIfThisMessageHasToBeDeleted(infoIterator.value().rawMessage) == true)
         {
             messageActions->deleteMessage(infoIterator.value().deleteUrl);
         }

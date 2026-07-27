@@ -68,6 +68,7 @@ private:
     void addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID);
     void editThisMessageOfMessagesBox(QString newMessage, long messageID);
     QString getColorOfThisPseudo(QString pseudo);
+    bool askIfThisMessageHasToBeDeleted(const QString& rawMessage);
     void setTopicToErrorMode();
     void replaceTextOrRemoveIt(QString& messageToChange, const QString& oldString, const QString& newString, bool itsAReplace);
 private slots:

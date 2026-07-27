@@ -127,7 +127,8 @@ void messageActionsClass::analyzeEditInfo()
 
 /* `urlForDeletion` vient directement du payload de la page (actions.delete.url du
  * message) : elle embarque l'identifiant du message et le jeton attendu par le site,
- * qui n'est pas celui utilisé ailleurs. */
+ * qui n'est pas celui utilisé ailleurs. Elle s'appelle en POST avec un corps vide, tout
+ * est déjà dans l'URL ; en GET le site répond 404. */
 void messageActionsClass::deleteMessage(QString urlForDeletion)
 {
     if(networkManager == nullptr)
@@ -141,7 +142,8 @@ void messageActionsClass::deleteMessage(QString urlForDeletion)
         QNetworkRequest requestForDeleteInfo = parsingTool::buildRequestWithThisUrl(urlForDeletion);
         requestForDeleteInfo.setRawHeader("Accept", "application/json");
         requestForDeleteInfo.setRawHeader("X-Requested-With", "XMLHttpRequest");
-        replyForDeleteInfo = timeoutForDeleteInfo->resetReply(networkManager->get(requestForDeleteInfo));
+        requestForDeleteInfo.setHeader(QNetworkRequest::ContentLengthHeader, 0);
+        replyForDeleteInfo = timeoutForDeleteInfo->resetReply(networkManager->post(requestForDeleteInfo, QByteArray()));
 
         if(replyForDeleteInfo->isOpen() == true)
         {
