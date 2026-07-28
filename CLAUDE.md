@@ -33,6 +33,11 @@ Trois pièges, tous documentés dans le README :
   l'exception `!/respawnIrc/` la neutralise, sans quoi les fichiers ajoutés dans `respawnIrc/`
   n'apparaissent pas dans `git status`.
 
+`./dist-macos.sh ~/Qt/5.15.2/clang_64` fabrique le DMG distribuable : `macdeployqt`, signature ad
+hoc, puis un dossier `RespawnIRC` contenant l'application **et** `resources/` et `themes/`. Ces
+dossiers ne peuvent pas être enfermés en lecture seule dans le bundle : `imageDownloadTool` écrit
+les stickers dans `resources/stickers/`.
+
 ## Logs et diagnostic
 
 Rien n'est journalisé par défaut. Avec `RESPAWNIRC_DEBUG=1` :

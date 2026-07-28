@@ -58,7 +58,23 @@ Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non 
     cd ..
     ./RespawnIRC.app/Contents/MacOS/RespawnIRC
 
-Le programme cherche `resources/`, `themes/`, `config.ini` et `logs/` **à côté du bundle** et non dedans (voir `pathTool::dataDirPath`), le bundle doit donc rester à la racine du dépôt. Il n'est pas signé et embarque des chemins vers `~/Qt` : tel quel il ne fonctionne que sur la machine qui l'a compilé, le rendre distribuable demanderait un passage par `macdeployqt`.
+Le programme cherche `resources/`, `themes/`, `config.ini` et `logs/` **à côté du bundle** et non dedans (voir `pathTool::dataDirPath`), le bundle doit donc rester à la racine du dépôt.
+
+#### Fabriquer une version distribuable
+
+Le bundle produit ci-dessus embarque les chemins du Qt de la machine qui l'a compilé : il n'est utilisable ailleurs qu'après un passage par `macdeployqt`, ce dont s'occupe `dist-macos.sh` :
+
+    ./dist-macos.sh ~/Qt/5.15.2/clang_64
+
+Le script compile, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 100 Mo pour un bundle de 200 Mo). Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH`.
+
+L'image disque contient un dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut glisser dans les Applications, ou n'importe où ailleurs. L'application et ses données ne peuvent pas être séparées, ni les données enfermées dans le bundle, parce que le programme écrit dedans — les stickers, notamment, sont téléchargés dans `resources/stickers/`.
+
+Trois limites de cette distribution :
+
+- l'application est en x86_64 seulement, parce que le Qt 5.15.2 officiel n'existe qu'en x86_64. Sur un Mac Apple Silicon elle tourne donc via Rosetta 2. Une version arm64 demanderait de compiler Qt et QtWebEngine depuis les sources, ou de passer à Qt 6 ;
+- la signature est ad hoc et l'application n'est pas notarisée : au premier lancement macOS la refusera. Il faut passer par un clic droit sur l'application puis « Ouvrir », ou retirer la mise en quarantaine avec `xattr -dr com.apple.quarantine /chemin/vers/RespawnIRC`. Cette signature ad hoc est bien celle qu'exigerait Apple Silicon pour du code arm64 ; elle ne dispense pas de la notarisation, seul un certificat Developer ID en dispenserait ;
+- l'icône vient du `.ico` de Windows, qui plafonne à 128 pixels, et paraît donc un peu molle dans les grands affichages du Finder.
 
 ---
 

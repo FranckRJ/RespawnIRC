@@ -31,3 +31,5 @@ tests/.qmake.stash
 .DS_Store
 /RespawnIRC.app/
 respawnIrc/RespawnIRC.app/
+# Bundle déployé et image disque fabriqués par dist-macos.sh
+/dist/

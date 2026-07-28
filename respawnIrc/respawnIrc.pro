@@ -13,6 +13,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 RC_FILE = respawnIrc.rc
 
+# Informations du bundle macOS. L'icône est celle de Windows convertie, elle plafonne donc à 128
+# pixels : elle est un peu molle dans les grands affichages du Finder, il faudrait une source plus
+# grande pour y remédier.
+macx {
+    ICON = rirc.icns
+    QMAKE_TARGET_BUNDLE_PREFIX = fr.pijon
+    QMAKE_BUNDLE = RespawnIRC
+    QMAKE_INFO_PLIST = Info.plist
+}
+
 CONFIG += c++14
 CONFIG += strict_c++
 
