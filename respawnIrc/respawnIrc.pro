@@ -20,6 +20,20 @@ macx {
     ICON = rirc.icns
     QMAKE_BUNDLE = RespawnIRC
     QMAKE_INFO_PLIST = Info.plist
+
+    # La version affichée par le Finder est lue dans respawnIrc.cpp pour n'avoir qu'une seule source ;
+    # qmake la remplace ensuite dans Info.plist à la place de @FULL_VERSION@. L'extraction se fait
+    # sans passer par le shell, dont les quotes ne survivent pas à l'analyse de qmake : la ligne
+    # cherchée est celle de currentVersionName, on enlève tout jusqu'au v du numéro puis tout ce qui
+    # suit le numéro lui-même.
+    linesOfSource = $$cat($$PWD/respawnIrc.cpp, lines)
+    lineOfVersion = $$find(linesOfSource, currentVersionName..v[0-9])
+    versionAfterTheV = $$replace(lineOfVersion, .*v, )
+    VERSION = $$replace(versionAfterTheV, [^0-9.].*, )
+
+    isEmpty(VERSION) {
+        error("Version introuvable dans respawnIrc.cpp, le bundle serait marqué 1.0.0.")
+    }
 }
 
 CONFIG += c++14

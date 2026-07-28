@@ -19,12 +19,12 @@
 	     nom du bundle, ce qui donnerait com.franckrj.RespawnIRC. -->
 	<key>CFBundleIdentifier</key>
 	<string>com.franckrj.respawnirc</string>
-	<!-- À garder en phase avec currentVersionName dans respawnIrc.cpp. Le @SHORT_VERSION@ de qmake
-	     ne servirait à rien ici, il tronque la version à ses deux premiers nombres. -->
+	<!-- Version complète, lue dans respawnIrc.cpp par le .pro. Surtout pas @SHORT_VERSION@, que
+	     qmake tronque aux deux premiers nombres : 3.1 au lieu de 3.1.17. -->
 	<key>CFBundleShortVersionString</key>
-	<string>3.1.17</string>
+	<string>@FULL_VERSION@</string>
 	<key>CFBundleVersion</key>
-	<string>3.1.17</string>
+	<string>@FULL_VERSION@</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
