@@ -83,7 +83,13 @@ La compilation se fait hors des sources, dans `build\`, contrairement à Linux e
 
 Avec un Hunspell venant de vcpkg, remplacez `HUNSPELL_LIB_NAME=hunspell` par `HUNSPELL_LIB_NAME=hunspell-1.7`.
 
-L'exécutable est dans `build\respawnIrc\release\RespawnIRC.exe`. Il cherche `resources\`, `themes\`, `config.ini` et `logs\` à côté de lui : déplacez-le à la racine du dépôt pour le lancer, ou passez par `dist-windows.ps1` ci-dessous. Le `bin` de Qt doit rester dans le `PATH`, sans quoi les DLL de Qt sont introuvables.
+L'exécutable est dans `build\respawnIrc\release\RespawnIRC.exe`, mais **il ne peut pas être lancé depuis là**, trois choses lui manquant à cet endroit : les DLL de Qt, celles d'OpenSSL, et surtout les dossiers `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de l'exécutable. Inutile pour autant de passer par l'archive de `dist-windows.ps1` : il suffit de recopier l'exécutable à la racine du dépôt, qui contient déjà ces dossiers, et d'avoir Qt et OpenSSL dans le `PATH`. C'est ce que fait `run-windows.ps1` :
+
+    .\run-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
+
+Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `logs\respawnirc.log` (voir plus bas).
+
+Ne remplacez pas cette recopie par une jonction vers `resources\` depuis `build\` : `dist-windows.ps1` supprime `build\respawnIrc` récursivement, et PowerShell 5.1 suit les jonctions en supprimant — le vrai `resources\` du dépôt y passerait, stickers téléchargés compris.
 
 Les tests se compilent de la même façon :
 
