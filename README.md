@@ -33,9 +33,36 @@ Et exécutez ces commandes :
     qmake
     make
 
+### macOS
+
+Homebrew fournit Hunspell, et zlib vient du système, mais son paquet `qt@5` est livré **sans QtWebEngine** (retiré parce que son Chromium a des failles non corrigées) alors que RespawnIRC en a besoin. Il faut donc le Qt 5.15.2 officiel, que [aqtinstall](https://github.com/miurahr/aqtinstall) récupère sans demander de compte Qt :
+
+    brew install hunspell
+    python3 -m venv ~/.aqtenv && ~/.aqtenv/bin/pip install aqtinstall
+    ~/.aqtenv/bin/aqt install-qt mac desktop 5.15.2 clang_64 -m qtwebengine --outputdir ~/Qt
+
+Ces binaires sont en x86_64 : sur un Mac Apple Silicon ils tournent via Rosetta 2. Le Chromium de Qt 5.15.2 est ancien, mieux vaut ne pas s'en servir comme navigateur généraliste.
+
+Rendez-vous ensuite dans le dossier `respawnIrc` et compilez :
+
+    export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"
+    cd respawnIrc
+    qmake CONFIG+=sdk_no_version_check
+    make -j4
+
+`CONFIG+=sdk_no_version_check` fait taire l'avertissement de Qt 5.15.2, qui n'a été testé qu'avec le SDK 10.15 alors que Xcode en fournit un bien plus récent.
+
+Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne peut donc pas être posé à la racine du dépôt à côté du dossier de sources `respawnIrc`. Déplacez le bundle à la racine et lancez-le, ou double-cliquez dessus depuis le Finder :
+
+    mv RespawnIRC.app ..
+    cd ..
+    ./RespawnIRC.app/Contents/MacOS/RespawnIRC
+
+Le programme cherche `resources/`, `themes/`, `config.ini` et `logs/` **à côté du bundle** et non dedans (voir `pathTool::dataDirPath`), le bundle doit donc rester à la racine du dépôt. Il n'est pas signé et embarque des chemins vers `~/Qt` : tel quel il ne fonctionne que sur la machine qui l'a compilé, le rendre distribuable demanderait un passage par `macdeployqt`.
+
 ---
 
-Un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` 
+Sous Windows et Linux, un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` 
 et `themes`) et exécutez-le :
 
     mv RespawnIRC ..

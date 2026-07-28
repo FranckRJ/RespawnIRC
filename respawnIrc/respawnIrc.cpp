@@ -1,6 +1,5 @@
 #include <QSound>
 #include <QObject>
-#include <QCoreApplication>
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QApplication>
@@ -23,6 +22,7 @@
 #include "settingTool.hpp"
 #include "styleTool.hpp"
 #include "configDependentVar.hpp"
+#include "pathTool.hpp"
 
 const QString respawnIrcClass::currentVersionName("v3.1.17");
 
@@ -772,7 +772,7 @@ void respawnIrcClass::warnUserForNewMessages()
 
     if(QApplication::focusWidget() == nullptr && beepWhenWarn == true)
     {
-        QSound::play(QCoreApplication::applicationDirPath() + "/resources/beep.wav");
+        QSound::play(pathTool::dataDirPath() + "/resources/beep.wav");
     }
 }
 
@@ -789,7 +789,7 @@ void respawnIrcClass::warnUserForNewMP(int newNumber, QString withThisPseudo)
 
     if(beepForNewMP == true && newNumber > oldValueMPNumber)
     {
-        QSound::play(QCoreApplication::applicationDirPath() + "/resources/new_mp.wav");
+        QSound::play(pathTool::dataDirPath() + "/resources/new_mp.wav");
     }
 }
 

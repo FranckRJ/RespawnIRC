@@ -18,6 +18,21 @@ zlib1g-dev`. zlib sert à décompresser le payload des pages (voir plus bas).
 L'exécutable doit tourner depuis la racine du dépôt (il y cherche `themes/`,
 `resources/` et `config.ini`).
 
+### macOS
+
+Trois pièges, tous documentés dans le README :
+
+- le `qt@5` de Homebrew n'a **plus** QtWebEngine (Chromium troué), il faut le Qt 5.15.2
+  officiel via `aqtinstall` ; Hunspell vient de Homebrew, avec une bibliothèque au nom
+  versionné (`-lhunspell-1.7`), et zlib du système ;
+- le système de fichiers ignore la casse, donc `RespawnIRC` ne peut pas cohabiter avec le
+  dossier `respawnIrc` : on compile un bundle `RespawnIRC.app` posé à la racine du dépôt, et
+  les données restent à côté du bundle. C'est à ça que sert `pathTool::dataDirPath()`, à
+  utiliser partout plutôt que `QCoreApplication::applicationDirPath()` ;
+- pour la même raison la règle `/RespawnIRC` du `.gitignore` attrape le dossier de sources ;
+  l'exception `!/respawnIrc/` la neutralise, sans quoi les fichiers ajoutés dans `respawnIrc/`
+  n'apparaissent pas dans `git status`.
+
 ## Logs et diagnostic
 
 Rien n'est journalisé par défaut. Avec `RESPAWNIRC_DEBUG=1` :

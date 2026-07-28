@@ -1,6 +1,5 @@
 #include <QFile>
 #include <QFileInfo>
-#include <QCoreApplication>
 #include <QDir>
 #include <QIODevice>
 #include <QImage>
@@ -8,6 +7,7 @@
 
 #include "imageDownloadTool.hpp"
 #include "parsingTool.hpp"
+#include "pathTool.hpp"
 
 imageDownloadToolClass::imageDownloadToolClass(QObject* parent) : QObject(parent)
 {
@@ -36,7 +36,7 @@ void imageDownloadToolClass::addOrUpdateRule(QString ruleName, QString directory
 
     if(newRule.alwaysCheckBeforeDL == true)
     {
-        QString basePath = (newRule.isInTmpDir == true ? tmpDir->path() : QCoreApplication::applicationDirPath());
+        QString basePath = (newRule.isInTmpDir == true ? tmpDir->path() : pathTool::dataDirPath());
         QDir imageDir(basePath + newRule.directoryPath);
         QStringList listOfImagesInDir;
 
@@ -173,7 +173,7 @@ bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, const imageD
 
     if(thisRule.alwaysCheckBeforeDL == true)
     {
-        QString basePath = (thisRule.isInTmpDir == true ? tmpDir->path() : QCoreApplication::applicationDirPath());
+        QString basePath = (thisRule.isInTmpDir == true ? tmpDir->path() : pathTool::dataDirPath());
         QString pathFile = (thisRule.takeOnlyFileNameForSave == true ? getOnlyLevelOfFilePath(imageUrl) : imageUrl);
         QFileInfo imageFile(basePath + thisRule.directoryPath + convertUrlToFilePath(pathFile) + thisRule.appendAfterName);
 
@@ -251,7 +251,7 @@ void imageDownloadToolClass::analyzeLatestImageDownloaded()
             {
                 QFile newImageFile;
                 QDir newDir;
-                QString basePath = (ruleIte.value().isInTmpDir == true ? tmpDir->path() : QCoreApplication::applicationDirPath());
+                QString basePath = (ruleIte.value().isInTmpDir == true ? tmpDir->path() : pathTool::dataDirPath());
                 QString pathFile = (ruleIte.value().takeOnlyFileNameForSave == true ? getOnlyLevelOfFilePath(listOfImagesUrlNeedDownload.front().linkOfImage) : listOfImagesUrlNeedDownload.front().linkOfImage);
                 QString imagePath = (basePath + ruleIte.value().directoryPath + convertUrlToFilePath(pathFile) + ruleIte.value().appendAfterName);
                 newDir.mkpath(removeLastLevelOfFilePath(imagePath));

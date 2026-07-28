@@ -1,4 +1,3 @@
-#include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
@@ -9,6 +8,7 @@
 #include <QtGlobal>
 
 #include "logTool.hpp"
+#include "pathTool.hpp"
 
 Q_LOGGING_CATEGORY(logNetwork, "respawnirc.network")
 Q_LOGGING_CATEGORY(logParsing, "respawnirc.parsing")
@@ -25,7 +25,7 @@ namespace
 
     QString directoryForLogs()
     {
-        return QCoreApplication::applicationDirPath() + "/logs";
+        return pathTool::dataDirPath() + "/logs";
     }
 
     QString levelToString(QtMsgType type)

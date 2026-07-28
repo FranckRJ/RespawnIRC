@@ -4,13 +4,13 @@
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QAbstractItemView>
-#include <QCoreApplication>
 #include <QFile>
 #include <QTextStream>
 
 #include "manageShortcutWindow.hpp"
 #include "addShortcutWindow.hpp"
 #include "shortcutTool.hpp"
+#include "pathTool.hpp"
 
 namespace
 {
@@ -199,7 +199,7 @@ void manageShortcutWindowClass::textInTextZoneChanged()
 
 void manageShortcutWindowClass::validateShortcuts()
 {
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/resources/shortcut.txt");
+    QFile thisFile(pathTool::dataDirPath() + "/resources/shortcut.txt");
 
     if(thisFile.open(QFile::WriteOnly | QFile::Text))
     {

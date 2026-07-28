@@ -18,9 +18,21 @@ CONFIG += strict_c++
 
 QMAKE_CXXFLAGS_RELEASE += -O2
 
-LIBS += -L$$PWD/../hunspell/lib/ -lhunspell
-INCLUDEPATH += $$PWD/../hunspell/include
-DEPENDPATH += $$PWD/../hunspell/include
+# Hunspell est attendu dans un dossier `hunspell` à la racine du dépôt (voir le wiki). Sous macOS
+# on se rabat sur celui de Homebrew, dont la bibliothèque porte un nom versionné contrairement à
+# celle de Debian ; ce nom peut être précisé : qmake HUNSPELL_LIB_NAME=hunspell-1.8
+HUNSPELL_DIR = $$PWD/../hunspell
+
+macx:!exists($$HUNSPELL_DIR/include/hunspell/hunspell.hxx) {
+    HUNSPELL_DIR = $$system(brew --prefix hunspell)
+    isEmpty(HUNSPELL_LIB_NAME): HUNSPELL_LIB_NAME = hunspell-1.7
+}
+
+isEmpty(HUNSPELL_LIB_NAME): HUNSPELL_LIB_NAME = hunspell
+
+LIBS += -L$$HUNSPELL_DIR/lib/ -l$$HUNSPELL_LIB_NAME
+INCLUDEPATH += $$HUNSPELL_DIR/include
+DEPENDPATH += $$HUNSPELL_DIR/include
 
 # zlib sert à décompresser le payload JSON des pages de jeuxvideo.com
 include(../zlib.pri)
@@ -109,4 +121,5 @@ HEADERS += \
     payloadTool.hpp \
     addCookieWindow.hpp \
     clickableLabel.hpp \
-    baseDialog.hpp
+    baseDialog.hpp \
+    pathTool.hpp
