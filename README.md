@@ -16,9 +16,102 @@ Pour compiler RespawnIRC vous devrez d'abord compiler Hunspell, pour ce faire r�
 
 ### Windows
 
-Pour Windows le plus simple reste de télécharger la dernière version de Qt (http://www.qt.io/download-open-source/) contenant Qt Creator, les libs Qt et un compilateur, de se rendre dans le dossier `respawnIrc` et d'ouvrir le .pro avec Qt Creator puis de cliquer sur `compiler`. Un nouveau dossier devrait être créé à la racine du projet (là où se trouvent les dossiers `resources` et `themes`) et à l'intérieur de celui-ci se trouve un dossier `debug` ou `release` (selon comment vous avez compilé) contenant le .exe, déplacez-le dans la racine du projet et exécutez-le.
+La cible est Windows 7 SP1 ou plus récent, en 64 bits. Tout se fait en ligne de commande, Qt Creator n'est pas nécessaire.
 
-En plus de Hunspell, RespawnIRC a besoin de zlib pour décompresser les pages de jeuxvideo.com. La plupart des toolchains MinGW, dont celle livrée avec Qt, en contiennent déjà une : dans ce cas il n'y a rien à faire. Sinon (avec MSVC notamment), compilez zlib et placez-la dans un dossier `zlib` à la racine du dépôt, à côté de `hunspell`, avec les en-têtes dans `zlib\include` et la bibliothèque dans `zlib\lib`. Si la bibliothèque obtenue ne porte pas le nom attendu (`zlib` avec MSVC, `z` ailleurs), son nom peut être précisé au moment de la configuration, par exemple `qmake ZLIB_LIB_NAME=zlibstatic`.
+**Le compilateur doit être MSVC, pas MinGW.** RespawnIRC utilise QtWebEngine, dont le moteur est Chromium, et Chromium ne se compile pas avec MinGW : les binaires officiels de Qt ne fournissent QtWebEngine que pour MSVC, et le module est purement et simplement absent des versions MinGW. C'est la seule contrainte forte de la compilation sous Windows, tout le reste en découle.
+
+En revanche aucune modification des fichiers `.pro` n'est nécessaire : toute la configuration passe par deux variables données à `qmake`.
+
+#### Les outils
+
+Les Build Tools de Visual Studio suffisent, l'IDE complet est inutile. L'installation se fait sans interface :
+
+    vs_BuildTools.exe --quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended
+
+Qt 5.15.2 est la dernière version dont les binaires sont librement téléchargeables. [aqtinstall](https://github.com/miurahr/aqtinstall) les récupère sans demander de compte Qt, et publie un exécutable autonome qui évite d'installer Python :
+
+    aqt.exe install-qt windows desktop 5.15.2 win64_msvc2019_64 -m qtwebengine --outputdir C:\Qt
+
+`qtmultimedia` fait partie de l'installation de base, seul `qtwebengine` doit être demandé en plus.
+
+#### Hunspell et zlib
+
+Rien n'est fourni par le système sous Windows, il faut donc compiler les deux. Ce sont deux petites bibliothèques sans dépendance, et les compiler à la main prend une quinzaine de secondes : c'est la méthode recommandée. Récupérez les sources, [Hunspell 1.7.3](https://github.com/hunspell/hunspell/releases) et [zlib 1.3.1](https://github.com/madler/zlib/releases), décompressez-les, puis depuis une invite de commandes où `vcvars64.bat` a été exécuté :
+
+    cd hunspell-1.7.3\src\hunspell
+    cl /nologo /c /O2 /MD /EHsc /DHUNSPELL_STATIC *.cxx
+    lib /nologo /OUT:hunspell.lib *.obj
+
+    cd zlib-1.3.1
+    cl /nologo /c /O2 /MD *.c
+    lib /nologo /OUT:zs.lib *.obj
+
+`/MD` est indispensable : c'est la bibliothèque C++ dynamique, celle qu'utilise Qt. Avec `/MT` l'édition de liens échouerait.
+
+Placez ensuite le résultat à la racine du dépôt, dans la disposition attendue par les `.pro` : les cinq en-têtes de `src\hunspell` (`hunspell.hxx`, `hunspell.h`, `hunvisapi.h`, `atypes.hxx`, `w_char.hxx`) dans `hunspell\include\hunspell` et `hunspell.lib` dans `hunspell\lib` ; `zlib.h` et `zconf.h` dans `zlib\include` et `zs.lib` dans `zlib\lib`.
+
+`HUNSPELL_STATIC` doit être défini à la compilation de Hunspell **et** à celle de RespawnIRC : sans lui les en-têtes de Hunspell déclarent tout en `__declspec(dllimport)` et l'édition de liens échoue. C'est le `DEFINES+=HUNSPELL_STATIC` des commandes plus bas.
+
+##### Avec vcpkg à la place
+
+[vcpkg](https://github.com/microsoft/vcpkg) fait la même chose sans avoir à savoir quels fichiers compiler, au prix d'une installation nettement plus lourde :
+
+    vcpkg install hunspell:x64-windows-static-md zlib:x64-windows-static-md
+
+Le triplet `x64-windows-static-md` donne des bibliothèques statiques avec la bibliothèque C++ dynamique, comme Qt ; `x64-windows-static` tout court utiliserait `/MT` et entrerait en conflit avec Qt. Les fichiers se recopient dans la même disposition que ci-dessus, à deux différences près : la bibliothèque s'appelle `hunspell-1.7.lib`, il faut donc `HUNSPELL_LIB_NAME=hunspell-1.7`, et son `hunvisapi.h` est engendré avec le test déjà figé, ce qui rend `DEFINES+=HUNSPELL_STATIC` inutile — mais inoffensif, les commandes plus bas marchent dans les deux cas.
+
+Pour mémoire, mesuré sur une même machine : la compilation à la main demande 2,4 Mo de téléchargement, une quinzaine de secondes et 44 Mo sur le disque, contre une dizaine de minutes et 912 Mo pour vcpkg, qui télécharge au passage CMake, 7zip, PowerShell Core et un environnement MSYS2 complet. Les deux tiers de ces dix minutes vont à libiconv, une dépendance du paquet vcpkg de Hunspell dont RespawnIRC n'a pas l'usage : la bibliothèque compilée à la main s'en passe et le programme fonctionne à l'identique, tests compris. vcpkg reste intéressant si vous utilisez déjà son cache binaire, ou pour suivre les mises à jour de Hunspell — qui sort une version tous les deux à quatre ans.
+
+Vérifiez dans tous les cas les noms de bibliothèques réellement obtenus plutôt que de recopier ceux d'ici, ils changent avec les versions : zlib ne s'appelle `zs` que depuis la 1.3.2.
+
+#### OpenSSL
+
+**Sans OpenSSL, le programme démarre mais ne peut joindre aucune page.** Qt 5.15.2 est compilé contre OpenSSL 1.1.1 et charge `libssl-1_1-x64.dll` et `libcrypto-1_1-x64.dll` à l'exécution pour tout ce qui est HTTPS ; en leur absence `QSslSocket::supportsSsl()` est faux et toutes les requêtes échouent, sans message clair. `windeployqt` ne les copie pas, et Qt ne les distribue plus : son dépôt ne contient plus que `tools_opensslv3_x64`, dont l'interface binaire est incompatible avec ce que Qt 5.15.2 va chercher.
+
+Il faut donc les récupérer ailleurs et les poser dans un dossier `openssl\bin` à la racine du dépôt, à côté de `hunspell` et `zlib`. La version utilisée pour la distribution actuelle est celle de [FireDaemon](https://firedaemon.com/download-firedaemon-openssl), signée et accompagnée d'une empreinte SHA-256 à vérifier.
+
+Attention : **OpenSSL 1.1.1 n'est plus maintenu depuis septembre 2023**. C'est un choix assumé faute d'alternative simple, Qt 5.15.2 ne sachant pas parler à OpenSSL 3. S'en affranchir demanderait de recompiler Qt depuis les sources avec `-schannel`, pour utiliser le TLS natif de Windows.
+
+#### Compiler
+
+La compilation se fait hors des sources, dans `build\`, contrairement à Linux et macOS : le dossier de sources reste propre et il n'y a rien à ignorer dedans. Depuis une invite de commandes où `vcvars64.bat` a été exécuté et où le `bin` de Qt est dans le `PATH` :
+
+    mkdir build\respawnIrc
+    cd build\respawnIrc
+    qmake ..\..\respawnIrc\respawnIrc.pro HUNSPELL_LIB_NAME=hunspell ZLIB_LIB_NAME=zs DEFINES+=HUNSPELL_STATIC
+    nmake release
+
+Avec un Hunspell venant de vcpkg, remplacez `HUNSPELL_LIB_NAME=hunspell` par `HUNSPELL_LIB_NAME=hunspell-1.7`.
+
+L'exécutable est dans `build\respawnIrc\release\RespawnIRC.exe`. Il cherche `resources\`, `themes\`, `config.ini` et `logs\` à côté de lui : déplacez-le à la racine du dépôt pour le lancer, ou passez par `dist-windows.ps1` ci-dessous. Le `bin` de Qt doit rester dans le `PATH`, sans quoi les DLL de Qt sont introuvables.
+
+Les tests se compilent de la même façon :
+
+    mkdir build\tests
+    cd build\tests
+    qmake ..\..\tests\tests.pro ZLIB_LIB_NAME=zs
+    nmake release
+    release\respawnIrcTests.exe
+
+#### Fabriquer une version distribuable
+
+    .\dist-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
+
+Le script compile, appelle `windeployqt`, allège le résultat, ajoute les bibliothèques d'exécution nécessaires et fabrique `dist\RespawnIRC-<version>-windows.zip`. Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur.
+
+L'archive contient un unique dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut décompresser quelque part. L'application et ses données ne peuvent pas être séparées, parce que le programme écrit dedans — les stickers, notamment, sont téléchargés dans `resources\stickers\`. À noter que `windeployqt` crée lui aussi un dossier `resources` pour QtWebEngine : les deux contenus cohabitent dans le même dossier, aucun nom de fichier ne se chevauchant.
+
+Trois dossiers sont allégés parce que `windeployqt` copie tout par défaut : les traductions de QtWebEngine sont réduites au français et à l'anglais qui lui sert de repli, celles de Qt au seul français, et les outils de développement de Chromium sont retirés. Cela représente une vingtaine de mégaoctets. En revanche `opengl32sw.dll` est conservé malgré ses 20 Mo : c'est le rendu OpenGL logiciel, seul recours sur une machine sans pilote OpenGL utilisable, ce qui est courant sur les vieilles configurations et les machines virtuelles visées par une cible Windows 7. L'essentiel du poids restant est incompressible, `Qt5WebEngineCore.dll` pesant à lui seul près de 100 Mo.
+
+#### Ce que Windows 7 change
+
+Trois choses que Windows 10 fournit et que Windows 7 n'a pas sont embarquées dans l'archive, sans quoi le programme ne démarre pas du tout sur certaines machines. C'est la raison d'être de la pile de DLL qui accompagne le programme depuis toujours, et non un excès de prudence :
+
+- l'**Universal CRT** est un composant du système à partir de Windows 10, alors que Windows 7 ne l'obtient que par une mise à jour facultative (KB2999226). L'archive embarque donc `ucrtbase.dll` et la quarantaine de petites DLL de redirection `api-ms-win-crt-*`, prises dans `Windows Kits\10\Redist\ucrt\DLLs\x64`. Sous Windows 10 la copie du système est utilisée de toute façon, ces fichiers n'y servent à rien mais ne gênent pas. Le redistribuable exige Windows 7 **SP1**, pas la version d'origine ;
+- les **bibliothèques C++ de MSVC** (`vcruntime140.dll`, `vcruntime140_1.dll`, `msvcp140.dll`), absentes de toute machine où le redistribuable n'a jamais été installé, quel que soit le Windows ;
+- **`D3Dcompiler_47.dll`**, présent dans le système sous Windows 10 mais généralement pas sous Windows 7, dont Qt a besoin pour le rendu via ANGLE.
+
+Une limite honnête : **rien de tout cela n'a été vérifié sur un vrai Windows 7**, faute d'une machine sous la main. Le contenu de l'archive suit les règles documentées par Microsoft et le programme a été lancé avec succès depuis l'archive sous Windows 10, mais la validation sous Windows 7 reste à faire.
 
 ### Linux
 
@@ -78,7 +171,7 @@ Trois limites de cette distribution :
 
 ---
 
-Sous Windows et Linux, un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` 
+Sous Linux, un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` 
 et `themes`) et exécutez-le :
 
     mv RespawnIRC ..

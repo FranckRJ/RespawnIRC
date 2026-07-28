@@ -1,6 +1,8 @@
 build-respawnIrc*
 hunspell/
 zlib/
+# Sous Windows, OpenSSL 1.1.1 posé à côté de hunspell et zlib (voir le README).
+openssl/
 respawnIrc/respawnIrc.pro.user
 
 # Exécutable déplacé à la racine du projet
@@ -31,5 +33,13 @@ tests/.qmake.stash
 .DS_Store
 /RespawnIRC.app/
 respawnIrc/RespawnIRC.app/
-# Bundle déployé et image disque fabriqués par dist-macos.sh
+
+# Windows
+# La compilation se fait hors des sources, dans build/ (voir README) : il n'y a donc rien à ignorer
+# dans respawnIrc/ ni dans tests/, contrairement à Linux et macOS.
+/build/
+# La règle /RespawnIRC plus haut n'attrape pas l'exécutable, qui porte ici une extension.
+/RespawnIRC.exe
+
+# Bundle déployé et image disque fabriqués par dist-macos.sh, dossier distribuable de dist-windows.ps1
 /dist/

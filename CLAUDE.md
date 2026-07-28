@@ -38,6 +38,74 @@ hoc, puis un dossier `RespawnIRC` contenant l'application **et** `resources/` et
 dossiers ne peuvent pas être enfermés en lecture seule dans le bundle : `imageDownloadTool` écrit
 les stickers dans `resources/stickers/`.
 
+### Windows
+
+Le point de départ, dont tout le reste découle : **QtWebEngine n'existe pas pour MinGW**, Chromium
+ne se compilant qu'avec MSVC. Le README détaille la mise en place ; les pièges à connaître :
+
+- les `.pro` n'ont **pas** été modifiés pour Windows, et ne devraient pas avoir à l'être : tout passe
+  par des variables de `qmake`, `HUNSPELL_LIB_NAME`, `ZLIB_LIB_NAME` et `DEFINES+=HUNSPELL_STATIC` ;
+- Hunspell et zlib se compilent **à la main**, c'est la méthode documentée : deux petites
+  bibliothèques sans dépendance, une quinzaine de secondes. vcpkg reste décrit en second choix ;
+- `HUNSPELL_STATIC` est nécessaire au Hunspell compilé à la main, dont le `hunvisapi.h` teste
+  vraiment la macro, mais sans effet sur celui de vcpkg, dont le port engendre un en-tête au test
+  figé à `#if 1`. Le passer systématiquement marche donc dans les deux cas, et c'est ce que fait
+  `dist-windows.ps1` ;
+- la compilation se fait **hors des sources**, dans `build/`, contrairement à Linux et macOS ;
+- `windeployqt` crée un dossier `resources/` pour QtWebEngine, exactement le nom du dossier de
+  données du programme, et au même endroit puisque `pathTool::dataDirPath()` renvoie le dossier de
+  l'exécutable. Les deux contenus doivent **fusionner**, pas se remplacer ;
+- `dist-windows.ps1` est en UTF-8 **avec BOM** : PowerShell 5.1 lit un `.ps1` comme de l'ANSI sans
+  lui, et tous les accents des messages sont abîmés. Ne pas réenregistrer le fichier sans le BOM ;
+- toujours dans PowerShell 5.1, `qmake`, `nmake` et `windeployqt` écrivent leur progression sur la
+  sortie d'erreur : avec `$ErrorActionPreference = 'Stop'` chaque ligne devient une erreur fatale
+  alors que la commande a réussi. D'où `Invoke-BuildTool`, qui juge sur le code de retour.
+
+#### Ce qui manque et ne se voit pas
+
+`windeployqt` ne copie **ni OpenSSL ni les bibliothèques d'exécution de MSVC**. Les trois pièges,
+par ordre de méchanceté :
+
+- **sans OpenSSL, aucune page n'est joignable.** Qt 5.15.2 charge `libssl-1_1`/`libcrypto-1_1` à
+  l'exécution ; en leur absence `QSslSocket::supportsSsl()` est faux et tout échoue silencieusement.
+  Qt ne distribue plus le 1.1.1, seulement un OpenSSL 3 incompatible. Pour vérifier, un programme de
+  trois lignes affichant `supportsSsl()` et `sslLibraryVersionString()` suffit et évite de deviner ;
+- sans `vcruntime140.dll` et compagnie, le programme ne démarre pas là où le redistribuable n'a
+  jamais été installé ;
+- sous **Windows 7**, l'Universal CRT n'est pas dans le système : il faut embarquer `ucrtbase.dll`
+  et la quarantaine de `api-ms-win-crt-*.dll`. C'est l'explication de la pile de DLL historiquement
+  distribuée avec le programme — elle était justifiée, ce n'est pas du gras.
+
+Le gras est ailleurs, et `dist-windows.ps1` s'en occupe : traductions de QtWebEngine et de Qt
+réduites au français, outils de développement de Chromium retirés, une vingtaine de mégaoctets.
+`opengl32sw.dll` (20 Mo) est gardé **volontairement**, c'est le rendu logiciel de secours sur les
+machines sans pilote OpenGL, cas courant de la cible Windows 7.
+
+**Rien n'a été essayé sur un vrai Windows 7** : le contenu de l'archive suit les règles documentées
+par Microsoft et le programme démarre depuis l'archive sous Windows 10, mais la validation sous
+Windows 7 reste à faire. Ne pas présenter cette compatibilité comme vérifiée.
+
+#### Pourquoi Hunspell et zlib ne passent pas par vcpkg
+
+Les deux méthodes ont été mesurées sur la même machine, avec le même compilateur, et donnent un
+programme identique — les 142 vérifications passent dans les deux cas. À la main : 2,4 Mo
+téléchargés, une quinzaine de secondes, 44 Mo sur le disque. Avec vcpkg : une dizaine de minutes et
+912 Mo, CMake, 7zip, PowerShell Core et un MSYS2 complet compris.
+
+L'écart vient surtout de **libiconv, qui mange les deux tiers des dix minutes sans servir à rien
+ici** : c'est une dépendance du paquet vcpkg de Hunspell, pas de Hunspell tel que RespawnIRC
+l'utilise. La bibliothèque compilée à la main s'en passe et tout fonctionne. Et c'est le pire genre
+de dépendance à compiler sous Windows, un `configure` autotools passé par un bash MSYS2 : des
+milliers de compilations d'une ligne lancées les unes après les autres, d'où un processeur au
+ralenti et une attente qui ne ressemble pas à du travail.
+
+L'argument des mises à jour ne tient pas non plus : Hunspell sort une version tous les deux à quatre
+ans (1.7.0 en 2018, 1.7.2 fin 2022, 1.7.3 en mai 2026), et la surface d'attaque que corrigent ces
+versions, ce sont les dictionnaires malformés — or RespawnIRC embarque les siens.
+
+vcpkg garderait l'avantage avec son cache binaire, en intégration continue, ou le jour où le projet
+prendrait des dépendances plus lourdes.
+
 ## Logs et diagnostic
 
 Rien n'est journalisé par défaut. Avec `RESPAWNIRC_DEBUG=1` :
