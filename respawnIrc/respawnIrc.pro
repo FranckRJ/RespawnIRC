@@ -18,7 +18,6 @@ RC_FILE = respawnIrc.rc
 # grande pour y remédier.
 macx {
     ICON = rirc.icns
-    QMAKE_TARGET_BUNDLE_PREFIX = fr.pijon
     QMAKE_BUNDLE = RespawnIRC
     QMAKE_INFO_PLIST = Info.plist
 }
