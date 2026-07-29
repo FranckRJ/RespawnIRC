@@ -53,8 +53,14 @@ ne se compilant qu'avec MSVC. Le README détaille la mise en place ; les pièges
 
 - les `.pro` n'ont **pas** été modifiés pour Windows, et ne devraient pas avoir à l'être : tout passe
   par des variables de `qmake`, `HUNSPELL_LIB_NAME`, `ZLIB_LIB_NAME` et `DEFINES+=HUNSPELL_STATIC` ;
+- l'installation ciblée des Build Tools demande **deux** composants, `VC.Tools.x86.x64` et un
+  Windows SDK. Le premier seul pose `cl.exe` mais aucun `Windows Kits`, et plus rien ne compile :
+  depuis Visual Studio 2015 les en-têtes de la bibliothèque C appartiennent au SDK et pas au
+  compilateur, un `#include <stdio.h>` suffit à s'en rendre compte ;
 - Hunspell et zlib se compilent **à la main**, c'est la méthode documentée : deux petites
-  bibliothèques sans dépendance, une quinzaine de secondes. vcpkg reste décrit en second choix ;
+  bibliothèques sans dépendance, une quinzaine de secondes. vcpkg reste décrit en second choix. La
+  recette ne produit qu'une bibliothèque release, donc `nmake debug` échoue en `LNK2038` sur
+  `RuntimeLibrary` et `_ITERATOR_DEBUG_LEVEL` — il faudrait un `hunspelld.lib` compilé en `/MDd` ;
 - `HUNSPELL_STATIC` est nécessaire au Hunspell compilé à la main, dont le `hunvisapi.h` teste
   vraiment la macro, mais sans effet sur celui de vcpkg, dont le port engendre un en-tête au test
   figé à `#if 1`. Le passer systématiquement marche donc dans les deux cas, et c'est ce que fait
@@ -85,6 +91,16 @@ par ordre de méchanceté :
   et la quarantaine de `api-ms-win-crt-*.dll`. C'est l'explication de la pile de DLL historiquement
   distribuée avec le programme — elle était justifiée, ce n'est pas du gras.
 
+**Et aujourd'hui l'Universal CRT n'entre plus dans l'archive.** `dist-windows.ps1` le cherche dans
+`Windows Kits\10\Redist\ucrt\DLLs\x64`, alors que le SDK 10.0.26100 le pose sous
+`Redist\10.0.26100.0\ucrt\DLLs\x64` : les SDK récents versionnent ce dossier. Le script se contente
+d'un `Write-Warning`, noyé dans la sortie de `windeployqt`, puis assemble et compresse quand même —
+d'où une archive complète pour tout le reste mais sans un seul des 46 fichiers de l'UCRT, donc
+incompatible avec Windows 7 sans que rien ne le signale. Le chemin étant versionné et non lié à la
+façon d'installer les outils, `--includeRecommended` avec le même SDK devrait donner le même
+résultat, ce qui n'a pas été vérifié. **Le script reste à corriger** : chercher les deux
+dispositions, et lever une erreur au lieu d'un avertissement.
+
 Le gras est ailleurs, et `dist-windows.ps1` s'en occupe : traductions de QtWebEngine et de Qt
 réduites au français, outils de développement de Chromium retirés, une vingtaine de mégaoctets.
 `opengl32sw.dll` (20 Mo) est gardé **volontairement**, c'est le rendu logiciel de secours sur les
@@ -107,8 +123,10 @@ sert. Le client lui-même, avec Qt Core, Gui, Widgets, Network, OpenSSL et les r
 trentaine de mégaoctets.
 
 **Rien n'a été essayé sur un vrai Windows 7** : le contenu de l'archive suit les règles documentées
-par Microsoft et le programme démarre depuis l'archive sous Windows 10, mais la validation sous
-Windows 7 reste à faire. Ne pas présenter cette compatibilité comme vérifiée.
+par Microsoft et le programme démarre depuis l'archive sous Windows 10 — revérifié sur une machine
+virtuelle vierge, archive décompressée et lancée telle quelle — mais la validation sous Windows 7
+reste à faire, et l'UCRT manquant décrit plus haut la rend de toute façon caduque en l'état. Ne pas
+présenter cette compatibilité comme vérifiée.
 
 #### Pourquoi Hunspell et zlib ne passent pas par vcpkg
 
@@ -221,6 +239,25 @@ Le chemin exact est affiché au démarrage, inutile de le deviner.
 Pour n'activer qu'une catégorie sans écrire de fichier :
 `QT_LOGGING_RULES="respawnirc.parsing.debug=true" ./RespawnIRC`.
 Catégories : `respawnirc.network`, `.parsing`, `.topic`, `.forum` (voir `logTool.hpp`).
+
+### Corruption de tas sous Windows : deux pièges de diagnostic
+
+Un plantage en `0xC0000374` au démarrage a coûté cher à comprendre, pour deux raisons qui se
+reproduiront :
+
+- **le programme cesse de planter sous débogueur.** Après quelques plantages, Windows applique de
+  lui-même le shim *Fault Tolerant Heap* à l'exécutable et compense la corruption. `cdb` l'annonce
+  par une ligne `FTH: (...) Fault tolerant heap shim applied to current process`, facile à manquer
+  au milieu des `ModLoad`. L'entrée est dans `HKLM\SOFTWARE\Microsoft\FTH\State`, en écriture
+  protégée ; le plus simple est de tester depuis un autre chemin, la liste étant indexée par chemin
+  d'exécutable ;
+- **le plantage est signalé loin du bug**, à la libération d'un bloc et non à l'écriture fautive.
+  Activer le page heap complet (`gflags /p /enable RespawnIRC.exe /full`, à désactiver ensuite) fait
+  fauter à l'endroit exact. Comme `release` n'a pas de symboles, recompiler avec
+  `CONFIG+=force_debug_info` pour obtenir une pile lisible plutôt que des `image00007ff6+0x...`.
+
+Les outils viennent du Windows SDK, feature `OptionId.WindowsDesktopDebuggers` de `winsdksetup.exe`,
+qui ne fait pas partie de l'installation des Build Tools.
 
 ## Comment jeuxvideo.com sert ses pages depuis la refonte de 2026
 
