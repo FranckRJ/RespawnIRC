@@ -14,6 +14,8 @@ Il est fortement recommandé d'utiliser les sources de la branche master pour co
 Pour connaître les modifications à apporter au programme selon votre compilateur/version de Qt, référez-vous au wiki : https://github.com/FranckRJ/RespawnIRC/wiki/Compiler-selon-sa-configuration.  
 Pour compiler RespawnIRC vous devrez d'abord compiler Hunspell, pour ce faire référez-vous au wiki : https://github.com/FranckRJ/RespawnIRC/wiki/Compiler-Hunspell.
 
+Ces deux liens vers le wiki sont **antérieurs** aux sections par plateforme qui suivent, et n'ont pas été revérifiés depuis : en cas de désaccord, ce sont les sections ci-dessous qui font foi.
+
 ### Windows
 
 La cible est Windows 7 SP1 ou plus récent, en 64 bits. Tout se fait en ligne de commande, Qt Creator n'est pas nécessaire.
