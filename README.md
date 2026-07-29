@@ -28,6 +28,12 @@ Les Build Tools de Visual Studio suffisent, l'IDE complet est inutile. L'install
 
     vs_BuildTools.exe --quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended
 
+C'est la commande dont tout ce document découle, la seule à avoir été vérifiée de bout en bout. Sachez toutefois que `--includeRecommended` est large : il installe le Windows SDK au complet, mais aussi **WebView2 et Microsoft Edge**, dont la compilation de RespawnIRC n'a aucun besoin, pour environ 5 Go en tout. Une installation ciblée devrait suffire :
+
+    vs_BuildTools.exe --quiet --wait --norestart --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.26100
+
+Cette seconde commande **n'a pas été essayée sur une machine vierge**, contrairement à la première : elle est donnée comme piste à vérifier, pas comme recette éprouvée. Le numéro du SDK est par ailleurs à adapter, c'est celui qui était courant au moment où ces lignes ont été écrites.
+
 Qt 5.15.2 est la dernière version dont les binaires sont librement téléchargeables. [aqtinstall](https://github.com/miurahr/aqtinstall) les récupère sans demander de compte Qt, et publie un exécutable autonome qui évite d'installer Python :
 
     aqt.exe install-qt windows desktop 5.15.2 win64_msvc2019_64 -m qtwebengine --outputdir C:\Qt
