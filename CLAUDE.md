@@ -411,3 +411,6 @@ les accompagnent sont eux aussi factices.
   `camelCase` suffixés (`...Class`, `...Struct`, `expFor...`).
 - Le `.gitignore` couvre les objets de compilation ; ne pas committer `RespawnIRC`
   ni `userdata/`.
+- Fins de ligne en **LF partout**, imposées par `.gitattributes` (`* text=auto eol=lf`) et non
+  par le `core.autocrlf` de la machine, qui n'a donc plus d'effet. Ne pas réintroduire de règle
+  `eol=crlf` : rien ici n'en a besoin. Le seul piège d'encodage qui reste est le BOM des `.ps1`.

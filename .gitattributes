@@ -1,19 +1,36 @@
-# Les scripts shell doivent garder des fins de ligne LF même récupérés sous Windows, où git est
-# souvent configuré avec core.autocrlf=true : avec des CRLF, le shebang de dist-macos.sh emmène un
-# \r dans le nom de l'interpréteur et le script ne s'exécute plus du tout sous macOS et Linux.
+# Fins de ligne : LF partout, dans le dépôt comme dans la copie de travail, sur les trois
+# plateformes. Sans cette règle le comportement dépend du core.autocrlf de chaque machine — vrai par
+# défaut sous Windows, où l'installeur de git le pose au niveau système — et les fichiers écrits par
+# un outil qui produit du LF sont en conflit permanent avec ceux que git a extraits en CRLF, d'où un
+# bruit continuel dans git status et un avertissement à chaque commit.
+#
+# Rien ici n'a besoin de CRLF : MSVC, qmake, Qt et PowerShell lisent indifféremment les deux. À
+# l'inverse le LF est obligatoire pour les scripts shell, voir plus bas.
+* text=auto eol=lf
+
+# Redondant depuis la règle ci-dessus, mais gardé pour la raison : avec des CRLF, le shebang de
+# dist-macos.sh emmène un \r dans le nom de l'interpréteur et le script ne s'exécute plus du tout
+# sous macOS et Linux. Ne jamais repasser ces fichiers en CRLF.
 *.sh text eol=lf
 
-# À l'inverse, les scripts PowerShell ne servent que sous Windows, autant y rester cohérent.
-*.ps1 text eol=crlf
+# Les scripts PowerShell n'ont aucune exigence de fins de ligne, ils suivent donc la règle générale.
+# Ce qui compte pour eux est ailleurs : ils doivent être en UTF-8 **avec BOM**, sans quoi PowerShell
+# 5.1 les lit comme de l'ANSI et tous les accents des messages sont abîmés. Le BOM ne dépend pas des
+# fins de ligne et aucune règle d'ici ne le touche, mais il se perd facilement en réenregistrant le
+# fichier avec un outil distrait.
 
-# Les fixtures des tests sont des pages gzippées et les ressources des images et des sons : git les
-# reconnaît déjà comme binaires, mais une conversion de fins de ligne les corromprait en silence et
-# le diagnostic serait pénible. Autant l'écrire.
+# Les fixtures des tests sont des pages gzippées, et les ressources des images, des sons et une
+# police : git les reconnaît déjà comme binaires, mais une conversion de fins de ligne les
+# corromprait en silence et le diagnostic serait pénible. Autant l'écrire.
 *.gz binary
+*.zip binary
 *.png binary
+*.gif binary
+*.jpg binary
 *.wav binary
 *.ico binary
 *.icns binary
+*.ttf binary
 
 # Les dictionnaires de Hunspell sont du texte, et Hunspell accepte indifféremment CRLF et LF (les
-# deux ont été essayés) : ils sont donc laissés à la convention par défaut.
+# deux ont été essayés) : ils suivent donc la règle générale.
