@@ -112,8 +112,14 @@ QStringList pathTool::dirPathsForReading()
 
     /* Le cache d'abord, où atterrissent les stickers téléchargés, puis les données de
      * l'utilisateur, puis celles livrées avec le programme. Sous Windows les trois premiers
-     * désignent le même dossier, d'où le dédoublonnage. */
-    for(const QString& thisDirPath : QStringList() << cacheDirPath() << userDataDirPath() << dataDirPath())
+     * désignent le même dossier, d'où le dédoublonnage.
+     *
+     * La liste doit être nommée : parcourir directement QStringList() << ... fait boucler sur un
+     * temporaire déjà détruit, l'opérateur rendant une référence et non la valeur, ce qui prive la
+     * boucle de la prolongation de durée de vie. */
+    const QStringList listOfDirPathsToConsider = {cacheDirPath(), userDataDirPath(), dataDirPath()};
+
+    for(const QString& thisDirPath : listOfDirPathsToConsider)
     {
         if(listOfDirPaths.contains(thisDirPath) == false)
         {
