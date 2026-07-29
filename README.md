@@ -26,7 +26,7 @@ En revanche aucune modification des fichiers `.pro` n'est nécessaire : toute la
 
 #### Tout installer d'un coup
 
-Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les sections suivantes, sans intervention. Depuis un PowerShell **administrateur**, à la racine du dépôt :
+Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les sections suivantes. Un PowerShell **ordinaire** suffit, à la racine du dépôt :
 
     powershell -ExecutionPolicy Bypass -File .\bootstrap-windows.ps1
 
@@ -36,9 +36,13 @@ Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les 
 
 Il installe les Build Tools, Qt 5.15.2 avec QtWebEngine, compile Hunspell et zlib, récupère OpenSSL en vérifiant son empreinte SHA-256, et pose le tout dans la disposition attendue par les `.pro`. Compter une trentaine de minutes et environ 4,5 Go, presque entièrement pour les Build Tools (3,3 Go) et Qt (0,9 Go).
 
-Une réserve honnête sur ce script : ses étapes 2 à 5 ont été rejouées telles quelles, mais **l'installation des Build Tools elle-même n'a jamais été exécutée par le script**, faute d'une machine où les désinstaller pour réessayer. Les composants demandés et l'URL sont ceux d'une installation manuelle vérifiée de bout en bout, et le code de retour 3010 — redémarrage conseillé — est traité comme un succès, mais cette branche-là reste la seule à n'avoir jamais tourné.
+Les cinq étapes ont maintenant tourné, l'installation des Build Tools comprise : elle a été exécutée par le script sur une machine virtuelle vierge, sans MSVC ni Qt, suivie de la compilation du programme et des tests. Elle avait longtemps été la seule branche jamais empruntée, faute d'une machine où désinstaller les Build Tools pour réessayer. Ce qui reste supposé et non constaté, c'est le seul traitement du code de retour 3010 — redémarrage conseillé — comme un succès : l'installation observée a rendu 0.
 
-Il faut un PowerShell **administrateur** pour l'installation des Build Tools, et elle seule : les autres étapes n'écrivent que dans le dépôt et dans `C:\Qt`, et une reprise avec `-SkipBuildTools` tourne depuis un PowerShell ordinaire. Le script est réentrant, chaque étape étant sautée si son résultat est déjà là — après un échec, on le relance et il reprend où il en était.
+Seule l'installation des Build Tools a besoin des droits d'administrateur, et le script **élève cet installateur-là par une invite UAC** au lieu de réclamer d'être lancé élevé. L'invite n'apparaît que si les Build Tools manquent vraiment : sur une machine qui les a déjà, l'étape se saute sans rien demander. Un PowerShell administrateur reste accepté et ne fait alors apparaître aucune invite. Les quatre autres étapes n'écrivent que dans le dépôt et dans `C:\Qt`, et n'ont jamais besoin d'élévation — c'est aussi pourquoi seul l'installateur est élevé : ce que le script écrit ensuite appartient à l'utilisateur courant, et non à l'administrateur.
+
+Une réserve honnête sur cette élévation : l'installation vérifiée s'est faite en élevant le script entier depuis l'extérieur, avant que le `-Verb RunAs` existe. Ce qui a été essayé depuis, c'est le cas où les Build Tools sont déjà là — aucune invite, aucune élévation, et la main rendue immédiatement. Le passage de l'invite acceptée, et le refus, n'ont pas encore été constatés.
+
+Le script est réentrant, chaque étape étant sautée si son résultat est déjà là — après un échec, on le relance et il reprend où il en était.
 
 Les sections qui suivent décrivent les mêmes étapes à la main, et restent la référence : ce sont elles qu'il faut lire quand quelque chose ne se passe pas comme prévu, ou pour adapter une version.
 

@@ -97,8 +97,14 @@ déjà équipée, et qui a coûté des essais :
   décompressée ne permet pas. L'échec arriverait tard, après une compilation complète. Sur un zip, la
   marque de provenance de Windows bloque en plus le script même avec `Bypass` (`Unblock-File`), et
   seuls la compilation et `run-windows.ps1` marcheraient ensuite ;
-- **seule l'installation des Build Tools demande l'élévation**, et le script ne la vérifie qu'à cet
-  endroit. Une reprise, ou un `-SkipBuildTools`, tourne depuis un PowerShell ordinaire ;
+- **seule l'installation des Build Tools demande l'élévation**, et le script n'élève que cet
+  installateur-là, par un `-Verb RunAs` qui déclenche une invite UAC : un PowerShell ordinaire
+  suffit donc pour tout le script. N'élever que l'installateur n'est pas un détail — le reste
+  continue dans le processus d'origine, et ce qui s'écrit dans le dépôt et dans `C:\Qt` appartient à
+  l'utilisateur courant, alors qu'un script entièrement relancé élevé laisserait des fichiers
+  d'administrateur dans le dépôt. L'invite **n'apparaît que si les Build Tools manquent** : le test
+  de `vswhere.exe` rend la main avant, donc une machine déjà équipée ne demande rien. Une reprise,
+  ou un `-SkipBuildTools`, n'élève rien non plus ;
 - `aqt` écrit un `aqtinstall.log` dans le **dossier courant**. Le script l'appelle donc depuis
   `build\bootstrap` : sans ce `Push-Location`, le fichier atterrit à la racine du dépôt et apparaît
   dans `git status`. Ne pas « simplifier » ce détour ;
@@ -110,13 +116,30 @@ déjà équipée, et qui a coûté des essais :
 Compter une trentaine de minutes et environ 4,5 Go, dont 3,3 pour les seuls Build Tools et 0,9 pour
 Qt avec QtWebEngine. Le reste est négligeable.
 
-**Ce qui reste non vérifié**, et à ne pas présenter autrement : l'étape d'installation des Build
-Tools est la seule branche du script à n'avoir jamais été exécutée, faute d'une machine où les
-désinstaller pour réessayer. Les quatre autres ont été rejouées, dossiers effacés, y compris celle de
-Qt — qui, la première fois qu'on l'a vraiment lancée, a révélé les deux défauts corrigés ci-dessus.
-La leçon vaut au-delà de ce script : **sur une machine déjà équipée, toute étape d'installation se
-saute et se déclare bonne sans avoir rien fait.** Pour l'essayer, effacer sa cible ou la détourner
-vers un dossier jetable.
+**Les cinq étapes ont maintenant tourné**, l'installation des Build Tools comprise : exécutée par le
+script sur une machine virtuelle vierge — ni MSVC ni Qt, `vswhere.exe` absent — puis suivie de la
+compilation du programme et des tests pour vérifier que la chaîne obtenue sert vraiment à quelque
+chose. Elle avait longtemps été la seule branche jamais empruntée, faute d'une machine où
+désinstaller les Build Tools pour réessayer. Les quatre autres ont été rejouées, dossiers effacés, y
+compris celle de Qt — qui, la première fois qu'on l'a vraiment lancée, a révélé les deux défauts
+corrigés ci-dessus.
+
+Ce qui **reste supposé** dans cette étape, et à ne pas présenter autrement :
+
+- le traitement du code de retour 3010 comme un succès. L'installation observée a rendu 0, et rien
+  n'a encore exigé le redémarrage que 3010 conseille ;
+- **la branche `-Verb RunAs` elle-même n'a pas tourné.** L'installation vérifiée s'est faite en
+  élevant le script entier depuis l'extérieur, avant que cette branche existe ; ce qui a été essayé
+  ensuite, c'est le cas où les Build Tools sont déjà là, qui a bien rendu la main sans invite et sans
+  élévation. Restent non constatés le passage de l'invite acceptée et le `catch` du refus. Même
+  situation qu'avant, et pour la même raison : il faudrait une machine où désinstaller les Build
+  Tools. En attendant, ne pas décrire l'élévation comme vérifiée.
+
+La leçon de méthode vaut au-delà de ce script : **sur une machine déjà équipée, toute étape
+d'installation se saute et se déclare bonne sans avoir rien fait.** Pour l'essayer, effacer sa cible
+ou la détourner vers un dossier jetable. C'est aussi ce qui rend une machine vierge irremplaçable —
+et la même propriété sert maintenant à l'invite UAC, qui ne peut pas apparaître sur une machine dont
+le `vswhere.exe` est déjà là.
 
 #### Ce qui manque et ne se voit pas
 

@@ -10,9 +10,14 @@
 # et refuse le script avant de l'avoir lu. Si le dépôt vient d'une archive zip et non d'un git clone,
 # il faut en plus un Unblock-File, la marque de provenance de Windows bloquant le script même ainsi.
 #
-# Le script demande les droits d'administrateur, l'installation des Build Tools en ayant besoin. Il
-# est réentrant : chaque étape est sautée si son résultat est déjà là, on peut donc le relancer après
-# un échec sans tout retélécharger.
+# Un PowerShell ordinaire suffit : seule l'installation des Build Tools a besoin des droits
+# d'administrateur, et le script élève cet installateur-là par une invite UAC plutôt que de réclamer
+# d'être lancé élevé. L'invite n'apparaît que si les Build Tools manquent vraiment — sur une machine
+# déjà équipée, l'étape se saute sans rien demander. Un PowerShell administrateur reste accepté, et
+# ne fait alors apparaître aucune invite.
+#
+# Le script est réentrant : chaque étape est sautée si son résultat est déjà là, on peut donc le
+# relancer après un échec sans tout retélécharger.
 #
 # Compter une trentaine de minutes et environ 4,5 Go sur le disque, presque entièrement pour les
 # Build Tools (3,3 Go) et Qt (0,9 Go mesuré, QtWebEngine compris), le reste étant négligeable :
@@ -150,27 +155,50 @@ elseif(Test-Path "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vsw
 else
 {
     # Seule cette étape demande l'élévation : les quatre autres écrivent dans le dépôt et dans
-    # $QtRootDir. On vérifie donc ici, et pas en tête de script, pour qu'une reprise après coup ou un
-    # -SkipBuildTools puisse tourner depuis un PowerShell ordinaire.
+    # $QtRootDir. On ne la réclame donc qu'ici, et pas en tête de script, pour qu'une reprise après
+    # coup ou un -SkipBuildTools puisse tourner depuis un PowerShell ordinaire. C'est aussi ce qui
+    # fait qu'aucune invite UAC n'apparaît sur une machine déjà équipée : le `elseif` ci-dessus a
+    # rendu la main avant d'arriver ici.
     $identity = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
-
-    if($identity.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) -eq $false)
-    {
-        throw "L'installation des Build Tools demande un PowerShell administrateur. Relancer élevé, ou passer -SkipBuildTools si MSVC est déjà là."
-    }
+    $isAdmin = $identity.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
     $buildToolsBin = Join-Path $downloadDir 'vs_BuildTools.exe'
     Get-FileIfNeeded -Url 'https://aka.ms/vs/17/release/vs_BuildTools.exe' -Path $buildToolsBin
 
     Write-Host "   installation (3,3 Go, une quinzaine de minutes, sans interface)..."
-    $process = Start-Process -FilePath $buildToolsBin -Wait -PassThru -ArgumentList @(
+
+    $installArgs = @(
         '--quiet', '--wait', '--norestart',
         '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64',
         '--add', $WindowsSdkComponent
     )
 
-    # 3010 vaut succès, il signale seulement qu'un redémarrage est conseillé.
-    if($process.ExitCode -ne 0 -and $process.ExitCode -ne 3010)
+    # Plutôt que d'exiger un PowerShell déjà élevé, on n'élève que l'installateur, par le -Verb RunAs
+    # qui déclenche l'invite UAC. Le reste du script continue dans le processus d'origine : ce qu'il
+    # écrit dans le dépôt et dans $QtRootDir appartient donc à l'utilisateur courant, et non à
+    # l'administrateur comme ce serait le cas en relançant tout le script élevé.
+    if($isAdmin -eq $true)
+    {
+        $process = Start-Process -FilePath $buildToolsBin -Wait -PassThru -ArgumentList $installArgs
+    }
+    else
+    {
+        Write-Host "   élévation nécessaire, accepter l'invite UAC qui va s'afficher..."
+
+        try
+        {
+            $process = Start-Process -FilePath $buildToolsBin -Verb RunAs -Wait -PassThru -ArgumentList $installArgs
+        }
+        catch
+        {
+            throw "L'invite UAC a été refusée, et l'installation des Build Tools ne peut pas s'en passer. L'accepter, relancer depuis un PowerShell administrateur, ou passer -SkipBuildTools si MSVC est déjà là."
+        }
+    }
+
+    # 3010 vaut succès, il signale seulement qu'un redémarrage est conseillé. Un code absent n'est pas
+    # un échec : -Verb RunAs ne permet pas toujours de le relever sur un processus élevé. On laisse
+    # alors juger l'Import-MsvcEnvironment qui suit, qui échoue de toute façon si rien n'est installé.
+    if($null -ne $process.ExitCode -and $process.ExitCode -ne 0 -and $process.ExitCode -ne 3010)
     {
         throw "L'installation des Build Tools a échoué (code $($process.ExitCode))."
     }
