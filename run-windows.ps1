@@ -5,13 +5,9 @@
 # -Logs active RESPAWNIRC_DEBUG. Le paramètre ne peut pas s'appeler -Debug : c'est déjà le nom d'un
 # paramètre commun ajouté par CmdletBinding, et PowerShell refuse le script au chargement.
 #
-# L'exécutable produit dans build\ ne peut pas être lancé sur place : il lui manque les DLL de Qt,
-# celles d'OpenSSL, et surtout les dossiers resources\ et themes\ que pathTool::dataDirPath() va
-# chercher à côté de lui. Ce script le recopie donc à la racine du dépôt, où ces dossiers sont déjà,
-# et met Qt et OpenSSL dans le PATH le temps de l'exécution.
-#
-# Ne pas remplacer cette copie par une jonction vers resources\ dans build\ : dist-windows.ps1
-# supprime build\respawnIrc récursivement, et PowerShell 5.1 suit les jonctions en supprimant.
+# Le DESTDIR de respawnIrc.pro produit l'exécutable directement à la racine du dépôt, là où sont
+# déjà resources\ et themes\ que pathTool::dataDirPath() va chercher à côté de lui : il n'y a donc
+# rien à recopier, il suffit de mettre Qt et OpenSSL dans le PATH le temps de l'exécution.
 
 [CmdletBinding()]
 param(
@@ -22,7 +18,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $repoDir = $PSScriptRoot
-$builtExe = Join-Path $repoDir 'build\respawnIrc\release\RespawnIRC.exe'
+$builtExe = Join-Path $repoDir 'RespawnIRC.exe'
 
 if(-not (Test-Path $builtExe))
 {
@@ -49,8 +45,6 @@ if(-not (Test-Path (Join-Path $opensslDir 'libssl-1_1-x64.dll')))
     Write-Warning "OpenSSL absent d'openssl\bin : le programme démarrera mais ne pourra joindre aucune page."
 }
 
-Copy-Item $builtExe $repoDir -Force
-
 $env:PATH = "$qtDir\bin;$opensslDir;$env:PATH"
 
 if($Logs)
@@ -61,4 +55,4 @@ if($Logs)
     Write-Host "RESPAWNIRC_DEBUG actif, logs dans $(Join-Path $repoDir 'logs\respawnirc.log')"
 }
 
-& (Join-Path $repoDir 'RespawnIRC.exe')
+& $builtExe

@@ -5,7 +5,7 @@ zlib/
 openssl/
 respawnIrc/respawnIrc.pro.user
 
-# Exécutable déplacé à la racine du projet
+# Exécutable, produit à la racine du projet par le DESTDIR de respawnIrc.pro
 /RespawnIRC
 # Sous macOS les majuscules ne comptent pas : sans cette exception la règle ci-dessus ignore aussi
 # le dossier de sources `respawnIrc`, et tout fichier qu'on y ajoute devient invisible pour git.
@@ -15,28 +15,24 @@ respawnIrc/respawnIrc.pro.user
 # Logs et pages sauvegardées quand RESPAWNIRC_DEBUG est activé
 /logs/
 
-# Linux
+# Objets de compilation, sous Linux et macOS où qmake est lancé dans les sources. Les exécutables,
+# eux, ne sont plus produits ici : le DESTDIR des .pro les envoie à la racine et dans build/.
 respawnIrc/*.o
 respawnIrc/moc_*.cpp
 respawnIrc/moc_predefs.h
 respawnIrc/Makefile
-respawnIrc/RespawnIRC
 respawnIrc/.qmake.stash
 tests/*.o
 tests/moc_*.cpp
 tests/moc_predefs.h
 tests/Makefile
-tests/respawnIrcTests
 tests/.qmake.stash
 
 # macOS
 .DS_Store
 /RespawnIRC.app/
-respawnIrc/RespawnIRC.app/
 
-# Windows
-# La compilation se fait hors des sources, dans build/ (voir README) : il n'y a donc rien à ignorer
-# dans respawnIrc/ ni dans tests/, contrairement à Linux et macOS.
+# Windows : compilation hors des sources, et les tests de toutes les plateformes
 /build/
 # La règle /RespawnIRC plus haut n'attrape pas l'exécutable, qui porte ici une extension.
 /RespawnIRC.exe

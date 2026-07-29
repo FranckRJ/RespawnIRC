@@ -9,6 +9,12 @@ QT += \
 TARGET = RespawnIRC
 TEMPLATE = app
 
+# Le programme cherche resources/ et themes/ à côté de son exécutable : on le produit donc
+# directement à la racine du dépôt, où ces dossiers sont déjà, plutôt que de demander un
+# déplacement à la main après chaque compilation. $$PWD est le dossier de ce .pro, la cible est
+# donc la même que la compilation ait lieu dans les sources ou dans build/.
+DESTDIR = $$PWD/..
+
 DEFINES += QT_DEPRECATED_WARNINGS
 
 RC_FILE = respawnIrc.rc

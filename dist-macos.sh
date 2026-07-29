@@ -44,31 +44,34 @@ then
     exit 1
 fi
 
+# Le DESTDIR de respawnIrc.pro produit le bundle à la racine du dépôt, pas dans les sources.
+bundlePath="$repoDir/RespawnIRC.app"
+
 echo "== Compilation de RespawnIRC $version avec $qtDir"
 cd "$repoDir/respawnIrc"
 # La règle de qmake qui fabrique Info.plist n'a aucune dépendance : make la saute dès qu'un bundle
 # est déjà là, et une version distribuable hériterait des informations du bundle précédent.
-rm -rf RespawnIRC.app
+rm -rf "$bundlePath"
 "$qmakeBin" CONFIG+=sdk_no_version_check
 make -j"$(sysctl -n hw.ncpu)"
 
 echo "== Embarquement de Qt dans le bundle"
 # macdeployqt copie les frameworks Qt, les greffons et le processus QtWebEngine dans le bundle, et
 # réécrit les chemins qui pointaient vers le Qt de la machine de compilation.
-"$macdeployqtBin" RespawnIRC.app
+"$macdeployqtBin" "$bundlePath"
 
 echo "== Signature ad hoc"
 # Sans signature, macOS refuse de lancer un bundle dont macdeployqt a réécrit les binaires. Cette
 # signature ad hoc ne vaut pas notarisation : au premier lancement il faudra passer par le menu
 # contextuel « Ouvrir », ou retirer la mise en quarantaine (voir le README).
-codesign --force --deep --sign - RespawnIRC.app
+codesign --force --deep --sign - "$bundlePath"
 
 echo "== Assemblage de l'image disque"
 # L'image contient un unique dossier RespawnIRC, à glisser tel quel dans les Applications :
 # l'application et ses données doivent rester ensemble.
 rm -rf "$distDir"
 mkdir -p "$distDir/image/RespawnIRC"
-mv RespawnIRC.app "$distDir/image/RespawnIRC/"
+mv "$bundlePath" "$distDir/image/RespawnIRC/"
 cp -R "$repoDir/resources" "$repoDir/themes" "$distDir/image/RespawnIRC/"
 
 dmgPath="$distDir/RespawnIRC-$version-macos.dmg"

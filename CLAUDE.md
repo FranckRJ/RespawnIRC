@@ -8,15 +8,19 @@ son historique git avant de deviner quoi que ce soit.
 ## Compiler et tester
 
 ```bash
-cd respawnIrc && qmake && make -j4    # l'exécutable est déplacé à la racine du projet
-cd tests && qmake && make -j4 && ./respawnIrcTests
+cd respawnIrc && qmake && make -j4    # l'exécutable est produit à la racine du projet
+cd tests && qmake && make -j4 && ../build/respawnIrcTests
 ```
+
+Les `.pro` ont un `DESTDIR` : quelle que soit la plateforme et l'endroit d'où `qmake` est lancé,
+le programme atterrit à la racine du dépôt et les tests dans `build/`. Il n'y a plus rien à
+déplacer à la main après compilation, seuls les objets intermédiaires suivent la façon de compiler.
 
 Dépendances Debian : `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine5-dev
 zlib1g-dev`. zlib sert à décompresser le payload des pages (voir plus bas).
 
-L'exécutable doit tourner depuis la racine du dépôt (il y cherche `themes/`,
-`resources/` et `config.ini`).
+L'exécutable doit tourner depuis la racine du dépôt (il y cherche `themes/`, `resources/` et
+`config.ini`), ce que le `DESTDIR` lui donne gratuitement.
 
 ### macOS
 
@@ -51,7 +55,8 @@ ne se compilant qu'avec MSVC. Le README détaille la mise en place ; les pièges
   vraiment la macro, mais sans effet sur celui de vcpkg, dont le port engendre un en-tête au test
   figé à `#if 1`. Le passer systématiquement marche donc dans les deux cas, et c'est ce que fait
   `dist-windows.ps1` ;
-- la compilation se fait **hors des sources**, dans `build/`, contrairement à Linux et macOS ;
+- la compilation se fait **hors des sources**, dans `build/`, contrairement à Linux et macOS ; seuls
+  les objets intermédiaires y restent, le `DESTDIR` envoyant l'exécutable à la racine comme ailleurs ;
 - `windeployqt` crée un dossier `resources/` pour QtWebEngine, exactement le nom du dossier de
   données du programme, et au même endroit puisque `pathTool::dataDirPath()` renvoie le dossier de
   l'exécutable. Les deux contenus doivent **fusionner**, pas se remplacer ;

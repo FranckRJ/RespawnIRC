@@ -89,13 +89,11 @@ La compilation se fait hors des sources, dans `build\`, contrairement à Linux e
 
 Avec un Hunspell venant de vcpkg, remplacez `HUNSPELL_LIB_NAME=hunspell` par `HUNSPELL_LIB_NAME=hunspell-1.7`.
 
-L'exécutable est dans `build\respawnIrc\release\RespawnIRC.exe`, mais **il ne peut pas être lancé depuis là**, trois choses lui manquant à cet endroit : les DLL de Qt, celles d'OpenSSL, et surtout les dossiers `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de l'exécutable. Inutile pour autant de passer par l'archive de `dist-windows.ps1` : il suffit de recopier l'exécutable à la racine du dépôt, qui contient déjà ces dossiers, et d'avoir Qt et OpenSSL dans le `PATH`. C'est ce que fait `run-windows.ps1` :
+Seuls les fichiers intermédiaires restent dans `build\` : l'exécutable, lui, est produit à la racine du dépôt, là où sont déjà `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de lui. Il lui manque encore les DLL de Qt et celles d'OpenSSL, sans quoi il ne démarre pas ; inutile pour autant de passer par l'archive de `dist-windows.ps1`, il suffit de les avoir dans le `PATH`. C'est ce que fait `run-windows.ps1` :
 
     .\run-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
 
 Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `logs\respawnirc.log` (voir plus bas).
-
-Ne remplacez pas cette recopie par une jonction vers `resources\` depuis `build\` : `dist-windows.ps1` supprime `build\respawnIrc` récursivement, et PowerShell 5.1 suit les jonctions en supprimant — le vrai `resources\` du dépôt y passerait, stickers téléchargés compris.
 
 Les tests se compilent de la même façon :
 
@@ -103,7 +101,7 @@ Les tests se compilent de la même façon :
     cd build\tests
     qmake ..\..\tests\tests.pro ZLIB_LIB_NAME=zs
     nmake release
-    release\respawnIrcTests.exe
+    ..\respawnIrcTests.exe
 
 #### Fabriquer une version distribuable
 
@@ -157,9 +155,8 @@ Rendez-vous ensuite dans le dossier `respawnIrc` et compilez :
 
 `CONFIG+=sdk_no_version_check` fait taire l'avertissement de Qt 5.15.2, qui n'a été testé qu'avec le SDK 10.15 alors que Xcode en fournit un bien plus récent.
 
-Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne peut donc pas être posé à la racine du dépôt à côté du dossier de sources `respawnIrc`. Déplacez le bundle à la racine et lancez-le, ou double-cliquez dessus depuis le Finder :
+Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne pourrait donc pas cohabiter à la racine du dépôt avec le dossier de sources `respawnIrc`. Le bundle est posé à la racine, lancez-le de là ou double-cliquez dessus depuis le Finder :
 
-    mv RespawnIRC.app ..
     cd ..
     ./RespawnIRC.app/Contents/MacOS/RespawnIRC
 
@@ -183,13 +180,11 @@ Trois limites de cette distribution :
 
 ---
 
-Sous Linux, un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` 
-et `themes`) et exécutez-le :
+Sous Linux, l'exécutable `RespawnIRC` est produit à la racine du projet, là où se trouvent les dossiers `resources` et `themes` qu'il va chercher à côté de lui. Il n'y a rien à déplacer, lancez-le de là :
 
-    mv RespawnIRC ..
     cd ..
     ./RespawnIRC
 
 Tout ceci en une ligne :
 
-    cd respawnIrc; qmake; make; mv RespawnIRC ..; cd ..; ./RespawnIRC
+    cd respawnIrc; qmake; make; cd ..; ./RespawnIRC
