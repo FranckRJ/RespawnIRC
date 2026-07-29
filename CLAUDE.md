@@ -88,18 +88,23 @@ par ordre de méchanceté :
 - sans `vcruntime140.dll` et compagnie, le programme ne démarre pas là où le redistribuable n'a
   jamais été installé ;
 - sous **Windows 7**, l'Universal CRT n'est pas dans le système : il faut embarquer `ucrtbase.dll`
-  et les 45 DLL de redirection qui l'accompagnent, 15 `api-ms-win-crt-*` et 30 `api-ms-win-core-*`
-  — les secondes comptent autant que les premières malgré leur nom. C'est l'explication de la pile
-  de DLL historiquement distribuée avec le programme — elle était justifiée, ce n'est pas du gras.
+  et la quarantaine de DLL de redirection qui l'accompagnent, `api-ms-win-crt-*` **comme**
+  `api-ms-win-core-*` — les secondes sont majoritaires et comptent autant, malgré leur nom. Leur
+  nombre varie avec la version du SDK (41 lors d'une compilation antérieure, 46 avec le SDK
+  10.0.26100) et Microsoft recommande de toutes les livrer : le script copie le dossier entier, ne
+  pas le remplacer par une liste de noms. C'est l'explication de la pile de DLL historiquement
+  distribuée avec le programme — elle était justifiée, ce n'est pas du gras.
 
-**Ce redistribuable se trouve à deux endroits selon l'âge du SDK**, et c'est un piège qui a déjà
-coûté une archive : `Redist\ucrt\DLLs\x64` pour les SDK anciens, `Redist\<version>\ucrt\DLLs\x64`
-pour les récents (10.0.26100.0 par exemple). `dist-windows.ps1` ne connaissait que le premier et
-n'émettait qu'un `Write-Warning`, invisible au milieu de la sortie de `windeployqt` : il assemblait
-et compressait quand même une archive sans un seul fichier de l'UCRT, complète pour tout le reste
-et incompatible avec Windows 7 sans que rien ne le dise. Il cherche maintenant les deux, le plus
-récent d'abord, et `throw` s'il ne trouve rien. **Ne pas rétrograder ce throw en avertissement** :
-c'est la seule pièce Windows 7 dont l'absence ne se voit sur aucune machine où l'on peut tester.
+**Ce redistribuable n'est pas toujours au même endroit**, et c'est un piège qui a déjà coûté une
+archive. Le SDK 10.0.26100 le range sous `Redist\<version>\ucrt\DLLs\x64`, seule disposition
+constatée directement ; la documentation de Microsoft et une compilation antérieure de ce dépôt
+décrivent `Redist\ucrt\DLLs\x64`, sans version, qui serait celle des SDK plus anciens — non
+revérifié. `dist-windows.ps1` ne connaissait que la seconde et n'émettait qu'un `Write-Warning`,
+invisible au milieu de la sortie de `windeployqt` : il assemblait et compressait quand même une
+archive sans un seul fichier de l'UCRT, complète pour tout le reste et incompatible avec Windows 7
+sans que rien ne le dise. Il cherche maintenant les deux, la plus récente d'abord, et `throw` s'il
+ne trouve rien. **Ne pas rétrograder ce throw en avertissement** : c'est la seule pièce Windows 7
+dont l'absence ne se voit sur aucune machine où l'on peut essayer l'archive.
 
 Le gras est ailleurs, et `dist-windows.ps1` s'en occupe : traductions de QtWebEngine et de Qt
 réduites au français, outils de développement de Chromium retirés, une vingtaine de mégaoctets.

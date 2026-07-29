@@ -203,13 +203,17 @@ foreach($thisDll in @('vcruntime140.dll', 'vcruntime140_1.dll', 'msvcp140.dll'))
 }
 
 # 3. Universal CRT : c'est un composant du système à partir de Windows 10, mais Windows 7 ne l'a
-#    qu'après une mise à jour facultative. On l'embarque donc : ucrtbase.dll et les 45 petites DLL
-#    de redirection qui l'accompagnent, api-ms-win-crt-* comme api-ms-win-core-*. Sous Windows 10 la
-#    copie du système est utilisée de toute façon, ces fichiers n'y servent à rien mais ne gênent pas.
-#    Deux dispositions coexistent selon l'âge du SDK : les versions récentes rangent ce
-#    redistribuable sous Redist\<version>\ucrt\DLLs\x64 (10.0.26100.0 par exemple), les plus
-#    anciennes directement sous Redist\ucrt\DLLs\x64. Il faut donc chercher les deux, sans quoi une
-#    machine à jour ne trouve rien alors que les fichiers sont bien là.
+#    qu'après une mise à jour facultative. On l'embarque donc : ucrtbase.dll et la quarantaine de
+#    DLL de redirection qui l'accompagnent, api-ms-win-crt-* comme api-ms-win-core-*. Leur nombre
+#    varie avec la version du SDK (41 relevées lors d'une compilation antérieure de ce dépôt, 46
+#    avec le SDK 10.0.26100) et Microsoft recommande de toutes les livrer : d'où la copie du dossier
+#    entier, et surtout pas une liste de noms figée. Sous Windows 10 la copie du système est
+#    utilisée de toute façon, ces fichiers n'y servent à rien mais ne gênent pas.
+#    Ce redistribuable n'est pas toujours au même endroit. Le SDK 10.0.26100 le range sous
+#    Redist\<version>\ucrt\DLLs\x64, seule disposition constatée directement. La documentation de
+#    Microsoft et une compilation antérieure de ce dépôt décrivent Redist\ucrt\DLLs\x64, sans
+#    version, qui serait la disposition des SDK plus anciens — non revérifié. On cherche donc les
+#    deux, sans quoi une machine à jour ne trouve rien alors que les fichiers sont bien là.
 $kitsRedistDir = "${env:ProgramFiles(x86)}\Windows Kits\10\Redist"
 
 #    Le plus récent d'abord : le tri porte sur le numéro de version converti, un tri de chaînes

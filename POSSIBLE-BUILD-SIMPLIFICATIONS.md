@@ -55,15 +55,17 @@ La compilation est déjà hors des sources, ce qui apporte l'essentiel de ce que
 
 `dist-macos.sh:51` a besoin d'un `rm -rf RespawnIRC.app` uniquement parce que la règle qmake qui fabrique `Info.plist` n'a aucune dépendance et que `make` la saute dès qu'un bundle est déjà là. Compiler dans `build/` comme sous Windows rend ce contournement inutile : un dossier neuf ne peut pas traîner un `Info.plist` périmé.
 
-## 8. L'installation des outils Visual Studio, et ce qu'elle entraîne pour l'archive
+## 8. L'installation des outils Visual Studio, et ce qu'elle entraîne pour l'archive — **fait**
 
-`README.md:27-35` donne la commande vérifiée, avec `--includeRecommended`, en signalant qu'elle tire le Windows SDK au complet mais aussi WebView2 et Microsoft Edge, pour environ 5 Go ; puis une variante ciblée à deux composants, explicitement donnée comme non essayée sur une machine vierge.
+Cette section est résolue, elle est conservée parce que le soupçon était juste mais la cause fausse.
 
-C'est le seul levier qui allège les **prérequis** plutôt que les scripts, et 5 Go pèsent plus lourd que tout le reste réuni. Mais les deux sujets sont liés, et le script échoue en silence :
+L'installation ciblée à deux composants a été essayée sur une machine virtuelle vierge et fonctionne : 3,3 Go contre environ 5 Go, sans WebView2 ni Edge, jusqu'à l'archive. Elle est devenue la commande principale du README. Au passage, les deux composants sont bien nécessaires : `VC.Tools.x86.x64` seul ne pose aucun `Windows Kits` et rien ne compile.
 
-`dist-windows.ps1:208-217` lit le redistribuable de l'Universal CRT dans `Windows Kits\10\Redist\ucrt\DLLs\x64`, et n'émet qu'un `Write-Warning` s'il est absent : l'archive est tout de même assemblée et compressée. Sur la machine de référence, installée avec `--includeRecommended`, ce dossier existe bien avec ses 41 DLL. Savoir si le seul composant `Windows11SDK.26100` installe lui aussi l'arborescence `Redist\ucrt` est précisément ce que le README annonce comme non vérifié. Si ce n'est pas le cas, qui suit la voie allégée obtient une archive silencieusement incompatible avec Windows 7 et une ligne d'avertissement qui défile au milieu de la sortie de `windeployqt`.
+Le script échouait effectivement en silence, mais pas pour la raison supposée ici. La question n'était pas de savoir si l'installation ciblée pose l'arborescence `Redist\ucrt` : c'est la **version du SDK** qui décide, les récents versionnant ce dossier en `Redist\<version>\ucrt\DLLs\x64`. Avec le SDK 10.0.26100, le chemin sans version n'existe pas du tout, et `--includeRecommended` avec le même SDK donnerait sans doute le même résultat. Le raisonnement « voie allégée = risque » était donc mal orienté, même si sa conclusion était la bonne.
 
-Piste, indépendante de la question de l'installation ciblée : transformer cet avertissement en `throw`, ou afficher en fin de script un récapitulatif de celles des pièces Windows 7 qui sont effectivement entrées dans l'archive. Cela ne coûte rien et transforme un risque de chemin non testé en échec visible.
+`dist-windows.ps1` cherche maintenant les deux dispositions et lève une erreur s'il ne trouve rien, comme il le fait déjà pour OpenSSL et les bibliothèques de MSVC. Le récapitulatif de fin de script n'a pas été fait et reste une piste, mais l'échec franc en couvre l'essentiel.
+
+Leçon transposable au reste de ce fichier : le nombre de DLL de l'UCRT dépend lui aussi de la version du SDK, 41 relevées ici lors d'une compilation antérieure et 46 avec le SDK 10.0.26100. **Ne pas figer ces chiffres**, ni dans le script ni dans la documentation.
 
 ## 9. Deux listes de « trois choses » qui ne se recouvrent pas
 
