@@ -153,7 +153,12 @@ Copy-Item (Join-Path $buildDir 'release\RespawnIRC.exe') $imageDir
 
 Write-Host "== Copie de Qt à côté de l'exécutable"
 # windeployqt copie les DLL de Qt, les greffons et QtWebEngineProcess.exe à côté de l'exécutable.
-Invoke-BuildTool -Name 'windeployqt' -Command { & $windeployqtBin --release (Join-Path $imageDir 'RespawnIRC.exe') }
+#
+# --no-compiler-runtime lui évite d'embarquer vc_redist.x64.exe, 24 Mo que rien ne lance jamais et
+# qui font doublon avec les trois DLL du runtime copiées plus bas. Il ne le copie que lorsque
+# VCINSTALLDIR est définie, donc uniquement quand le script est lancé après vcvars64.bat, ce qui est
+# toujours le cas ici : sans cet argument le gras dépend de la façon dont on appelle le script.
+Invoke-BuildTool -Name 'windeployqt' -Command { & $windeployqtBin --release --no-compiler-runtime (Join-Path $imageDir 'RespawnIRC.exe') }
 
 Write-Host "== Allègement"
 # windeployqt copie les traductions de toutes les langues : le programme est en français, on ne

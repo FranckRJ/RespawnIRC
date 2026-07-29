@@ -81,6 +81,22 @@ réduites au français, outils de développement de Chromium retirés, une vingt
 `opengl32sw.dll` (20 Mo) est gardé **volontairement**, c'est le rendu logiciel de secours sur les
 machines sans pilote OpenGL, cas courant de la cible Windows 7.
 
+Le plus gros morceau était plus sournois : `windeployqt` embarque `vc_redist.x64.exe`, 24 Mo que
+rien ne lance jamais et qui font doublon avec les DLL du runtime copiées à côté de l'exécutable. Il
+ne le fait que si `VCINSTALLDIR` est définie, donc seulement quand le script tourne après
+`vcvars64.bat` — d'où une archive dont le poids dépendait de la façon de l'appeler, et un fichier
+qui n'apparaît pas si on essaie `windeployqt` à la main dans un shell neuf. D'où le
+`--no-compiler-runtime`, à ne pas retirer.
+
+Répartition de ce qui reste, pour situer les ordres de grandeur : sur 184 Mo décompressés, **environ
+148 tiennent à QtWebEngine**, soit 80 %. Chromium lui-même en fait 112 (`Qt5WebEngineCore.dll` seul
+en pèse 97, le reste étant `icudtl.dat` et ses fichiers `.pak`), ANGLE et le rendu logiciel 28
+(`opengl32sw.dll`, `libGLESv2.dll`, `libEGL.dll`, `d3dcompiler_47.dll`), et QtQuick, QML et
+WebChannel une dizaine. Attention au raisonnement : RespawnIRC est une application Widgets, qui
+dessine en raster et n'utilise ni QML ni OpenGL — tout cela n'est là que parce que WebEngine s'en
+sert. Le client lui-même, avec Qt Core, Gui, Widgets, Network, OpenSSL et les runtimes, pèse une
+trentaine de mégaoctets.
+
 **Rien n'a été essayé sur un vrai Windows 7** : le contenu de l'archive suit les règles documentées
 par Microsoft et le programme démarre depuis l'archive sous Windows 10, mais la validation sous
 Windows 7 reste à faire. Ne pas présenter cette compatibilité comme vérifiée.
