@@ -19,8 +19,8 @@ déplacer à la main après compilation, seuls les objets intermédiaires suiven
 Dépendances Debian : `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine5-dev
 zlib1g-dev`. zlib sert à décompresser le payload des pages (voir plus bas).
 
-L'exécutable doit tourner depuis la racine du dépôt (il y cherche `themes/`, `resources/` et
-`userdata/`), ce que le `DESTDIR` lui donne gratuitement.
+L'exécutable doit tourner depuis la racine du dépôt (il y cherche `themes/` et `resources/`), ce que
+le `DESTDIR` lui donne gratuitement.
 
 ### macOS
 
@@ -38,9 +38,13 @@ Trois pièges, tous documentés dans le README :
   n'apparaissent pas dans `git status`.
 
 `./dist-macos.sh ~/Qt/5.15.2/clang_64` fabrique le DMG distribuable : `macdeployqt`, signature ad
-hoc, puis un dossier `RespawnIRC` contenant l'application **et** `resources/` et `themes/`. Ces
-dossiers ne peuvent pas être enfermés en lecture seule dans le bundle : `imageDownloadTool` écrit
-les stickers dans `resources/stickers/`.
+hoc, puis un dossier `RespawnIRC` contenant l'application **et** `resources/` et `themes/`. Cette
+disposition datait de l'époque où `imageDownloadTool` écrivait les stickers dans
+`resources/stickers/`, ce qui interdisait d'enfermer ces dossiers en lecture seule dans le bundle.
+Ce n'est plus le cas depuis que les stickers vont dans le cache : **le bundle pourrait maintenant
+être autonome**, `resources/` et `themes/` placés dans `Contents/Resources/` et le DMG réduit à un
+simple `RespawnIRC.app`. Ça n'a pas été fait, `pathTool::dataDirPath()` cherchant toujours à côté du
+bundle.
 
 ### Windows
 
@@ -129,58 +133,75 @@ prendrait des dépendances plus lourdes.
 
 ## Où le programme range ses données
 
-Deux dossiers à côté de l'exécutable — à côté du bundle sous macOS — et une règle :
+`resources/` et `themes/` sont **livrés avec le programme et jamais écrits**, toujours à côté de
+l'exécutable — à côté du bundle sous macOS. Ce que le programme écrit se répartit en **trois
+rôles**, qui atterrissent là où chaque système les attend :
 
-- `resources/` et `themes/` sont **livrés avec le programme et jamais écrits** ;
-- `userdata/` contient **tout ce que le programme écrit**, en reproduisant la même disposition :
-  `userdata/config.ini`, `userdata/logs/`, `userdata/user_fr.dic`,
-  `userdata/resources/shortcut.txt`, `userdata/resources/stickers/`.
+| Rôle | Contenu | Windows | Linux | macOS |
+| --- | --- | --- | --- | --- |
+| configuration | `config.ini` | `userdata/` | `~/.config/RespawnIRC/` | `~/Library/Application Support/RespawnIRC/` |
+| données | `user_fr.dic`, `resources/shortcut.txt` | `userdata/` | `~/.local/share/RespawnIRC/` | idem ci-dessus |
+| cache | `resources/stickers/`, `logs/` | `userdata/` | `~/.cache/RespawnIRC/` | `~/Library/Caches/RespawnIRC/` |
 
-D'où les fonctions de `pathTool` :
+Sous Windows les trois rôles retombent sur un unique `userdata/` à côté de l'exécutable : le
+programme y est distribué en archive à décompresser où l'on veut, il doit donc rester portable. Cet
+`#ifdef Q_OS_WIN` est **le seul endroit** du programme qui distingue les plateformes pour les
+chemins ; tout le reste passe par les fonctions ci-dessous.
 
-| Fonction | Usage |
+Les logs sont dans le cache et non dans les données : ils ne sont écrits qu'avec
+`RESPAWNIRC_DEBUG`, et les perdre ne coûte rien. La spécification XDG les rangerait plutôt dans
+`XDG_STATE_HOME`, mais Qt 5.15 n'a pas de `StateLocation` et il faudrait lire la variable
+d'environnement à la main, pour un gain nul ici.
+
+| Fonction de `pathTool` | Usage |
 | --- | --- |
 | `dataDirPath()` | les données livrées, en lecture seule |
-| `userDataDirPath()` | ce que le programme écrit |
-| `dirPathsForReading()` | les deux, dans l'ordre où il faut les consulter |
-| `pathForReading(rel)` | `userdata/` si le fichier y est, sinon les données livrées |
-| `pathForWriting(rel)` | toujours `userdata/`, dossiers parents créés au passage |
+| `configDirPath()` / `configFilePath()` | la configuration |
+| `userDataDirPath()` | ce que l'utilisateur a écrit |
+| `cacheDirPath()` | les stickers téléchargés |
+| `logDirPath()` | `cacheDirPath() + "/logs"` |
+| `dirPathsForReading()` | tous les dossiers de lecture, dans l'ordre, sans doublon |
+| `pathForReading(rel)` | les données de l'utilisateur si le fichier y est, sinon celles livrées |
+| `pathForWriting(rel)` | toujours les données de l'utilisateur, dossiers parents créés au passage |
 
 **Utiliser `pathForReading` pour tout ce qui peut avoir été écrit** (`shortcut.txt`, dictionnaires)
 et `pathForWriting` pour toute écriture. `dataDirPath()` ne reste direct que pour ce qui n'est
 jamais écrit : sons, images de tags, thèmes.
 
+Les dossiers d'écriture **reproduisent la disposition des données livrées** :
+`<données>/resources/shortcut.txt`, `<cache>/resources/stickers/`. Ce niveau `resources/` au milieu
+d'un dossier de cache a l'air arbitraire, mais il est obligatoire : voir plus bas.
+
 Pourquoi cette séparation : les scripts de distribution embarquaient les données du mainteneur,
 `resources/shortcut.txt` et les stickers téléchargés en se servant du programme. Aucune règle de nom
 ne pouvait les exclure, un sticker téléchargé étant dans le même dossier et de la même forme
 (`<id>.png`) qu'un sticker livré. Les scripts extraient donc maintenant `resources/` et `themes/`
-avec `git archive HEAD` — uniquement ce qui est commité — et ne copient jamais `userdata/`.
+avec `git archive HEAD` — uniquement ce qui est commité — et ne copient jamais ce qui est écrit.
 
-`QStandardPaths::AppDataLocation` aurait fermé le trou de façon plus radicale, mais aurait sorti la
-configuration du dossier du programme : plus de version portable, version de développement et
-version installée partageant le même `config.ini`, et migration obligatoire. D'où `userdata/`.
+`pathTool::migrateOldUserDataIfNeeded()`, appelé au tout début de `main`, déplace vers ces dossiers
+ce que les versions antérieures laissaient à côté de l'exécutable. `QCoreApplication` doit avoir un
+`applicationName` **avant** tout appel à `pathTool` : c'est de lui que `QStandardPaths` déduit tous
+les chemins, et il est posé dans `main` juste après la construction de `QApplication`.
 
-`pathTool::migrateOldUserDataIfNeeded()`, appelé au tout début de `main`, déplace dans `userdata/`
-ce que les versions antérieures laissaient à côté de l'exécutable.
+### Stickers : lecture dans plusieurs dossiers
 
-### Stickers : lecture dans deux dossiers
-
-237 stickers sont livrés dans `resources/stickers/`, les nouveaux vont dans
-`userdata/resources/stickers/`, et ceux qu'une version antérieure avait téléchargés sont restés
-parmi les premiers — ils ne sont pas déplaçables, rien ne les en distingue. Trois endroits
-consultent donc les deux dossiers :
+237 stickers sont livrés dans `resources/stickers/`, les nouveaux vont dans le cache, et ceux qu'une
+version antérieure avait téléchargés sont restés parmi les premiers — ils ne sont pas déplaçables,
+rien ne les en distingue. Trois endroits consultent donc tous les dossiers de lecture :
 
 - `imageDownloadTool::basePathsForReading()`, pour ne pas retélécharger un sticker déjà là
-  (`basePathForWriting()` désigne, lui, le seul dossier où écrire) ;
-- `selectStickerWindow`, qui liste les deux dossiers, dédoublonne, puis retrie — la concaténation
-  de deux listes triées ne l'est plus ;
+  (`basePathForWriting()` désigne, lui, le seul dossier où écrire, le cache) ;
+- `selectStickerWindow`, qui les liste tous, dédoublonne, puis retrie — la concaténation de listes
+  triées ne l'est plus ;
 - les `setSearchPaths()` de `showTopic` et `selectStickerWindow`, qui reçoivent `dirPathsForReading()`.
 
 **Ne pas toucher à la forme des chemins dans le HTML des messages.** `parsingTool.cpp` écrit
 `<img src="resources/stickers/<id>.png">` et `respawnIrc.cpp` relit exactement ce préfixe par regex
-pour refabriquer `[[sticker:p/<id>]]` au moment de citer. C'est la raison pour laquelle `userdata/`
-reproduit la disposition de `resources/` au lieu d'être à plat : les mêmes chemins relatifs
-résolvent dans les deux dossiers, sans rien changer au HTML ni aux regex qui le relisent.
+pour refabriquer `[[sticker:p/<id>]]` au moment de citer. C'est la raison pour laquelle les dossiers
+d'écriture reproduisent la disposition de `resources/` au lieu d'être à plat, y compris le cache :
+les mêmes chemins relatifs résolvent partout, sans rien changer au HTML ni aux regex qui le
+relisent. C'est aussi pourquoi `dirPathsForReading()` rend des **racines** et non des sous-dossiers
+de stickers.
 
 ## Logs et diagnostic
 
@@ -191,8 +212,11 @@ RESPAWNIRC_DEBUG=1 ./RespawnIRC
 ```
 
 - toutes les catégories `respawnirc.*` passent en debug,
-- les logs sont écrits dans `userdata/logs/respawnirc.log`,
-- les pages dont l'analyse échoue sont sauvegardées dans `userdata/logs/page-*.html` (20 max).
+- les logs sont écrits dans `<cache>/logs/respawnirc.log`, soit `userdata/logs/` sous Windows et
+  `~/.cache/RespawnIRC/logs/` sous Linux (voir `pathTool::logDirPath()`),
+- les pages dont l'analyse échoue sont sauvegardées à côté, en `page-*.html` (20 max).
+
+Le chemin exact est affiché au démarrage, inutile de le deviner.
 
 Pour n'activer qu'une catégorie sans écrire de fichier :
 `QT_LOGGING_RULES="respawnirc.parsing.debug=true" ./RespawnIRC`.

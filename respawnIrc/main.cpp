@@ -22,11 +22,15 @@ int main(int argc, char* argv[])
 
     QApplication app(argc, argv);
 
-    /* Avant toute lecture : les versions antérieures écrivaient à côté de l'exécutable, tout est
-     * maintenant rassemblé dans userdata/. */
+    /* Tous les dossiers rendus par QStandardPaths en dépendent, il faut donc le définir avant le
+     * premier appel à pathTool. L'organisation est laissée vide exprès : elle ajouterait un niveau
+     * de dossier au-dessus de RespawnIRC sans rien apporter. */
+    QCoreApplication::setApplicationName("RespawnIRC");
+
+    /* Avant toute lecture : les versions antérieures écrivaient à côté de l'exécutable. */
     pathTool::migrateOldUserDataIfNeeded();
 
-    QSettings setting(pathTool::pathForWriting("config.ini"), QSettings::IniFormat);
+    QSettings setting(pathTool::configFilePath(), QSettings::IniFormat);
 
     logTool::initialize();
 

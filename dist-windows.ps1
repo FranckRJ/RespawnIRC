@@ -1,8 +1,8 @@
 ﻿# Fabrique une archive distribuable de RespawnIRC pour Windows : l'exécutable rendu autonome par
 # windeployqt (Qt et QtWebEngine copiés à côté de lui), accompagné des dossiers resources/ et
-# themes/ que le programme lit et écrit à côté de lui, comme sous Linux et macOS. Le programme
-# téléchargeant les stickers dans resources/, ces dossiers ne peuvent pas être mis en lecture
-# seule : l'application et ses données restent côte à côte dans un même dossier.
+# themes/ que le programme lit à côté de lui, comme sous Linux et macOS. Ces deux dossiers ne sont
+# jamais écrits : sous Windows tout ce que le programme écrit va dans userdata/, à côté de
+# l'exécutable, ce qui garde l'ensemble portable.
 #
 # Usage : .\dist-windows.ps1 [-QtDir chemin\vers\Qt\5.15.2\msvc2019_64]
 # À défaut, le Qt utilisé est celui dont le qmake est dans le PATH.

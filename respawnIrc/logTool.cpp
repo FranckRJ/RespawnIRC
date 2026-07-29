@@ -25,7 +25,7 @@ namespace
 
     QString directoryForLogs()
     {
-        return pathTool::userDataDirPath() + "/logs";
+        return pathTool::logDirPath();
     }
 
     QString levelToString(QtMsgType type)

@@ -147,9 +147,9 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
         {
             case 0:
             {
-                /* Les stickers livrés avec le programme et ceux téléchargés depuis vivent dans
-                 * deux dossiers de même forme : on liste les deux, sans doublon, et on retrie
-                 * puisque la concaténation de deux listes triées ne l'est plus. */
+                /* Les stickers livrés avec le programme et ceux téléchargés depuis vivent dans des
+                 * dossiers différents mais de même forme : on les liste tous, sans doublon, et on
+                 * retrie puisque la concaténation de listes triées ne l'est plus. */
                 QStringList listOfStickers;
 
                 for(const QString& thisBasePath : pathTool::dirPathsForReading())

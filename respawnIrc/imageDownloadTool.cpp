@@ -200,17 +200,17 @@ QStringList imageDownloadToolClass::basePathsForReading(const imageDownloadRuleS
         return QStringList(tmpDir->path());
     }
 
-    /* Les images téléchargées vont dans userdata/, mais celles livrées avec le programme restent
-     * dans resources/ : il faut regarder dans les deux pour ne pas retélécharger un sticker déjà
-     * là. C'est aussi ce qui permet de retrouver les stickers qu'une version antérieure avait
-     * déposés dans resources/stickers/, et qui ne sont pas déplaçables faute de pouvoir les
-     * distinguer de ceux d'origine. */
+    /* Les images téléchargées vont dans le cache, mais celles livrées avec le programme restent
+     * dans resources/ : il faut regarder dans tous ces dossiers pour ne pas retélécharger un
+     * sticker déjà là. C'est aussi ce qui permet de retrouver les stickers qu'une version
+     * antérieure avait déposés dans resources/stickers/, et qui ne sont pas déplaçables faute de
+     * pouvoir les distinguer de ceux d'origine. */
     return pathTool::dirPathsForReading();
 }
 
 QString imageDownloadToolClass::basePathForWriting(const imageDownloadRuleStruct& thisRule)
 {
-    return (thisRule.isInTmpDir == true ? tmpDir->path() : pathTool::userDataDirPath());
+    return (thisRule.isInTmpDir == true ? tmpDir->path() : pathTool::cacheDirPath());
 }
 
 void imageDownloadToolClass::startDownloadMissingImages()

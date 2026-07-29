@@ -109,7 +109,7 @@ Les tests se compilent de la même façon :
 
 Le script compile, appelle `windeployqt`, allège le résultat, ajoute les bibliothèques d'exécution nécessaires et fabrique `dist\RespawnIRC-<version>-windows.zip`. Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur.
 
-L'archive contient un unique dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut décompresser quelque part. L'application et ses données ne peuvent pas être séparées, parce que le programme écrit dedans — les stickers, notamment, sont téléchargés dans `resources\stickers\`. À noter que `windeployqt` crée lui aussi un dossier `resources` pour QtWebEngine : les deux contenus cohabitent dans le même dossier, aucun nom de fichier ne se chevauchant.
+L'archive contient un unique dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut décompresser quelque part. Ces deux dossiers ne sont jamais modifiés par le programme, qui écrit tout dans un `userdata` créé à côté de l'exécutable — l'ensemble reste donc portable et se déplace d'un bloc. À noter que `windeployqt` crée lui aussi un dossier `resources` pour QtWebEngine : les deux contenus cohabitent dans le même dossier, aucun nom de fichier ne se chevauchant.
 
 Trois dossiers sont allégés parce que `windeployqt` copie tout par défaut : les traductions de QtWebEngine sont réduites au français et à l'anglais qui lui sert de repli, celles de Qt au seul français, et les outils de développement de Chromium sont retirés. Cela représente une vingtaine de mégaoctets. S'y ajoute `--no-compiler-runtime`, qui évite les 24 Mo de `vc_redist.x64.exe` : `windeployqt` l'embarque dès que `VCINSTALLDIR` est définie, alors que rien ne le lance jamais et que les DLL du runtime sont déjà copiées une à une. En revanche `opengl32sw.dll` est conservé malgré ses 20 Mo : c'est le rendu OpenGL logiciel, seul recours sur une machine sans pilote OpenGL utilisable, ce qui est courant sur les vieilles configurations et les machines virtuelles visées par une cible Windows 7. L'essentiel du poids restant est incompressible, `Qt5WebEngineCore.dll` pesant à lui seul près de 100 Mo.
 
@@ -179,7 +179,7 @@ Le bundle produit ci-dessus embarque les chemins du Qt de la machine qui l'a com
 
 Le script compile, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 100 Mo pour un bundle de 200 Mo). Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH`.
 
-L'image disque contient un dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut glisser dans les Applications, ou n'importe où ailleurs. L'application et ses données ne peuvent pas être séparées, ni les données enfermées dans le bundle, parce que le programme écrit dedans — les stickers, notamment, sont téléchargés dans `resources/stickers/`.
+L'image disque contient un dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut glisser dans les Applications, ou n'importe où ailleurs. Ces dossiers doivent rester à côté du bundle, que `pathTool::dataDirPath()` va y chercher. Ils ne sont plus jamais écrits depuis que le programme range ce qu'il produit dans `~/Library/Application Support` et `~/Library/Caches` : le bundle pourrait donc les embarquer et l'image se réduire à un simple `RespawnIRC.app`, ce qui reste à faire.
 
 Trois limites de cette distribution :
 
@@ -191,18 +191,30 @@ Trois limites de cette distribution :
 
 ## Où le programme range ses données
 
-Tout ce que RespawnIRC écrit va dans un dossier `userdata/`, à côté de l'exécutable — à côté du bundle sous macOS :
+Les dossiers `resources` et `themes` sont livrés avec le programme et ne sont jamais modifiés. Ce que RespawnIRC écrit se range en trois catégories, qui vont là où chaque système les attend.
+
+**Sous Windows**, tout tient dans un dossier `userdata` à côté de l'exécutable, pour que le programme reste portable : on décompresse l'archive où l'on veut, et déplacer le dossier emporte la configuration avec lui.
 
 | Chemin | Contenu |
 | --- | --- |
-| `userdata/config.ini` | les réglages : comptes, thème, listes de pseudos |
-| `userdata/logs/` | journal et pages sauvegardées quand `RESPAWNIRC_DEBUG` est actif |
-| `userdata/user_fr.dic` | mots ajoutés au correcteur orthographique |
-| `userdata/resources/shortcut.txt` | raccourcis d'écriture |
-| `userdata/resources/stickers/` | stickers téléchargés en lisant les topics |
+| `userdata\config.ini` | les réglages : comptes, thème, listes de pseudos |
+| `userdata\user_fr.dic` | mots ajoutés au correcteur orthographique |
+| `userdata\resources\shortcut.txt` | raccourcis d'écriture |
+| `userdata\resources\stickers\` | stickers téléchargés en lisant les topics |
+| `userdata\logs\` | journal et pages sauvegardées quand `RESPAWNIRC_DEBUG` est actif |
 
-`userdata/` reproduit la disposition des données livrées avec le programme, et la lecture le consulte en premier : un fichier qui s'y trouve masque celui d'origine. C'est ce qui permet de poser son propre dictionnaire dans `userdata/resources/` sans toucher à celui livré.
+**Sous Linux et macOS**, ce sont les dossiers standards :
 
-Deux raisons à cette séparation. Une mise à jour se fait en remplaçant `resources/` et `themes/`, sans risquer d'effacer des réglages ; et les scripts de distribution n'embarquent plus les données du mainteneur, ce qu'ils faisaient jusqu'ici puisque les stickers téléchargés atterrissaient dans `resources/stickers/`, indiscernables de ceux livrés.
+| Contenu | Linux | macOS |
+| --- | --- | --- |
+| `config.ini` | `~/.config/RespawnIRC/` | `~/Library/Application Support/RespawnIRC/` |
+| dictionnaire, raccourcis | `~/.local/share/RespawnIRC/` | `~/Library/Application Support/RespawnIRC/` |
+| stickers téléchargés, logs | `~/.cache/RespawnIRC/` | `~/Library/Caches/RespawnIRC/` |
 
-Le programme reste entièrement portable : rien n'est écrit hors de son propre dossier, qu'on peut déplacer, copier sur une clé ou supprimer sans laisser de trace ailleurs. Les versions antérieures posaient ces fichiers directement à côté de l'exécutable ; ils sont déplacés au premier démarrage.
+Les stickers téléchargés et les logs sont dans le cache parce qu'ils sont refabriquables : les premiers se retéléchargent tout seuls, les seconds ne servent qu'au diagnostic. Les effacer ne fait rien perdre.
+
+Ces dossiers reproduisent la disposition des données livrées, et la lecture les consulte en premier : un fichier qui s'y trouve masque celui d'origine. C'est ce qui permet de poser son propre dictionnaire à côté sans toucher à celui livré.
+
+Deux raisons à cette séparation. Une mise à jour se fait en remplaçant `resources` et `themes`, sans risquer d'effacer des réglages ; et les scripts de distribution n'embarquent plus les données du mainteneur, ce qu'ils faisaient jusqu'ici puisque les stickers téléchargés atterrissaient dans `resources/stickers/`, indiscernables de ceux livrés.
+
+Les versions antérieures posaient tous ces fichiers directement à côté de l'exécutable ; ils sont déplacés au premier démarrage, il n'y a rien à faire à la main.

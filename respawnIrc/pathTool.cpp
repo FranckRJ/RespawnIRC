@@ -1,6 +1,9 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QPair>
+#include <QStandardPaths>
+#include <QVector>
 
 #include "pathTool.hpp"
 
@@ -10,6 +13,35 @@ namespace
     QString directoryOfThisPath(const QString& thisPath)
     {
         return thisPath.left(thisPath.lastIndexOf('/'));
+    }
+
+#ifndef Q_OS_WIN
+    /* Dossier standard du système, avec repli à côté de l'exécutable : QStandardPaths peut rendre
+     * une chaîne vide si le nom de l'application n'a pas été défini, et rien ne serait écrit. */
+    QString standardDirPath(QStandardPaths::StandardLocation typeOfLocation)
+    {
+        QString pathOfLocation = QStandardPaths::writableLocation(typeOfLocation);
+
+        if(pathOfLocation.isEmpty() == true)
+        {
+            return pathTool::dataDirPath() + "/userdata";
+        }
+
+        return pathOfLocation;
+    }
+#endif
+
+    /* Déplace un fichier ou un dossier laissé par une version antérieure, sans jamais écraser ce
+     * qui serait déjà en place. */
+    void moveIfStillNeeded(const QString& oldPath, const QString& newPath)
+    {
+        if(oldPath == newPath || QFileInfo::exists(oldPath) == false || QFileInfo::exists(newPath) == true)
+        {
+            return;
+        }
+
+        QDir().mkpath(directoryOfThisPath(newPath));
+        QDir().rename(oldPath, newPath);
     }
 }
 
@@ -30,16 +62,64 @@ QString pathTool::dataDirPath()
     return QCoreApplication::applicationDirPath();
 }
 
+QString pathTool::configDirPath()
+{
+#if defined(Q_OS_WIN)
+    return dataDirPath() + "/userdata";
+#elif defined(Q_OS_MACOS)
+    /* macOS ne sépare pas la configuration des données, et AppConfigLocation y désigne
+     * ~/Library/Preferences, réservé aux .plist gérés par cfprefsd : un config.ini n'y a pas sa
+     * place, il va donc dans Application Support avec le reste. */
+    return standardDirPath(QStandardPaths::AppDataLocation);
+#else
+    return standardDirPath(QStandardPaths::AppConfigLocation);
+#endif
+}
+
+QString pathTool::configFilePath()
+{
+    QDir().mkpath(configDirPath());
+
+    return configDirPath() + "/config.ini";
+}
+
 QString pathTool::userDataDirPath()
 {
+#ifdef Q_OS_WIN
     return dataDirPath() + "/userdata";
+#else
+    return standardDirPath(QStandardPaths::AppDataLocation);
+#endif
+}
+
+QString pathTool::cacheDirPath()
+{
+#ifdef Q_OS_WIN
+    return dataDirPath() + "/userdata";
+#else
+    return standardDirPath(QStandardPaths::CacheLocation);
+#endif
+}
+
+QString pathTool::logDirPath()
+{
+    return cacheDirPath() + "/logs";
 }
 
 QStringList pathTool::dirPathsForReading()
 {
     QStringList listOfDirPaths;
 
-    listOfDirPaths << userDataDirPath() << dataDirPath();
+    /* Le cache d'abord, où atterrissent les stickers téléchargés, puis les données de
+     * l'utilisateur, puis celles livrées avec le programme. Sous Windows les trois premiers
+     * désignent le même dossier, d'où le dédoublonnage. */
+    for(const QString& thisDirPath : QStringList() << cacheDirPath() << userDataDirPath() << dataDirPath())
+    {
+        if(listOfDirPaths.contains(thisDirPath) == false)
+        {
+            listOfDirPaths.append(thisDirPath);
+        }
+    }
 
     return listOfDirPaths;
 }
@@ -67,28 +147,42 @@ QString pathTool::pathForWriting(const QString& relativePath)
 
 void pathTool::migrateOldUserDataIfNeeded()
 {
-    /* Avant l'introduction de userdata/, tout ce que le programme écrivait était posé à côté de
-     * l'exécutable, mélangé aux données livrées avec lui. On déplace ces fichiers au premier
-     * démarrage, sans quoi l'utilisateur croirait avoir perdu ses comptes et ses réglages.
+    /* Les versions antérieures posaient tout ce que le programme écrit à côté de l'exécutable,
+     * mélangé aux données livrées avec lui. On déplace ces fichiers au premier démarrage, sans quoi
+     * l'utilisateur croirait avoir perdu ses comptes et ses réglages.
      *
-     * Les stickers téléchargés, eux, ne sont pas déplaçables : rien dans resources/stickers/ ne
-     * les distingue de ceux livrés avec le programme. Ils y restent, et la lecture à deux dossiers
+     * Les stickers téléchargés, eux, ne sont pas déplaçables : rien dans resources/stickers/ ne les
+     * distingue de ceux livrés avec le programme. Ils y restent, et la lecture à plusieurs dossiers
      * continue de les trouver.
      */
-    QStringList listOfRelativePathsToMove;
+    QStringList listOfOldDirPaths;
 
-    listOfRelativePathsToMove << "config.ini" << "logs" << "resources/shortcut.txt";
-    listOfRelativePathsToMove << QDir(dataDirPath()).entryList(QStringList("user_*.dic"), QDir::Files);
+    listOfOldDirPaths << dataDirPath();
 
-    for(const QString& thisRelativePath : listOfRelativePathsToMove)
+#ifndef Q_OS_WIN
+    /* Sous Windows userdata/ est la destination et non une origine. Ailleurs il a pu être créé par
+     * une compilation de développement antérieure au passage aux dossiers du système. */
+    listOfOldDirPaths << dataDirPath() + "/userdata";
+#endif
+
+    for(const QString& thisOldDirPath : listOfOldDirPaths)
     {
-        QString oldPath = dataDirPath() + "/" + thisRelativePath;
-        QString newPath = userDataDirPath() + "/" + thisRelativePath;
+        QVector<QPair<QString, QString>> listOfPathsToMove;
 
-        if(QFileInfo::exists(oldPath) == true && QFileInfo::exists(newPath) == false)
+        listOfPathsToMove.append(qMakePair(thisOldDirPath + "/config.ini", configFilePath()));
+        listOfPathsToMove.append(qMakePair(thisOldDirPath + "/logs", logDirPath()));
+        listOfPathsToMove.append(qMakePair(thisOldDirPath + "/resources/shortcut.txt",
+                                           userDataDirPath() + "/resources/shortcut.txt"));
+
+        for(const QString& thisDicFile : QDir(thisOldDirPath).entryList(QStringList("user_*.dic"), QDir::Files))
         {
-            QDir().mkpath(directoryOfThisPath(newPath));
-            QDir().rename(oldPath, newPath);
+            listOfPathsToMove.append(qMakePair(thisOldDirPath + "/" + thisDicFile,
+                                               userDataDirPath() + "/" + thisDicFile));
+        }
+
+        for(const QPair<QString, QString>& thisPathToMove : listOfPathsToMove)
+        {
+            moveIfStillNeeded(thisPathToMove.first, thisPathToMove.second);
         }
     }
 }

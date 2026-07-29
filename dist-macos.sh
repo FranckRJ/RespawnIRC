@@ -1,9 +1,10 @@
 #!/bin/bash
 # Fabrique une image disque distribuable de RespawnIRC pour macOS : le bundle RespawnIRC.app rendu
 # autonome par macdeployqt (Qt et QtWebEngine embarqués), accompagné des dossiers resources/ et
-# themes/ que le programme lit et écrit à côté de lui, comme sous Windows et Linux. Le programme
-# téléchargeant les stickers dans resources/, ces dossiers ne peuvent pas être enfermés en lecture
-# seule dans le bundle : l'application et ses données restent côte à côte dans un même dossier.
+# themes/ que le programme lit à côté du bundle. Ces deux dossiers ne sont jamais écrits, ce que le
+# programme écrit allant dans ~/Library/Application Support et ~/Library/Caches : le bundle pourrait
+# donc les embarquer dans Contents/Resources et l'image se réduire à un simple RespawnIRC.app, mais
+# pathTool::dataDirPath() les cherche toujours à côté de lui.
 #
 # Usage : ./dist-macos.sh [chemin/vers/Qt/5.15.2/clang_64]
 # À défaut d'argument, le Qt utilisé est celui dont le qmake est dans le PATH.
