@@ -88,18 +88,18 @@ par ordre de méchanceté :
 - sans `vcruntime140.dll` et compagnie, le programme ne démarre pas là où le redistribuable n'a
   jamais été installé ;
 - sous **Windows 7**, l'Universal CRT n'est pas dans le système : il faut embarquer `ucrtbase.dll`
-  et la quarantaine de `api-ms-win-crt-*.dll`. C'est l'explication de la pile de DLL historiquement
-  distribuée avec le programme — elle était justifiée, ce n'est pas du gras.
+  et les 45 DLL de redirection qui l'accompagnent, 15 `api-ms-win-crt-*` et 30 `api-ms-win-core-*`
+  — les secondes comptent autant que les premières malgré leur nom. C'est l'explication de la pile
+  de DLL historiquement distribuée avec le programme — elle était justifiée, ce n'est pas du gras.
 
-**Et aujourd'hui l'Universal CRT n'entre plus dans l'archive.** `dist-windows.ps1` le cherche dans
-`Windows Kits\10\Redist\ucrt\DLLs\x64`, alors que le SDK 10.0.26100 le pose sous
-`Redist\10.0.26100.0\ucrt\DLLs\x64` : les SDK récents versionnent ce dossier. Le script se contente
-d'un `Write-Warning`, noyé dans la sortie de `windeployqt`, puis assemble et compresse quand même —
-d'où une archive complète pour tout le reste mais sans un seul des 46 fichiers de l'UCRT, donc
-incompatible avec Windows 7 sans que rien ne le signale. Le chemin étant versionné et non lié à la
-façon d'installer les outils, `--includeRecommended` avec le même SDK devrait donner le même
-résultat, ce qui n'a pas été vérifié. **Le script reste à corriger** : chercher les deux
-dispositions, et lever une erreur au lieu d'un avertissement.
+**Ce redistribuable se trouve à deux endroits selon l'âge du SDK**, et c'est un piège qui a déjà
+coûté une archive : `Redist\ucrt\DLLs\x64` pour les SDK anciens, `Redist\<version>\ucrt\DLLs\x64`
+pour les récents (10.0.26100.0 par exemple). `dist-windows.ps1` ne connaissait que le premier et
+n'émettait qu'un `Write-Warning`, invisible au milieu de la sortie de `windeployqt` : il assemblait
+et compressait quand même une archive sans un seul fichier de l'UCRT, complète pour tout le reste
+et incompatible avec Windows 7 sans que rien ne le dise. Il cherche maintenant les deux, le plus
+récent d'abord, et `throw` s'il ne trouve rien. **Ne pas rétrograder ce throw en avertissement** :
+c'est la seule pièce Windows 7 dont l'absence ne se voit sur aucune machine où l'on peut tester.
 
 Le gras est ailleurs, et `dist-windows.ps1` s'en occupe : traductions de QtWebEngine et de Qt
 réduites au français, outils de développement de Chromium retirés, une vingtaine de mégaoctets.
@@ -125,8 +125,7 @@ trentaine de mégaoctets.
 **Rien n'a été essayé sur un vrai Windows 7** : le contenu de l'archive suit les règles documentées
 par Microsoft et le programme démarre depuis l'archive sous Windows 10 — revérifié sur une machine
 virtuelle vierge, archive décompressée et lancée telle quelle — mais la validation sous Windows 7
-reste à faire, et l'UCRT manquant décrit plus haut la rend de toute façon caduque en l'état. Ne pas
-présenter cette compatibilité comme vérifiée.
+reste à faire. Ne pas présenter cette compatibilité comme vérifiée.
 
 #### Pourquoi Hunspell et zlib ne passent pas par vcpkg
 

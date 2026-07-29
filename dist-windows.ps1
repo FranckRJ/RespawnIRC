@@ -203,19 +203,34 @@ foreach($thisDll in @('vcruntime140.dll', 'vcruntime140_1.dll', 'msvcp140.dll'))
 }
 
 # 3. Universal CRT : c'est un composant du système à partir de Windows 10, mais Windows 7 ne l'a
-#    qu'après une mise à jour facultative. On l'embarque donc : ucrtbase.dll et la quarantaine de
-#    petites DLL de redirection api-ms-win-crt-*. Sous Windows 10 la copie du système est utilisée
-#    de toute façon, ces fichiers n'y servent à rien mais ne gênent pas.
-$ucrtDir = "${env:ProgramFiles(x86)}\Windows Kits\10\Redist\ucrt\DLLs\x64"
+#    qu'après une mise à jour facultative. On l'embarque donc : ucrtbase.dll et les 45 petites DLL
+#    de redirection qui l'accompagnent, api-ms-win-crt-* comme api-ms-win-core-*. Sous Windows 10 la
+#    copie du système est utilisée de toute façon, ces fichiers n'y servent à rien mais ne gênent pas.
+#    Deux dispositions coexistent selon l'âge du SDK : les versions récentes rangent ce
+#    redistribuable sous Redist\<version>\ucrt\DLLs\x64 (10.0.26100.0 par exemple), les plus
+#    anciennes directement sous Redist\ucrt\DLLs\x64. Il faut donc chercher les deux, sans quoi une
+#    machine à jour ne trouve rien alors que les fichiers sont bien là.
+$kitsRedistDir = "${env:ProgramFiles(x86)}\Windows Kits\10\Redist"
 
-if(Test-Path $ucrtDir)
+#    Le plus récent d'abord : le tri porte sur le numéro de version converti, un tri de chaînes
+#    plaçant 10.0.9.0 après 10.0.26100.0. La disposition sans version ferme la marche, elle ne sert
+#    que si aucun dossier versionné n'existe.
+$ucrtDir = @(
+    Get-ChildItem (Join-Path $kitsRedistDir '*\ucrt\DLLs\x64') -Directory -ErrorAction SilentlyContinue |
+        Sort-Object -Property @{Expression = {[version]$_.Parent.Parent.Parent.Name}} -Descending
+    Get-Item (Join-Path $kitsRedistDir 'ucrt\DLLs\x64') -ErrorAction SilentlyContinue
+) | Select-Object -First 1
+
+#    Un throw et non un avertissement : sans ces DLL l'archive se fabrique et s'ouvre normalement,
+#    mais le programme ne démarre pas sous Windows 7, seule cible qu'on ne peut pas essayer d'ici.
+#    Un avertissement se perdrait au milieu de la sortie de windeployqt et l'archive partirait quand
+#    même. C'est aussi ce que font les deux pièces Windows 7 traitées au-dessus.
+if(-not $ucrtDir)
 {
-    Copy-Item (Join-Path $ucrtDir '*.dll') $imageDir -Force
+    throw "Universal CRT introuvable sous $kitsRedistDir : l'archive ne démarrerait pas sur un Windows 7 sans la mise à jour KB2999226."
 }
-else
-{
-    Write-Warning "Universal CRT introuvable : l'archive ne démarrera pas sur un Windows 7 sans la mise à jour KB2999226."
-}
+
+Copy-Item (Join-Path $ucrtDir.FullName '*.dll') $imageDir -Force
 
 Write-Host "== Données du programme"
 # resources/ et themes/ sont extraits de git et non copiés depuis le dossier de travail : celui-ci
