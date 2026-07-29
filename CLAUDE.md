@@ -135,6 +135,14 @@ Ce qui **reste supposé** dans cette étape, et à ne pas présenter autrement :
   situation qu'avant, et pour la même raison : il faudrait une machine où désinstaller les Build
   Tools. En attendant, ne pas décrire l'élévation comme vérifiée.
 
+Une conséquence de ce changement, moins visible, vaut d'être notée avant de croire les étapes 3 à 5
+mieux couvertes qu'elles ne le sont : **elles n'ont jamais travaillé sans élévation.** Elles ont
+tourné pour de bon dans un processus élevé, et se sont sautées dans un processus ordinaire — jamais
+l'inverse. Seule celle de Qt a réellement installé quelque chose sans élévation. Rien ne laisse
+attendre un problème, tout ce qu'elles écrivent allant dans le dépôt et dans `C:\Qt`, mais c'est bien
+une combinaison neuve : jusqu'ici la marche à suivre lançait tout le script élevé, elle ne pouvait
+donc pas se produire. La prochaine machine vierge la verra en même temps que l'invite UAC.
+
 La leçon de méthode vaut au-delà de ce script : **sur une machine déjà équipée, toute étape
 d'installation se saute et se déclare bonne sans avoir rien fait.** Pour l'essayer, effacer sa cible
 ou la détourner vers un dossier jetable. C'est aussi ce qui rend une machine vierge irremplaçable —
