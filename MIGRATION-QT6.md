@@ -104,10 +104,10 @@ se rabat sur Schannel quand OpenSSL est absent. En livrant `qschannelbackend`, l
 `dist-windows.ps1`, et le paragraphe d'excuses du README sur un OpenSSL 1.1.1 non maintenu
 depuis septembre 2023 s'en vont tous ensemble. C'est le gain le plus net de l'opération.
 
-**La pile de l'Universal CRT disparaît aussi** — mais seulement parce que Windows 7 n'est
-plus une cible, voir la section D.
+**La pile de l'Universal CRT a déjà disparu**, avec l'abandon de Windows 7, et indépendamment
+de Qt : ce n'est plus un gain à porter au crédit de la migration. Voir la section D.
 
-**QtMultimedia devient un sujet.** Aujourd'hui il coûte 0,95 Mo sur 184, mesuré dans
+**QtMultimedia devient un sujet.** Aujourd'hui il coûte 0,95 Mo sur 158, mesuré dans
 l'archive : `Qt5Multimedia.dll` 0,71 Mo, `audio/qtaudio_wasapi.dll` et
 `audio/qtaudio_windows.dll` 0,15 Mo, `mediaservice/qtmedia_audioengine.dll` 0,06 Mo,
 `playlistformats/qtmultimedia_m3u.dll` 0,03 Mo. Sous Qt 6.5 et suivants le moteur par défaut
@@ -119,8 +119,10 @@ les traductions. **À vérifier plutôt qu'à supposer** : il faut écouter les 
 
 Le reste ne bouge pas dans son principe : `--no-compiler-runtime` reste nécessaire pour la
 même raison, l'allègement des traductions et la fusion des deux `resources/` aussi, avec des
-noms de fichiers renumérotés (`Qt6WebEngineCore.dll` et compagnie). La répartition des 184 Mo
-documentée dans `CLAUDE.md` sera à refaire de zéro.
+noms de fichiers renumérotés (`Qt6WebEngineCore.dll` et compagnie). La répartition des 158 Mo
+documentée dans `CLAUDE.md` sera à refaire de zéro. À noter que les retraits d'`opengl32sw.dll` et
+de `D3Dcompiler_47.dll` seront à revérifier plutôt qu'à reconduire : Qt 6 a abandonné ANGLE, et le
+chemin de rendu par défaut sous Windows n'est plus le même.
 
 ---
 
@@ -136,14 +138,16 @@ documentée dans `CLAUDE.md` sera à refaire de zéro.
 Les minimums de 6.12 ne sont pas encore publiés ; ceux de 6.11 sont donnés ici comme
 approximation, seule la fin de la prise en charge de Windows 10 après 6.12 étant annoncée.
 
-**Windows 7 est abandonné.** Comme `CLAUDE.md` le dit franchement, cette compatibilité a été
-raisonnée d'après la documentation de Microsoft mais **jamais vérifiée sur une vraie machine
-Windows 7** : elle est peut-être bon marché à abandonner. C'est une décision, pas un détail
-technique.
+**Windows 7 était le principal coût de cette ligne, et il est déjà payé** : la cible du dépôt
+est passée à Windows 10 avant toute migration, la compatibilité Windows 7 ayant été raisonnée
+d'après la documentation de Microsoft mais jamais vérifiée sur une vraie machine. La ligne
+« Windows minimum » du tableau ne coûte donc plus rien à Qt 6 — mais elle ne lui rapporte plus
+rien non plus : la pile de DLL de l'Universal CRT et `D3Dcompiler_47.dll` sont sorties de
+l'archive à cette occasion, pas à celle-ci. Les bibliothèques C++ de MSVC, elles, restent
+nécessaires quoi qu'il arrive, Qt 6 ou non.
 
-Toute la pile de DLL de l'Universal CRT (`ucrtbase.dll` et la quarantaine de
-`api-ms-win-crt-*.dll`) part avec Windows 7, puisqu'elle n'existait que pour lui. Les
-bibliothèques C++ de MSVC, elles, restent nécessaires.
+Ce qui reste à décider ici est plus étroit : Qt 6.11 demande Windows 10 **1809**, là où le dépôt
+ne dit aujourd'hui que « Windows 10 ».
 
 ---
 
@@ -265,7 +269,7 @@ transforme septembre en simple changement de numéro de version.
    jeu.
 2. **Le programme** : les substitutions de la table A, puis `QSoundEffect` à part.
 3. **`dist-windows.ps1` et `dist-macos.sh`**, puis remesurer l'archive et reprendre le
-   passage de `CLAUDE.md` sur la répartition des 184 Mo.
+   passage de `CLAUDE.md` sur la répartition des 158 Mo.
 
 **En septembre 2026 :** recompiler sur 6.12.0, qui ne devrait demander qu'un changement de
 chemin, et vérifier qu'aucune dépréciation n'est apparue entre les deux versions.

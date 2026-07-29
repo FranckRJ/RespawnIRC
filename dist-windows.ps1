@@ -10,9 +10,10 @@
 # Le script trouve tout seul l'environnement MSVC avec vswhere, il n'y a donc pas besoin de le
 # lancer depuis une invite de commandes développeur.
 #
-# La cible est Windows 7 SP1 : trois choses que Windows 10 fournit et que Windows 7 n'a pas sont
-# donc embarquées, sans quoi le programme ne démarre pas ou ne peut joindre aucune page (voir le
-# README pour le détail).
+# La cible est Windows 10 64 bits ou plus récent. Le système fournit l'Universal CRT et
+# D3Dcompiler_47.dll, il n'y a donc que deux choses à embarquer : OpenSSL, sans quoi aucune page
+# n'est joignable, et les bibliothèques C++ de MSVC, sans lesquelles le programme ne démarre pas sur
+# une machine où le redistribuable n'a jamais été installé (voir le README pour le détail).
 
 [CmdletBinding()]
 param(
@@ -171,11 +172,25 @@ Get-ChildItem (Join-Path $imageDir 'translations') -Filter 'qt_*.qm' -File |
 # Les outils de développement de Chromium ne sont jamais ouverts depuis le programme.
 Remove-Item (Join-Path $imageDir 'resources\qtwebengine_devtools_resources.pak') -Force -ErrorAction SilentlyContinue
 
-# opengl32sw.dll (20 Mo) est délibérément conservé : c'est le rendu OpenGL logiciel, seul recours
-# quand la machine n'a pas de pilote OpenGL utilisable, ce qui est courant sur les vieilles
-# configurations et les machines virtuelles visées par une cible Windows 7.
+# D3Dcompiler_47.dll, que windeployqt copie avec le lot ANGLE, fait partie du système depuis
+# Windows 10 : le chargeur trouve celui de System32. Il n'était embarqué que pour Windows 7, où il
+# manque généralement. Si ANGLE échouait malgré tout, le repli reste opengl32sw.dll ci-dessous.
+Remove-Item (Join-Path $imageDir 'D3Dcompiler_47.dll') -Force -ErrorAction SilentlyContinue
 
-Write-Host "== Bibliothèques d'exécution (cible Windows 7 SP1)"
+# opengl32sw.dll (20 Mo, le plus gros fichier retirable de l'archive) est le rendu OpenGL logiciel de
+# Mesa. On a longtemps écrit ici qu'il était le seul recours des machines sans pilote OpenGL : c'est
+# faux. Sans pilote du vendeur, l'OpenGL de bureau se limite au « GDI Generic » 1.1 du système,
+# inutilisable pour Qt, mais le défaut de Qt bascule alors sur ANGLE, qui passe par Direct3D 11 et,
+# faute de GPU, par WARP, le rasteriseur logiciel livré avec Windows. Le repli logiciel est donc déjà
+# dans le système, une couche plus bas. Mesuré sur une machine virtuelle sans aucune accélération :
+# GL_RENDERER vaut « ANGLE (Microsoft Basic Render Driver Direct3D11 vs_5_0 ps_5_0) » et QtWebEngine
+# affiche correctement une page sans ce fichier. Les versions v3.1.6 à v3.1.10 publiées en amont ont
+# d'ailleurs été distribuées ainsi, avec QtWebEngine et sans lui, pendant un an et demi.
+# Il ne reste utile que si ANGLE lui-même échoue, ou si QT_OPENGL=software est forcé — ce dernier cas
+# ne peut venir que d'une variable d'environnement posée à la main, jamais du programme.
+Remove-Item (Join-Path $imageDir 'opengl32sw.dll') -Force -ErrorAction SilentlyContinue
+
+Write-Host "== Bibliothèques d'exécution (cible Windows 10)"
 # 1. OpenSSL : Qt 5.15.2 charge libssl-1_1/libcrypto-1_1 à l'exécution pour tout ce qui est HTTPS.
 #    Sans elles QSslSocket::supportsSsl() est faux et aucune page de jeuxvideo.com n'est joignable.
 #    windeployqt ne les copie pas et Qt ne les fournit plus (voir le README).
@@ -189,7 +204,9 @@ if(-not (Test-Path (Join-Path $opensslDir 'libssl-1_1-x64.dll')))
 Copy-Item (Join-Path $opensslDir '*.dll') $imageDir -Force
 
 # 2. Bibliothèques C++ de MSVC : absentes d'une machine où le redistribuable n'a jamais été
-#    installé, quel que soit le Windows.
+#    installé, quel que soit le Windows. C'est ce qui les distingue de l'Universal CRT abandonné
+#    plus bas : sur un Windows 10 vierge, ucrtbase.dll est bien dans System32 alors que
+#    msvcp140.dll et vcruntime140.dll n'y sont pas. Passer à Windows 10 ne les rend pas inutiles.
 $crtDir = Get-ChildItem (Join-Path $env:VCToolsRedistDir 'x64\Microsoft.VC143.CRT') -ErrorAction SilentlyContinue
 
 if(-not $crtDir)
@@ -202,39 +219,10 @@ foreach($thisDll in @('vcruntime140.dll', 'vcruntime140_1.dll', 'msvcp140.dll'))
     Copy-Item (Join-Path $env:VCToolsRedistDir "x64\Microsoft.VC143.CRT\$thisDll") $imageDir -Force
 }
 
-# 3. Universal CRT : c'est un composant du système à partir de Windows 10, mais Windows 7 ne l'a
-#    qu'après une mise à jour facultative. On l'embarque donc : ucrtbase.dll et la quarantaine de
-#    DLL de redirection qui l'accompagnent, api-ms-win-crt-* comme api-ms-win-core-*. Leur nombre
-#    varie avec la version du SDK (41 relevées lors d'une compilation antérieure de ce dépôt, 46
-#    avec le SDK 10.0.26100) et Microsoft recommande de toutes les livrer : d'où la copie du dossier
-#    entier, et surtout pas une liste de noms figée. Sous Windows 10 la copie du système est
-#    utilisée de toute façon, ces fichiers n'y servent à rien mais ne gênent pas.
-#    Ce redistribuable n'est pas toujours au même endroit. Le SDK 10.0.26100 le range sous
-#    Redist\<version>\ucrt\DLLs\x64, seule disposition constatée directement. La documentation de
-#    Microsoft et une compilation antérieure de ce dépôt décrivent Redist\ucrt\DLLs\x64, sans
-#    version, qui serait la disposition des SDK plus anciens — non revérifié. On cherche donc les
-#    deux, sans quoi une machine à jour ne trouve rien alors que les fichiers sont bien là.
-$kitsRedistDir = "${env:ProgramFiles(x86)}\Windows Kits\10\Redist"
-
-#    Le plus récent d'abord : le tri porte sur le numéro de version converti, un tri de chaînes
-#    plaçant 10.0.9.0 après 10.0.26100.0. La disposition sans version ferme la marche, elle ne sert
-#    que si aucun dossier versionné n'existe.
-$ucrtDir = @(
-    Get-ChildItem (Join-Path $kitsRedistDir '*\ucrt\DLLs\x64') -Directory -ErrorAction SilentlyContinue |
-        Sort-Object -Property @{Expression = {[version]$_.Parent.Parent.Parent.Name}} -Descending
-    Get-Item (Join-Path $kitsRedistDir 'ucrt\DLLs\x64') -ErrorAction SilentlyContinue
-) | Select-Object -First 1
-
-#    Un throw et non un avertissement : sans ces DLL l'archive se fabrique et s'ouvre normalement,
-#    mais le programme ne démarre pas sous Windows 7, seule cible qu'on ne peut pas essayer d'ici.
-#    Un avertissement se perdrait au milieu de la sortie de windeployqt et l'archive partirait quand
-#    même. C'est aussi ce que font les deux pièces Windows 7 traitées au-dessus.
-if(-not $ucrtDir)
-{
-    throw "Universal CRT introuvable sous $kitsRedistDir : l'archive ne démarrerait pas sur un Windows 7 sans la mise à jour KB2999226."
-}
-
-Copy-Item (Join-Path $ucrtDir.FullName '*.dll') $imageDir -Force
+# L'Universal CRT n'est pas copié : ucrtbase.dll et les api-ms-win-* sont des composants du système
+# depuis Windows 10, et les seconds n'y sont même pas des fichiers, le chargeur résolvant ces noms
+# par le schéma d'API sets du noyau. La quarantaine de DLL que le dépôt distribuait n'existait que
+# pour Windows 7, où l'Universal CRT n'arrivait que par la mise à jour facultative KB2999226.
 
 Write-Host "== Données du programme"
 # resources/ et themes/ sont extraits de git et non copiés depuis le dossier de travail : celui-ci

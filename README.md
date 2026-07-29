@@ -18,7 +18,7 @@ Ces deux liens vers le wiki sont **antérieurs** aux sections par plateforme qui
 
 ### Windows
 
-La cible est Windows 7 SP1 ou plus récent, en 64 bits. Tout se fait en ligne de commande, Qt Creator n'est pas nécessaire.
+La cible est Windows 10 ou plus récent, en 64 bits. Tout se fait en ligne de commande, Qt Creator n'est pas nécessaire.
 
 **Le compilateur doit être MSVC, pas MinGW.** RespawnIRC utilise QtWebEngine, dont le moteur est Chromium, et Chromium ne se compile pas avec MinGW : les binaires officiels de Qt ne fournissent QtWebEngine que pour MSVC, et le module est purement et simplement absent des versions MinGW. C'est la seule contrainte forte de la compilation sous Windows, tout le reste en découle.
 
@@ -119,19 +119,43 @@ Le script compile, appelle `windeployqt`, allège le résultat, ajoute les bibli
 
 L'archive contient un unique dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut décompresser quelque part. Ces deux dossiers ne sont jamais modifiés par le programme, qui écrit tout dans un `userdata` créé à côté de l'exécutable — l'ensemble reste donc portable et se déplace d'un bloc. À noter que `windeployqt` crée lui aussi un dossier `resources` pour QtWebEngine : les deux contenus cohabitent dans le même dossier, aucun nom de fichier ne se chevauchant.
 
-Trois dossiers sont allégés parce que `windeployqt` copie tout par défaut : les traductions de QtWebEngine sont réduites au français et à l'anglais qui lui sert de repli, celles de Qt au seul français, et les outils de développement de Chromium sont retirés. Cela représente une vingtaine de mégaoctets. S'y ajoute `--no-compiler-runtime`, qui évite les 24 Mo de `vc_redist.x64.exe` : `windeployqt` l'embarque dès que `VCINSTALLDIR` est définie, alors que rien ne le lance jamais et que les DLL du runtime sont déjà copiées une à une. En revanche `opengl32sw.dll` est conservé malgré ses 20 Mo : c'est le rendu OpenGL logiciel, seul recours sur une machine sans pilote OpenGL utilisable, ce qui est courant sur les vieilles configurations et les machines virtuelles visées par une cible Windows 7. L'essentiel du poids restant est incompressible, `Qt5WebEngineCore.dll` pesant à lui seul près de 100 Mo.
+Trois dossiers sont allégés parce que `windeployqt` copie tout par défaut : les traductions de QtWebEngine sont réduites au français et à l'anglais qui lui sert de repli, celles de Qt au seul français, et les outils de développement de Chromium sont retirés. Cela représente une vingtaine de mégaoctets. S'y ajoute `--no-compiler-runtime`, qui évite les 24 Mo de `vc_redist.x64.exe` : `windeployqt` l'embarque dès que `VCINSTALLDIR` est définie, alors que rien ne le lance jamais et que les DLL du runtime sont déjà copiées une à une. S'y ajoute enfin `opengl32sw.dll` et ses 20 Mo, longtemps conservé pour une raison qui s'est révélée fausse : voir plus bas. L'essentiel du poids restant est incompressible, `Qt5WebEngineCore.dll` pesant à lui seul près de 100 Mo.
 
-#### Ce que Windows 7 change
+#### Les bibliothèques d'exécution
 
-Trois choses que Windows 10 fournit et que Windows 7 n'a pas sont embarquées dans l'archive, sans quoi le programme ne démarre pas du tout sur certaines machines. C'est la raison d'être de la pile de DLL qui accompagne le programme depuis toujours, et non un excès de prudence :
+Une seule chose manque encore à une machine vierge, et l'archive l'embarque : les **bibliothèques C++ de MSVC** (`vcruntime140.dll`, `vcruntime140_1.dll`, `msvcp140.dll`). Elles ne font partie d'aucun Windows, elles arrivent avec le redistribuable Visual C++, et sans elles le programme ne démarre pas du tout. C'est facile à vérifier sur une machine neuve : `ucrtbase.dll` est bien dans `System32`, `msvcp140.dll` et `vcruntime140.dll` n'y sont pas.
 
-- l'**Universal CRT** est un composant du système à partir de Windows 10, alors que Windows 7 ne l'obtient que par une mise à jour facultative (KB2999226). L'archive embarque donc `ucrtbase.dll` et la quarantaine de petites DLL de redirection qui l'accompagnent, `api-ms-win-crt-*` **comme** `api-ms-win-core-*` — les secondes sont majoritaires et comptent autant que les premières, malgré leur nom. Leur nombre exact dépend de la version du SDK (41 relevées lors d'une compilation antérieure de ce dépôt, 46 avec le SDK 10.0.26100) et Microsoft recommande de toutes les livrer : le script copie le dossier entier, ne pas le remplacer par une liste de noms. Sous Windows 10 la copie du système est utilisée de toute façon, ces fichiers n'y servent à rien mais ne gênent pas. Le redistribuable exige Windows 7 **SP1**, pas la version d'origine ;
-- les **bibliothèques C++ de MSVC** (`vcruntime140.dll`, `vcruntime140_1.dll`, `msvcp140.dll`), absentes de toute machine où le redistribuable n'a jamais été installé, quel que soit le Windows ;
-- **`D3Dcompiler_47.dll`**, présent dans le système sous Windows 10 mais généralement pas sous Windows 7, dont Qt a besoin pour le rendu via ANGLE.
+S'y ajoute OpenSSL, traité dans sa propre section plus haut, pour une raison sans rapport avec la version de Windows : Qt le charge à l'exécution et ne le distribue plus.
 
-Ce redistribuable n'est pas toujours au même endroit. Le SDK 10.0.26100 le range sous `Windows Kits\10\Redist\10.0.26100.0\ucrt\DLLs\x64` : c'est la seule disposition constatée directement ici. La documentation de Microsoft et une compilation antérieure de ce dépôt décrivent au contraire `Windows Kits\10\Redist\ucrt\DLLs\x64`, sans version, qui serait celle des SDK plus anciens — cela n'a pas été revérifié. `dist-windows.ps1` ne connaissait que cette seconde disposition et n'émettait qu'un `Write-Warning` quand elle manquait, avertissement noyé dans la sortie de `windeployqt` : l'archive était assemblée et compressée sans un seul fichier de l'Universal CRT, complète pour tout le reste et silencieusement incompatible avec Windows 7. Le script cherche maintenant les deux dispositions, la plus récente d'abord, et échoue franchement s'il ne trouve rien — comme il le fait déjà pour OpenSSL et les bibliothèques de MSVC.
+Le reste de la pile de DLL qui accompagnait historiquement le programme n'existait que pour **Windows 7, qui n'est plus une cible** :
 
-Une limite honnête : **rien de tout cela n'a été vérifié sur un vrai Windows 7**, faute d'une machine sous la main. Le contenu de l'archive suit les règles documentées par Microsoft et le programme a été lancé avec succès depuis l'archive sous Windows 10, mais la validation sous Windows 7 reste à faire.
+- l'**Universal CRT** (`ucrtbase.dll` et la quarantaine de `api-ms-win-crt-*` et `api-ms-win-core-*`) est un composant du système depuis Windows 10, alors que Windows 7 ne l'obtenait que par la mise à jour facultative KB2999226. Les DLL de redirection n'ont même pas d'existence en tant que fichiers sous Windows 10 : ces noms sont résolus par le schéma d'*API sets* du noyau, ce qui explique qu'on ne les trouve pas dans `System32` sans que rien ne manque pour autant ;
+- **`D3Dcompiler_47.dll`**, dont Qt a besoin pour le rendu via ANGLE, fait partie de Windows 10 et n'était embarqué que parce que Windows 7 ne l'a généralement pas. `windeployqt` le copie encore avec le lot ANGLE, `dist-windows.ps1` le retire ensuite.
+
+Ces deux suppressions retirent une quarantaine de fichiers et quelques mégaoctets de l'archive — 47 fichiers et 6,4 Mo relevés avec le SDK 10.0.26100, mais le nombre de DLL de l'Universal CRT varie avec la version du SDK et ce chiffre n'est pas à figer. Le gain de poids est modeste ; le vrai gain est ailleurs. Le redistribuable de l'Universal CRT n'était pas au même endroit selon la version du SDK (`Redist\<version>\ucrt\DLLs\x64` pour les récents, `Redist\ucrt\DLLs\x64` pour les anciens), et cette recherche à deux dispositions, avec l'échec franc qui la protégeait, était la partie la plus fragile du script : elle avait déjà coûté une archive silencieusement incomplète. Elle n'a plus de raison d'être.
+
+#### `opengl32sw.dll`, et pourquoi il ne fait plus partie de l'archive
+
+Ce n'est pas une pièce Windows 7 : il est parti pour une raison à lui, et c'est le plus gros retrait de l'archive, 20 Mo sur 178.
+
+Le raisonnement qui l'a longtemps gardé était : sans pilote OpenGL utilisable, Windows ne fournit que le « GDI Generic » en version 1.1, très en deçà de ce que Qt demande, donc `opengl32sw.dll` est le seul recours. La première moitié est exacte, la conclusion ne suit pas. Le comportement par défaut de Qt bascule sur **ANGLE**, qui ne fait pas d'OpenGL du tout : il traduit en Direct3D 11, et en l'absence de GPU utilisable Direct3D se rabat sur **WARP**, le rasteriseur logiciel livré avec Windows. Le repli logiciel existe donc déjà dans le système, une couche plus bas.
+
+Mesuré sur une machine virtuelle sans la moindre accélération graphique (« Microsoft Basic Display Adapter », aucun ICD OpenGL enregistré) :
+
+| `QT_OPENGL` | `GL_RENDERER` obtenu |
+| --- | --- |
+| *(défaut)* | `ANGLE (Microsoft Basic Render Driver Direct3D11 vs_5_0 ps_5_0)` |
+| `desktop` | `GDI Generic`, OpenGL 1.1 — inutilisable |
+| `angle` | `ANGLE (Microsoft Basic Render Driver Direct3D11 vs_5_0 ps_5_0)` |
+| `software` | `Gallium 0.4 on llvmpipe`, Mesa 12 — c'est `opengl32sw.dll` |
+
+Sur cette même machine, l'archive privée d'`opengl32sw.dll` affiche correctement une page dans QtWebEngine, en mode par défaut comme en mode `angle`. Le fichier n'est donc **pas** le recours des machines sans pilote : ANGLE et WARP le sont.
+
+L'historique des versions publiées dit la même chose. Les releases **v3.1.6 à v3.1.10**, de 2018 à mars 2019, ont été distribuées avec QtWebEngine et ANGLE mais **sans aucun rendu OpenGL logiciel**, pendant environ un an et demi, sans problème signalé. `opengl32sw.dll` est apparu en v3.1.11 en même temps que `vc_redist.x86.exe` et qu'un changement de version de Qt : deux fichiers que `windeployqt` ajoute de lui-même, jamais une réponse à une panne.
+
+Il ne reste utile que si ANGLE lui-même échoue, ou si quelqu'un force `QT_OPENGL=software` — auquel cas, sans lui, Qt affiche « Failed to create OpenGL context » et le programme s'arrête. Ce dernier cas ne peut venir que d'une variable d'environnement posée à la main, le programme ne la définit jamais.
+
+**Il est donc retiré de l'archive**, comme `D3Dcompiler_47.dll`, après le passage de `windeployqt` qui continue de le copier. La réserve honnête : WARP est un composant de Windows, mais rien ne prouve qu'aucune machine cible n'a un Direct3D 11 cassé ou désactivé, et la panne serait alors totale. Le remettre est une ligne à supprimer dans `dist-windows.ps1`.
 
 ### Linux
 

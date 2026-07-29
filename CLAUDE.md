@@ -78,38 +78,75 @@ ne se compilant qu'avec MSVC. Le README détaille la mise en place ; les pièges
 
 #### Ce qui manque et ne se voit pas
 
-`windeployqt` ne copie **ni OpenSSL ni les bibliothèques d'exécution de MSVC**. Les trois pièges,
-par ordre de méchanceté :
+La cible est **Windows 10 64 bits ou plus récent**. `windeployqt` ne copie **ni OpenSSL ni les
+bibliothèques d'exécution de MSVC**, ce sont les deux seules pièces à ajouter à la main :
 
 - **sans OpenSSL, aucune page n'est joignable.** Qt 5.15.2 charge `libssl-1_1`/`libcrypto-1_1` à
   l'exécution ; en leur absence `QSslSocket::supportsSsl()` est faux et tout échoue silencieusement.
   Qt ne distribue plus le 1.1.1, seulement un OpenSSL 3 incompatible. Pour vérifier, un programme de
   trois lignes affichant `supportsSsl()` et `sslLibraryVersionString()` suffit et évite de deviner ;
 - sans `vcruntime140.dll` et compagnie, le programme ne démarre pas là où le redistribuable n'a
-  jamais été installé ;
-- sous **Windows 7**, l'Universal CRT n'est pas dans le système : il faut embarquer `ucrtbase.dll`
-  et la quarantaine de DLL de redirection qui l'accompagnent, `api-ms-win-crt-*` **comme**
-  `api-ms-win-core-*` — les secondes sont majoritaires et comptent autant, malgré leur nom. Leur
-  nombre varie avec la version du SDK (41 lors d'une compilation antérieure, 46 avec le SDK
-  10.0.26100) et Microsoft recommande de toutes les livrer : le script copie le dossier entier, ne
-  pas le remplacer par une liste de noms. C'est l'explication de la pile de DLL historiquement
-  distribuée avec le programme — elle était justifiée, ce n'est pas du gras.
+  jamais été installé. **Ces DLL-là ne partent pas avec Windows 7** : elles ne font partie d'aucun
+  Windows. Le test qui tranche, sur une machine vierge : `ucrtbase.dll` est dans `System32`,
+  `msvcp140.dll` et `vcruntime140.dll` n'y sont pas.
 
-**Ce redistribuable n'est pas toujours au même endroit**, et c'est un piège qui a déjà coûté une
-archive. Le SDK 10.0.26100 le range sous `Redist\<version>\ucrt\DLLs\x64`, seule disposition
-constatée directement ; la documentation de Microsoft et une compilation antérieure de ce dépôt
-décrivent `Redist\ucrt\DLLs\x64`, sans version, qui serait celle des SDK plus anciens — non
-revérifié. `dist-windows.ps1` ne connaissait que la seconde et n'émettait qu'un `Write-Warning`,
-invisible au milieu de la sortie de `windeployqt` : il assemblait et compressait quand même une
-archive sans un seul fichier de l'UCRT, complète pour tout le reste et incompatible avec Windows 7
-sans que rien ne le dise. Il cherche maintenant les deux, la plus récente d'abord, et `throw` s'il
-ne trouve rien. **Ne pas rétrograder ce throw en avertissement** : c'est la seule pièce Windows 7
-dont l'absence ne se voit sur aucune machine où l'on peut essayer l'archive.
+#### Ce que l'abandon de Windows 7 a retiré
+
+Deux pièces ont disparu de l'archive avec la cible Windows 7 — 47 fichiers et 6,4 Mo relevés avec le
+SDK 10.0.26100, chiffre à ne pas figer puisque le nombre de DLL de l'UCRT suit la version du SDK :
+
+- l'**Universal CRT** (`ucrtbase.dll`, les `api-ms-win-crt-*` et `api-ms-win-core-*`), composant du
+  système depuis Windows 10 et que Windows 7 n'obtenait que par la mise à jour facultative
+  KB2999226. Ne pas s'étonner de ne pas trouver les DLL de redirection dans `System32` : sous
+  Windows 10 ce ne sont pas des fichiers, ces noms sont résolus par le schéma d'*API sets* du noyau ;
+- **`D3Dcompiler_47.dll`**, nécessaire au rendu ANGLE de Qt, fourni par Windows 10. `windeployqt`
+  continue de le copier avec le lot ANGLE, `dist-windows.ps1` le retire après coup. Attention en
+  relisant : `opengl32sw.dll` n'est plus là pour rattraper un ANGLE en panne, il a été retiré lui
+  aussi, pour ses raisons propres (plus bas).
+
+Ce que cela a supprimé de plus précieux, c'est la partie la plus fragile du script. Le redistribuable
+de l'Universal CRT n'était pas au même endroit selon la version du SDK — `Redist\<version>\ucrt\DLLs\x64`
+pour les récents, `Redist\ucrt\DLLs\x64` pour les anciens — et cette recherche à deux dispositions
+avait déjà coûté une archive silencieusement incomplète, du temps où elle ne se protégeait que par un
+`Write-Warning` noyé dans la sortie de `windeployqt`. Tout ce bloc est parti. **Ne pas le
+réintroduire sans réintroduire d'abord Windows 7 comme cible** : c'était la seule pièce dont
+l'absence ne se voyait sur aucune machine où l'on pouvait essayer l'archive, et c'est exactement ce
+qui la rendait dangereuse.
+
+#### Ce que les releases d'amont ont vraiment livré
+
+Ce dépôt a longtemps expliqué la pile de DLL de l'Universal CRT comme celle « historiquement
+distribuée avec le programme », justifiée et non du gras. **C'est faux, et il ne faut pas réécrire
+cette histoire.** Les archives publiées sur `franckrj/respawnirc` ont été inspectées : aucune ne
+contient `ucrtbase.dll` ni le moindre `api-ms-win-*`. Elles diffèrent d'ailleurs sur presque tout :
+
+- elles sont en **32 bits** (`vc_redist.x86.exe`, `libssl-1_1.dll` sans suffixe `-x64`), quand ce
+  dépôt vise le 64 bits ;
+- Hunspell y est **dynamique** (`libhunspell.dll`), ici il est statique ;
+- pour les bibliothèques d'exécution de MSVC, elles embarquent **l'installateur**
+  `vc_redist.x86.exe` (13,7 Mo) plutôt que les trois DLL. C'est le fichier que `windeployqt` ajoute
+  dès que `VCINSTALLDIR` est définie, et exactement celui que `--no-compiler-runtime` écarte ici.
+
+Deux enseignements qui portent au-delà de l'anecdote. D'abord, `vc_redist.x86.exe` et
+`opengl32sw.dll` apparaissent **dans la même release**, la v3.1.11 de juillet 2019, en même temps
+qu'un changement de version de Qt : ce sont deux ajouts automatiques de `windeployqt`, pas des
+décisions. Ensuite, les v3.1.6 à v3.1.10 ont été distribuées **avec QtWebEngine et ANGLE mais sans
+`opengl32sw.dll`**, pendant environ un an et demi, sans problème signalé — ce qui corrobore la mesure
+faite ici sur une machine sans accélération. Voir `POSSIBLE-BUILD-SIMPLIFICATIONS.md`.
 
 Le gras est ailleurs, et `dist-windows.ps1` s'en occupe : traductions de QtWebEngine et de Qt
 réduites au français, outils de développement de Chromium retirés, une vingtaine de mégaoctets.
-`opengl32sw.dll` (20 Mo) est gardé **volontairement**, c'est le rendu logiciel de secours sur les
-machines sans pilote OpenGL, cas courant de la cible Windows 7.
+`opengl32sw.dll` (20 Mo) a été **retiré**, et ce n'est pas une pièce Windows 7 : il est parti pour une
+raison à lui. On lisait ici que sans pilote OpenGL utilisable il était le seul recours ; c'était faux.
+Le défaut de Qt bascule sur ANGLE, qui traduit en Direct3D 11 et, faute de GPU, tombe sur WARP, le
+rasteriseur logiciel de Windows — le repli est donc déjà dans le système, une couche plus bas.
+Vérifié sur une machine virtuelle sans aucune accélération : `GL_RENDERER` vaut `ANGLE (Microsoft
+Basic Render Driver Direct3D11 vs_5_0 ps_5_0)` et QtWebEngine affiche correctement une page sans ce
+fichier. Les releases v3.1.6 à v3.1.10 d'amont ont d'ailleurs été distribuées ainsi pendant un an et
+demi (voir plus bas). Il ne servait plus que si ANGLE échouait, ou si `QT_OPENGL=software` était forcé
+à la main — auquel cas Qt affiche « Failed to create OpenGL context » et s'arrête. **Ne pas le
+remettre sans une machine réelle qui le réclame** : c'est le plus gros fichier de l'archive après
+Chromium.
 
 Le plus gros morceau était plus sournois : `windeployqt` embarque `vc_redist.x64.exe`, 24 Mo que
 rien ne lance jamais et qui font doublon avec les DLL du runtime copiées à côté de l'exécutable. Il
@@ -118,19 +155,24 @@ ne le fait que si `VCINSTALLDIR` est définie, donc seulement quand le script to
 qui n'apparaît pas si on essaie `windeployqt` à la main dans un shell neuf. D'où le
 `--no-compiler-runtime`, à ne pas retirer.
 
-Répartition de ce qui reste, pour situer les ordres de grandeur : sur 184 Mo décompressés, **environ
-148 tiennent à QtWebEngine**, soit 80 %. Chromium lui-même en fait 112 (`Qt5WebEngineCore.dll` seul
-en pèse 97, le reste étant `icudtl.dat` et ses fichiers `.pak`), ANGLE et le rendu logiciel 28
-(`opengl32sw.dll`, `libGLESv2.dll`, `libEGL.dll`, `d3dcompiler_47.dll`), et QtQuick, QML et
-WebChannel une dizaine. Attention au raisonnement : RespawnIRC est une application Widgets, qui
-dessine en raster et n'utilise ni QML ni OpenGL — tout cela n'est là que parce que WebEngine s'en
-sert. Le client lui-même, avec Qt Core, Gui, Widgets, Network, OpenSSL et les runtimes, pèse une
-trentaine de mégaoctets.
+Répartition de ce qui reste, pour situer les ordres de grandeur : sur 158 Mo décompressés (70 Mo
+compressés, 419 fichiers), **environ 124 tiennent à QtWebEngine**, soit 78 %. Chromium lui-même en
+fait 112 (`Qt5WebEngineCore.dll` seul en pèse 97, le reste étant `icudtl.dat` et ses fichiers
+`.pak`), QtQuick, QML et WebChannel 8, et ANGLE 3 (`libGLESv2.dll` et `libEGL.dll`). Attention au
+raisonnement : RespawnIRC est une application Widgets, qui dessine en raster et n'utilise ni QML ni
+OpenGL — tout cela n'est là que parce que WebEngine s'en sert. Le client lui-même, avec Qt Core, Gui,
+Widgets, Network, OpenSSL et les runtimes, pèse une trentaine de mégaoctets.
 
-**Rien n'a été essayé sur un vrai Windows 7** : le contenu de l'archive suit les règles documentées
-par Microsoft et le programme démarre depuis l'archive sous Windows 10 — revérifié sur une machine
-virtuelle vierge, archive décompressée et lancée telle quelle — mais la validation sous Windows 7
-reste à faire. Ne pas présenter cette compatibilité comme vérifiée.
+Ces chiffres sont ceux de l'archive Windows 10. Celle qui visait Windows 7 en faisait 184 avec les
+mêmes composants : 6 Mo de différence tiennent à l'Universal CRT et à `D3Dcompiler_47.dll`, et 20 au
+seul `opengl32sw.dll`. Le poids n'était la raison d'aucun des trois retraits, mais il explique que le
+dernier soit le plus visible.
+
+Windows 7 n'est plus une cible, et n'avait de toute façon **jamais été essayé** : sa compatibilité
+était raisonnée d'après la documentation de Microsoft, sans machine pour la vérifier. Ce qui est
+vérifié, et qui reste la seule chose à présenter comme telle, c'est que le programme démarre depuis
+l'archive sous Windows 10, sur une machine virtuelle vierge, archive décompressée et lancée telle
+quelle.
 
 #### Pourquoi Hunspell et zlib ne passent pas par vcpkg
 

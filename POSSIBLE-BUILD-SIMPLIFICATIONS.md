@@ -48,8 +48,10 @@ La compilation est déjà hors des sources, ce qui apporte l'essentiel de ce que
 
 ## 6. Deux détails dans la section des bibliothèques d'exécution
 
-- `Microsoft.VC143.CRT` est figé en dur dans `dist-windows.ps1:192` et `:201`. Cela cassera au prochain changement de version des outils. Chercher `x64\Microsoft.VC*.CRT` et copier `*.dll` (ce dossier ne contient que les trois DLL voulues plus `concrt140.dll`) supprime le numéro figé, la liste des trois noms et la boucle `foreach`.
-- `dist-windows.ps1:192` affecte un `Get-ChildItem` à `$crtDir` pour ne s'en servir que comme test d'existence. `Test-Path` dit la même chose sans construire un listage de dossier.
+- `Microsoft.VC143.CRT` est figé en dur dans `dist-windows.ps1:202` et `:211`. Cela cassera au prochain changement de version des outils. Chercher `x64\Microsoft.VC*.CRT` et copier `*.dll` (ce dossier ne contient que les trois DLL voulues plus `concrt140.dll`) supprime le numéro figé, la liste des trois noms et la boucle `foreach`.
+- `dist-windows.ps1:202` affecte un `Get-ChildItem` à `$crtDir` pour ne s'en servir que comme test d'existence. `Test-Path` dit la même chose sans construire un listage de dossier.
+
+Ces deux points sont désormais tout ce qui reste de cette section : l'Universal CRT, qui en occupait l'essentiel, est sorti du script avec l'abandon de Windows 7.
 
 ## 7. macOS compile dans les sources, Windows non
 
@@ -63,21 +65,50 @@ L'installation ciblée à deux composants a été essayée sur une machine virtu
 
 Le script échouait effectivement en silence, mais pas pour la raison supposée ici. La question n'était pas de savoir si l'installation ciblée pose l'arborescence `Redist\ucrt` : c'est la **version du SDK** qui décide, les récents versionnant ce dossier en `Redist\<version>\ucrt\DLLs\x64`. Avec le SDK 10.0.26100, le chemin sans version n'existe pas du tout, et `--includeRecommended` avec le même SDK donnerait sans doute le même résultat. Le raisonnement « voie allégée = risque » était donc mal orienté, même si sa conclusion était la bonne.
 
-`dist-windows.ps1` cherche maintenant les deux dispositions et lève une erreur s'il ne trouve rien, comme il le fait déjà pour OpenSSL et les bibliothèques de MSVC. Le récapitulatif de fin de script n'a pas été fait et reste une piste, mais l'échec franc en couvre l'essentiel.
+`dist-windows.ps1` a cherché les deux dispositions et levé une erreur s'il ne trouvait rien, comme il le fait déjà pour OpenSSL et les bibliothèques de MSVC. **Tout ce bloc a depuis été supprimé** avec l'abandon de Windows 7 : l'Universal CRT n'est plus copié du tout, et la question de savoir où le SDK range son redistribuable ne se pose plus. Le récapitulatif de fin de script, lui, reste une piste jamais faite.
 
-Leçon transposable au reste de ce fichier : le nombre de DLL de l'UCRT dépend lui aussi de la version du SDK, 41 relevées ici lors d'une compilation antérieure et 46 avec le SDK 10.0.26100. **Ne pas figer ces chiffres**, ni dans le script ni dans la documentation.
+Deux leçons transposables au reste de ce fichier survivent à cette suppression :
 
-## 9. Deux listes de « trois choses » qui ne se recouvrent pas
+- **ne pas figer de chiffres** venant de l'installation. Le nombre de DLL de l'UCRT dépendait de la version du SDK, 41 relevées ici lors d'une compilation antérieure et 46 avec le SDK 10.0.26100 ; c'est exactement le défaut que le point 6 reproche encore à `Microsoft.VC143.CRT` ;
+- **la meilleure façon de ne pas se tromper sur un chemin d'installation est de ne pas en dépendre.** Cette section a coûté deux corrections successives avant que la bonne réponse se révèle être la suppression pure et simple du code fautif.
 
-`dist-windows.ps1:13-15` annonce trois choses que Windows 10 fournit et que Windows 7 n'a pas, et ses sections livrent OpenSSL, les bibliothèques C++ de MSVC et l'Universal CRT. `README.md:120-124` annonce trois choses aussi, mais énumère l'Universal CRT, les bibliothèques de MSVC et `D3Dcompiler_47.dll`, OpenSSL étant traité à part dans sa propre sous-section.
+## 9. Deux listes de « trois choses » qui ne se recouvrent pas — **fait**
 
-`D3Dcompiler_47.dll` n'apparaît nulle part dans le script : il arrive par `windeployqt`, dans le lot ANGLE. Rien n'est cassé, le fichier finit bien dans l'archive, mais les deux listes ne se recouvrent que sur deux éléments et l'une des trois du README n'est pas le fait du script. À aligner si l'on touche à cette section, pour éviter au prochain lecteur d'aller chercher une copie qui n'existe pas.
+`dist-windows.ps1` annonçait trois choses que Windows 10 fournit et que Windows 7 n'a pas — OpenSSL, les bibliothèques C++ de MSVC, l'Universal CRT — quand le README en annonçait trois autres — l'Universal CRT, les bibliothèques de MSVC et `D3Dcompiler_47.dll` — en traitant OpenSSL à part. Les deux listes ne se recouvraient que sur deux éléments, et `D3Dcompiler_47.dll` n'apparaissait nulle part dans le script : il arrivait par `windeployqt`, dans le lot ANGLE.
+
+L'abandon de Windows 7 a résolu le désaccord en vidant les deux listes. Il ne reste qu'une seule pièce à copier, les bibliothèques C++ de MSVC, plus OpenSSL pour une raison sans rapport avec la version de Windows. `D3Dcompiler_47.dll` est maintenant nommé dans le script, mais pour être **retiré** de ce que `windeployqt` a copié.
 
 ## 10. Accessoire : la compression
 
-`Compress-Archive` sur 184 Mo et plusieurs milliers de fichiers est l'étape la plus lente du script (`dist-windows.ps1:227`). `[System.IO.Compression.ZipFile]::CreateFromDirectory` fait la même chose nettement plus vite. Sans autre effet que le temps d'attente.
+`Compress-Archive` sur 158 Mo et quelques centaines de fichiers est l'étape la plus lente du script (`dist-windows.ps1:245`). `[System.IO.Compression.ZipFile]::CreateFromDirectory` fait la même chose nettement plus vite. Sans autre effet que le temps d'attente.
+
+## 11. `opengl32sw.dll` : 20 Mo pour un repli que Windows fournit déjà — **fait**
+
+C'était le plus gros fichier retirable de l'archive, et le seul point de cette liste dont le gain se comptait en dizaines de mégaoctets — 20 sur 178, soit 11 %. `dist-windows.ps1` le retire désormais après `windeployqt`, comme `D3Dcompiler_47.dll`.
+
+La justification inscrite partout dans ce dépôt était fausse : « sans pilote OpenGL utilisable, le système ne donne que du 1.1, donc `opengl32sw.dll` est le seul recours ». La prémisse est juste, la conclusion non. Qt ne reste pas sur l'OpenGL de bureau : son défaut bascule sur ANGLE, qui traduit en Direct3D 11, et Direct3D sans GPU utilisable se rabat sur WARP, le rasteriseur logiciel livré avec Windows. Le repli logiciel est déjà dans le système, une couche plus bas.
+
+Mesuré sur une machine virtuelle sans aucune accélération graphique, `GL_RENDERER` vaut `ANGLE (Microsoft Basic Render Driver Direct3D11 vs_5_0 ps_5_0)` en mode par défaut, et l'archive privée d'`opengl32sw.dll` affiche correctement une page dans QtWebEngine — c'est-à-dire précisément le cas que ce fichier était censé sauver.
+
+Ce qu'il couvre encore : le cas où ANGLE lui-même échouerait, et le cas où `QT_OPENGL=software` serait forcé. Dans ce dernier, sans lui, Qt affiche « Failed to create OpenGL context » et le programme s'arrête — vérifié.
+
+### Ce que disent les versions publiées en amont
+
+La mesure ci-dessus est confirmée par l'historique des releases de `franckrj/respawnirc`, et c'est l'argument le plus solide de cette section parce qu'il porte sur de vrais utilisateurs :
+
+| Release | Date | QtWebEngine | `opengl32sw.dll` |
+| --- | --- | --- | --- |
+| v3.1.6 à v3.1.10 | 2018 – mars 2019 | oui (49 Mo) | **non** |
+| v3.1.11 et suivantes | juillet 2019 → | oui (57 Mo puis 72) | oui |
+
+**Cinq versions ont été distribuées avec QtWebEngine et ANGLE mais sans aucun rendu OpenGL logiciel**, pendant environ un an et demi, sans que cela pose de problème signalé. C'est exactement la configuration que le point ci-dessus propose de rétablir.
+
+Son apparition en v3.1.11 n'a rien d'une correction : elle est simultanée à un changement de version de Qt (`Qt5WebEngineCore.dll` passe de 49 à 57 Mo) et à celle de `vc_redist.x86.exe`, dans la même archive. Ce sont les deux fichiers que `windeployqt` ajoute tout seul — le second étant précisément celui que `--no-compiler-runtime` sert à écarter ici. `opengl32sw.dll` est donc arrivé comme effet de bord de l'outil de déploiement, jamais comme une réponse à une panne.
+
+**Contrepartie assumée** : WARP est un composant de Windows, mais rien ne prouve qu'aucune machine cible n'a un Direct3D 11 cassé ou désactivé, et la panne serait alors totale et sans message utile. L'absence de plainte sur les versions 3.1.6 à 3.1.10 n'est pas une preuve non plus — qui obtient une fenêtre noire ne le signale pas forcément. Le retrait a été fait parce que c'est celui de cette liste qui s'appuie sur le plus de faits, pas parce que le risque est nul : le remettre est une ligne à supprimer dans `dist-windows.ps1`.
 
 ## Ce qu'il ne faut pas toucher
 
 - `Invoke-BuildTool` (`dist-windows.ps1:90`) ressemble à de la cérémonie mais c'est la plus petite correction juste au fait que PowerShell 5.1 transforme la sortie d'erreur des outils natifs en erreurs fatales. S'en passer voudrait dire abandonner `$ErrorActionPreference = 'Stop'`, ce qui serait pire.
-- `--no-compiler-runtime`, la pile de DLL de l'Universal CRT, `opengl32sw.dll`, le BOM de `dist-windows.ps1` : tous documentés, tous justifiés.
+- `--no-compiler-runtime`, les trois DLL du runtime C++ de MSVC, le BOM de `dist-windows.ps1` : tous documentés, tous justifiés. Les DLL du runtime en particulier ne sont pas parties avec Windows 7 et ne doivent pas être confondues avec ce qui l'a fait — elles ne sont dans aucun Windows.
+- `opengl32sw.dll` figurait ici, au titre du rendu de secours des machines sans pilote OpenGL. Il en sort, et de l'archive avec : ce rôle-là est tenu par ANGLE et WARP, pas par lui (point 11). C'est le rappel utile de cette section — une entrée y était depuis des années sur une justification que personne n'avait vérifiée.
