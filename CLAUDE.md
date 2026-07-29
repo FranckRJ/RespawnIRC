@@ -73,11 +73,47 @@ version change ou qu'une étape échoue. Les pièges à connaître :
 - `windeployqt` crée un dossier `resources/` pour QtWebEngine, exactement le nom du dossier de
   données du programme, et au même endroit puisque `pathTool::dataDirPath()` renvoie le dossier de
   l'exécutable. Les deux contenus doivent **fusionner**, pas se remplacer ;
-- `dist-windows.ps1` est en UTF-8 **avec BOM** : PowerShell 5.1 lit un `.ps1` comme de l'ANSI sans
-  lui, et tous les accents des messages sont abîmés. Ne pas réenregistrer le fichier sans le BOM ;
+- les `.ps1` du dépôt sont en UTF-8 **avec BOM** — `dist-windows.ps1` comme `bootstrap-windows.ps1` :
+  PowerShell 5.1 lit un `.ps1` comme de l'ANSI sans lui, et tous les accents des messages sont
+  abîmés. Ne réenregistrer aucun des deux sans le BOM, et le vérifier sur les octets du fichier, pas
+  à travers un pipeline PowerShell qui décode le texte et masquerait la perte ;
 - toujours dans PowerShell 5.1, `qmake`, `nmake` et `windeployqt` écrivent leur progression sur la
   sortie d'erreur : avec `$ErrorActionPreference = 'Stop'` chaque ligne devient une erreur fatale
   alors que la commande a réussi. D'où `Invoke-BuildTool`, qui juge sur le code de retour.
+
+#### Amorcer une machine vierge
+
+`bootstrap-windows.ps1` enchaîne les cinq installations. Ce qui ne se devine pas depuis une machine
+déjà équipée, et qui a coûté des essais :
+
+- **la stratégie d'exécution par défaut d'un Windows 10 est `Restricted`**, donc un
+  `.\bootstrap-windows.ps1` échoue avant d'afficher la moindre ligne. La commande à donner est
+  `powershell -ExecutionPolicy Bypass -File .\bootstrap-windows.ps1`. Attention à ne pas conclure de
+  `Get-ExecutionPolicy` qu'il n'y a pas de problème : un `Bypass` de portée `Process`, posé par
+  l'outil depuis lequel on travaille, masque complètement le `Restricted` des portées persistantes,
+  qu'il faut donc lire avec `Get-ExecutionPolicy -List` ;
+- si le dépôt vient d'une **archive zip** et non d'un `git clone`, la marque de provenance de Windows
+  bloque le script même avec `Bypass` : il faut un `Unblock-File` ;
+- **seule l'installation des Build Tools demande l'élévation**, et le script ne la vérifie qu'à cet
+  endroit. Une reprise, ou un `-SkipBuildTools`, tourne depuis un PowerShell ordinaire ;
+- `aqt` écrit un `aqtinstall.log` dans le **dossier courant**. Le script l'appelle donc depuis
+  `build\bootstrap` : sans ce `Push-Location`, le fichier atterrit à la racine du dépôt et apparaît
+  dans `git status`. Ne pas « simplifier » ce détour ;
+- le script est **réentrant**, chaque étape se sautant si son résultat est déjà là. C'est ce qui rend
+  une reprise après échec sans douleur — utile si les Build Tools rendent 3010, code qui signale un
+  redémarrage conseillé et que le script traite comme un succès, mais qui pourrait demander un vrai
+  redémarrage avant que `cl.exe` fonctionne.
+
+Compter une trentaine de minutes et environ 4,5 Go, dont 3,3 pour les seuls Build Tools et 0,9 pour
+Qt avec QtWebEngine. Le reste est négligeable.
+
+**Ce qui reste non vérifié**, et à ne pas présenter autrement : l'étape d'installation des Build
+Tools est la seule branche du script à n'avoir jamais été exécutée, faute d'une machine où les
+désinstaller pour réessayer. Les quatre autres ont été rejouées, dossiers effacés, y compris celle de
+Qt — qui, la première fois qu'on l'a vraiment lancée, a révélé les deux défauts corrigés ci-dessus.
+La leçon vaut au-delà de ce script : **sur une machine déjà équipée, toute étape d'installation se
+saute et se déclare bonne sans avoir rien fait.** Pour l'essayer, effacer sa cible ou la détourner
+vers un dossier jetable.
 
 #### Ce qui manque et ne se voit pas
 
