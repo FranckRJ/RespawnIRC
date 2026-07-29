@@ -92,8 +92,11 @@ déjà équipée, et qui a coûté des essais :
   `Get-ExecutionPolicy` qu'il n'y a pas de problème : un `Bypass` de portée `Process`, posé par
   l'outil depuis lequel on travaille, masque complètement le `Restricted` des portées persistantes,
   qu'il faut donc lire avec `Get-ExecutionPolicy -List` ;
-- si le dépôt vient d'une **archive zip** et non d'un `git clone`, la marque de provenance de Windows
-  bloque le script même avec `Bypass` : il faut un `Unblock-File` ;
+- **git est le seul prérequis que le script n'installe pas**, et le dépôt doit être un vrai clone :
+  `dist-windows.ps1` extrait `resources/` et `themes/` avec `git archive HEAD`, ce qu'une archive zip
+  décompressée ne permet pas. L'échec arriverait tard, après une compilation complète. Sur un zip, la
+  marque de provenance de Windows bloque en plus le script même avec `Bypass` (`Unblock-File`), et
+  seuls la compilation et `run-windows.ps1` marcheraient ensuite ;
 - **seule l'installation des Build Tools demande l'élévation**, et le script ne la vérifie qu'à cet
   endroit. Une reprise, ou un `-SkipBuildTools`, tourne depuis un PowerShell ordinaire ;
 - `aqt` écrit un `aqtinstall.log` dans le **dossier courant**. Le script l'appelle donc depuis

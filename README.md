@@ -30,9 +30,9 @@ Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les 
 
     powershell -ExecutionPolicy Bypass -File .\bootstrap-windows.ps1
 
-`-ExecutionPolicy Bypass` n'est pas une précaution de style : la stratégie d'exécution par défaut d'un Windows 10 est `Restricted`, et un `.\bootstrap-windows.ps1` lancé tel quel sur une machine neuve échoue avant d'afficher quoi que ce soit. Si le dépôt a été récupéré en archive zip plutôt qu'avec `git clone`, il faut de plus lever la marque de provenance qu'y met Windows, sans quoi le script est bloqué même avec `Bypass` :
+`-ExecutionPolicy Bypass` n'est pas une précaution de style : la stratégie d'exécution par défaut d'un Windows 10 est `Restricted`, et un `.\bootstrap-windows.ps1` lancé tel quel sur une machine neuve échoue avant d'afficher quoi que ce soit.
 
-    Unblock-File .\bootstrap-windows.ps1
+**Le dépôt doit être récupéré avec `git clone`**, et git est le seul prérequis que le script n'installe pas — il sert d'ailleurs à le récupérer. Une archive zip téléchargée depuis GitHub ne suffit pas : `dist-windows.ps1` extrait `resources/` et `themes/` avec `git archive HEAD`, et une archive décompressée n'est pas un dépôt. L'échec arriverait tard, après une compilation complète. Sur un zip il faudrait de plus lever la marque de provenance que Windows y met, sans quoi le script est bloqué même avec `Bypass` (`Unblock-File .\bootstrap-windows.ps1`) — mais seuls la compilation et `run-windows.ps1` fonctionneraient ensuite, pas la fabrication de l'archive.
 
 Il installe les Build Tools, Qt 5.15.2 avec QtWebEngine, compile Hunspell et zlib, récupère OpenSSL en vérifiant son empreinte SHA-256, et pose le tout dans la disposition attendue par les `.pro`. Compter une trentaine de minutes et environ 4,5 Go, presque entièrement pour les Build Tools (3,3 Go) et Qt (0,9 Go).
 
