@@ -24,6 +24,18 @@ La cible est Windows 10 ou plus récent, en 64 bits. Tout se fait en ligne de co
 
 En revanche aucune modification des fichiers `.pro` n'est nécessaire : toute la configuration passe par deux variables données à `qmake`.
 
+#### Tout installer d'un coup
+
+Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les sections suivantes, sans intervention :
+
+    .\bootstrap-windows.ps1
+
+Il installe les Build Tools, Qt 5.15.2 avec QtWebEngine, compile Hunspell et zlib, récupère OpenSSL en vérifiant son empreinte SHA-256, et pose le tout dans la disposition attendue par les `.pro`. Compter une trentaine de minutes et environ 8 Go, presque entièrement pour les Build Tools et Qt.
+
+Il faut un PowerShell **administrateur** pour l'installation des Build Tools, et elle seule : les autres étapes n'écrivent que dans le dépôt et dans `C:\Qt`, et une reprise avec `-SkipBuildTools` tourne depuis un PowerShell ordinaire. Le script est réentrant, chaque étape étant sautée si son résultat est déjà là — après un échec, on le relance et il reprend où il en était.
+
+Les sections qui suivent décrivent les mêmes étapes à la main, et restent la référence : ce sont elles qu'il faut lire quand quelque chose ne se passe pas comme prévu, ou pour adapter une version.
+
 #### Les outils
 
 Les Build Tools de Visual Studio suffisent, l'IDE complet est inutile. L'installation se fait sans interface :

@@ -49,7 +49,10 @@ bundle.
 ### Windows
 
 Le point de départ, dont tout le reste découle : **QtWebEngine n'existe pas pour MinGW**, Chromium
-ne se compilant qu'avec MSVC. Le README détaille la mise en place ; les pièges à connaître :
+ne se compilant qu'avec MSVC. Le README détaille la mise en place, que `bootstrap-windows.ps1`
+exécute d'un bloc sur une machine vierge — Build Tools, Qt, Hunspell, zlib et OpenSSL. Ce script ne
+remplace pas le README : il applique ce qu'il décrit, et c'est le README qu'il faut lire quand une
+version change ou qu'une étape échoue. Les pièges à connaître :
 
 - les `.pro` n'ont **pas** été modifiés pour Windows, et ne devraient pas avoir à l'être : tout passe
   par des variables de `qmake`, `HUNSPELL_LIB_NAME`, `ZLIB_LIB_NAME` et `DEFINES+=HUNSPELL_STATIC` ;

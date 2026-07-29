@@ -26,7 +26,7 @@ Aujourd'hui : `qmake ...pro HUNSPELL_LIB_NAME=hunspell ZLIB_LIB_NAME=zs DEFINES+
 
 Les trois ensemble ramènent la ligne de compilation Windows à `qmake ..\..\respawnIrc\respawnIrc.pro`, de la même forme que sous Linux et macOS.
 
-## 3. Il n'y a pas de script de compilation, seulement un script de distribution et un script de lancement
+## 3. Il n'y a pas de script de compilation, seulement un script d'amorçage, un de distribution et un de lancement
 
 Le README fait taper `mkdir` / `cd` / `qmake` / `nmake` à la main (`README.md:85-88`), puis une seconde fois pour les tests (`README.md:102-106`). Pendant ce temps `run-windows.ps1:27` refuse de travailler tant que cela n'a pas été fait, et `dist-windows.ps1:124-143` contient sa propre copie des mêmes quatre étapes.
 
@@ -34,11 +34,15 @@ Piste : un `build-windows.ps1 [-Tests]` extrait de `dist-windows.ps1`, appelé p
 
 Cela donnerait aussi un chemin scripté aux tests : aujourd'hui `tests/tests.pro` n'est compilé qu'à la main, et `dist-windows.ps1` fabrique une archive sans avoir lancé les 142 vérifications. Les faire tourner avant l'assemblage ne coûte presque rien puisque la chaîne d'outils est déjà chargée — avec un `-SkipTests` pour s'en passer.
 
+`bootstrap-windows.ps1` a comblé l'autre bout de la chaîne, l'installation des outils, mais s'arrête volontairement là : il se termine en affichant la commande de `dist-windows.ps1` plutôt que de compiler. Un `build-windows.ps1` viendrait exactement entre les deux, et c'est lui qui manque encore pour qu'une machine vierge aille du dépôt à l'exécutable sans qu'on tape une seule ligne de `qmake`.
+
 ## 4. Une trentaine de lignes dupliquées mot pour mot entre les deux scripts PowerShell
 
 Le bloc de résolution de Qt est identique : `dist-windows.ps1:30-41` et `run-windows.ps1:32-43`. La vérification de la présence d'OpenSSL est dans les deux également (`dist-windows.ps1:183` et `run-windows.ps1:47`), à la seule différence du `throw` contre le `Write-Warning`.
 
-Piste : un `windows-common.ps1` chargé par point-sourcing, avec `Resolve-QtDir` et `Test-OpenSslDir`. Ce serait aussi le logement naturel de `Invoke-BuildTool` et `Import-MsvcEnvironment` une fois le script de compilation séparé.
+L'arrivée de `bootstrap-windows.ps1` a aggravé le constat : `Import-MsvcEnvironment` et `Invoke-BuildTool` y sont recopiés à l'identique depuis `dist-windows.ps1`, ce qui en fait deux exemplaires de chacune. La duplication est cette fois délibérée et commentée dans le script — un script d'amorçage tourne avant que quoi que ce soit d'autre n'existe sur la machine, et l'autonomie y a une valeur propre — mais elle reste de la duplication.
+
+Piste : un `windows-common.ps1` chargé par point-sourcing, avec `Resolve-QtDir` et `Test-OpenSslDir`. Ce serait aussi le logement naturel de `Invoke-BuildTool` et `Import-MsvcEnvironment` une fois le script de compilation séparé. À arbitrer pour le script d'amorçage, qui est le seul des trois à avoir une raison de ne dépendre de rien.
 
 ## 5. Chaque distribution recompile tout, et efface ce dont `run-windows.ps1` a besoin
 
