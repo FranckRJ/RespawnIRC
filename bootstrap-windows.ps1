@@ -2,15 +2,21 @@
 # Visual Studio, Qt 5.15.2 avec QtWebEngine, Hunspell et zlib compilés à la main, et OpenSSL 1.1.1.
 # Tout est posé dans la disposition attendue par les .pro, il n'y a rien à déplacer ensuite.
 #
-# Usage : .\bootstrap-windows.ps1 [-QtRootDir C:\Qt] [-SkipBuildTools] [-SkipQt] [-KeepDownloads]
+# Usage, depuis un PowerShell administrateur, à la racine du dépôt :
+#     powershell -ExecutionPolicy Bypass -File .\bootstrap-windows.ps1
+#         [-QtRootDir C:\Qt] [-SkipBuildTools] [-SkipQt] [-KeepDownloads]
+#
+# Le -ExecutionPolicy Bypass est nécessaire et pas décoratif : un Windows 10 neuf est en Restricted
+# et refuse le script avant de l'avoir lu. Si le dépôt vient d'une archive zip et non d'un git clone,
+# il faut en plus un Unblock-File, la marque de provenance de Windows bloquant le script même ainsi.
 #
 # Le script demande les droits d'administrateur, l'installation des Build Tools en ayant besoin. Il
 # est réentrant : chaque étape est sautée si son résultat est déjà là, on peut donc le relancer après
 # un échec sans tout retélécharger.
 #
-# Compter une trentaine de minutes et environ 8 Go sur le disque, presque entièrement pour les Build
-# Tools (3,3 Go) et Qt (2 Go), le reste étant négligeable : Hunspell et zlib pèsent 2,4 Mo de
-# téléchargement et se compilent en une quinzaine de secondes.
+# Compter une trentaine de minutes et environ 4,5 Go sur le disque, presque entièrement pour les
+# Build Tools (3,3 Go) et Qt (0,9 Go mesuré, QtWebEngine compris), le reste étant négligeable :
+# Hunspell et zlib pèsent 2,4 Mo de téléchargement et se compilent en une quinzaine de secondes.
 #
 # Ce script est en UTF-8 avec BOM, comme dist-windows.ps1 et pour la même raison : PowerShell 5.1 lit
 # un .ps1 comme de l'ANSI sans lui et tous les accents des messages sont abîmés.
@@ -189,9 +195,22 @@ else
     $aqtBin = Join-Path $downloadDir 'aqt.exe'
     Get-FileIfNeeded -Url "https://github.com/miurahr/aqtinstall/releases/download/$AqtVersion/aqt_x64.exe" -Path $aqtBin
 
-    Write-Host "   installation dans $QtRootDir (2 Go)..."
-    Invoke-BuildTool -Name 'aqt' -Command {
-        & $aqtBin install-qt windows desktop $QtVersion $QtArch -m qtwebengine --outputdir $QtRootDir
+    Write-Host "   installation dans $QtRootDir (0,9 Go)..."
+
+    # aqt écrit un aqtinstall.log dans le dossier courant : on se place dans build\bootstrap pour
+    # qu'il y atterrisse avec le reste des téléchargements, et non à la racine du dépôt où il
+    # apparaîtrait dans git status.
+    Push-Location $downloadDir
+
+    try
+    {
+        Invoke-BuildTool -Name 'aqt' -Command {
+            & $aqtBin install-qt windows desktop $QtVersion $QtArch -m qtwebengine --outputdir $QtRootDir
+        }
+    }
+    finally
+    {
+        Pop-Location
     }
 
     if(-not (Test-Path (Join-Path $qtDir 'bin\qmake.exe')))

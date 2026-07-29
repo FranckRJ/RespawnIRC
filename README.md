@@ -26,11 +26,17 @@ En revanche aucune modification des fichiers `.pro` n'est nécessaire : toute la
 
 #### Tout installer d'un coup
 
-Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les sections suivantes, sans intervention :
+Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les sections suivantes, sans intervention. Depuis un PowerShell **administrateur**, à la racine du dépôt :
 
-    .\bootstrap-windows.ps1
+    powershell -ExecutionPolicy Bypass -File .\bootstrap-windows.ps1
 
-Il installe les Build Tools, Qt 5.15.2 avec QtWebEngine, compile Hunspell et zlib, récupère OpenSSL en vérifiant son empreinte SHA-256, et pose le tout dans la disposition attendue par les `.pro`. Compter une trentaine de minutes et environ 8 Go, presque entièrement pour les Build Tools et Qt.
+`-ExecutionPolicy Bypass` n'est pas une précaution de style : la stratégie d'exécution par défaut d'un Windows 10 est `Restricted`, et un `.\bootstrap-windows.ps1` lancé tel quel sur une machine neuve échoue avant d'afficher quoi que ce soit. Si le dépôt a été récupéré en archive zip plutôt qu'avec `git clone`, il faut de plus lever la marque de provenance qu'y met Windows, sans quoi le script est bloqué même avec `Bypass` :
+
+    Unblock-File .\bootstrap-windows.ps1
+
+Il installe les Build Tools, Qt 5.15.2 avec QtWebEngine, compile Hunspell et zlib, récupère OpenSSL en vérifiant son empreinte SHA-256, et pose le tout dans la disposition attendue par les `.pro`. Compter une trentaine de minutes et environ 4,5 Go, presque entièrement pour les Build Tools (3,3 Go) et Qt (0,9 Go).
+
+Une réserve honnête sur ce script : ses étapes 2 à 5 ont été rejouées telles quelles, mais **l'installation des Build Tools elle-même n'a jamais été exécutée par le script**, faute d'une machine où les désinstaller pour réessayer. Les composants demandés et l'URL sont ceux d'une installation manuelle vérifiée de bout en bout, et le code de retour 3010 — redémarrage conseillé — est traité comme un succès, mais cette branche-là reste la seule à n'avoir jamais tourné.
 
 Il faut un PowerShell **administrateur** pour l'installation des Build Tools, et elle seule : les autres étapes n'écrivent que dans le dépôt et dans `C:\Qt`, et une reprise avec `-SkipBuildTools` tourne depuis un PowerShell ordinaire. Le script est réentrant, chaque étape étant sautée si son résultat est déjà là — après un échec, on le relance et il reprend où il en était.
 
