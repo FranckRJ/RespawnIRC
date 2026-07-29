@@ -28,13 +28,17 @@ En revanche aucune modification des fichiers `.pro` n'est nécessaire : toute la
 
 Les Build Tools de Visual Studio suffisent, l'IDE complet est inutile. L'installation se fait sans interface :
 
-    vs_BuildTools.exe --quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended
-
-C'est la commande dont tout ce document découle, la seule à avoir été vérifiée de bout en bout. Sachez toutefois que `--includeRecommended` est large : il installe le Windows SDK au complet, mais aussi **WebView2 et Microsoft Edge**, dont la compilation de RespawnIRC n'a aucun besoin, pour environ 5 Go en tout. Une installation ciblée devrait suffire :
-
     vs_BuildTools.exe --quiet --wait --norestart --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.26100
 
-Cette seconde commande **n'a pas été essayée sur une machine vierge**, contrairement à la première : elle est donnée comme piste à vérifier, pas comme recette éprouvée. Le numéro du SDK est par ailleurs à adapter, c'est celui qui était courant au moment où ces lignes ont été écrites.
+Cette installation ciblée pèse **3,3 Go** (1,7 Go de Build Tools et 1,7 Go de Windows SDK) et n'installe ni WebView2 ni Microsoft Edge. Elle a été vérifiée de bout en bout sur une machine sans MSVC ni Qt : compilation du programme, des tests, et fabrication de l'archive. Le numéro du SDK est à adapter, c'est celui qui était courant au moment où ces lignes ont été écrites.
+
+Les **deux** composants sont nécessaires. `VC.Tools.x86.x64` seul pose bien `cl.exe` mais aucun `Windows Kits`, et rien ne compile : depuis Visual Studio 2015 les en-têtes de la bibliothèque C standard appartiennent au Windows SDK, pas au compilateur, et un simple `#include <stdio.h>` échoue.
+
+La variante historique reste valable :
+
+    vs_BuildTools.exe --quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended
+
+Elle installe la même chose plus WebView2 et Microsoft Edge, dont la compilation de RespawnIRC n'a aucun besoin, pour environ 5 Go. Il n'y a pas de raison de la préférer.
 
 Qt 5.15.2 est la dernière version dont les binaires sont librement téléchargeables. [aqtinstall](https://github.com/miurahr/aqtinstall) les récupère sans demander de compte Qt, et publie un exécutable autonome qui évite d'installer Python :
 
@@ -44,7 +48,7 @@ Qt 5.15.2 est la dernière version dont les binaires sont librement télécharge
 
 #### Hunspell et zlib
 
-Rien n'est fourni par le système sous Windows, il faut donc compiler les deux. Ce sont deux petites bibliothèques sans dépendance, et les compiler à la main prend une quinzaine de secondes : c'est la méthode recommandée. Récupérez les sources, [Hunspell 1.7.3](https://github.com/hunspell/hunspell/releases) et [zlib 1.3.1](https://github.com/madler/zlib/releases), décompressez-les, puis depuis une invite de commandes où `vcvars64.bat` a été exécuté :
+Rien n'est fourni par le système sous Windows, il faut donc compiler les deux. Ce sont deux petites bibliothèques sans dépendance, et les compiler à la main prend une quinzaine de secondes (12 s mesurées au dernier essai) : c'est la méthode recommandée. Récupérez les sources, [Hunspell 1.7.3](https://github.com/hunspell/hunspell/releases) et [zlib 1.3.1](https://github.com/madler/zlib/releases), décompressez-les, puis depuis une invite de commandes où `vcvars64.bat` a été exécuté :
 
     cd hunspell-1.7.3\src\hunspell
     cl /nologo /c /O2 /MD /EHsc /DHUNSPELL_STATIC *.cxx
@@ -55,6 +59,8 @@ Rien n'est fourni par le système sous Windows, il faut donc compiler les deux. 
     lib /nologo /OUT:zs.lib *.obj
 
 `/MD` est indispensable : c'est la bibliothèque C++ dynamique, celle qu'utilise Qt. Avec `/MT` l'édition de liens échouerait.
+
+Cette recette ne produit qu'une bibliothèque *release*. Un `nmake debug` de RespawnIRC échouera donc en `LNK2038`, sur un désaccord de `RuntimeLibrary` et de `_ITERATOR_DEBUG_LEVEL` : il faudrait recompiler Hunspell une seconde fois avec `/MDd`, dans un `hunspelld.lib` à part. Rien n'en a eu besoin jusqu'ici, la distribution ne se faisant qu'en release.
 
 Placez ensuite le résultat à la racine du dépôt, dans la disposition attendue par les `.pro` : les cinq en-têtes de `src\hunspell` (`hunspell.hxx`, `hunspell.h`, `hunvisapi.h`, `atypes.hxx`, `w_char.hxx`) dans `hunspell\include\hunspell` et `hunspell.lib` dans `hunspell\lib` ; `zlib.h` et `zconf.h` dans `zlib\include` et `zs.lib` dans `zlib\lib`.
 
@@ -119,9 +125,11 @@ Trois dossiers sont allégés parce que `windeployqt` copie tout par défaut : l
 
 Trois choses que Windows 10 fournit et que Windows 7 n'a pas sont embarquées dans l'archive, sans quoi le programme ne démarre pas du tout sur certaines machines. C'est la raison d'être de la pile de DLL qui accompagne le programme depuis toujours, et non un excès de prudence :
 
-- l'**Universal CRT** est un composant du système à partir de Windows 10, alors que Windows 7 ne l'obtient que par une mise à jour facultative (KB2999226). L'archive embarque donc `ucrtbase.dll` et la quarantaine de petites DLL de redirection `api-ms-win-crt-*`, prises dans `Windows Kits\10\Redist\ucrt\DLLs\x64`. Sous Windows 10 la copie du système est utilisée de toute façon, ces fichiers n'y servent à rien mais ne gênent pas. Le redistribuable exige Windows 7 **SP1**, pas la version d'origine ;
+- l'**Universal CRT** est un composant du système à partir de Windows 10, alors que Windows 7 ne l'obtient que par une mise à jour facultative (KB2999226). L'archive doit donc embarquer `ucrtbase.dll` et la quarantaine de petites DLL de redirection `api-ms-win-crt-*`. Sous Windows 10 la copie du système est utilisée de toute façon, ces fichiers n'y servent à rien mais ne gênent pas. Le redistribuable exige Windows 7 **SP1**, pas la version d'origine ;
 - les **bibliothèques C++ de MSVC** (`vcruntime140.dll`, `vcruntime140_1.dll`, `msvcp140.dll`), absentes de toute machine où le redistribuable n'a jamais été installé, quel que soit le Windows ;
 - **`D3Dcompiler_47.dll`**, présent dans le système sous Windows 10 mais généralement pas sous Windows 7, dont Qt a besoin pour le rendu via ANGLE.
+
+**En l'état, l'Universal CRT n'entre pas dans l'archive.** `dist-windows.ps1` le cherche dans `Windows Kits\10\Redist\ucrt\DLLs\x64`, alors que le SDK 10.0.26100 le pose sous `Windows Kits\10\Redist\10.0.26100.0\ucrt\DLLs\x64` — les SDK récents versionnent ce dossier. Le script ne s'en émeut pas : il émet un `Write-Warning` qui défile au milieu de la sortie de `windeployqt`, puis assemble et compresse quand même. L'archive obtenue est complète pour tout le reste (`vcruntime140.dll`, `vcruntime140_1.dll`, `msvcp140.dll`, `D3Dcompiler_47.dll`, OpenSSL) mais ne contient **aucun** des 46 fichiers de l'Universal CRT, donc ne démarrera pas sur un Windows 7 sans KB2999226. Le chemin étant versionné et non propre à l'installation ciblée, une installation `--includeRecommended` avec le même SDK devrait donner le même résultat — cela n'a pas été vérifié. À corriger dans le script en cherchant les deux dispositions, et en transformant l'avertissement en erreur franche.
 
 Une limite honnête : **rien de tout cela n'a été vérifié sur un vrai Windows 7**, faute d'une machine sous la main. Le contenu de l'archive suit les règles documentées par Microsoft et le programme a été lancé avec succès depuis l'archive sous Windows 10, mais la validation sous Windows 7 reste à faire.
 
