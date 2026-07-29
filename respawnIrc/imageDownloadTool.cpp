@@ -36,13 +36,16 @@ void imageDownloadToolClass::addOrUpdateRule(QString ruleName, QString directory
 
     if(newRule.alwaysCheckBeforeDL == true)
     {
-        QString basePath = (newRule.isInTmpDir == true ? tmpDir->path() : pathTool::dataDirPath());
-        QDir imageDir(basePath + newRule.directoryPath);
         QStringList listOfImagesInDir;
 
-        if(imageDir.exists() == true)
+        for(const QString& thisBasePath : basePathsForReading(newRule))
         {
-            listOfImagesInDir = imageDir.entryList(QDir::Files);
+            QDir imageDir(thisBasePath + newRule.directoryPath);
+
+            if(imageDir.exists() == true)
+            {
+                listOfImagesInDir.append(imageDir.entryList(QDir::Files));
+            }
         }
 
         for(QString& thisImage : listOfImagesInDir)
@@ -173,18 +176,41 @@ bool imageDownloadToolClass::checkIfImageUrlExist(QString imageUrl, const imageD
 
     if(thisRule.alwaysCheckBeforeDL == true)
     {
-        QString basePath = (thisRule.isInTmpDir == true ? tmpDir->path() : pathTool::dataDirPath());
         QString pathFile = (thisRule.takeOnlyFileNameForSave == true ? getOnlyLevelOfFilePath(imageUrl) : imageUrl);
-        QFileInfo imageFile(basePath + thisRule.directoryPath + convertUrlToFilePath(pathFile) + thisRule.appendAfterName);
 
-        if(imageFile.exists() == true && imageFile.isFile() == true)
+        for(const QString& thisBasePath : basePathsForReading(thisRule))
         {
-            listOfImagesIte.value().append(convertUrlToFilePath(imageUrl));
-            return true;
+            QFileInfo imageFile(thisBasePath + thisRule.directoryPath + convertUrlToFilePath(pathFile) + thisRule.appendAfterName);
+
+            if(imageFile.exists() == true && imageFile.isFile() == true)
+            {
+                listOfImagesIte.value().append(convertUrlToFilePath(imageUrl));
+                return true;
+            }
         }
     }
 
     return false;
+}
+
+QStringList imageDownloadToolClass::basePathsForReading(const imageDownloadRuleStruct& thisRule)
+{
+    if(thisRule.isInTmpDir == true)
+    {
+        return QStringList(tmpDir->path());
+    }
+
+    /* Les images téléchargées vont dans userdata/, mais celles livrées avec le programme restent
+     * dans resources/ : il faut regarder dans les deux pour ne pas retélécharger un sticker déjà
+     * là. C'est aussi ce qui permet de retrouver les stickers qu'une version antérieure avait
+     * déposés dans resources/stickers/, et qui ne sont pas déplaçables faute de pouvoir les
+     * distinguer de ceux d'origine. */
+    return pathTool::dirPathsForReading();
+}
+
+QString imageDownloadToolClass::basePathForWriting(const imageDownloadRuleStruct& thisRule)
+{
+    return (thisRule.isInTmpDir == true ? tmpDir->path() : pathTool::userDataDirPath());
 }
 
 void imageDownloadToolClass::startDownloadMissingImages()
@@ -251,7 +277,7 @@ void imageDownloadToolClass::analyzeLatestImageDownloaded()
             {
                 QFile newImageFile;
                 QDir newDir;
-                QString basePath = (ruleIte.value().isInTmpDir == true ? tmpDir->path() : pathTool::dataDirPath());
+                QString basePath = basePathForWriting(ruleIte.value());
                 QString pathFile = (ruleIte.value().takeOnlyFileNameForSave == true ? getOnlyLevelOfFilePath(listOfImagesUrlNeedDownload.front().linkOfImage) : listOfImagesUrlNeedDownload.front().linkOfImage);
                 QString imagePath = (basePath + ruleIte.value().directoryPath + convertUrlToFilePath(pathFile) + ruleIte.value().appendAfterName);
                 newDir.mkpath(removeLastLevelOfFilePath(imagePath));

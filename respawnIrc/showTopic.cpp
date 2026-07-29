@@ -282,7 +282,7 @@ void showTopicClass::addSearchPath(QString newSearchPath)
 
 void showTopicClass::resetSearchPath()
 {
-    messagesBox->setSearchPaths(QStringList(pathTool::dataDirPath()));
+    messagesBox->setSearchPaths(pathTool::dirPathsForReading());
 }
 
 void showTopicClass::relayoutDocumentHack()

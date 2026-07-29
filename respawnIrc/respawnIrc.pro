@@ -107,7 +107,8 @@ SOURCES += \
     payloadTool.cpp \
     addCookieWindow.cpp \
     clickableLabel.cpp \
-    baseDialog.cpp
+    baseDialog.cpp \
+    pathTool.cpp
 
 HEADERS += \
     customWebPage.hpp \

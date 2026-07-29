@@ -21,7 +21,12 @@ int main(int argc, char* argv[])
     QCoreApplication::addLibraryPath("./");
 
     QApplication app(argc, argv);
-    QSettings setting(pathTool::dataDirPath() + "/config.ini", QSettings::IniFormat);
+
+    /* Avant toute lecture : les versions antérieures écrivaient à côté de l'exécutable, tout est
+     * maintenant rassemblé dans userdata/. */
+    pathTool::migrateOldUserDataIfNeeded();
+
+    QSettings setting(pathTool::pathForWriting("config.ini"), QSettings::IniFormat);
 
     logTool::initialize();
 

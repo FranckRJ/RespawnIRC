@@ -21,7 +21,10 @@ void shortcutTool::initializeAllShortcutsRules()
 
 void shortcutTool::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew, bool useRegex)
 {
-    QFile thisFile(pathTool::dataDirPath() + "/resources/" + ruleName + ".txt");
+    /* shortcut.txt est écrit par l'utilisateur et vit dans userdata/, alors que
+     * noLangageSticker.txt et stickerToSmiley.txt sont livrés avec le programme : la lecture à
+     * deux dossiers trouve les deux sans avoir à les distinguer ici. */
+    QFile thisFile(pathTool::pathForReading("resources/" + ruleName + ".txt"));
 
     QMap<QString, shortcutRuleStruct>::iterator rulesIte = listOfShortcutRules.insert(ruleName, shortcutRuleStruct());
 

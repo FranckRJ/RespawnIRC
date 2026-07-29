@@ -49,10 +49,10 @@ $env:PATH = "$qtDir\bin;$opensslDir;$env:PATH"
 
 if($Logs)
 {
-    # Toutes les catégories respawnirc.* en debug, logs dans logs\respawnirc.log, et pages non
-    # analysées sauvegardées dans logs\page-*.html.
+    # Toutes les catégories respawnirc.* en debug, logs dans userdata\logs\respawnirc.log, et pages
+    # non analysées sauvegardées dans userdata\logs\page-*.html.
     $env:RESPAWNIRC_DEBUG = '1'
-    Write-Host "RESPAWNIRC_DEBUG actif, logs dans $(Join-Path $repoDir 'logs\respawnirc.log')"
+    Write-Host "RESPAWNIRC_DEBUG actif, logs dans $(Join-Path $repoDir 'userdata\logs\respawnirc.log')"
 }
 
 & $builtExe

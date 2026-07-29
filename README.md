@@ -93,7 +93,7 @@ Seuls les fichiers intermédiaires restent dans `build\` : l'exécutable, lui, e
 
     .\run-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
 
-Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `logs\respawnirc.log` (voir plus bas).
+Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `userdata\logs\respawnirc.log` (voir plus bas).
 
 Les tests se compilent de la même façon :
 
@@ -136,6 +136,15 @@ Et exécutez ces commandes :
     qmake
     make
 
+L'exécutable `RespawnIRC` est produit à la racine du dépôt, là où sont `resources/` et `themes/` qu'il va chercher à côté de lui. Il n'y a rien à déplacer, lancez-le de là :
+
+    cd ..
+    ./RespawnIRC
+
+Tout ceci en une ligne :
+
+    cd respawnIrc; qmake; make; cd ..; ./RespawnIRC
+
 ### macOS
 
 Homebrew fournit Hunspell, et zlib vient du système, mais son paquet `qt@5` est livré **sans QtWebEngine** (retiré parce que son Chromium a des failles non corrigées) alors que RespawnIRC en a besoin. Il faut donc le Qt 5.15.2 officiel, que [aqtinstall](https://github.com/miurahr/aqtinstall) récupère sans demander de compte Qt :
@@ -160,7 +169,7 @@ Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non 
     cd ..
     ./RespawnIRC.app/Contents/MacOS/RespawnIRC
 
-Le programme cherche `resources/`, `themes/`, `config.ini` et `logs/` **à côté du bundle** et non dedans (voir `pathTool::dataDirPath`), le bundle doit donc rester à la racine du dépôt.
+Le programme cherche `resources/`, `themes/` et `userdata/` **à côté du bundle** et non dedans (voir `pathTool::dataDirPath`), le bundle doit donc rester à la racine du dépôt.
 
 #### Fabriquer une version distribuable
 
@@ -180,11 +189,20 @@ Trois limites de cette distribution :
 
 ---
 
-Sous Linux, l'exécutable `RespawnIRC` est produit à la racine du projet, là où se trouvent les dossiers `resources` et `themes` qu'il va chercher à côté de lui. Il n'y a rien à déplacer, lancez-le de là :
+## Où le programme range ses données
 
-    cd ..
-    ./RespawnIRC
+Tout ce que RespawnIRC écrit va dans un dossier `userdata/`, à côté de l'exécutable — à côté du bundle sous macOS :
 
-Tout ceci en une ligne :
+| Chemin | Contenu |
+| --- | --- |
+| `userdata/config.ini` | les réglages : comptes, thème, listes de pseudos |
+| `userdata/logs/` | journal et pages sauvegardées quand `RESPAWNIRC_DEBUG` est actif |
+| `userdata/user_fr.dic` | mots ajoutés au correcteur orthographique |
+| `userdata/resources/shortcut.txt` | raccourcis d'écriture |
+| `userdata/resources/stickers/` | stickers téléchargés en lisant les topics |
 
-    cd respawnIrc; qmake; make; cd ..; ./RespawnIRC
+`userdata/` reproduit la disposition des données livrées avec le programme, et la lecture le consulte en premier : un fichier qui s'y trouve masque celui d'origine. C'est ce qui permet de poser son propre dictionnaire dans `userdata/resources/` sans toucher à celui livré.
+
+Deux raisons à cette séparation. Une mise à jour se fait en remplaçant `resources/` et `themes/`, sans risquer d'effacer des réglages ; et les scripts de distribution n'embarquent plus les données du mainteneur, ce qu'ils faisaient jusqu'ici puisque les stickers téléchargés atterrissaient dans `resources/stickers/`, indiscernables de ceux livrés.
+
+Le programme reste entièrement portable : rien n'est écrit hors de son propre dossier, qu'on peut déplacer, copier sur une clé ou supprimer sans laisser de trace ailleurs. Les versions antérieures posaient ces fichiers directement à côté de l'exécutable ; ils sont déplacés au premier démarrage.

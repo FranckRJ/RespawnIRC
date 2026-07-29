@@ -23,6 +23,7 @@ SOURCES += \
     testParsing.cpp \
     ../respawnIrc/parsingTool.cpp \
     ../respawnIrc/payloadTool.cpp \
+    ../respawnIrc/pathTool.cpp \
     ../respawnIrc/logTool.cpp \
     ../respawnIrc/styleTool.cpp \
     ../respawnIrc/shortcutTool.cpp

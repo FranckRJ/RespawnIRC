@@ -20,7 +20,7 @@ Dépendances Debian : `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine
 zlib1g-dev`. zlib sert à décompresser le payload des pages (voir plus bas).
 
 L'exécutable doit tourner depuis la racine du dépôt (il y cherche `themes/`, `resources/` et
-`config.ini`), ce que le `DESTDIR` lui donne gratuitement.
+`userdata/`), ce que le `DESTDIR` lui donne gratuitement.
 
 ### macOS
 
@@ -127,6 +127,61 @@ versions, ce sont les dictionnaires malformés — or RespawnIRC embarque les si
 vcpkg garderait l'avantage avec son cache binaire, en intégration continue, ou le jour où le projet
 prendrait des dépendances plus lourdes.
 
+## Où le programme range ses données
+
+Deux dossiers à côté de l'exécutable — à côté du bundle sous macOS — et une règle :
+
+- `resources/` et `themes/` sont **livrés avec le programme et jamais écrits** ;
+- `userdata/` contient **tout ce que le programme écrit**, en reproduisant la même disposition :
+  `userdata/config.ini`, `userdata/logs/`, `userdata/user_fr.dic`,
+  `userdata/resources/shortcut.txt`, `userdata/resources/stickers/`.
+
+D'où les fonctions de `pathTool` :
+
+| Fonction | Usage |
+| --- | --- |
+| `dataDirPath()` | les données livrées, en lecture seule |
+| `userDataDirPath()` | ce que le programme écrit |
+| `dirPathsForReading()` | les deux, dans l'ordre où il faut les consulter |
+| `pathForReading(rel)` | `userdata/` si le fichier y est, sinon les données livrées |
+| `pathForWriting(rel)` | toujours `userdata/`, dossiers parents créés au passage |
+
+**Utiliser `pathForReading` pour tout ce qui peut avoir été écrit** (`shortcut.txt`, dictionnaires)
+et `pathForWriting` pour toute écriture. `dataDirPath()` ne reste direct que pour ce qui n'est
+jamais écrit : sons, images de tags, thèmes.
+
+Pourquoi cette séparation : les scripts de distribution embarquaient les données du mainteneur,
+`resources/shortcut.txt` et les stickers téléchargés en se servant du programme. Aucune règle de nom
+ne pouvait les exclure, un sticker téléchargé étant dans le même dossier et de la même forme
+(`<id>.png`) qu'un sticker livré. Les scripts extraient donc maintenant `resources/` et `themes/`
+avec `git archive HEAD` — uniquement ce qui est commité — et ne copient jamais `userdata/`.
+
+`QStandardPaths::AppDataLocation` aurait fermé le trou de façon plus radicale, mais aurait sorti la
+configuration du dossier du programme : plus de version portable, version de développement et
+version installée partageant le même `config.ini`, et migration obligatoire. D'où `userdata/`.
+
+`pathTool::migrateOldUserDataIfNeeded()`, appelé au tout début de `main`, déplace dans `userdata/`
+ce que les versions antérieures laissaient à côté de l'exécutable.
+
+### Stickers : lecture dans deux dossiers
+
+237 stickers sont livrés dans `resources/stickers/`, les nouveaux vont dans
+`userdata/resources/stickers/`, et ceux qu'une version antérieure avait téléchargés sont restés
+parmi les premiers — ils ne sont pas déplaçables, rien ne les en distingue. Trois endroits
+consultent donc les deux dossiers :
+
+- `imageDownloadTool::basePathsForReading()`, pour ne pas retélécharger un sticker déjà là
+  (`basePathForWriting()` désigne, lui, le seul dossier où écrire) ;
+- `selectStickerWindow`, qui liste les deux dossiers, dédoublonne, puis retrie — la concaténation
+  de deux listes triées ne l'est plus ;
+- les `setSearchPaths()` de `showTopic` et `selectStickerWindow`, qui reçoivent `dirPathsForReading()`.
+
+**Ne pas toucher à la forme des chemins dans le HTML des messages.** `parsingTool.cpp` écrit
+`<img src="resources/stickers/<id>.png">` et `respawnIrc.cpp` relit exactement ce préfixe par regex
+pour refabriquer `[[sticker:p/<id>]]` au moment de citer. C'est la raison pour laquelle `userdata/`
+reproduit la disposition de `resources/` au lieu d'être à plat : les mêmes chemins relatifs
+résolvent dans les deux dossiers, sans rien changer au HTML ni aux regex qui le relisent.
+
 ## Logs et diagnostic
 
 Rien n'est journalisé par défaut. Avec `RESPAWNIRC_DEBUG=1` :
@@ -136,8 +191,8 @@ RESPAWNIRC_DEBUG=1 ./RespawnIRC
 ```
 
 - toutes les catégories `respawnirc.*` passent en debug,
-- les logs sont écrits dans `logs/respawnirc.log`,
-- les pages dont l'analyse échoue sont sauvegardées dans `logs/page-*.html` (20 max).
+- les logs sont écrits dans `userdata/logs/respawnirc.log`,
+- les pages dont l'analyse échoue sont sauvegardées dans `userdata/logs/page-*.html` (20 max).
 
 Pour n'activer qu'une catégorie sans écrire de fichier :
 `QT_LOGGING_RULES="respawnirc.parsing.debug=true" ./RespawnIRC`.
@@ -354,5 +409,5 @@ les accompagnent sont eux aussi factices.
 - Commentaires et messages de commit en français, sans retour à la ligne manuel.
 - Style du dépôt : `if(x == true)`, accolades sur leur propre ligne, noms en
   `camelCase` suffixés (`...Class`, `...Struct`, `expFor...`).
-- Le `.gitignore` couvre les objets de compilation ; ne pas committer `RespawnIRC`,
-  `config.ini`, ni `logs/`.
+- Le `.gitignore` couvre les objets de compilation ; ne pas committer `RespawnIRC`
+  ni `userdata/`.

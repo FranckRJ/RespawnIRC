@@ -28,7 +28,7 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : baseDialog
     stickerBrowser->setReadOnly(true);
     stickerBrowser->setOpenExternalLinks(false);
     stickerBrowser->setOpenLinks(false);
-    stickerBrowser->setSearchPaths(QStringList(pathTool::dataDirPath()));
+    stickerBrowser->setSearchPaths(pathTool::dirPathsForReading());
     stickerBrowser->setMinimumWidth(450);
     stickerBrowser->setMinimumHeight(480);
 
@@ -124,7 +124,7 @@ clickableLabelClass* selectStickerWindowClass::createQLabelForStickerTypeWithThe
     QPalette palette;
     clickableLabelClass* imageView = new clickableLabelClass(listOfLabels.size(), parent);
 
-    image.load(pathTool::dataDirPath() + "/resources/" + imageName);
+    image.load(pathTool::pathForReading("resources/" + imageName));
     image = image.scaled(50, 50, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     palette.setColor(QPalette::Background, Qt::transparent);
@@ -147,13 +147,28 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
         {
             case 0:
             {
-                QDir stickerDir(pathTool::dataDirPath() + "/resources/stickers/");
+                /* Les stickers livrés avec le programme et ceux téléchargés depuis vivent dans
+                 * deux dossiers de même forme : on liste les deux, sans doublon, et on retrie
+                 * puisque la concaténation de deux listes triées ne l'est plus. */
                 QStringList listOfStickers;
 
-                if(stickerDir.exists() == true)
+                for(const QString& thisBasePath : pathTool::dirPathsForReading())
                 {
-                    listOfStickers = stickerDir.entryList(QDir::Files);
+                    QDir stickerDir(thisBasePath + "/resources/stickers/");
+
+                    if(stickerDir.exists() == true)
+                    {
+                        for(const QString& thisSticker : stickerDir.entryList(QDir::Files))
+                        {
+                            if(listOfStickers.contains(thisSticker) == false)
+                            {
+                                listOfStickers.append(thisSticker);
+                            }
+                        }
+                    }
                 }
+
+                listOfStickers.sort();
 
                 for(const QString& thisSticker : listOfStickers)
                 {

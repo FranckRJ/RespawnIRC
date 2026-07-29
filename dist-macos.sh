@@ -72,7 +72,12 @@ echo "== Assemblage de l'image disque"
 rm -rf "$distDir"
 mkdir -p "$distDir/image/RespawnIRC"
 mv "$bundlePath" "$distDir/image/RespawnIRC/"
-cp -R "$repoDir/resources" "$repoDir/themes" "$distDir/image/RespawnIRC/"
+# resources/ et themes/ sont extraits de git et non copiés depuis le dossier de travail : celui-ci
+# contient aussi ce que le mainteneur a accumulé en se servant du programme, à commencer par les
+# stickers qu'une version antérieure téléchargeait dans resources/stickers/ et que rien ne distingue
+# de ceux livrés. git archive ne sort que ce qui est commité, sans liste d'exclusion à tenir à jour.
+# Ce que le programme écrit aujourd'hui vit dans userdata/, qui n'est simplement jamais copié.
+git -C "$repoDir" archive HEAD resources themes | tar -x -C "$distDir/image/RespawnIRC"
 
 dmgPath="$distDir/RespawnIRC-$version-macos.dmg"
 hdiutil create -volname "RespawnIRC $version" -srcfolder "$distDir/image" -ov -format UDZO -quiet "$dmgPath"

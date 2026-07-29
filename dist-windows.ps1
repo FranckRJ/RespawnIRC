@@ -217,12 +217,30 @@ else
     Write-Warning "Universal CRT introuvable : l'archive ne démarrera pas sur un Windows 7 sans la mise à jour KB2999226."
 }
 
+Write-Host "== Données du programme"
+# resources/ et themes/ sont extraits de git et non copiés depuis le dossier de travail : celui-ci
+# contient aussi ce que le mainteneur a accumulé en se servant du programme, à commencer par les
+# stickers qu'une version antérieure téléchargeait dans resources/stickers/ et que rien ne distingue
+# de ceux livrés. git archive ne sort que ce qui est commité, sans liste d'exclusion à tenir à jour.
+# Ce que le programme écrit aujourd'hui vit dans userdata/, qui n'est simplement jamais copié.
+if(-not (Get-Command git -ErrorAction SilentlyContinue))
+{
+    throw "git est introuvable : il sert à extraire resources\ et themes\ sans y mêler de données personnelles."
+}
+
+$archiveOfData = Join-Path $distDir 'donnees.zip'
+
+Invoke-BuildTool -Name 'git archive' -Command {
+    & git -C $repoDir archive --format=zip --output=$archiveOfData HEAD resources themes
+}
+
 # windeployqt a déjà créé un dossier resources/ à côté de l'exécutable pour QtWebEngine (icudtl.dat
 # et les fichiers .pak). C'est le même nom que celui des données du programme, qui doivent elles
 # aussi être à côté de l'exécutable : les deux contenus cohabitent donc dans un seul dossier, ce que
-# rien n'empêche puisque aucun nom de fichier ne se chevauche. Il faut fusionner et non remplacer.
-Copy-Item (Join-Path $repoDir 'resources\*') (Join-Path $imageDir 'resources') -Recurse -Force
-Copy-Item (Join-Path $repoDir 'themes') $imageDir -Recurse -Force
+# rien n'empêche puisque aucun nom de fichier ne se chevauche. Il faut fusionner et non remplacer,
+# ce que fait Expand-Archive en écrivant dans un dossier déjà peuplé.
+Expand-Archive -Path $archiveOfData -DestinationPath $imageDir -Force
+Remove-Item $archiveOfData -Force
 
 $zipPath = Join-Path $distDir "RespawnIRC-$version-windows.zip"
 Compress-Archive -Path (Join-Path $distDir 'image\RespawnIRC') -DestinationPath $zipPath
