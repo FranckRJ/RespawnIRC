@@ -759,6 +759,15 @@ Cloudflare » plutôt que de faire semblant que le topic n'existe pas.
 vraies pages sauvegardées dans `tests/fixtures` (stockées en `.html.gz` pour ne pas
 alourdir le dépôt, décompressées à la volée avec `payloadTool::gzipUncompress`).
 
+Le harnais écrit en UTF-8, ce que la console de Windows n'est pas par défaut : `main` y
+passe donc la page de codes en UTF-8 le temps des tests, puis **remet celle d'origine**.
+C'est un réglage de la console et non du processus, il survivrait sinon au programme et
+laisserait la fenêtre en UTF-8 pour tout ce qu'on y taperait ensuite. Constaté de bout en
+bout : les accents sortent droits dans une vraie console, la page de codes d'origine est
+bien rendue — essayé en partant d'une console en 850 — et `dumpbin /imports` montre les
+deux appels dans le binaire. Ce dernier contrôle n'est pas de trop : la restauration seule
+ne prouve rien, un bloc qui n'aurait pas été compilé donnant exactement le même résultat.
+
 Pour ajouter une fixture : récupérer la page avec un programme Qt (cf. Cloudflare),
 `gzip -9` le résultat dans `tests/fixtures`, puis écrire les vérifications dans
 `testParsing.cpp`. Les fixtures actuelles sont figées dans le temps (juillet 2026),
