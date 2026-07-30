@@ -156,11 +156,13 @@ déjà équipée, et qui a coûté des essais :
   d'environnement `PSExecutionPolicyPreference`, si bien que relancer un `powershell.exe` neuf ne
   révèle rien non plus. Pour voir le vrai comportement il faut vider cette variable, et c'est
   seulement alors que `Get-ExecutionPolicy` répond `Restricted` ;
-- **git est le seul prérequis que le script n'installe pas**, et le dépôt doit être un vrai clone :
-  `dist-windows.ps1` extrait `resources/` et `themes/` avec `git archive HEAD`, ce qu'une archive zip
-  décompressée ne permet pas. L'échec arriverait tard, après une compilation complète. Sur un zip, la
-  marque de provenance de Windows bloque en plus le script même avec `Bypass` (`Unblock-File`), et
-  seuls la compilation et `run-windows.ps1` marcheraient ensuite ;
+- **le script n'utilise pas git et ne récupère pas le dépôt** — il en fait partie, on l'a forcément
+  déjà. Ce qui compte est la **façon** dont on l'a obtenu : `dist-windows.ps1` extrait `resources/` et
+  `themes/` avec `git archive HEAD`, donc un zip décompressé, qui n'est pas un dépôt, fait échouer la
+  distribution — tard, après une compilation complète. La compilation et `run-windows.ps1`, eux,
+  marcheraient. Sur un zip, la marque de provenance de Windows bloque en plus le script même avec
+  `Bypass` (`Unblock-File`). Ne pas réécrire ceci en « git est un prérequis du script » : ça a été
+  écrit, et ça fait chercher un `git clone` qui n'existe nulle part ;
 - **seule l'installation des Build Tools demande l'élévation**, et le script n'élève que cet
   installateur-là, par un `-Verb RunAs` qui déclenche une invite UAC : un PowerShell ordinaire
   suffit donc pour tout le script. N'élever que l'installateur n'est pas un détail — le reste
@@ -434,13 +436,15 @@ un seul vrai point, l'autre étant réglé.
   entreprendre le portage sans le mainteneur.
 
 Les pistes de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` sont du confort et rien n'y casse si elles
-attendent ; il n'en reste qu'une ouverte, la compilation hors des sources sous macOS du point 7. Les
-points 1, 2, 3, 4, 5 et 10 ont été faits, et ce qu'il faut en
-retenir tient en une ligne : le numéro de version vit dans `version.pri`, les noms de bibliothèques ne
-se passent plus à `qmake` que s'ils sortent de l'ordinaire, `windows-common.ps1` porte ce que les trois
-scripts partagent, `build-windows.ps1` est le seul endroit où la compilation est écrite, la distribution
-reprend les objets au lieu de les raser et lance les tests avant d'assembler, et l'archive se compresse
-par `ZipFile`. Une réserve sur le point 3 : le script de compilation n'a encore rien compilé pour de
+attendent ; **dix des onze sont faites**, et il ne reste que la compilation hors des sources sous macOS
+du point 7. Ce qu'il faut en retenir tient en une ligne : le numéro de version vit dans `version.pri`,
+les noms de bibliothèques ne se passent plus à `qmake` que s'ils sortent de l'ordinaire,
+`windows-common.ps1` porte ce que les trois scripts partagent, `build-windows.ps1` est le seul endroit
+où la compilation est écrite, la distribution reprend les objets au lieu de les raser et lance les
+tests avant d'assembler, et l'archive se compresse par `ZipFile`. Le fichier a été allégé d'autant : il
+ne garde que la piste ouverte, les décisions à ne pas rouvrir, les réserves et les leçons — le récit de
+ce qui a été fait est ici ou dans le README, et la version longue dans l'historique git. Une réserve
+sur le point 3 : le script de compilation n'a encore rien compilé pour de
 bon, seul son enchaînement ayant été essayé avec des outils simulés, la machine où il a été écrit
 n'ayant ni Build Tools ni Qt. Restent enfin deux réserves qui ne sont pas des tâches, seulement des choses
 à ne pas oublier : le code de retour 3010, toujours non constaté et de faible valeur — il ne diffère
