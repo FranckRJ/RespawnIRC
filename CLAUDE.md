@@ -329,6 +329,34 @@ versions, ce sont les dictionnaires malformés — or RespawnIRC embarque les si
 vcpkg garderait l'avantage avec son cache binaire, en intégration continue, ou le jour où le projet
 prendrait des dépendances plus lourdes.
 
+#### Ce qui reste à faire pour Windows
+
+Chacun de ces points est détaillé à sa place, ici ou dans les autres fichiers ; cette liste ne sert
+qu'à les rassembler et à dire lesquels comptent. Le portage lui-même est fini : l'amorçage, la
+compilation, l'archive et son démarrage sur machine vierge sont tous constatés. Ce qui reste tient en
+deux vrais points, et l'ordre proposé n'est qu'un avis.
+
+- **`nmake debug` ne compile pas**, la recette de Hunspell ne produisant qu'une bibliothèque release
+  (voir la section Windows plus haut, et `README.md`). C'est le seul manque de fonctionnement qui
+  reste, et il gêne là où c'est le plus cher : la section « Corruption de tas sous Windows » plus bas
+  doit se rabattre sur `CONFIG+=force_debug_info` faute de build de débogage. Le correctif est petit,
+  une seconde passe `cl /MDd` et un second `lib` dans `bootstrap-windows.ps1`, vers un `hunspelld.lib`
+  à part ;
+- **OpenSSL 1.1.1 n'est plus maintenu depuis septembre 2023 et il est distribué tel quel.** Aucun
+  rangement de la chaîne de compilation n'y touche : il faut Qt 6, ou recompiler Qt 5.15.2 avec
+  `-schannel` pour le TLS de Windows. C'est le sujet de `MIGRATION-QT6.md`, et le seul point restant
+  qui soit une exposition et non du confort. À l'échelle de « ce qui reste pour Windows », il pèse
+  plus lourd que tout le reste réuni : ce qui subsiste, au fond, c'est d'être arrimé à un Qt et à une
+  bibliothèque TLS tous deux en fin de vie.
+
+Les pistes de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` (points 1 à 5, 7 et 10) sont du confort et rien n'y
+casse si elles attendent. Restent enfin deux réserves qui ne sont pas des tâches, seulement des choses
+à ne pas oublier : le refus de l'invite UAC et le code 3010, toujours non constatés et de faible
+valeur — quatre lignes et un code qui ne diffère de 0 que par un redémarrage conseillé — et le retrait
+d'`opengl32sw.dll`, vérifié sur une machine sans accélération mais pas sur une machine dont Direct3D 11
+serait cassé ou désactivé, cas qu'une machine virtuelle ordinaire n'exerce pas. Ce dernier restera
+probablement un risque documenté.
+
 ## Où le programme range ses données
 
 `resources/` et `themes/` sont **livrés avec le programme et jamais écrits**, toujours à côté de
