@@ -62,7 +62,7 @@ Fait, par la seconde branche et une précaution que la piste ne voyait pas. `-Cl
 
 La première branche, un `build\dist` séparé, aurait été le mauvais choix pour cette raison exacte : deux dossiers visant le même `DESTDIR`, c'est le piège documenté dans le README, et il se serait mis à mordre le va-et-vient courant entre essayer et distribuer.
 
-Le cas qui juge le mécanisme a été exercé, et dans le bon sens : un `nmake debug` avait laissé ses 3,5 Mo à la racine, le `dist-windows.ps1` lancé ensuite a effacé cet exécutable et rendu les 1,5 Mo du release, relié depuis les objets déjà présents. **Ce qui reste à vérifier** est la suite du script, de `windeployqt` à la compression, qui n'a pas encore tourné depuis ces changements : il faut fabriquer une archive complète une fois.
+Le cas qui juge le mécanisme a été exercé, et dans le bon sens : un `nmake debug` avait laissé ses 3,5 Mo à la racine, le `dist-windows.ps1` lancé ensuite a effacé cet exécutable et rendu les 1,5 Mo du release, relié depuis les objets déjà présents. La suite du script, de `windeployqt` à la compression, a **maintenant tourné** elle aussi : une archive complète a été fabriquée d'un bout à l'autre à partir des objets repris tels quels, 426 fichiers pour 159 Mo décompressés et 71 compressés, avec les deux `resources/` fusionnés — `icudtl.dat` et les `.pak` de QtWebEngine à côté des 237 stickers et des dictionnaires — les 30 fichiers de `themes/` extraits par `git archive`, les traductions réduites à `fr` et `en-US`, ni `opengl32sw.dll` ni `D3Dcompiler_47.dll` ni `vc_redist`, et la vérification au `dumpbin` annonçant 98 imports du runtime C++ dont aucun manquant. Il ne reste rien à vérifier sur ce point.
 
 ## 6. Deux détails dans la section des bibliothèques d'exécution — **fait, et ce n'était pas un détail**
 
@@ -117,7 +117,7 @@ La vérification a démenti au passage ce qui allait être écrit ici. On attend
 
 Seule autre différence relevée : `Compress-Archive` écrivait aussi des entrées de dossier (`RespawnIRC\resources\`), là où `CreateFromDirectory` ne liste que les fichiers. Sans conséquence, les dossiers étant recréés à la décompression.
 
-Le gain de temps, lui, n'a pas encore été mesuré sur la vraie archive : il demande le `dist-windows.ps1` complet qui manque aussi au point 5.
+Le script complet a depuis tourné, et le gain a été mesuré sur la vraie archive : **7,6 s contre 13,5 s** pour les 426 fichiers et 159 Mo, soit un peu moins de la moitié du temps, pour deux archives de 70,8 Mo l'une comme l'autre. La mesure a été prise en dehors du script, en comprimant deux fois la même arborescence — c'est le seul moyen d'avoir les deux chiffres, `dist-windows.ps1` n'appelant plus que le premier. À garder pour ce que ça vaut : six secondes sur un script qui en prend plusieurs dizaines, ce qui remet à sa place le « de loin l'étape la plus lente » écrit plus haut. C'était vrai quand la compilation était reprise et non refaite, pas en général.
 
 ## 11. `opengl32sw.dll` : 20 Mo pour un repli que Windows fournit déjà — **fait**
 

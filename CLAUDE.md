@@ -107,8 +107,10 @@ version change ou qu'une étape échoue. Les pièges à connaître :
   `build\respawnIrc`, ce qui achetait la même garantie au prix des 45 sources à chaque archive.
   Le cas qui juge ce mécanisme a été exercé : un `nmake debug` avait laissé ses 3,5 Mo à la racine, et le
   `dist-windows.ps1` lancé ensuite a bien rendu un exécutable de 1,5 Mo, sorti des objets de son dossier.
-  Ce qui n'a pas encore tourné depuis ces changements, c'est la **suite** du script, de `windeployqt` à la
-  compression : il reste donc une archive complète à fabriquer une fois. Le même `DESTDIR` dépose aussi `RespawnIRC.pdb` à la racine,
+  La **suite** du script, de `windeployqt` à la compression, a tourné depuis elle aussi : une archive complète
+  a été fabriquée d'un bout à l'autre, 426 fichiers, 159 Mo décompressés et 71 compressés, avec les deux
+  `resources/` bien fusionnés, la vérification au `dumpbin` à 98 imports du runtime sans manquant, et un
+  `git status` vide à l'arrivée. Le même `DESTDIR` dépose aussi `RespawnIRC.pdb` à la racine,
   14 Mo, désormais dans le `.gitignore` — sans quoi `git status` n'est plus vide après un `nmake debug` ;
 - `windeployqt` crée un dossier `resources/` pour QtWebEngine, exactement le nom du dossier de
   données du programme, et au même endroit puisque `pathTool::dataDirPath()` renvoie le dossier de
