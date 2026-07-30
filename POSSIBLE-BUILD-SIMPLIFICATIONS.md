@@ -86,7 +86,7 @@ Le script échouait effectivement en silence, mais pas pour la raison supposée 
 
 Deux leçons transposables au reste de ce fichier survivent à cette suppression :
 
-- **ne pas figer de chiffres** venant de l'installation. Le nombre de DLL de l'UCRT dépendait de la version du SDK, 41 relevées ici lors d'une compilation antérieure et 46 avec le SDK 10.0.26100 ; c'est exactement le défaut que le point 6 reproche encore à `Microsoft.VC143.CRT` ;
+- **ne pas figer de chiffres** venant de l'installation. Le nombre de DLL de l'UCRT dépendait de la version du SDK, 41 relevées ici lors d'une compilation antérieure et 46 avec le SDK 10.0.26100 ; c'est exactement le défaut que le point 6 reprochait à `Microsoft.VC143.CRT`, et il a fini par coûter une archive qui ne démarrait pas — cette leçon-là a été écrite avant d'être appliquée ;
 - **la meilleure façon de ne pas se tromper sur un chemin d'installation est de ne pas en dépendre.** Cette section a coûté deux corrections successives avant que la bonne réponse se révèle être la suppression pure et simple du code fautif.
 
 ## 9. Deux listes de « trois choses » qui ne se recouvrent pas — **fait**

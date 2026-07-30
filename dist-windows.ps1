@@ -157,7 +157,7 @@ Write-Host "== Copie de Qt à côté de l'exécutable"
 # windeployqt copie les DLL de Qt, les greffons et QtWebEngineProcess.exe à côté de l'exécutable.
 #
 # --no-compiler-runtime lui évite d'embarquer vc_redist.x64.exe, 24 Mo que rien ne lance jamais et
-# qui font doublon avec les trois DLL du runtime copiées plus bas. Il ne le copie que lorsque
+# qui font doublon avec les DLL du runtime copiées plus bas. Il ne le copie que lorsque
 # VCINSTALLDIR est définie, donc uniquement quand le script est lancé après vcvars64.bat, ce qui est
 # toujours le cas ici : sans cet argument le gras dépend de la façon dont on appelle le script.
 Invoke-BuildTool -Name 'windeployqt' -Command { & $windeployqtBin --release --no-compiler-runtime (Join-Path $imageDir 'RespawnIRC.exe') }
@@ -174,7 +174,10 @@ Remove-Item (Join-Path $imageDir 'resources\qtwebengine_devtools_resources.pak')
 
 # D3Dcompiler_47.dll, que windeployqt copie avec le lot ANGLE, fait partie du système depuis
 # Windows 10 : le chargeur trouve celui de System32. Il n'était embarqué que pour Windows 7, où il
-# manque généralement. Si ANGLE échouait malgré tout, le repli reste opengl32sw.dll ci-dessous.
+# manque généralement. Ne pas lire cette ligne comme s'il restait un rendu de secours dans l'archive :
+# opengl32sw.dll est retiré juste en dessous, pour ses raisons propres, et plus rien ici ne rattrape un
+# ANGLE en panne. Ce qui rattrape l'absence de pilote OpenGL est WARP, déjà dans le système et une
+# couche plus bas — voir le commentaire suivant.
 Remove-Item (Join-Path $imageDir 'D3Dcompiler_47.dll') -Force -ErrorAction SilentlyContinue
 
 # opengl32sw.dll (20 Mo, le plus gros fichier retirable de l'archive) est le rendu OpenGL logiciel de
@@ -244,11 +247,17 @@ Write-Host "== Vérification des dépendances"
 # par le système ; OpenSSL n'apparaît pas ici puisque Qt le charge dynamiquement, et il a déjà sa
 # propre vérification plus haut. Un import chargé à la main par LoadLibrary échapperait aussi à ce
 # contrôle : il ne remplace pas un essai sur une machine sans redistribuable Visual C++.
+if(-not (Get-Command dumpbin -ErrorAction SilentlyContinue))
+{
+    throw "dumpbin est introuvable alors que l'environnement MSVC est chargé : la vérification des dépendances ne peut pas se faire, et la sauter rendrait le contrôle inutile."
+}
+
 $namesInImage = @{}
 Get-ChildItem $imageDir -Recurse -File -Include '*.dll', '*.exe' |
     ForEach-Object { $namesInImage[$_.Name.ToLower()] = $true }
 
 $missingRuntime = @{}
+$runtimeImportsSeen = 0
 $previousPreference = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
 
@@ -263,9 +272,14 @@ try
             {
                 $thisImport = $matches[1].ToLower()
 
-                if($thisImport -match '^(msvcp|vcruntime|concrt|vccorlib)\d' -and -not $namesInImage.ContainsKey($thisImport))
+                if($thisImport -match '^(msvcp|vcruntime|concrt|vccorlib)\d')
                 {
-                    $missingRuntime[$thisImport] = $true
+                    $runtimeImportsSeen++
+
+                    if(-not $namesInImage.ContainsKey($thisImport))
+                    {
+                        $missingRuntime[$thisImport] = $true
+                    }
                 }
             }
         }
@@ -276,12 +290,23 @@ finally
     $ErrorActionPreference = $previousPreference
 }
 
+# Ce contrôle-ci vise le contrôle lui-même, et il n'est pas décoratif : un relevé qui ne trouve rien
+# conclurait que tout va bien. Or l'archive importe forcément le runtime C++, des dizaines de binaires
+# de Qt le réclamant — 98 imports relevés en juillet 2026, chiffre donné pour situer l'ordre de
+# grandeur et sur lequel le test ne s'appuie pas : seul zéro est traité comme impossible. Zéro ne peut
+# vouloir dire que la sortie de dumpbin a changé de forme, ou que l'expression rationnelle ci-dessus ne
+# mord plus, jamais que l'archive est saine.
+if($runtimeImportsSeen -eq 0)
+{
+    throw "Le relevé des dépendances n'a trouvé aucun import du runtime C++, ce qui est impossible : c'est la vérification qui est cassée, pas l'archive qui est propre. Comparer la sortie de dumpbin /dependents à l'expression rationnelle qui la lit."
+}
+
 if($missingRuntime.Count -gt 0)
 {
     throw "L'archive serait incomplète : $(($missingRuntime.Keys | Sort-Object) -join ', ') réclamée(s) par ses binaires mais absente(s). Ces DLL ne font partie d'aucun Windows, le programme ne démarrerait pas sur une machine où le redistribuable Visual C++ n'a jamais été installé."
 }
 
-Write-Host "   ok, aucune DLL du runtime C++ ne manque à l'archive"
+Write-Host "   ok, $runtimeImportsSeen imports du runtime C++ relevés, aucun manquant"
 
 Write-Host "== Données du programme"
 # resources/ et themes/ sont extraits de git et non copiés depuis le dossier de travail : celui-ci

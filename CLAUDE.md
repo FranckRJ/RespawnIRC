@@ -235,8 +235,9 @@ contient `ucrtbase.dll` ni le moindre `api-ms-win-*`. Elles diffèrent d'ailleur
   dépôt vise le 64 bits ;
 - Hunspell y est **dynamique** (`libhunspell.dll`), ici il est statique ;
 - pour les bibliothèques d'exécution de MSVC, elles embarquent **l'installateur**
-  `vc_redist.x86.exe` (13,7 Mo) plutôt que les trois DLL. C'est le fichier que `windeployqt` ajoute
-  dès que `VCINSTALLDIR` est définie, et exactement celui que `--no-compiler-runtime` écarte ici.
+  `vc_redist.x86.exe` (13,7 Mo) plutôt que les DLL elles-mêmes. C'est le fichier que `windeployqt`
+  ajoute dès que `VCINSTALLDIR` est définie, et exactement celui que `--no-compiler-runtime` écarte
+  ici.
 
 Deux enseignements qui portent au-delà de l'anecdote. D'abord, `vc_redist.x86.exe` et
 `opengl32sw.dll` apparaissent **dans la même release**, la v3.1.11 de juillet 2019, en même temps
