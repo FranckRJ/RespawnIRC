@@ -197,13 +197,36 @@ jamais l'inverse. Rien n'a bronché : compilation de Hunspell et de zlib, extrac
 vérification finale, `git status` vide à l'arrivée, aucun `aqtinstall.log` à la racine et
 `build\bootstrap` bien effacé.
 
-Ce qui **reste supposé** dans cette étape, et à ne pas présenter autrement :
+**Le refus de l'invite a maintenant été essayé lui aussi**, sur une machine vierge et depuis un
+PowerShell ordinaire : le `catch` se déclenche, le script s'arrête sur son message et rend 1, et la
+machine reste un témoin valable — ni `vswhere.exe` ni `msvcp140.dll` dans `System32`, `git status`
+vide. Seul `build\bootstrap\vs_BuildTools.exe` subsiste, que le `.gitignore` couvre et que la
+réentrance réutilise à la reprise : le `Remove-Item` final du dossier de téléchargement ne s'exécute
+évidemment pas, le script s'étant arrêté avant.
 
-- le traitement du code de retour 3010 comme un succès. Les deux installations observées ont rendu 0
-  — les journaux de l'installateur disent `Exit code: 0x0, restarting: No` — et rien n'a encore exigé
-  le redémarrage que 3010 conseille ;
-- **le `catch` du refus de l'invite UAC.** L'invite acceptée est maintenant constatée, le refus non.
-  Il faudrait pour cela une machine où désinstaller les Build Tools, puis refuser volontairement.
+Ce qu'il a fallu corriger, et qu'aucun raisonnement n'aurait donné : **le refus n'est pas
+reconnaissable.** Il arrive en `InvalidOperationException` « This command cannot be run due to the
+error: The operation was canceled by the user. », **sans exception interne** — le `Win32Exception`
+1223 y est aplati en texte. Il n'y a donc aucun code à tester, et le message suit la langue de
+Windows. Or ce `catch` attrape tout autant un installateur introuvable ou corrompu : il affirmait le
+refus, il rapporte maintenant la cause telle quelle et laisse la conduite à tenir, refus compris. **Ne
+pas y remettre un diagnostic que rien ne permet de poser.**
+
+Et ce n'est pas qu'une question de type d'exception : **trois causes différentes rendent la même
+exception, au caractère près.** Le bouton « Non », la croix de l'invite, et l'invite laissée intacte —
+qui expire d'elle-même au bout de **deux minutes** — donnent tous le `The operation was canceled by
+the user.` ci-dessus. Mesuré : 4,4 s pour la croix, 122,4 s pour l'expiration. Windows ne distingue
+donc pas « l'utilisateur a refusé » de « il n'y avait personne devant la machine », et le script ne le
+peut pas davantage. Deux conséquences pratiques : un `bootstrap-windows.ps1` lancé sans surveillance
+sur une machine qui a besoin de l'élévation **échoue au bout de deux minutes** au lieu d'attendre, et
+la valeur d'un essai de cette branche tient entièrement à savoir qui était devant l'écran. C'est le
+piège qui a été rencontré ici : deux des exécutions ont d'abord été présentées comme des refus
+volontaires alors qu'elles n'étaient que des expirations, le message étant identique.
+
+Ce qui **reste supposé** dans cette étape, et à ne pas présenter autrement : le traitement du code de
+retour 3010 comme un succès. Les deux installations observées ont rendu 0 — les journaux de
+l'installateur disent `Exit code: 0x0, restarting: No` — et rien n'a encore exigé le redémarrage que
+3010 conseille.
 
 Et une conséquence à connaître avant de vouloir tout enchaîner sur la même machine : **installer les
 Build Tools détruit la seule propriété qui rendait cette machine utile.** L'installation pose
@@ -408,11 +431,12 @@ retenir tient en une ligne : le numéro de version vit dans `version.pri`, les n
 se passent plus à `qmake` que s'ils sortent de l'ordinaire, `windows-common.ps1` porte ce que deux des
 scripts partagent, la distribution reprend les objets au lieu de les raser, et l'archive se compresse
 par `ZipFile`. Restent enfin deux réserves qui ne sont pas des tâches, seulement des choses
-à ne pas oublier : le refus de l'invite UAC et le code 3010, toujours non constatés et de faible
-valeur — quatre lignes et un code qui ne diffère de 0 que par un redémarrage conseillé — et le retrait
-d'`opengl32sw.dll`, vérifié sur une machine sans accélération mais pas sur une machine dont Direct3D 11
-serait cassé ou désactivé, cas qu'une machine virtuelle ordinaire n'exerce pas. Ce dernier restera
-probablement un risque documenté.
+à ne pas oublier : le code de retour 3010, toujours non constaté et de faible valeur — il ne diffère
+de 0 que par un redémarrage conseillé — et le retrait d'`opengl32sw.dll`, vérifié sur une machine sans
+accélération mais pas sur une machine dont Direct3D 11 serait cassé ou désactivé, cas qu'une machine
+virtuelle ordinaire n'exerce pas. Ce dernier restera probablement un risque documenté. Le refus de
+l'invite UAC, qui figurait ici, est maintenant constaté — et il n'était pas gratuit : il a montré que
+ce refus ne se reconnaît pas, et fait corriger le message qui l'affirmait.
 
 ## Où le programme range ses données
 

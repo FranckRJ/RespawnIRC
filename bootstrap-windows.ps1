@@ -191,7 +191,13 @@ else
         }
         catch
         {
-            throw "L'invite UAC a été refusée, et l'installation des Build Tools ne peut pas s'en passer. L'accepter, relancer depuis un PowerShell administrateur, ou passer -SkipBuildTools si MSVC est déjà là."
+            # Le refus de l'invite arrive en InvalidOperationException « This command cannot be run
+            # due to the error: The operation was canceled by the user. », sans exception interne :
+            # le Win32Exception 1223 y est aplati en texte, il n'y a donc aucun code à tester, et le
+            # message suit la langue de Windows. Ce catch attrape aussi les autres
+            # échecs de lancement — annoncer un refus dans ces cas-là enverrait chercher au mauvais
+            # endroit, on rapporte donc la cause telle quelle plutôt que de la deviner.
+            throw "L'installateur des Build Tools n'a pas pu être lancé avec élévation : $($_.Exception.Message) S'il s'agit du refus de l'invite UAC, l'accepter ; sinon relancer depuis un PowerShell administrateur, ou passer -SkipBuildTools si MSVC est déjà là."
         }
     }
 
