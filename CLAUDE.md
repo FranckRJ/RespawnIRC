@@ -163,6 +163,17 @@ déjà équipée, et qui a coûté des essais :
   marcheraient. Sur un zip, la marque de provenance de Windows bloque en plus le script même avec
   `Bypass` (`Unblock-File`). Ne pas réécrire ceci en « git est un prérequis du script » : ça a été
   écrit, et ça fait chercher un `git clone` qui n'existe nulle part ;
+- **l'installation des Build Tools demande confirmation, et c'est la seule étape qui le fasse.** La
+  raison n'est pas seulement son poids — 3,3 Go, un quart d'heure, le processeur occupé : c'est que
+  l'invite UAC arrive **dans la seconde** qui suit le `Start-Process`, si bien que la ligne
+  « élévation nécessaire » s'affichait sans qu'on ait le temps de la lire. Constaté, et c'est ce qui a
+  fait ajouter le `Read-Host`. Le message dit aussi ce que l'invite doit montrer, l'installateur de
+  Visual Studio édité par Microsoft : accorder une élévation à un installateur nommé n'est pas la même
+  chose que l'accorder à un script dont on ne sait pas ce qu'il élève. Le bloc est **dans la branche
+  qui installe**, donc rien n'est demandé si les Build Tools sont déjà là ou avec `-SkipBuildTools` —
+  la réentrance garde sa valeur, une reprise ne redemande rien. `-Yes` s'en passe. Ne pas déplacer ce
+  bloc en tête de script : il redemanderait à chaque reprise, ce que la conception évite depuis le
+  début ;
 - **seule l'installation des Build Tools demande l'élévation**, et le script n'élève que cet
   installateur-là, par un `-Verb RunAs` qui déclenche une invite UAC : un PowerShell ordinaire
   suffit donc pour tout le script. N'élever que l'installateur n'est pas un détail — le reste

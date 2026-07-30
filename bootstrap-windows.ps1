@@ -2,9 +2,9 @@
 # Visual Studio, Qt 5.15.2 avec QtWebEngine, Hunspell et zlib compilés à la main, et OpenSSL 1.1.1.
 # Tout est posé dans la disposition attendue par les .pro, il n'y a rien à déplacer ensuite.
 #
-# Usage, depuis un PowerShell administrateur, à la racine du dépôt :
+# Usage, depuis un PowerShell ordinaire, à la racine du dépôt :
 #     powershell -ExecutionPolicy Bypass -File .\bootstrap-windows.ps1
-#         [-QtRootDir C:\Qt] [-SkipBuildTools] [-SkipQt] [-KeepDownloads]
+#         [-QtRootDir C:\Qt] [-SkipBuildTools] [-SkipQt] [-KeepDownloads] [-Yes]
 #
 # Le -ExecutionPolicy Bypass est nécessaire et pas décoratif : un Windows 10 neuf est en Restricted
 # et refuse le script avant de l'avoir lu. Si le dépôt vient d'une archive zip et non d'un git clone,
@@ -15,6 +15,12 @@
 # d'être lancé élevé. L'invite n'apparaît que si les Build Tools manquent vraiment — sur une machine
 # déjà équipée, l'étape se saute sans rien demander. Un PowerShell administrateur reste accepté, et
 # ne fait alors apparaître aucune invite.
+#
+# Cette même installation est la seule étape à demander confirmation, pour la même raison : elle pèse
+# 3,3 Go et un quart d'heure, et l'invite UAC qui la suit arrive trop vite pour qu'on ait le temps de
+# lire ce qu'on autorise. -Yes s'en passe. Là encore, rien n'est demandé si les Build Tools sont déjà
+# là : une reprise après un échec d'une des étapes suivantes ne redemande donc rien, et la réentrance
+# du script garde toute sa valeur.
 #
 # Le script est réentrant : chaque étape est sautée si son résultat est déjà là, on peut donc le
 # relancer après un échec sans tout retélécharger.
@@ -45,7 +51,8 @@ param(
     [string]$OpenSslSha256 = '1870B15BF6749E65FFBBADF52CDFF3EE0E9F02943550BF4395574BB432AF3EB8',
     [switch]$SkipBuildTools,
     [switch]$SkipQt,
-    [switch]$KeepDownloads
+    [switch]$KeepDownloads,
+    [switch]$Yes
 )
 
 $ErrorActionPreference = 'Stop'
@@ -164,6 +171,35 @@ else
     # rendu la main avant d'arriver ici.
     $identity = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
     $isAdmin = $identity.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+    # Demander avant, et seulement ici. C'est de loin l'étape la plus lourde du script — les quatre
+    # autres réunies pèsent un dixième de celle-ci — et la seule qui écrive hors du dépôt et de
+    # $QtRootDir. Surtout, l'invite UAC arrive dans la seconde qui suit le Start-Process : annoncer
+    # l'élévation juste avant de la demander ne laissait pas le temps de lire l'annonce, et on se
+    # retrouvait à autoriser une élévation sans savoir laquelle. Ce bloc est dans le `else`, donc il
+    # n'apparaît pas sur une machine qui a déjà les Build Tools, ni avec -SkipBuildTools : personne
+    # n'a à valider une étape qui ne va rien faire.
+    if(-not $Yes)
+    {
+        Write-Host ""
+        Write-Host "   Les Build Tools de Visual Studio ne sont pas installés, et c'est l'étape la plus"
+        Write-Host "   lourde : environ 3,3 Go téléchargés puis installés, une quinzaine de minutes, le"
+        Write-Host "   processeur occupé tout du long, et des fichiers écrits dans Program Files."
+
+        if($isAdmin -ne $true)
+        {
+            Write-Host ""
+            Write-Host "   Une invite UAC va s'afficher pour cette installation, et pour elle seule. Elle"
+            Write-Host "   nomme l'installateur de Visual Studio, édité par Microsoft : c'est ce qu'il faut"
+            Write-Host "   y lire avant d'accepter, et refuser si elle annonce autre chose. Elle expire au"
+            Write-Host "   bout de deux minutes, il faut donc rester devant l'écran jusque-là."
+        }
+
+        Write-Host ""
+        Write-Host "   Entrée pour continuer, Ctrl+C pour arrêter. -SkipBuildTools si MSVC est déjà là,"
+        Write-Host "   -Yes pour ne plus rien demander."
+        Read-Host | Out-Null
+    }
 
     $buildToolsBin = Join-Path $downloadDir 'vs_BuildTools.exe'
     Get-FileIfNeeded -Url 'https://aka.ms/vs/17/release/vs_BuildTools.exe' -Path $buildToolsBin
