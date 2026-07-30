@@ -36,6 +36,9 @@ tests/.qmake.stash
 /build/
 # La règle /RespawnIRC plus haut n'attrape pas l'exécutable, qui porte ici une extension.
 /RespawnIRC.exe
+# Les symboles, que le DESTDIR dépose à côté de l'exécutable : produits par `nmake debug` et par un
+# release compilé avec CONFIG+=force_debug_info. 14 Mo, et sans eux `git status` n'est plus vide.
+/RespawnIRC.pdb
 
 # Bundle déployé et image disque fabriqués par dist-macos.sh, dossier distribuable de dist-windows.ps1
 /dist/

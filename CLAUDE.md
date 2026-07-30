@@ -61,15 +61,35 @@ version change ou qu'une étape échoue. Les pièges à connaître :
   depuis Visual Studio 2015 les en-têtes de la bibliothèque C appartiennent au SDK et pas au
   compilateur, un `#include <stdio.h>` suffit à s'en rendre compte ;
 - Hunspell et zlib se compilent **à la main**, c'est la méthode documentée : deux petites
-  bibliothèques sans dépendance, une quinzaine de secondes. vcpkg reste décrit en second choix. La
-  recette ne produit qu'une bibliothèque release, donc `nmake debug` échoue en `LNK2038` sur
-  `RuntimeLibrary` et `_ITERATOR_DEBUG_LEVEL` — il faudrait un `hunspelld.lib` compilé en `/MDd` ;
+  bibliothèques sans dépendance, une quinzaine de secondes. vcpkg reste décrit en second choix.
+  Les deux se compilent **deux fois**, en `/MD` et en `/MDd` : `/MD` et `/MDd` ne se mélangent pas
+  dans un même binaire, et les seules bibliothèques release faisaient échouer `nmake debug`. Le
+  débogage se choisit au `qmake`, par `HUNSPELL_LIB_NAME=hunspelld ZLIB_LIB_NAME=zsd`, et donc dans
+  un dossier de compilation à part — les `.pro` restent sans rien de spécifique à Windows ;
+- **les deux ne préviennent pas de la même façon, et zlib est le piège.** Hunspell est en C++ : ses
+  en-têtes posent les enregistrements `RuntimeLibrary` et `_ITERATOR_DEBUG_LEVEL`, le mélange est un
+  `LNK2038` et la compilation s'arrête. zlib est en C et n'en pose aucun : il ne reste que le
+  `/DEFAULTLIB:MSVCRT` de ses objets release — visible au `dumpbin /directives zs.lib`, quinze fois —
+  qui ne donne qu'un `LNK4098`, un avertissement, et laisse **deux CRT dans le même binaire**. On a
+  d'autant plus envie de l'ignorer qu'il n'empêche rien ; c'est pourtant le mélange exact que la
+  section « Corruption de tas sous Windows » plus bas apprend à traquer. Constaté ici : la première
+  version du correctif ne traitait que Hunspell, et l'avertissement était la seule trace du zlib
+  release qui restait lié au binaire de débogage. **Ne pas conclure d'un `nmake debug` qui aboutit
+  que les CRT sont cohérentes, lire les avertissements de l'édition de liens** ;
 - `HUNSPELL_STATIC` est nécessaire au Hunspell compilé à la main, dont le `hunvisapi.h` teste
   vraiment la macro, mais sans effet sur celui de vcpkg, dont le port engendre un en-tête au test
   figé à `#if 1`. Le passer systématiquement marche donc dans les deux cas, et c'est ce que fait
   `dist-windows.ps1` ;
 - la compilation se fait **hors des sources**, dans `build/`, contrairement à Linux et macOS ; seuls
   les objets intermédiaires y restent, le `DESTDIR` envoyant l'exécutable à la racine comme ailleurs ;
+- ce `DESTDIR` ne distingue pas release et debug : les deux produisent `RespawnIRC.exe` à la racine et
+  **s'écrasent l'un l'autre**, même depuis deux dossiers de compilation séparés. Conséquence contre-intuitive,
+  constatée : après un `nmake debug`, un `nmake release` dans son propre dossier **ne fait rien** — sa cible
+  est l'exécutable de débogage laissé à la racine, plus récent que ses objets, donc jugé à jour. Il n'affiche
+  rien et on continue d'exécuter le binaire de débogage en croyant l'avoir remplacé. Effacer `RespawnIRC.exe`
+  avant de recompiler ; la taille tranche, 1,5 Mo en release contre 3,5 en debug. `dist-windows.ps1` y échappe
+  en effaçant `build\respawnIrc` avant `qmake`. Le même `DESTDIR` dépose aussi `RespawnIRC.pdb` à la racine,
+  14 Mo, désormais dans le `.gitignore` — sans quoi `git status` n'est plus vide après un `nmake debug` ;
 - `windeployqt` crée un dossier `resources/` pour QtWebEngine, exactement le nom du dossier de
   données du programme, et au même endroit puisque `pathTool::dataDirPath()` renvoie le dossier de
   l'exécutable. Les deux contenus doivent **fusionner**, pas se remplacer ;
@@ -334,14 +354,15 @@ prendrait des dépendances plus lourdes.
 Chacun de ces points est détaillé à sa place, ici ou dans les autres fichiers ; cette liste ne sert
 qu'à les rassembler et à dire lesquels comptent. Le portage lui-même est fini : l'amorçage, la
 compilation, l'archive et son démarrage sur machine vierge sont tous constatés. Ce qui reste tient en
-deux vrais points, et l'ordre proposé n'est qu'un avis.
+un seul vrai point, l'autre étant réglé.
 
-- **`nmake debug` ne compile pas**, la recette de Hunspell ne produisant qu'une bibliothèque release
-  (voir la section Windows plus haut, et `README.md`). C'est le seul manque de fonctionnement qui
-  reste, et il gêne là où c'est le plus cher : la section « Corruption de tas sous Windows » plus bas
-  doit se rabattre sur `CONFIG+=force_debug_info` faute de build de débogage. Le correctif est petit,
-  une seconde passe `cl /MDd` et un second `lib` dans `bootstrap-windows.ps1`, vers un `hunspelld.lib`
-  à part ;
+- ~~**`nmake debug` ne compile pas.**~~ **Fait.** `bootstrap-windows.ps1` compile Hunspell **et zlib**
+  une seconde fois en `/MDd /Z7`, vers un `hunspelld.lib` et un `zsd.lib` à part. La section
+  « Corruption de tas sous Windows » plus bas n'a donc plus à se rabattre sur
+  `CONFIG+=force_debug_info`. Voir la section Windows plus haut pour les deux `..._LIB_NAME`, le
+  dossier de compilation séparé qu'ils imposent, et surtout le `LNK4098` de zlib, qui est ce que
+  cette tâche avait de moins évident : le correctif que CLAUDE.md décrivait — Hunspell seul — laissait
+  une CRT release dans le binaire de débogage sans que rien n'échoue ;
 - **OpenSSL 1.1.1 n'est plus maintenu depuis septembre 2023 et il est distribué tel quel.** Aucun
   rangement de la chaîne de compilation n'y touche : il faut Qt 6, ou recompiler Qt 5.15.2 avec
   `-schannel` pour le TLS de Windows. C'est le sujet de `MIGRATION-QT6.md`, et le seul point restant
@@ -461,8 +482,10 @@ reproduiront :
   d'exécutable ;
 - **le plantage est signalé loin du bug**, à la libération d'un bloc et non à l'écriture fautive.
   Activer le page heap complet (`gflags /p /enable RespawnIRC.exe /full`, à désactiver ensuite) fait
-  fauter à l'endroit exact. Comme `release` n'a pas de symboles, recompiler avec
-  `CONFIG+=force_debug_info` pour obtenir une pile lisible plutôt que des `image00007ff6+0x...`.
+  fauter à l'endroit exact. Comme `release` n'a pas de symboles, recompiler pour obtenir une pile
+  lisible plutôt que des `image00007ff6+0x...` : un vrai `nmake debug` est maintenant possible
+  (`HUNSPELL_LIB_NAME=hunspelld`, dans son propre dossier de compilation), et `CONFIG+=force_debug_info`
+  reste utile quand on veut les symboles sans quitter les optimisations de release.
 
 Les outils viennent du Windows SDK, feature `OptionId.WindowsDesktopDebuggers` de `winsdksetup.exe`,
 qui ne fait pas partie de l'installation des Build Tools.

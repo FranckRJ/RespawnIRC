@@ -77,16 +77,24 @@ Rien n'est fourni par le système sous Windows, il faut donc compiler les deux. 
     cd hunspell-1.7.3\src\hunspell
     cl /nologo /c /O2 /MD /EHsc /DHUNSPELL_STATIC *.cxx
     lib /nologo /OUT:hunspell.lib *.obj
+    del *.obj
+    cl /nologo /c /Od /MDd /Z7 /EHsc /DHUNSPELL_STATIC *.cxx
+    lib /nologo /OUT:hunspelld.lib *.obj
 
     cd zlib-1.3.1
     cl /nologo /c /O2 /MD *.c
     lib /nologo /OUT:zs.lib *.obj
+    del *.obj
+    cl /nologo /c /Od /MDd /Z7 *.c
+    lib /nologo /OUT:zsd.lib *.obj
 
 `/MD` est indispensable : c'est la bibliothèque C++ dynamique, celle qu'utilise Qt. Avec `/MT` l'édition de liens échouerait.
 
-Cette recette ne produit qu'une bibliothèque *release*. Un `nmake debug` de RespawnIRC échouera donc en `LNK2038`, sur un désaccord de `RuntimeLibrary` et de `_ITERATOR_DEBUG_LEVEL` : il faudrait recompiler Hunspell une seconde fois avec `/MDd`, dans un `hunspelld.lib` à part. Rien n'en a eu besoin jusqu'ici, la distribution ne se faisant qu'en release.
+Hunspell se compile **deux fois**, en release et en debug. `/MD` et `/MDd` ne se mélangent pas dans un même binaire : avec la seule bibliothèque release, un `nmake debug` de RespawnIRC échoue en `LNK2038`, sur un désaccord de `RuntimeLibrary` et de `_ITERATOR_DEBUG_LEVEL`. D'où le `hunspelld.lib` à part. Le `del *.obj` entre les deux passes n'est pas décoratif : `cl` écrit toujours `<source>.obj`, et sans lui la seconde bibliothèque reprendrait les objets de la première. `/Z7` plutôt que `/Zi` range les symboles dans les `.obj`, qui les emportent dans le `.lib`, là où `/Zi` les laisserait dans un `vc140.pdb` que personne ne copie et que l'éditeur de liens réclamerait ensuite en `LNK4099`.
 
-Placez ensuite le résultat à la racine du dépôt, dans la disposition attendue par les `.pro` : les cinq en-têtes de `src\hunspell` (`hunspell.hxx`, `hunspell.h`, `hunvisapi.h`, `atypes.hxx`, `w_char.hxx`) dans `hunspell\include\hunspell` et `hunspell.lib` dans `hunspell\lib` ; `zlib.h` et `zconf.h` dans `zlib\include` et `zs.lib` dans `zlib\lib`.
+zlib se compile deux fois pour la même raison, mais son symptôme est plus discret et mérite d'être connu : étant en C, il n'emporte ni `_ITERATOR_DEBUG_LEVEL` ni l'enregistrement `RuntimeLibrary` que posent les en-têtes C++, si bien que l'éditeur de liens ne peut pas rendre de `LNK2038`. Il ne reste que le `/DEFAULTLIB:MSVCRT` des objets release — visible au `dumpbin /directives zs.lib` — qui dégénère en simple avertissement `LNK4098` et laisse **deux CRT dans le même binaire**. Un avertissement qu'on est d'autant plus tenté d'ignorer qu'il n'empêche rien ; c'est pourtant exactement le mélange que la section « Corruption de tas sous Windows » plus bas apprend à traquer, allouer dans une CRT et libérer dans l'autre. Le laisser dans le binaire de débogage, ce serait y introduire le défaut qu'on s'en sert pour chercher.
+
+Placez ensuite le résultat à la racine du dépôt, dans la disposition attendue par les `.pro` : les cinq en-têtes de `src\hunspell` (`hunspell.hxx`, `hunspell.h`, `hunvisapi.h`, `atypes.hxx`, `w_char.hxx`) dans `hunspell\include\hunspell` et `hunspell.lib` **et `hunspelld.lib`** dans `hunspell\lib` ; `zlib.h` et `zconf.h` dans `zlib\include` et `zs.lib` **et `zsd.lib`** dans `zlib\lib`.
 
 `HUNSPELL_STATIC` doit être défini à la compilation de Hunspell **et** à celle de RespawnIRC : sans lui les en-têtes de Hunspell déclarent tout en `__declspec(dllimport)` et l'édition de liens échoue. C'est le `DEFINES+=HUNSPELL_STATIC` des commandes plus bas.
 
@@ -120,6 +128,21 @@ La compilation se fait hors des sources, dans `build\`, contrairement à Linux e
     nmake release
 
 Avec un Hunspell venant de vcpkg, remplacez `HUNSPELL_LIB_NAME=hunspell` par `HUNSPELL_LIB_NAME=hunspell-1.7`.
+
+Pour une compilation de débogage, ce sont les mêmes `HUNSPELL_LIB_NAME` et `ZLIB_LIB_NAME` qui désignent les bibliothèques de débogage, les `.pro` n'ayant rien de spécifique à Windows — et **dans un dossier de compilation à part**, ces noms étant choisis au moment du `qmake` et non à celui du `nmake` :
+
+    mkdir build\respawnIrc-debug
+    cd build\respawnIrc-debug
+    qmake ..\..\respawnIrc\respawnIrc.pro HUNSPELL_LIB_NAME=hunspelld ZLIB_LIB_NAME=zsd DEFINES+=HUNSPELL_STATIC
+    nmake debug
+
+Ne pas lancer `nmake release` dans ce dossier-là : il lierait les bibliothèques de débogage à un binaire release et échouerait par le `LNK2038` symétrique.
+
+Le `DESTDIR` des `.pro` ne distingue pas les deux configurations : **l'exécutable de débogage remplace celui de release** à la racine du dépôt, sous le même nom `RespawnIRC.exe`. Deux dossiers de compilation séparés ne donnent donc pas deux exécutables côte à côte, seulement le dernier compilé.
+
+Et le piège qui suit, constaté : revenir au dossier de release et y relancer `nmake release` **ne rend pas la main à l'exécutable de release**. `nmake` compare la cible à ses objets, or la cible est l'exécutable de débogage laissé à la racine, plus récent qu'eux : il conclut que tout est à jour, n'affiche rien et ne fait rien. On croit lancer un binaire de release et on continue d'exécuter celui de débogage. Effacer `RespawnIRC.exe` avant de recompiler suffit, et la différence de taille est un bon signal — ici 1,5 Mo en release contre 3,5 en debug.
+
+`dist-windows.ps1` n'est pas exposé à ce piège : il efface `build\respawnIrc` avant d'appeler `qmake`, ses objets sont donc toujours plus récents que l'exécutable en place et l'édition de liens a toujours lieu.
 
 Seuls les fichiers intermédiaires restent dans `build\` : l'exécutable, lui, est produit à la racine du dépôt, là où sont déjà `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de lui. Il lui manque encore les DLL de Qt et celles d'OpenSSL, sans quoi il ne démarre pas ; inutile pour autant de passer par l'archive de `dist-windows.ps1`, il suffit de les avoir dans le `PATH`. C'est ce que fait `run-windows.ps1` :
 

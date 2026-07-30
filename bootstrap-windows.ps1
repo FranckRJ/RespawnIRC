@@ -253,13 +253,15 @@ Import-MsvcEnvironment
 #    bibliothèques sans dépendance : les compiler prend une quinzaine de secondes, contre une dizaine
 #    de minutes et 912 Mo pour vcpkg, dont les deux tiers vont à libiconv qui ne sert à rien ici.
 #    /MD est indispensable, c'est la bibliothèque C++ dynamique, celle qu'utilise Qt : avec /MT
-#    l'édition de liens échouerait. La recette ne produit qu'une bibliothèque release, un
-#    `nmake debug` de RespawnIRC échouerait donc en LNK2038.
+#    l'édition de liens échouerait. On compile deux fois, release et debug : une bibliothèque release
+#    seule suffisait à `nmake release`, mais faisait échouer `nmake debug` en LNK2038 sur
+#    `RuntimeLibrary` et `_ITERATOR_DEBUG_LEVEL`, /MD et /MDd ne se mélangeant pas dans un même binaire.
 Write-Host "== 3/5 Hunspell $HunspellVersion"
 
 $hunspellLib = Join-Path $repoDir 'hunspell\lib\hunspell.lib'
+$hunspellLibDebug = Join-Path $repoDir 'hunspell\lib\hunspelld.lib'
 
-if(Test-Path $hunspellLib)
+if((Test-Path $hunspellLib) -and (Test-Path $hunspellLibDebug))
 {
     Write-Host "   déjà compilé"
 }
@@ -279,6 +281,15 @@ else
         # déclare tout en __declspec(dllimport) et l'édition de liens échouera.
         Invoke-BuildTool -Name 'cl (hunspell)' -Command { & cl /nologo /c /O2 /MD /EHsc /DHUNSPELL_STATIC *.cxx }
         Invoke-BuildTool -Name 'lib (hunspell)' -Command { & lib /nologo /OUT:hunspell.lib *.obj }
+
+        # Seconde passe pour hunspelld.lib. cl écrit toujours <source>.obj, il faut donc effacer les
+        # objets release avant, sans quoi la seconde bibliothèque reprendrait les premiers. /Z7 plutôt
+        # que /Zi : il range les symboles dans les .obj, qui les emportent dans le .lib, quand /Zi les
+        # laisserait dans un vc140.pdb que personne ne copie et que l'éditeur de liens réclamerait
+        # ensuite en LNK4099.
+        Remove-Item *.obj -Force
+        Invoke-BuildTool -Name 'cl (hunspell debug)' -Command { & cl /nologo /c /Od /MDd /Z7 /EHsc /DHUNSPELL_STATIC *.cxx }
+        Invoke-BuildTool -Name 'lib (hunspell debug)' -Command { & lib /nologo /OUT:hunspelld.lib *.obj }
     }
     finally
     {
@@ -293,14 +304,22 @@ else
         Copy-Item (Join-Path $sourceDir $thisHeader) (Join-Path $repoDir 'hunspell\include\hunspell') -Force
     }
 
-    Copy-Item (Join-Path $sourceDir 'hunspell.lib') (Join-Path $repoDir 'hunspell\lib') -Force
+    Copy-Item (Join-Path $sourceDir 'hunspell.lib'), (Join-Path $sourceDir 'hunspelld.lib') (Join-Path $repoDir 'hunspell\lib') -Force
 }
 
+# zlib se compile deux fois pour la même raison que Hunspell, mais le symptôme est plus discret :
+# étant en C, il n'emporte ni _ITERATOR_DEBUG_LEVEL ni l'enregistrement RuntimeLibrary que les
+# en-têtes C++ posent, donc l'éditeur de liens ne peut pas rendre de LNK2038. Il ne reste que le
+# /DEFAULTLIB:MSVCRT des objets release, qui dégénère en simple avertissement LNK4098 et fait cohabiter
+# deux CRT dans le même binaire. C'est précisément le genre de mélange — allouer dans l'une, libérer
+# dans l'autre — que la section « Corruption de tas sous Windows » de CLAUDE.md apprend à traquer : le
+# laisser dans le binaire de débogage reviendrait à y introduire le défaut qu'on l'utilise à chercher.
 Write-Host "== 4/5 zlib $ZlibVersion"
 
 $zlibLib = Join-Path $repoDir 'zlib\lib\zs.lib'
+$zlibLibDebug = Join-Path $repoDir 'zlib\lib\zsd.lib'
 
-if(Test-Path $zlibLib)
+if((Test-Path $zlibLib) -and (Test-Path $zlibLibDebug))
 {
     Write-Host "   déjà compilé"
 }
@@ -321,6 +340,11 @@ else
         Invoke-BuildTool -Name 'cl (zlib)' -Command { & cl /nologo /c /O2 /MD *.c }
         # Le nom zs.lib est celui qu'attendent le README et le ZLIB_LIB_NAME=zs des appels à qmake.
         Invoke-BuildTool -Name 'lib (zlib)' -Command { & lib /nologo /OUT:zs.lib *.obj }
+
+        # Seconde passe, comme pour Hunspell et avec le même Remove-Item pour la même raison.
+        Remove-Item *.obj -Force
+        Invoke-BuildTool -Name 'cl (zlib debug)' -Command { & cl /nologo /c /Od /MDd /Z7 *.c }
+        Invoke-BuildTool -Name 'lib (zlib debug)' -Command { & lib /nologo /OUT:zsd.lib *.obj }
     }
     finally
     {
@@ -330,7 +354,7 @@ else
     New-Item -ItemType Directory -Force -Path (Join-Path $repoDir 'zlib\include') | Out-Null
     New-Item -ItemType Directory -Force -Path (Join-Path $repoDir 'zlib\lib') | Out-Null
     Copy-Item (Join-Path $sourceDir 'zlib.h'), (Join-Path $sourceDir 'zconf.h') (Join-Path $repoDir 'zlib\include') -Force
-    Copy-Item (Join-Path $sourceDir 'zs.lib') (Join-Path $repoDir 'zlib\lib') -Force
+    Copy-Item (Join-Path $sourceDir 'zs.lib'), (Join-Path $sourceDir 'zsd.lib') (Join-Path $repoDir 'zlib\lib') -Force
 }
 
 # 5. OpenSSL. Sans lui le programme démarre mais ne peut joindre aucune page : Qt 5.15.2 charge
@@ -386,7 +410,9 @@ $checks = [ordered]@{
     'qmake'          = Join-Path $qtDir 'bin\qmake.exe'
     'windeployqt'    = Join-Path $qtDir 'bin\windeployqt.exe'
     'hunspell.lib'   = $hunspellLib
+    'hunspelld.lib'  = $hunspellLibDebug
     'zs.lib'         = $zlibLib
+    'zsd.lib'        = $zlibLibDebug
     'libssl-1_1'     = $opensslDll
     'libcrypto-1_1'  = Join-Path $repoDir 'openssl\bin\libcrypto-1_1-x64.dll'
 }
