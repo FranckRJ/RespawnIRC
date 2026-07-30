@@ -488,12 +488,23 @@ if($missing -gt 0)
     throw "$missing élément(s) manquant(s) : relancer le script, il reprendra où il en était."
 }
 
+# Les trois commandes reprennent le -ExecutionPolicy Bypass de celle qui a lancé ce script, et ce
+# n'est pas de la ceinture et bretelles : la machine qui vient d'être amorcée est justement celle où
+# la stratégie d'exécution n'a pas été touchée, donc un `.\build-windows.ps1` nu y est refusé par un
+# PSSecurityException — constaté, en suivant les lignes affichées ici. Ne pas essayer de n'afficher la
+# forme longue que si elle est nécessaire : `Get-ExecutionPolicy` répond `Bypass` dans ce processus,
+# qui a justement été lancé ainsi, et la variable PSExecutionPolicyPreference le transmet aux enfants.
+# Le test conclurait donc « inutile » précisément sur les machines qui en ont besoin.
+Write-Host ""
+Write-Host "Les commandes ci-dessous reprennent le -ExecutionPolicy Bypass de celle qui a lancé ce"
+Write-Host "script : sans lui, un Windows dont la stratégie d'exécution est restée au défaut refuse"
+Write-Host "le .ps1 avant même de le lire."
 Write-Host ""
 Write-Host "Pour compiler, avec ses tests :"
-Write-Host "    .\build-windows.ps1 -QtDir $qtDir -Tests"
+Write-Host "    powershell -ExecutionPolicy Bypass -File .\build-windows.ps1 -QtDir $qtDir -Tests"
 Write-Host ""
 Write-Host "Pour compiler et essayer le programme :"
-Write-Host "    .\run-windows.ps1 -QtDir $qtDir"
+Write-Host "    powershell -ExecutionPolicy Bypass -File .\run-windows.ps1 -QtDir $qtDir"
 Write-Host ""
 Write-Host "Pour fabriquer l'archive distribuable :"
-Write-Host "    .\dist-windows.ps1 -QtDir $qtDir"
+Write-Host "    powershell -ExecutionPolicy Bypass -File .\dist-windows.ps1 -QtDir $qtDir"

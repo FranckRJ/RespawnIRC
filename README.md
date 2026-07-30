@@ -32,6 +32,12 @@ Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les 
 
 `-ExecutionPolicy Bypass` n'est pas une précaution de style : la stratégie d'exécution par défaut d'un Windows 10 est `Restricted`, et un `.\bootstrap-windows.ps1` lancé tel quel sur une machine neuve échoue avant d'afficher quoi que ce soit — vérifié, il est refusé par un `UnauthorizedAccess`. Si vous cherchez à le constater vous-même, sachez que c'est étonnamment difficile à voir : `Get-ExecutionPolicy -List` affiche `Undefined` partout et jamais le mot `Restricted`, qui n'est que le défaut implicite, et un `Bypass` de portée `Process` se transmet aux processus enfants par la variable d'environnement `PSExecutionPolicyPreference` — relancer un `powershell.exe` neuf depuis un shell déjà en `Bypass` ne montre donc rien. Il faut vider cette variable.
 
+**Ce qui vaut pour ce script vaut pour les trois autres**, et ça se voit juste après : sur une machine restée au défaut, les `.\build-windows.ps1`, `.\run-windows.ps1` et `.\dist-windows.ps1` écrits tels quels dans les sections suivantes sont refusés de la même façon, par un `PSSecurityException`. Il faut les préfixer pareillement, par exemple :
+
+    powershell -ExecutionPolicy Bypass -File .\build-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64 -Tests
+
+C'est d'ailleurs sous cette forme que `bootstrap-windows.ps1` affiche les commandes de la suite quand il a fini. Les sections ci-dessous gardent la forme courte, qui est celle d'un shell où les scripts sont autorisés.
+
 Le script n'utilise pas git et ne récupère rien : il fait partie du dépôt, vous l'avez donc déjà. En revanche **la façon dont vous avez obtenu ce dépôt compte pour la suite**, et il vaut mieux le savoir avant d'installer 4,5 Go. Avec un `git clone`, tout fonctionne. Avec une archive zip téléchargée depuis GitHub, la compilation et `run-windows.ps1` fonctionnent, mais pas `dist-windows.ps1` : il extrait `resources/` et `themes/` avec `git archive HEAD`, et une archive décompressée n'est pas un dépôt — l'échec arriverait tard, après une compilation complète. Sur un zip il faut de plus lever la marque de provenance que Windows y met, sans quoi le script est bloqué même avec `Bypass` (`Unblock-File .\bootstrap-windows.ps1`).
 
 Il installe les Build Tools, Qt 5.15.2 avec QtWebEngine, compile Hunspell et zlib, récupère OpenSSL en vérifiant son empreinte SHA-256, et pose le tout dans la disposition attendue par les `.pro`. Compter une trentaine de minutes et environ 4,5 Go, presque entièrement pour les Build Tools (3,3 Go) et Qt (0,9 Go).
@@ -129,8 +135,6 @@ Attention : **OpenSSL 1.1.1 n'est plus maintenu depuis septembre 2023**. C'est u
 Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. La compilation se fait hors des sources, dans `build\respawnIrc`, contrairement à Linux et macOS : le dossier de sources reste propre et il n'y a rien à ignorer dedans. Les objets déjà compilés sont repris, `-Clean` recompile tout.
 
 Avec `-Tests`, il compile aussi `tests\tests.pro` dans `build\tests` et lance les vérifications. Avec un Hunspell venant de vcpkg, ajoutez `-HunspellLibName hunspell-1.7` ; c'est le même argument que celui de `dist-windows.ps1`, qui appelle ce script plutôt que d'avoir sa propre copie de ces étapes.
-
-À savoir, ce script étant récent : son enchaînement a été essayé avec des outils simulés, mais il n'a pas encore compilé sur une machine réellement équipée — la machine où il a été écrit n'a ni Build Tools ni Qt. Les quatre lignes ci-dessous, elles, sont celles qui ont servi jusqu'ici.
 
 Ce qu'il fait tient en quatre lignes, si vous préférez les taper depuis une invite de commandes où `vcvars64.bat` a été exécuté et où le `bin` de Qt est dans le `PATH` :
 

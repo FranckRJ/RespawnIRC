@@ -155,7 +155,13 @@ déjà équipée, et qui a coûté des essais :
   posé ; et le `Bypass` de portée `Process` **se transmet aux processus enfants** par la variable
   d'environnement `PSExecutionPolicyPreference`, si bien que relancer un `powershell.exe` neuf ne
   révèle rien non plus. Pour voir le vrai comportement il faut vider cette variable, et c'est
-  seulement alors que `Get-ExecutionPolicy` répond `Restricted` ;
+  seulement alors que `Get-ExecutionPolicy` répond `Restricted`. **Cela vaut aussi pour les trois
+  autres scripts**, ce qui s'est vu en suivant les lignes que `bootstrap-windows.ps1` affiche en
+  terminant : elles donnaient un `.\build-windows.ps1` nu, refusé par un `PSSecurityException` sur la
+  machine que le script venait pourtant d'amorcer. Elles reprennent maintenant le
+  `powershell -ExecutionPolicy Bypass -File`. Ne pas essayer de ne l'afficher que si c'est nécessaire :
+  le test se ferait dans un processus lancé en `Bypass`, donc il conclurait « inutile » exactement sur
+  les machines qui en ont besoin ;
 - **le script n'utilise pas git et ne récupère pas le dépôt** — il en fait partie, on l'a forcément
   déjà. Ce qui compte est la **façon** dont on l'a obtenu : `dist-windows.ps1` extrait `resources/` et
   `themes/` avec `git archive HEAD`, donc un zip décompressé, qui n'est pas un dépôt, fait échouer la
@@ -458,10 +464,12 @@ les noms de bibliothèques ne se passent plus à `qmake` que s'ils sortent de l'
 où la compilation est écrite, la distribution reprend les objets au lieu de les raser et lance les
 tests avant d'assembler, et l'archive se compresse par `ZipFile`. Le fichier a été allégé d'autant : il
 ne garde que la piste ouverte, les décisions à ne pas rouvrir, les réserves et les leçons — le récit de
-ce qui a été fait est ici ou dans le README, et la version longue dans l'historique git. Une réserve
-sur le point 3 : le script de compilation n'a encore rien compilé pour de
-bon, seul son enchaînement ayant été essayé avec des outils simulés, la machine où il a été écrit
-n'ayant ni Build Tools ni Qt. Restent enfin deux réserves qui ne sont pas des tâches, seulement des choses
+ce qui a été fait est ici ou dans le README, et la version longue dans l'historique git. **La réserve
+qui pesait sur le point 3 est levée** : `build-windows.ps1 -Tests` a compilé pour de bon, sur une
+machine amorcée par `bootstrap-windows.ps1` — 142 vérifications sans échec, `RespawnIRC.exe` à 1,52 Mo,
+soit la taille attendue d'un release. Deux avertissements sortent au passage, les deux dans
+`utilityTool.cpp:32` et antérieurs à tout ceci : un `C4100` sur un paramètre inutilisé et un `C5051`
+disant que `[[maybe_unused]]` demanderait `/std:c++17`. Restent enfin deux réserves qui ne sont pas des tâches, seulement des choses
 à ne pas oublier : le code de retour 3010, toujours non constaté et de faible valeur — il ne diffère
 de 0 que par un redémarrage conseillé — et le retrait d'`opengl32sw.dll`, vérifié sur une machine sans
 accélération mais pas sur une machine dont Direct3D 11 serait cassé ou désactivé, cas qu'une machine

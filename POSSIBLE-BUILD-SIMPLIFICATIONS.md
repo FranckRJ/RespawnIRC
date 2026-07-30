@@ -27,6 +27,8 @@ C'est du confort, rien ne casse si ça attend.
 | 10 | La compression | `dist-windows.ps1` : `ZipFile::CreateFromDirectory`, 7,6 s contre 13,5 |
 | 11 | `opengl32sw.dll`, 20 Mo pour un repli que Windows fournit déjà | `CLAUDE.md`, le README et le commentaire de `dist-windows.ps1` |
 
+Le point 3 a d'abord été livré sans avoir jamais compilé — seul son enchaînement avait été essayé avec des outils simulés, faute d'une machine équipée. Ce n'est plus le cas : `build-windows.ps1 -Tests` a compilé pour de bon sur une machine amorcée par `bootstrap-windows.ps1`, 142 vérifications sans échec et un `RespawnIRC.exe` de 1,52 Mo. Et la commande lancée était celle que le script d'amorçage affiche en terminant, ce qui a du même coup montré qu'elle ne marchait pas : elle donnait un `.\build-windows.ps1` nu, refusé par la stratégie d'exécution sur la machine qu'elle venait pourtant d'amorcer. Elle reprend maintenant le `powershell -ExecutionPolicy Bypass -File`.
+
 Le point 6 est de loin le plus instructif des dix, et il vaut d'être lu dans l'historique : rangé ici en « deux détails » pour son gain de quelques lignes de script, il cachait l'absence de `msvcp140_1.dll`, c'est-à-dire une archive qui ne démarrait sur aucune machine sans redistribuable Visual C++.
 
 ## Les décisions à ne pas rouvrir sans le mainteneur
@@ -49,7 +51,6 @@ Son apparition en v3.1.11 n'a rien d'une correction : elle est simultanée à un
 
 ## Les réserves qui restent
 
-- **`build-windows.ps1` n'a encore rien compilé pour de bon** (point 3). Seul son enchaînement a été essayé, avec un `windows-common.ps1` simulé et un faux `qmake.exe` affichant ses arguments : les deux cibles dans leurs dossiers, les options réellement transmises, le code de retour des tests, `-Clean`, l'erreur quand `qmake` manque, l'appel depuis `run-windows.ps1` et celui depuis `dist-windows.ps1` jusqu'à `windeployqt`. C'est l'enchaînement qui est vérifié, pas la compilation ;
 - **`ZipFile::CreateFromDirectory` écrit des antislashs** dans les noms d'entrées de l'archive (point 10), mesuré sur ce .NET Framework 4.8 alors qu'on attendait des `/`. Ce qui sauve le changement, c'est que le `Compress-Archive` de PowerShell 5.1 en écrivait exactement autant : la forme des noms ne change pas et les archives publiées en ont toujours contenu. Mais la spécification ZIP demande des `/`, et un décompresseur non-Windows peut en sortir des fichiers dont le nom contient des antislashs plutôt qu'une arborescence. Si ça devenait un sujet, ce serait un défaut préexistant et non une régression.
 
 ## Les leçons, qui portent au-delà de ces pistes
