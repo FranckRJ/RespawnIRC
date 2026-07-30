@@ -216,10 +216,11 @@ Copy-Item (Join-Path $opensslDir '*.dll') $imageDir -Force
 #    Qt5Core.dll et Qt5Widgets.dll importent aussi msvcp140_1.dll, et le chargeur s'arrête sur
 #    « MSVCP140_1.dll est introuvable » avant la première ligne de code. Ce n'est pas une DLL que
 #    ce dépôt choisit — elle est réclamée par les binaires précompilés de Qt 5.15.2, donc depuis
-#    toujours et quel que soit le compilateur qui construit RespawnIRC. Relevé au dumpbin, elle
-#    était la seule des dix DLL du dossier à manquer, les neuf autres n'étant importées par rien ;
-#    les copier quand même coûte 1,1 Mo sur 158 et retire la question. Le glob sur
-#    Microsoft.VC*.CRT évite au passage de figer le numéro de version des outils.
+#    toujours et quel que soit le compilateur qui construit RespawnIRC. Relevé au dumpbin, quatre des
+#    dix DLL du dossier sont réellement importées — msvcp140.dll, msvcp140_1.dll, vcruntime140.dll et
+#    vcruntime140_1.dll — et msvcp140_1.dll était la seule des quatre à manquer ; les six autres ne
+#    sont importées par rien. Les copier quand même coûte 1,1 Mo sur 158 et retire la question. Le
+#    glob sur Microsoft.VC*.CRT évite au passage de figer le numéro de version des outils.
 $crtDir = Get-ChildItem (Join-Path $env:VCToolsRedistDir 'x64') -Directory -Filter 'Microsoft.VC*.CRT' -ErrorAction SilentlyContinue |
     Select-Object -First 1
 

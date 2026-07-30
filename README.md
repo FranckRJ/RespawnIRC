@@ -153,6 +153,8 @@ Le script copie **tout le dossier `Microsoft.VC*.CRT`** du redistribuable, soit 
 
 Depuis, le script **vérifie avant de compresser** qu'aucun binaire de l'archive ne réclame une DLL du runtime C++ absente de l'archive, en relevant les imports au `dumpbin`. Ce contrôle ne remplace pas un essai sur une vraie machine sans redistribuable — il ne voit pas ce qui serait chargé par `LoadLibrary`, comme OpenSSL — mais il rend impossible la répétition exacte de cette panne.
 
+**L'archive corrigée a été essayée sur une machine virtuelle vierge sous Windows 10 LTSC 2019, celle-là même où la précédente échouait, et le programme fonctionne.** Les deux vérifications sont complémentaires et aucune ne rend l'autre inutile : celle du script tourne à chaque archive et attrape une régression immédiatement, l'essai sur machine vierge juge le résultat entier mais dépend de quelqu'un qui y pense.
+
 S'y ajoute OpenSSL, traité dans sa propre section plus haut, pour une raison sans rapport avec la version de Windows : Qt le charge à l'exécution et ne le distribue plus.
 
 Le reste de la pile de DLL qui accompagnait historiquement le programme n'existait que pour **Windows 7, qui n'est plus une cible** :

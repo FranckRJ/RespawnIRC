@@ -197,9 +197,12 @@ cette dépendance vient des **binaires précompilés de Qt 5.15.2**, pas de la c
 Elle ne dépend donc ni de la version des Build Tools ni d'un changement récent — elle est là depuis
 que ce Qt existe, et toutes les archives précédentes en manquaient. `dist-windows.ps1` copie
 maintenant tout le dossier `Microsoft.VC*.CRT`, dix DLL pour 1,8 Mo, et vérifie avant de compresser
-qu'aucun import de la famille du runtime ne manque à l'archive. Relevé au `dumpbin` : `msvcp140_1.dll`
-était la seule qui manquait vraiment, les huit autres ne sont importées par rien — elles sont copiées
-quand même, 1,1 Mo sur 158 valant mieux qu'une liste de noms à tenir à jour.
+qu'aucun import de la famille du runtime ne manque à l'archive. Relevé au `dumpbin` : sur les dix,
+**quatre sont réellement importées** — `msvcp140.dll`, `msvcp140_1.dll`, `vcruntime140.dll` et
+`vcruntime140_1.dll` — et `msvcp140_1.dll` était la seule des quatre à manquer. Les six autres ne sont
+importées par rien ; elles sont copiées quand même, 1,1 Mo sur 158 valant mieux qu'une liste de noms à
+tenir à jour. **L'archive corrigée a été essayée sur une machine virtuelle vierge sous Windows 10 LTSC
+2019, celle où la précédente échouait, et le programme fonctionne.**
 
 #### Ce que l'abandon de Windows 7 a retiré
 
@@ -294,10 +297,16 @@ machine-là.
 
 La leçon est la même que celle du bas de la section précédente, appliquée cette fois non pas à une
 étape d'installation mais à l'essai final : **une machine cesse d'être un témoin valable dès qu'on y
-installe ce dont on veut prouver l'absence.** Ce qui est vérifié aujourd'hui, et à ne pas présenter
-plus largement, c'est que l'archive corrigée ne réclame aucune DLL du runtime C++ qu'elle n'embarque
-pas — établi au `dumpbin` contre l'inventaire de `System32` relevé avant l'installation des Build
-Tools, et non par un lancement sur une seconde machine vierge, qui reste à faire.
+installe ce dont on veut prouver l'absence.**
+
+**L'archive corrigée a maintenant été essayée pour de bon**, sur une machine virtuelle vierge sous
+Windows 10 LTSC 2019 — la configuration exacte où la précédente échouait sur `MSVCP140_1.dll` — et le
+programme fonctionne. C'est ce qui manquait : le relevé au `dumpbin`, fait contre l'inventaire de
+`System32` pris avant l'installation des Build Tools, disait seulement qu'aucun import statique du
+runtime C++ ne manquait. Il ne pouvait rien dire de ce qui se charge par `LoadLibrary`, OpenSSL
+compris. Les deux se complètent et aucun ne remplace l'autre : le `dumpbin` tourne à chaque archive et
+attrape la régression tout de suite, l'essai sur machine vierge est le seul à juger le résultat entier
+mais demande qu'on y pense.
 
 #### Pourquoi Hunspell et zlib ne passent pas par vcpkg
 
