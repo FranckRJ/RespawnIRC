@@ -37,11 +37,13 @@ do
     fi
 done
 
-version="$(sed -n 's/.*currentVersionName("v\([0-9.]*\)").*/\1/p' "$repoDir/respawnIrc/respawnIrc.cpp")"
+# version.pri est la seule source du numéro de version, et le .pro le pousse de là dans le programme
+# comme dans Info.plist : le DMG, le bundle et le binaire ne peuvent pas annoncer trois numéros.
+version="$(sed -n 's/^ *RESPAWNIRC_VERSION *= *\([0-9.]*\) *$/\1/p' "$repoDir/version.pri")"
 
 if [ -z "$version" ]
 then
-    echo "Numéro de version introuvable dans respawnIrc.cpp." >&2
+    echo "Numéro de version introuvable dans version.pri." >&2
     exit 1
 fi
 

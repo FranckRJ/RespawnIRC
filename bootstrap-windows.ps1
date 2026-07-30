@@ -316,8 +316,8 @@ else
 # laisser dans le binaire de débogage reviendrait à y introduire le défaut qu'on l'utilise à chercher.
 Write-Host "== 4/5 zlib $ZlibVersion"
 
-$zlibLib = Join-Path $repoDir 'zlib\lib\zs.lib'
-$zlibLibDebug = Join-Path $repoDir 'zlib\lib\zsd.lib'
+$zlibLib = Join-Path $repoDir 'zlib\lib\zlib.lib'
+$zlibLibDebug = Join-Path $repoDir 'zlib\lib\zlibd.lib'
 
 if((Test-Path $zlibLib) -and (Test-Path $zlibLibDebug))
 {
@@ -338,13 +338,15 @@ else
     try
     {
         Invoke-BuildTool -Name 'cl (zlib)' -Command { & cl /nologo /c /O2 /MD *.c }
-        # Le nom zs.lib est celui qu'attendent le README et le ZLIB_LIB_NAME=zs des appels à qmake.
-        Invoke-BuildTool -Name 'lib (zlib)' -Command { & lib /nologo /OUT:zs.lib *.obj }
+        # zlib.lib est le nom que zlib.pri prend déjà par défaut sous MSVC, et celui que produit aussi
+        # vcpkg : le choisir ici évite un ZLIB_LIB_NAME sur chaque appel à qmake. Il n'y a rien qui
+        # oblige à ce nom, la recette est libre — c'est justement pourquoi autant prendre celui-là.
+        Invoke-BuildTool -Name 'lib (zlib)' -Command { & lib /nologo /OUT:zlib.lib *.obj }
 
         # Seconde passe, comme pour Hunspell et avec le même Remove-Item pour la même raison.
         Remove-Item *.obj -Force
         Invoke-BuildTool -Name 'cl (zlib debug)' -Command { & cl /nologo /c /Od /MDd /Z7 *.c }
-        Invoke-BuildTool -Name 'lib (zlib debug)' -Command { & lib /nologo /OUT:zsd.lib *.obj }
+        Invoke-BuildTool -Name 'lib (zlib debug)' -Command { & lib /nologo /OUT:zlibd.lib *.obj }
     }
     finally
     {
@@ -354,7 +356,7 @@ else
     New-Item -ItemType Directory -Force -Path (Join-Path $repoDir 'zlib\include') | Out-Null
     New-Item -ItemType Directory -Force -Path (Join-Path $repoDir 'zlib\lib') | Out-Null
     Copy-Item (Join-Path $sourceDir 'zlib.h'), (Join-Path $sourceDir 'zconf.h') (Join-Path $repoDir 'zlib\include') -Force
-    Copy-Item (Join-Path $sourceDir 'zs.lib'), (Join-Path $sourceDir 'zsd.lib') (Join-Path $repoDir 'zlib\lib') -Force
+    Copy-Item (Join-Path $sourceDir 'zlib.lib'), (Join-Path $sourceDir 'zlibd.lib') (Join-Path $repoDir 'zlib\lib') -Force
 }
 
 # 5. OpenSSL. Sans lui le programme démarre mais ne peut joindre aucune page : Qt 5.15.2 charge
@@ -411,8 +413,8 @@ $checks = [ordered]@{
     'windeployqt'    = Join-Path $qtDir 'bin\windeployqt.exe'
     'hunspell.lib'   = $hunspellLib
     'hunspelld.lib'  = $hunspellLibDebug
-    'zs.lib'         = $zlibLib
-    'zsd.lib'        = $zlibLibDebug
+    'zlib.lib'       = $zlibLib
+    'zlibd.lib'      = $zlibLibDebug
     'libssl-1_1'     = $opensslDll
     'libcrypto-1_1'  = Join-Path $repoDir 'openssl\bin\libcrypto-1_1-x64.dll'
 }

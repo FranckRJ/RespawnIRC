@@ -24,7 +24,14 @@
 #include "configDependentVar.hpp"
 #include "pathTool.hpp"
 
-const QString respawnIrcClass::currentVersionName("v3.1.17");
+// Le numéro vient de version.pri par un DEFINES de respawnIrc.pro, et non d'un littéral écrit ici :
+// c'est le même que celui dont les scripts de distribution nomment leurs archives. Sans qmake la
+// macro n'est pas définie, d'où le message plutôt qu'une erreur de compilation obscure.
+#ifndef RESPAWNIRC_VERSION
+    #error "RESPAWNIRC_VERSION n'est pas défini : compiler avec qmake, qui le tire de version.pri."
+#endif
+
+const QString respawnIrcClass::currentVersionName("v" RESPAWNIRC_VERSION);
 
 namespace
 {

@@ -17,6 +17,16 @@ DESTDIR = $$PWD/..
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
+# Le numéro de version vient de version.pri, qui en est la seule source, et arrive dans le programme
+# par ce DEFINES : respawnIrc.cpp le préfixe d'un v pour en faire currentVersionName.
+include(../version.pri)
+
+isEmpty(RESPAWNIRC_VERSION) {
+    error("RESPAWNIRC_VERSION est vide : version.pri manque ou n'a pas la forme attendue.")
+}
+
+DEFINES += RESPAWNIRC_VERSION=\\\"$$RESPAWNIRC_VERSION\\\"
+
 RC_FILE = respawnIrc.rc
 
 # Informations du bundle macOS. L'icône est celle de Windows convertie, elle plafonne donc à 128
@@ -27,19 +37,10 @@ macx {
     QMAKE_BUNDLE = RespawnIRC
     QMAKE_INFO_PLIST = Info.plist
 
-    # La version affichée par le Finder est lue dans respawnIrc.cpp pour n'avoir qu'une seule source ;
-    # qmake la remplace ensuite dans Info.plist à la place de @FULL_VERSION@. L'extraction se fait
-    # sans passer par le shell, dont les quotes ne survivent pas à l'analyse de qmake : la ligne
-    # cherchée est celle de currentVersionName, on enlève tout jusqu'au v du numéro puis tout ce qui
-    # suit le numéro lui-même.
-    linesOfSource = $$cat($$PWD/respawnIrc.cpp, lines)
-    lineOfVersion = $$find(linesOfSource, currentVersionName..v[0-9])
-    versionAfterTheV = $$replace(lineOfVersion, .*v, )
-    VERSION = $$replace(versionAfterTheV, [^0-9.].*, )
-
-    isEmpty(VERSION) {
-        error("Version introuvable dans respawnIrc.cpp, le bundle serait marqué 1.0.0.")
-    }
+    # La version affichée par le Finder est la même que celle du programme, celle de version.pri :
+    # qmake remplace @FULL_VERSION@ par cette VERSION dans Info.plist. Elle reste dans ce bloc parce
+    # que c'est le seul endroit qui la lit, la VERSION de qmake n'ayant pas d'usage ailleurs ici.
+    VERSION = $$RESPAWNIRC_VERSION
 }
 
 CONFIG += c++14

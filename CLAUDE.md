@@ -22,6 +22,14 @@ zlib1g-dev`. zlib sert à décompresser le payload des pages (voir plus bas).
 L'exécutable doit tourner depuis la racine du dépôt (il y cherche `themes/` et `resources/`), ce que
 le `DESTDIR` lui donne gratuitement.
 
+Le numéro de version est dans `version.pri`, à la racine, et **nulle part ailleurs** : le `.pro`
+l'inclut, le pousse dans un `DEFINES` que `respawnIrc.cpp` reprend pour `currentVersionName`, et le
+donne à la `VERSION` de qmake dont `Info.plist` tire la version du bundle ; les deux scripts de
+distribution lisent ce même fichier pour nommer leurs archives. Une publication ne touche donc
+qu'une ligne. Il était auparavant dans le littéral C++, que trois analyseurs syntaxiques allaient
+lire — une regex PowerShell, un `sed`, et un enchaînement `$$cat`/`$$find`/`$$replace` dans le
+`.pro`. Conséquence assumée : le programme ne se compile plus sans qmake, un `#error` le dit.
+
 ### macOS
 
 Trois pièges, tous documentés dans le README :
@@ -55,7 +63,13 @@ remplace pas le README : il applique ce qu'il décrit, et c'est le README qu'il 
 version change ou qu'une étape échoue. Les pièges à connaître :
 
 - les `.pro` n'ont **pas** été modifiés pour Windows, et ne devraient pas avoir à l'être : tout passe
-  par des variables de `qmake`, `HUNSPELL_LIB_NAME`, `ZLIB_LIB_NAME` et `DEFINES+=HUNSPELL_STATIC` ;
+  par la ligne de commande de `qmake`, où il ne reste que `DEFINES+=HUNSPELL_STATIC`. Les variables
+  `HUNSPELL_LIB_NAME` et `ZLIB_LIB_NAME` existent toujours mais ne servent plus qu'aux bibliothèques
+  autrement nommées — le `hunspell-1.7` de vcpkg, les bibliothèques de débogage — la recette du
+  README produisant maintenant `hunspell.lib` et `zlib.lib`, qui sont les défauts des `.pro`. Les
+  passer quand même ne fait rien, mais c'est du bruit : on les répétait à trois endroits pour rien.
+  Ce `DEFINES` pourrait lui aussi devenir une ligne `win32:` du `.pro` ; ça a été proposé et
+  **refusé**, précisément pour garder les `.pro` sans rien de spécifique à Windows ;
 - l'installation ciblée des Build Tools demande **deux** composants, `VC.Tools.x86.x64` et un
   Windows SDK. Le premier seul pose `cl.exe` mais aucun `Windows Kits`, et plus rien ne compile :
   depuis Visual Studio 2015 les en-têtes de la bibliothèque C appartiennent au SDK et pas au
@@ -64,12 +78,12 @@ version change ou qu'une étape échoue. Les pièges à connaître :
   bibliothèques sans dépendance, une quinzaine de secondes. vcpkg reste décrit en second choix.
   Les deux se compilent **deux fois**, en `/MD` et en `/MDd` : `/MD` et `/MDd` ne se mélangent pas
   dans un même binaire, et les seules bibliothèques release faisaient échouer `nmake debug`. Le
-  débogage se choisit au `qmake`, par `HUNSPELL_LIB_NAME=hunspelld ZLIB_LIB_NAME=zsd`, et donc dans
+  débogage se choisit au `qmake`, par `HUNSPELL_LIB_NAME=hunspelld ZLIB_LIB_NAME=zlibd`, et donc dans
   un dossier de compilation à part — les `.pro` restent sans rien de spécifique à Windows ;
 - **les deux ne préviennent pas de la même façon, et zlib est le piège.** Hunspell est en C++ : ses
   en-têtes posent les enregistrements `RuntimeLibrary` et `_ITERATOR_DEBUG_LEVEL`, le mélange est un
   `LNK2038` et la compilation s'arrête. zlib est en C et n'en pose aucun : il ne reste que le
-  `/DEFAULTLIB:MSVCRT` de ses objets release — visible au `dumpbin /directives zs.lib`, quinze fois —
+  `/DEFAULTLIB:MSVCRT` de ses objets release — visible au `dumpbin /directives zlib.lib`, quinze fois —
   qui ne donne qu'un `LNK4098`, un avertissement, et laisse **deux CRT dans le même binaire**. On a
   d'autant plus envie de l'ignorer qu'il n'empêche rien ; c'est pourtant le mélange exact que la
   section « Corruption de tas sous Windows » plus bas apprend à traquer. Constaté ici : la première
@@ -88,15 +102,27 @@ version change ou qu'une étape échoue. Les pièges à connaître :
   est l'exécutable de débogage laissé à la racine, plus récent que ses objets, donc jugé à jour. Il n'affiche
   rien et on continue d'exécuter le binaire de débogage en croyant l'avoir remplacé. Effacer `RespawnIRC.exe`
   avant de recompiler ; la taille tranche, 1,5 Mo en release contre 3,5 en debug. `dist-windows.ps1` y échappe
-  en effaçant `build\respawnIrc` avant `qmake`. Le même `DESTDIR` dépose aussi `RespawnIRC.pdb` à la racine,
+  en effaçant ce seul `RespawnIRC.exe` avant son `nmake` : le lien est alors toujours refait, donc l'archive
+  emporte forcément un binaire sorti des objets de son propre dossier. Il rasait auparavant tout
+  `build\respawnIrc`, ce qui achetait la même garantie au prix des 45 sources à chaque archive.
+  Le cas qui juge ce mécanisme a été exercé : un `nmake debug` avait laissé ses 3,5 Mo à la racine, et le
+  `dist-windows.ps1` lancé ensuite a bien rendu un exécutable de 1,5 Mo, sorti des objets de son dossier.
+  Ce qui n'a pas encore tourné depuis ces changements, c'est la **suite** du script, de `windeployqt` à la
+  compression : il reste donc une archive complète à fabriquer une fois. Le même `DESTDIR` dépose aussi `RespawnIRC.pdb` à la racine,
   14 Mo, désormais dans le `.gitignore` — sans quoi `git status` n'est plus vide après un `nmake debug` ;
 - `windeployqt` crée un dossier `resources/` pour QtWebEngine, exactement le nom du dossier de
   données du programme, et au même endroit puisque `pathTool::dataDirPath()` renvoie le dossier de
   l'exécutable. Les deux contenus doivent **fusionner**, pas se remplacer ;
-- les `.ps1` du dépôt sont en UTF-8 **avec BOM** — `dist-windows.ps1` comme `bootstrap-windows.ps1` :
-  PowerShell 5.1 lit un `.ps1` comme de l'ANSI sans lui, et tous les accents des messages sont
-  abîmés. Ne réenregistrer aucun des deux sans le BOM, et le vérifier sur les octets du fichier, pas
-  à travers un pipeline PowerShell qui décode le texte et masquerait la perte ;
+- `dist-windows.ps1` et `run-windows.ps1` chargent `windows-common.ps1` par point-sourcing, où vivent
+  la résolution du dossier de Qt et la vérification d'OpenSSL, qui étaient recopiées dans les deux.
+  `bootstrap-windows.ps1` **garde ses propres copies** d'`Import-MsvcEnvironment` et d'`Invoke-BuildTool`,
+  et c'est délibéré : il tourne quand rien n'est encore installé, et il est le seul des trois à avoir une
+  raison de ne dépendre de rien ;
+- les **quatre** `.ps1` du dépôt sont en UTF-8 **avec BOM** — `dist-windows.ps1`, `run-windows.ps1`,
+  `windows-common.ps1` et `bootstrap-windows.ps1` : PowerShell 5.1 lit un `.ps1` comme de l'ANSI sans
+  lui, et tous les accents des messages sont abîmés. N'en réenregistrer aucun sans le BOM, et le
+  vérifier sur les octets du fichier, pas à travers un pipeline PowerShell qui décode le texte et
+  masquerait la perte ;
 - toujours dans PowerShell 5.1, `qmake`, `nmake` et `windeployqt` écrivent leur progression sur la
   sortie d'erreur : avec `$ErrorActionPreference = 'Stop'` chaque ligne devient une erreur fatale
   alors que la commande a réussi. D'où `Invoke-BuildTool`, qui juge sur le code de retour.
@@ -158,7 +184,7 @@ neuve — sur une machine vierge **suivante**, distincte de celle du paragraphe 
 Windows 10 IoT Enterprise LTSC 2021. Le script lancé depuis un PowerShell **ordinaire** y a affiché sa
 ligne « élévation nécessaire », l'invite UAC a été acceptée, l'installateur élevé a rendu 0 et les
 quatre étapes suivantes ont continué dans le processus d'origine. Ce qui se déduisait de la conception est
-désormais constaté : `C:\Qt`, `qmake.exe`, `hunspell.lib`, `zs.lib` et les DLL d'OpenSSL appartiennent
+désormais constaté : `C:\Qt`, `qmake.exe`, `hunspell.lib`, la bibliothèque de zlib et les DLL d'OpenSSL appartiennent
 à l'utilisateur courant, quand `C:\Program Files (x86)\Microsoft Visual Studio` appartient à
 `BUILTIN\Administrators`. C'est exactement ce que n'élever que l'installateur cherche à obtenir, et
 c'est la raison de ne pas « simplifier » en relançant tout le script élevé.
@@ -357,7 +383,7 @@ compilation, l'archive et son démarrage sur machine vierge sont tous constatés
 un seul vrai point, l'autre étant réglé.
 
 - ~~**`nmake debug` ne compile pas.**~~ **Fait.** `bootstrap-windows.ps1` compile Hunspell **et zlib**
-  une seconde fois en `/MDd /Z7`, vers un `hunspelld.lib` et un `zsd.lib` à part. La section
+  une seconde fois en `/MDd /Z7`, vers un `hunspelld.lib` et un `zlibd.lib` à part. La section
   « Corruption de tas sous Windows » plus bas n'a donc plus à se rabattre sur
   `CONFIG+=force_debug_info`. Voir la section Windows plus haut pour les deux `..._LIB_NAME`, le
   dossier de compilation séparé qu'ils imposent, et surtout le `LNK4098` de zlib, qui est ce que
@@ -370,8 +396,13 @@ un seul vrai point, l'autre étant réglé.
   plus lourd que tout le reste réuni : ce qui subsiste, au fond, c'est d'être arrimé à un Qt et à une
   bibliothèque TLS tous deux en fin de vie.
 
-Les pistes de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` (points 1 à 5, 7 et 10) sont du confort et rien n'y
-casse si elles attendent. Restent enfin deux réserves qui ne sont pas des tâches, seulement des choses
+Les pistes de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` sont du confort et rien n'y casse si elles
+attendent ; il n'en reste que deux ouvertes, le `build-windows.ps1` du point 3 et la compilation hors
+des sources sous macOS du point 7. Les points 1, 2, 4, 5 et 10 ont été faits, et ce qu'il faut en
+retenir tient en une ligne : le numéro de version vit dans `version.pri`, les noms de bibliothèques ne
+se passent plus à `qmake` que s'ils sortent de l'ordinaire, `windows-common.ps1` porte ce que deux des
+scripts partagent, la distribution reprend les objets au lieu de les raser, et l'archive se compresse
+par `ZipFile`. Restent enfin deux réserves qui ne sont pas des tâches, seulement des choses
 à ne pas oublier : le refus de l'invite UAC et le code 3010, toujours non constatés et de faible
 valeur — quatre lignes et un code qui ne diffère de 0 que par un redémarrage conseillé — et le retrait
 d'`opengl32sw.dll`, vérifié sur une machine sans accélération mais pas sur une machine dont Direct3D 11
@@ -484,7 +515,7 @@ reproduiront :
   Activer le page heap complet (`gflags /p /enable RespawnIRC.exe /full`, à désactiver ensuite) fait
   fauter à l'endroit exact. Comme `release` n'a pas de symboles, recompiler pour obtenir une pile
   lisible plutôt que des `image00007ff6+0x...` : un vrai `nmake debug` est maintenant possible
-  (`HUNSPELL_LIB_NAME=hunspelld`, dans son propre dossier de compilation), et `CONFIG+=force_debug_info`
+  (`HUNSPELL_LIB_NAME=hunspelld ZLIB_LIB_NAME=zlibd`, dans son propre dossier de compilation), et `CONFIG+=force_debug_info`
   reste utile quand on veut les symboles sans quitter les optimisations de release.
 
 Les outils viennent du Windows SDK, feature `OptionId.WindowsDesktopDebuggers` de `winsdksetup.exe`,

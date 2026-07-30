@@ -25,25 +25,13 @@ if(-not (Test-Path $builtExe))
     throw "$builtExe est introuvable : compilez d'abord (voir le README)."
 }
 
-if($QtDir)
-{
-    $qtDir = $QtDir
-}
-elseif(Get-Command qmake -ErrorAction SilentlyContinue)
-{
-    $qtDir = Split-Path (Split-Path (Get-Command qmake).Source)
-}
-else
-{
-    throw "Qt introuvable : passez son chemin avec -QtDir, ou mettez son qmake dans le PATH."
-}
+# Résolution de Qt et vérification d'OpenSSL, partagées avec dist-windows.ps1.
+. (Join-Path $PSScriptRoot 'windows-common.ps1')
 
-$opensslDir = Join-Path $repoDir 'openssl\bin'
-
-if(-not (Test-Path (Join-Path $opensslDir 'libssl-1_1-x64.dll')))
-{
-    Write-Warning "OpenSSL absent d'openssl\bin : le programme démarrera mais ne pourra joindre aucune page."
-}
+$qtDir = Resolve-QtDir -QtDir $QtDir
+# Sans -Required : l'absence d'OpenSSL n'empêche pas de lancer le programme, seulement de joindre une
+# page, et c'est encore utile pour tout ce qui ne dépend pas du réseau.
+$opensslDir = Get-OpenSslDir -RepoDir $repoDir
 
 $env:PATH = "$qtDir\bin;$opensslDir;$env:PATH"
 

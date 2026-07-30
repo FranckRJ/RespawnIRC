@@ -1,12 +1,10 @@
 # Pistes de simplification de la compilation et de la distribution
 
-État des lieux des redondances et des frottements de la chaîne de compilation, relevés en juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, `dist-windows.ps1`, `run-windows.ps1`, `dist-macos.sh` et la section « Compilation » du README. Ce fichier est une liste de pistes, classées par rapport entre l'effort et le gain, pas un plan arrêté : les points 1 à 5, 7 et 10 n'ont pas été faits. Ceux qui l'ont été portent la mention **fait** et sont conservés pour ce qu'ils ont appris — les points 8, 9 et 11, et le point 6 qui est le plus instructif des quatre.
+État des lieux des redondances et des frottements de la chaîne de compilation, relevés en juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, `dist-windows.ps1`, `run-windows.ps1`, `dist-macos.sh` et la section « Compilation » du README. Ce fichier est une liste de pistes, classées par rapport entre l'effort et le gain, pas un plan arrêté : **il n'en reste que deux d'ouvertes, les points 3 et 7.** Les autres portent la mention **fait** et sont conservés pour ce qu'ils ont appris, le point 6 restant de loin le plus instructif.
 
 Les numéros de ligne cités sont ceux du relevé de juillet 2026 et ont dérivé depuis ; les chercher par leur contenu plutôt que par leur numéro.
 
-Les deux premières sont celles qui rapportent le plus pour le moins de risque : elles ne changent aucune sémantique de compilation et suppriment à elles deux quatre analyseurs dupliqués et neuf occurrences d'options.
-
-## 1. Le numéro de version est analysé trois fois, dans trois langages
+## 1. Le numéro de version est analysé trois fois, dans trois langages — **fait**
 
 - `dist-windows.ps1:116` : une expression rationnelle PowerShell sur `respawnIrc.cpp` ;
 - `dist-macos.sh:39` : un `sed` sur le même fichier ;
@@ -14,11 +12,11 @@ Les deux premières sont celles qui rapportent le plus pour le moins de risque :
 
 Trois expressions rationnelles et une dizaine de lignes de contorsions qmake pour lire `"v3.1.17"` dans un littéral C++.
 
-Piste : un `version.pri` contenant `VERSION = 3.1.17`, inclus par le `.pro` qui le pousse ensuite dans un `DEFINES` que `respawnIrc.cpp` consomme. Le bloc qmake se réduit alors à un `include()`, et les deux scripts lisent un fichier d'une ligne au lieu d'analyser du C++. Les tests ne compilent pas `respawnIrc.cpp`, rien d'autre ne bouge.
+Fait, sous la forme décrite : un `version.pri` à la racine porte `RESPAWNIRC_VERSION = 3.1.17`, `respawnIrc.pro` l'inclut, le pousse dans un `DEFINES` que `respawnIrc.cpp` reprend pour `currentVersionName`, et le donne à la `VERSION` de qmake dont `Info.plist` tire la version du bundle. Le bloc `$$cat`/`$$find`/`$$replace` a disparu, et les deux scripts de distribution lisent une ligne au lieu d'analyser du C++. Les 142 vérifications passent, et le binaire release contient bien le littéral `v3.1.17` — c'est ce qu'on vérifie, plutôt que la seule réussite de la compilation.
 
-Contrepartie : le numéro de version disparaît des sources C++, et une compilation sans qmake ne marcherait plus — sans objet ici, qmake est le seul système de compilation du dépôt.
+Contrepartie assumée : le numéro de version ne figure plus dans les sources C++, et compiler sans qmake ne marche plus. Un `#ifndef` dans `respawnIrc.cpp` le dit en une phrase plutôt que de laisser sortir une erreur de compilation obscure — c'est le seul ajout par rapport à la piste telle qu'elle était écrite ici.
 
-## 2. Trois options qmake sous Windows, dont aucune n'a besoin d'exister
+## 2. Trois options qmake sous Windows, dont aucune n'a besoin d'exister — **fait pour deux sur trois, la troisième arbitrée**
 
 Aujourd'hui : `qmake ...pro HUNSPELL_LIB_NAME=hunspell ZLIB_LIB_NAME=zs DEFINES+=HUNSPELL_STATIC`, répété dans `README.md:87`, encore dans la recette des tests en `README.md:104`, et encore dans `dist-windows.ps1:135`.
 
@@ -26,7 +24,11 @@ Aujourd'hui : `qmake ...pro HUNSPELL_LIB_NAME=hunspell ZLIB_LIB_NAME=zs DEFINES+
 - `ZLIB_LIB_NAME=zs` n'existe que parce que le README fait fabriquer `zs.lib` (`README.md:53`) alors que `zlib.pri:21` prend `zlib` par défaut sous MSVC. La recette manuelle choisit ce nom librement, et vcpkg produit de toute façon `zlib.lib` : c'est donc la recette manuelle qui est l'intruse. Écrire `/OUT:zlib.lib` et la variable disparaît des deux recettes du README, du paramètre par défaut de `dist-windows.ps1:21` et des deux appels à qmake.
 - `DEFINES+=HUNSPELL_STATIC` pourrait être une ligne `win32:` dans le `.pro`. Il est sans effet sur le Hunspell de vcpkg, ce qui est justement l'argument pour le figer plutôt que de le répéter à trois endroits. **Contrepartie** : cela contredit le principe documenté selon lequel les `.pro` n'ont pas été modifiés pour Windows et ne devraient pas avoir à l'être. À arbitrer.
 
-Les trois ensemble ramènent la ligne de compilation Windows à `qmake ..\..\respawnIrc\respawnIrc.pro`, de la même forme que sous Linux et macOS.
+**L'arbitrage a été rendu : non.** Le principe des `.pro` sans rien de spécifique à Windows a été jugé plus précieux que la disparition de la dernière option, et `DEFINES+=HUNSPELL_STATIC` reste donc sur la ligne de commande, aux trois mêmes endroits. Ne pas rouvrir la question sans le mainteneur : ce n'est pas un oubli.
+
+Les deux premiers sont faits. `HUNSPELL_LIB_NAME` est vide par défaut dans `dist-windows.ps1` et n'est transmis que s'il est renseigné, et la recette du README fabrique maintenant `zlib.lib` et `zlibd.lib` au lieu de `zs.lib` et `zsd.lib` — c'est-à-dire le nom que `zlib.pri` prend déjà par défaut sous MSVC, et celui que produit aussi vcpkg. La ligne de compilation Windows passe donc de `qmake ...pro HUNSPELL_LIB_NAME=hunspell ZLIB_LIB_NAME=zs DEFINES+=HUNSPELL_STATIC` à `qmake ...pro DEFINES+=HUNSPELL_STATIC`, et celle des tests à un `qmake ..\..\tests\tests.pro` nu. Les deux variables restent pour ce à quoi elles servent vraiment : le `hunspell-1.7` de vcpkg, et les bibliothèques de débogage (`HUNSPELL_LIB_NAME=hunspelld ZLIB_LIB_NAME=zlibd`).
+
+Une conséquence à ne pas oublier en reprenant ce point : le renommage de la bibliothèque de zlib touche `bootstrap-windows.ps1`, sa vérification finale, les deux recettes du README et les mentions de `CLAUDE.md`, et il périme les `zs.lib` déjà posés sur les machines de développement — un `zlib\lib` qui ne contient que les anciens noms fait échouer l'édition de liens sur un `zlib.lib` introuvable. Les renommer suffit, rien n'est à recompiler.
 
 ## 3. Il n'y a pas de script de compilation, seulement un script d'amorçage, un de distribution et un de lancement
 
@@ -38,7 +40,7 @@ Cela donnerait aussi un chemin scripté aux tests : aujourd'hui `tests/tests.pro
 
 `bootstrap-windows.ps1` a comblé l'autre bout de la chaîne, l'installation des outils, mais s'arrête volontairement là : il se termine en affichant la commande de `dist-windows.ps1` plutôt que de compiler. Un `build-windows.ps1` viendrait exactement entre les deux, et c'est lui qui manque encore pour qu'une machine vierge aille du dépôt à l'exécutable sans qu'on tape une seule ligne de `qmake`.
 
-## 4. Une trentaine de lignes dupliquées mot pour mot entre les deux scripts PowerShell
+## 4. Une trentaine de lignes dupliquées mot pour mot entre les deux scripts PowerShell — **fait**
 
 Le bloc de résolution de Qt est identique : `dist-windows.ps1:30-41` et `run-windows.ps1:32-43`. La vérification de la présence d'OpenSSL est dans les deux également (`dist-windows.ps1:183` et `run-windows.ps1:47`), à la seule différence du `throw` contre le `Write-Warning`.
 
@@ -46,11 +48,21 @@ L'arrivée de `bootstrap-windows.ps1` a aggravé le constat : `Import-MsvcEnviro
 
 Piste : un `windows-common.ps1` chargé par point-sourcing, avec `Resolve-QtDir` et `Test-OpenSslDir`. Ce serait aussi le logement naturel de `Invoke-BuildTool` et `Import-MsvcEnvironment` une fois le script de compilation séparé. À arbitrer pour le script d'amorçage, qui est le seul des trois à avoir une raison de ne dépendre de rien.
 
-## 5. Chaque distribution recompile tout, et efface ce dont `run-windows.ps1` a besoin
+Fait : `windows-common.ps1` porte `Resolve-QtDir` et `Get-OpenSslDir`, chargé par point-sourcing depuis `dist-windows.ps1` et `run-windows.ps1`. La différence entre les deux appelants — le `throw` de la distribution contre le `Write-Warning` du lanceur — est devenue un `-Required`, ce qui est exactement ce qu'elle était.
+
+`bootstrap-windows.ps1` n'y touche pas et garde ses deux copies, l'arbitrage ayant été tranché dans le sens de son autonomie. `Invoke-BuildTool` et `Import-MsvcEnvironment` restent donc en deux exemplaires, dans le script d'amorçage et dans celui de distribution : les réunir n'a de sens qu'avec le `build-windows.ps1` du point 3, qui serait leur troisième utilisateur.
+
+## 5. Chaque distribution recompile tout, et efface ce dont `run-windows.ps1` a besoin — **fait**
 
 `dist-windows.ps1:125` fait `Remove-Item -Recurse -Force` sur `build\respawnIrc`, c'est-à-dire exactement le dossier que lit `run-windows.ps1:25`. Alterner entre essayer le programme et fabriquer une archive coûte donc une recompilation complète des 45 sources à chaque fois.
 
 La compilation est déjà hors des sources, ce qui apporte l'essentiel de ce que cet effacement achetait. Piste : donner à la distribution son propre `build\dist`, ou faire de l'effacement une option `-Clean`.
+
+Fait, par la seconde branche et une précaution que la piste ne voyait pas. `-Clean` rend l'ancien comportement, et par défaut le dossier est repris tel quel — mais l'effacement ne servait pas seulement à repartir propre : il garantissait aussi que l'édition de liens ait lieu. Le `DESTDIR` des `.pro` ne distingue ni release, ni debug, ni dossier de compilation, si bien qu'un `RespawnIRC.exe` venu d'ailleurs — un `nmake debug`, typiquement — est plus récent que les objets, `nmake` le juge à jour, et l'archive emporterait ce binaire-là. `dist-windows.ps1` efface donc ce seul exécutable avant son `nmake`, ce qui rachète la garantie pour un fichier au lieu de 45 sources.
+
+La première branche, un `build\dist` séparé, aurait été le mauvais choix pour cette raison exacte : deux dossiers visant le même `DESTDIR`, c'est le piège documenté dans le README, et il se serait mis à mordre le va-et-vient courant entre essayer et distribuer.
+
+Le cas qui juge le mécanisme a été exercé, et dans le bon sens : un `nmake debug` avait laissé ses 3,5 Mo à la racine, le `dist-windows.ps1` lancé ensuite a effacé cet exécutable et rendu les 1,5 Mo du release, relié depuis les objets déjà présents. **Ce qui reste à vérifier** est la suite du script, de `windeployqt` à la compression, qui n'a pas encore tourné depuis ces changements : il faut fabriquer une archive complète une fois.
 
 ## 6. Deux détails dans la section des bibliothèques d'exécution — **fait, et ce n'était pas un détail**
 
@@ -95,9 +107,17 @@ Deux leçons transposables au reste de ce fichier survivent à cette suppression
 
 L'abandon de Windows 7 a résolu le désaccord en vidant les deux listes. Il ne reste qu'une seule pièce à copier, les bibliothèques C++ de MSVC, plus OpenSSL pour une raison sans rapport avec la version de Windows. `D3Dcompiler_47.dll` est maintenant nommé dans le script, mais pour être **retiré** de ce que `windeployqt` a copié.
 
-## 10. Accessoire : la compression
+## 10. Accessoire : la compression — **fait**
 
 `Compress-Archive` sur 159 Mo et quelques centaines de fichiers est l'étape la plus lente du script (`dist-windows.ps1:312`). `[System.IO.Compression.ZipFile]::CreateFromDirectory` fait la même chose nettement plus vite. Sans autre effet que le temps d'attente.
+
+Fait. Le détail qui compte est le quatrième argument, `includeBaseDirectory` : à `$true`, les entrées commencent par `RespawnIRC`, ce que le `-Path` sur le dossier donnait avant et sur quoi tient la consigne « décompresser ce dossier tel quel ».
+
+La vérification a démenti au passage ce qui allait être écrit ici. On attendait des entrées séparées par des `/`, le `ZipFile` du .NET Framework ayant cessé d'écrire des antislashs en 4.6.1 : **mesuré sur ce .NET Framework 4.8, `CreateFromDirectory` écrit bel et bien des antislashs.** Ce qui sauve le changement, c'est que `Compress-Archive` de PowerShell 5.1 en écrit exactement autant — vérifié sur la même arborescence d'essai, il s'appuie sur la même API. Les archives publiées par ce dépôt en ont donc toujours contenu, la forme des noms ne change pas, et ce point reste ce qu'il annonçait : du temps d'attente et rien d'autre. À ne pas relire comme un certificat de conformité : la spécification ZIP demande des `/`, et un décompresseur non-Windows peut sortir des fichiers dont le nom contient des antislashs plutôt qu'une arborescence. Si ça devait devenir un sujet, ce serait un défaut préexistant et non une régression de ce changement.
+
+Seule autre différence relevée : `Compress-Archive` écrivait aussi des entrées de dossier (`RespawnIRC\resources\`), là où `CreateFromDirectory` ne liste que les fichiers. Sans conséquence, les dossiers étant recréés à la décompression.
+
+Le gain de temps, lui, n'a pas encore été mesuré sur la vraie archive : il demande le `dist-windows.ps1` complet qui manque aussi au point 5.
 
 ## 11. `opengl32sw.dll` : 20 Mo pour un repli que Windows fournit déjà — **fait**
 

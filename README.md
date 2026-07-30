@@ -22,7 +22,7 @@ La cible est Windows 10 ou plus récent, en 64 bits. Tout se fait en ligne de co
 
 **Le compilateur doit être MSVC, pas MinGW.** RespawnIRC utilise QtWebEngine, dont le moteur est Chromium, et Chromium ne se compile pas avec MinGW : les binaires officiels de Qt ne fournissent QtWebEngine que pour MSVC, et le module est purement et simplement absent des versions MinGW. C'est la seule contrainte forte de la compilation sous Windows, tout le reste en découle.
 
-En revanche aucune modification des fichiers `.pro` n'est nécessaire : toute la configuration passe par deux variables données à `qmake`.
+En revanche aucune modification des fichiers `.pro` n'est nécessaire : toute la configuration passe par la ligne de commande de `qmake`, et il n'y reste qu'un `DEFINES+=HUNSPELL_STATIC`. Les deux variables `HUNSPELL_LIB_NAME` et `ZLIB_LIB_NAME` existent toujours mais ne servent plus qu'à désigner des bibliothèques autrement nommées — celles de vcpkg, ou celles de débogage : les noms produits par la recette ci-dessous sont ceux que les `.pro` prennent déjà par défaut.
 
 #### Tout installer d'un coup
 
@@ -83,10 +83,10 @@ Rien n'est fourni par le système sous Windows, il faut donc compiler les deux. 
 
     cd zlib-1.3.1
     cl /nologo /c /O2 /MD *.c
-    lib /nologo /OUT:zs.lib *.obj
+    lib /nologo /OUT:zlib.lib *.obj
     del *.obj
     cl /nologo /c /Od /MDd /Z7 *.c
-    lib /nologo /OUT:zsd.lib *.obj
+    lib /nologo /OUT:zlibd.lib *.obj
 
 `/MD` est indispensable : c'est la bibliothèque C++ dynamique, celle qu'utilise Qt. Avec `/MT` l'édition de liens échouerait.
 
@@ -94,7 +94,9 @@ Hunspell se compile **deux fois**, en release et en debug. `/MD` et `/MDd` ne se
 
 zlib se compile deux fois pour la même raison, mais son symptôme est plus discret et mérite d'être connu : étant en C, il n'emporte ni `_ITERATOR_DEBUG_LEVEL` ni l'enregistrement `RuntimeLibrary` que posent les en-têtes C++, si bien que l'éditeur de liens ne peut pas rendre de `LNK2038`. Il ne reste que le `/DEFAULTLIB:MSVCRT` des objets release — visible au `dumpbin /directives zs.lib` — qui dégénère en simple avertissement `LNK4098` et laisse **deux CRT dans le même binaire**. Un avertissement qu'on est d'autant plus tenté d'ignorer qu'il n'empêche rien ; c'est pourtant exactement le mélange que la section « Corruption de tas sous Windows » plus bas apprend à traquer, allouer dans une CRT et libérer dans l'autre. Le laisser dans le binaire de débogage, ce serait y introduire le défaut qu'on s'en sert pour chercher.
 
-Placez ensuite le résultat à la racine du dépôt, dans la disposition attendue par les `.pro` : les cinq en-têtes de `src\hunspell` (`hunspell.hxx`, `hunspell.h`, `hunvisapi.h`, `atypes.hxx`, `w_char.hxx`) dans `hunspell\include\hunspell` et `hunspell.lib` **et `hunspelld.lib`** dans `hunspell\lib` ; `zlib.h` et `zconf.h` dans `zlib\include` et `zs.lib` **et `zsd.lib`** dans `zlib\lib`.
+Ces noms de bibliothèques ne sont pas arbitraires : `hunspell` et, sous MSVC, `zlib` sont ceux que les `.pro` prennent par défaut. La recette est libre de les choisir — `lib /OUT:` accepte n'importe quoi — donc autant prendre ceux qui n'obligent à rien passer à `qmake` ensuite. Ce sont aussi ceux que produit vcpkg pour zlib.
+
+Placez ensuite le résultat à la racine du dépôt, dans la disposition attendue par les `.pro` : les cinq en-têtes de `src\hunspell` (`hunspell.hxx`, `hunspell.h`, `hunvisapi.h`, `atypes.hxx`, `w_char.hxx`) dans `hunspell\include\hunspell` et `hunspell.lib` **et `hunspelld.lib`** dans `hunspell\lib` ; `zlib.h` et `zconf.h` dans `zlib\include` et `zlib.lib` **et `zlibd.lib`** dans `zlib\lib`.
 
 `HUNSPELL_STATIC` doit être défini à la compilation de Hunspell **et** à celle de RespawnIRC : sans lui les en-têtes de Hunspell déclarent tout en `__declspec(dllimport)` et l'édition de liens échoue. C'est le `DEFINES+=HUNSPELL_STATIC` des commandes plus bas.
 
@@ -104,11 +106,11 @@ Placez ensuite le résultat à la racine du dépôt, dans la disposition attendu
 
     vcpkg install hunspell:x64-windows-static-md zlib:x64-windows-static-md
 
-Le triplet `x64-windows-static-md` donne des bibliothèques statiques avec la bibliothèque C++ dynamique, comme Qt ; `x64-windows-static` tout court utiliserait `/MT` et entrerait en conflit avec Qt. Les fichiers se recopient dans la même disposition que ci-dessus, à deux différences près : la bibliothèque s'appelle `hunspell-1.7.lib`, il faut donc `HUNSPELL_LIB_NAME=hunspell-1.7`, et son `hunvisapi.h` est engendré avec le test déjà figé, ce qui rend `DEFINES+=HUNSPELL_STATIC` inutile — mais inoffensif, les commandes plus bas marchent dans les deux cas.
+Le triplet `x64-windows-static-md` donne des bibliothèques statiques avec la bibliothèque C++ dynamique, comme Qt ; `x64-windows-static` tout court utiliserait `/MT` et entrerait en conflit avec Qt. Les fichiers se recopient dans la même disposition que ci-dessus, à deux différences près : la bibliothèque de Hunspell s'appelle `hunspell-1.7.lib`, il faut donc ajouter `HUNSPELL_LIB_NAME=hunspell-1.7` aux commandes plus bas — c'est le cas type de cette variable, et le seul qui reste courant — et son `hunvisapi.h` est engendré avec le test déjà figé, ce qui rend `DEFINES+=HUNSPELL_STATIC` inutile, mais inoffensif. Le zlib de vcpkg, lui, s'appelle bien `zlib.lib` et ne demande rien.
 
 Pour mémoire, mesuré sur une même machine : la compilation à la main demande 2,4 Mo de téléchargement, une quinzaine de secondes et 44 Mo sur le disque, contre une dizaine de minutes et 912 Mo pour vcpkg, qui télécharge au passage CMake, 7zip, PowerShell Core et un environnement MSYS2 complet. Les deux tiers de ces dix minutes vont à libiconv, une dépendance du paquet vcpkg de Hunspell dont RespawnIRC n'a pas l'usage : la bibliothèque compilée à la main s'en passe et le programme fonctionne à l'identique, tests compris. vcpkg reste intéressant si vous utilisez déjà son cache binaire, ou pour suivre les mises à jour de Hunspell — qui sort une version tous les deux à quatre ans.
 
-Vérifiez dans tous les cas les noms de bibliothèques réellement obtenus plutôt que de recopier ceux d'ici, ils changent avec les versions : zlib ne s'appelle `zs` que depuis la 1.3.2.
+Vérifiez dans tous les cas les noms de bibliothèques réellement obtenus plutôt que de supposer ceux d'ici, ils changent avec les versions et les méthodes de compilation — un zlib compilé en statique par CMake donne un `zlibstatic.lib`, par exemple. C'est à ça que servent les deux `..._LIB_NAME` quand le nom ne tombe pas juste.
 
 #### OpenSSL
 
@@ -124,16 +126,16 @@ La compilation se fait hors des sources, dans `build\`, contrairement à Linux e
 
     mkdir build\respawnIrc
     cd build\respawnIrc
-    qmake ..\..\respawnIrc\respawnIrc.pro HUNSPELL_LIB_NAME=hunspell ZLIB_LIB_NAME=zs DEFINES+=HUNSPELL_STATIC
+    qmake ..\..\respawnIrc\respawnIrc.pro DEFINES+=HUNSPELL_STATIC
     nmake release
 
-Avec un Hunspell venant de vcpkg, remplacez `HUNSPELL_LIB_NAME=hunspell` par `HUNSPELL_LIB_NAME=hunspell-1.7`.
+Avec un Hunspell venant de vcpkg, ajoutez `HUNSPELL_LIB_NAME=hunspell-1.7` à la ligne du `qmake`.
 
-Pour une compilation de débogage, ce sont les mêmes `HUNSPELL_LIB_NAME` et `ZLIB_LIB_NAME` qui désignent les bibliothèques de débogage, les `.pro` n'ayant rien de spécifique à Windows — et **dans un dossier de compilation à part**, ces noms étant choisis au moment du `qmake` et non à celui du `nmake` :
+Pour une compilation de débogage, ce sont les variables `HUNSPELL_LIB_NAME` et `ZLIB_LIB_NAME` qui désignent les bibliothèques de débogage, les `.pro` n'ayant rien de spécifique à Windows — et **dans un dossier de compilation à part**, ces noms étant choisis au moment du `qmake` et non à celui du `nmake` :
 
     mkdir build\respawnIrc-debug
     cd build\respawnIrc-debug
-    qmake ..\..\respawnIrc\respawnIrc.pro HUNSPELL_LIB_NAME=hunspelld ZLIB_LIB_NAME=zsd DEFINES+=HUNSPELL_STATIC
+    qmake ..\..\respawnIrc\respawnIrc.pro HUNSPELL_LIB_NAME=hunspelld ZLIB_LIB_NAME=zlibd DEFINES+=HUNSPELL_STATIC
     nmake debug
 
 Ne pas lancer `nmake release` dans ce dossier-là : il lierait les bibliothèques de débogage à un binaire release et échouerait par le `LNK2038` symétrique.
@@ -142,7 +144,7 @@ Le `DESTDIR` des `.pro` ne distingue pas les deux configurations : **l'exécutab
 
 Et le piège qui suit, constaté : revenir au dossier de release et y relancer `nmake release` **ne rend pas la main à l'exécutable de release**. `nmake` compare la cible à ses objets, or la cible est l'exécutable de débogage laissé à la racine, plus récent qu'eux : il conclut que tout est à jour, n'affiche rien et ne fait rien. On croit lancer un binaire de release et on continue d'exécuter celui de débogage. Effacer `RespawnIRC.exe` avant de recompiler suffit, et la différence de taille est un bon signal — ici 1,5 Mo en release contre 3,5 en debug.
 
-`dist-windows.ps1` n'est pas exposé à ce piège : il efface `build\respawnIrc` avant d'appeler `qmake`, ses objets sont donc toujours plus récents que l'exécutable en place et l'édition de liens a toujours lieu.
+`dist-windows.ps1` n'est pas exposé à ce piège : il efface `RespawnIRC.exe` avant d'appeler `nmake`, ce qui force l'édition de liens et garantit que l'archive emporte bien un binaire sorti de ses propres objets. Il effaçait auparavant tout `build\respawnIrc`, ce qui donnait la même garantie en recompilant les 45 sources à chaque archive ; le dossier est maintenant repris tel quel, et `-Clean` rend l'ancien comportement.
 
 Seuls les fichiers intermédiaires restent dans `build\` : l'exécutable, lui, est produit à la racine du dépôt, là où sont déjà `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de lui. Il lui manque encore les DLL de Qt et celles d'OpenSSL, sans quoi il ne démarre pas ; inutile pour autant de passer par l'archive de `dist-windows.ps1`, il suffit de les avoir dans le `PATH`. C'est ce que fait `run-windows.ps1` :
 
@@ -154,7 +156,7 @@ Les tests se compilent de la même façon :
 
     mkdir build\tests
     cd build\tests
-    qmake ..\..\tests\tests.pro ZLIB_LIB_NAME=zs
+    qmake ..\..\tests\tests.pro
     nmake release
     ..\respawnIrcTests.exe
 
@@ -162,7 +164,7 @@ Les tests se compilent de la même façon :
 
     .\dist-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
 
-Le script compile, appelle `windeployqt`, allège le résultat, ajoute les bibliothèques d'exécution nécessaires, vérifie qu'il n'en manque aucune et fabrique `dist\RespawnIRC-<version>-windows.zip`. Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur.
+Le script compile, appelle `windeployqt`, allège le résultat, ajoute les bibliothèques d'exécution nécessaires, vérifie qu'il n'en manque aucune et fabrique `dist\RespawnIRC-<version>-windows.zip`. Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. Il reprend le dossier `build\respawnIrc` de la compilation à la main plutôt que de le raser, donc alterner entre essayer le programme et fabriquer une archive ne recompile que ce qui a changé ; `-Clean` force une compilation complète. Le numéro de version qui nomme l'archive est lu dans `version.pri`, d'où le programme le tient aussi.
 
 L'archive contient un unique dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut décompresser quelque part. Ces deux dossiers ne sont jamais modifiés par le programme, qui écrit tout dans un `userdata` créé à côté de l'exécutable — l'ensemble reste donc portable et se déplace d'un bloc. À noter que `windeployqt` crée lui aussi un dossier `resources` pour QtWebEngine : les deux contenus cohabitent dans le même dossier, aucun nom de fichier ne se chevauchant.
 

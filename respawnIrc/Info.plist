@@ -19,8 +19,8 @@
 	     nom du bundle, ce qui donnerait com.franckrj.RespawnIRC. -->
 	<key>CFBundleIdentifier</key>
 	<string>com.franckrj.respawnirc</string>
-	<!-- Version complète, lue dans respawnIrc.cpp par le .pro. Surtout pas @SHORT_VERSION@, que
-	     qmake tronque aux deux premiers nombres : 3.1 au lieu de 3.1.17. -->
+	<!-- Version complète, celle de version.pri que le .pro passe en VERSION. Surtout pas
+	     @SHORT_VERSION@, que qmake tronque aux deux premiers nombres : 3.1 au lieu de 3.1.17. -->
 	<key>CFBundleShortVersionString</key>
 	<string>@FULL_VERSION@</string>
 	<key>CFBundleVersion</key>

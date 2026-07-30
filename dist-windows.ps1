@@ -4,8 +4,13 @@
 # jamais écrits : sous Windows tout ce que le programme écrit va dans userdata/, à côté de
 # l'exécutable, ce qui garde l'ensemble portable.
 #
-# Usage : .\dist-windows.ps1 [-QtDir chemin\vers\Qt\5.15.2\msvc2019_64]
+# Usage : .\dist-windows.ps1 [-QtDir chemin\vers\Qt\5.15.2\msvc2019_64] [-Clean]
+#         [-HunspellLibName hunspell-1.7] [-ZlibLibName zlibstatic]
 # À défaut, le Qt utilisé est celui dont le qmake est dans le PATH.
+#
+# Les deux noms de bibliothèques ne servent qu'à ceux qui n'ont pas suivi la recette du README : les
+# .pro prennent par défaut hunspell et, sous MSVC, zlib, qui sont les noms qu'elle produit. Le cas
+# type est le hunspell-1.7 de vcpkg. -Clean recompile tout au lieu de reprendre l'existant.
 #
 # Le script trouve tout seul l'environnement MSVC avec vswhere, il n'y a donc pas besoin de le
 # lancer depuis une invite de commandes développeur.
@@ -18,8 +23,9 @@
 [CmdletBinding()]
 param(
     [string]$QtDir,
-    [string]$HunspellLibName = 'hunspell',
-    [string]$ZlibLibName = 'zs'
+    [string]$HunspellLibName,
+    [string]$ZlibLibName,
+    [switch]$Clean
 )
 
 $ErrorActionPreference = 'Stop'
@@ -28,19 +34,10 @@ $repoDir = $PSScriptRoot
 $distDir = Join-Path $repoDir 'dist'
 $buildDir = Join-Path $repoDir 'build\respawnIrc'
 
-if($QtDir)
-{
-    $qtDir = $QtDir
-}
-elseif(Get-Command qmake -ErrorAction SilentlyContinue)
-{
-    $qtDir = Split-Path (Split-Path (Get-Command qmake).Source)
-}
-else
-{
-    throw "Qt introuvable : passez le chemin de Qt avec -QtDir, ou mettez son qmake dans le PATH."
-}
+# Résolution de Qt et vérification d'OpenSSL, partagées avec run-windows.ps1.
+. (Join-Path $PSScriptRoot 'windows-common.ps1')
 
+$qtDir = Resolve-QtDir -QtDir $QtDir
 $qmakeBin = Join-Path $qtDir 'bin\qmake.exe'
 $windeployqtBin = Join-Path $qtDir 'bin\windeployqt.exe'
 
@@ -112,28 +109,60 @@ function Invoke-BuildTool
 
 Import-MsvcEnvironment
 
-$sourceOfVersion = Get-Content (Join-Path $repoDir 'respawnIrc\respawnIrc.cpp') -Raw
+# version.pri est la seule source du numéro de version, et le .pro le pousse de là dans le programme :
+# l'archive et le binaire qu'elle contient ne peuvent donc pas annoncer deux numéros différents.
+$sourceOfVersion = Get-Content (Join-Path $repoDir 'version.pri') -Raw
 
-if($sourceOfVersion -notmatch 'currentVersionName\("v([0-9.]+)"\)')
+if($sourceOfVersion -notmatch '(?m)^\s*RESPAWNIRC_VERSION\s*=\s*([0-9.]+)\s*$')
 {
-    throw "Numéro de version introuvable dans respawnIrc.cpp."
+    throw "Numéro de version introuvable dans version.pri."
 }
 
 $version = $matches[1]
 
 Write-Host "== Compilation de RespawnIRC $version avec $qtDir"
 # Compilation hors des sources : tout ce qui est produit reste dans build/, jamais dans respawnIrc/.
-Remove-Item -Recurse -Force $buildDir -ErrorAction SilentlyContinue
+# Le dossier est celui de la compilation release à la main, décrite dans le README, et il est repris
+# tel quel : fabriquer une archive après avoir essayé le programme ne recompile que ce qui a changé,
+# là où l'effacement systématique d'avant coûtait les 45 sources à chaque fois. -Clean le retrouve.
+if($Clean)
+{
+    Remove-Item -Recurse -Force $buildDir -ErrorAction SilentlyContinue
+}
+
 New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
+
+# En revanche l'exécutable en place est toujours effacé, et ce n'est pas un détail : le DESTDIR des
+# .pro ne distingue ni release ni debug ni dossier de compilation, si bien que le RespawnIRC.exe de la
+# racine peut venir d'ailleurs — d'un nmake debug, typiquement. nmake le comparerait alors à ses
+# objets, le trouverait plus récent, n'éditerait aucun lien et l'archive emporterait ce binaire-là. Le
+# retirer garantit que ce qui est empaqueté sort bien des objets de ce dossier-ci. C'est ce que
+# l'effacement complet assurait avant, pour beaucoup plus cher.
+Remove-Item (Join-Path $repoDir 'RespawnIRC.exe') -Force -ErrorAction SilentlyContinue
+
+# Les noms de bibliothèques ne sont transmis que s'ils sont donnés : les valeurs par défaut des .pro
+# sont déjà celles de la recette du README, et les répéter ici ne faisait rien. HUNSPELL_STATIC, lui,
+# est nécessaire au Hunspell compilé à la main, dont les en-têtes déclareraient sinon tout en
+# __declspec(dllimport) ; il est sans effet sur celui de vcpkg, qui engendre un hunvisapi.h au test
+# déjà figé. Le passer toujours marche donc dans les deux cas.
+$optionsForQmake = @('DEFINES+=HUNSPELL_STATIC')
+
+if($HunspellLibName)
+{
+    $optionsForQmake += "HUNSPELL_LIB_NAME=$HunspellLibName"
+}
+
+if($ZlibLibName)
+{
+    $optionsForQmake += "ZLIB_LIB_NAME=$ZlibLibName"
+}
+
 Push-Location $buildDir
 
 try
 {
-    # HUNSPELL_STATIC est nécessaire au Hunspell compilé à la main, dont les en-têtes déclareraient
-    # sinon tout en __declspec(dllimport) ; il est sans effet sur celui de vcpkg, qui engendre un
-    # hunvisapi.h au test déjà figé. Le passer toujours marche donc dans les deux cas.
     Invoke-BuildTool -Name 'qmake' -Command {
-        & $qmakeBin (Join-Path $repoDir 'respawnIrc\respawnIrc.pro') "HUNSPELL_LIB_NAME=$HunspellLibName" "ZLIB_LIB_NAME=$ZlibLibName" 'DEFINES+=HUNSPELL_STATIC'
+        & $qmakeBin (Join-Path $repoDir 'respawnIrc\respawnIrc.pro') @optionsForQmake
     }
 
     Invoke-BuildTool -Name 'nmake' -Command { nmake release }
@@ -194,15 +223,10 @@ Remove-Item (Join-Path $imageDir 'D3Dcompiler_47.dll') -Force -ErrorAction Silen
 Remove-Item (Join-Path $imageDir 'opengl32sw.dll') -Force -ErrorAction SilentlyContinue
 
 Write-Host "== Bibliothèques d'exécution (cible Windows 10)"
-# 1. OpenSSL : Qt 5.15.2 charge libssl-1_1/libcrypto-1_1 à l'exécution pour tout ce qui est HTTPS.
-#    Sans elles QSslSocket::supportsSsl() est faux et aucune page de jeuxvideo.com n'est joignable.
-#    windeployqt ne les copie pas et Qt ne les fournit plus (voir le README).
-$opensslDir = Join-Path $repoDir 'openssl\bin'
-
-if(-not (Test-Path (Join-Path $opensslDir 'libssl-1_1-x64.dll')))
-{
-    throw "OpenSSL introuvable dans openssl\bin : sans lui le programme ne peut joindre aucune page (voir le README)."
-}
+# 1. OpenSSL, que Qt charge à l'exécution et sans lequel aucune page n'est joignable. Le détail est
+#    dans windows-common.ps1, avec la vérification elle-même : ici son absence est une erreur franche,
+#    une archive sans OpenSSL n'ayant aucun intérêt.
+$opensslDir = Get-OpenSslDir -RepoDir $repoDir -Required
 
 Copy-Item (Join-Path $opensslDir '*.dll') $imageDir -Force
 
@@ -335,7 +359,13 @@ Expand-Archive -Path $archiveOfData -DestinationPath $imageDir -Force
 Remove-Item $archiveOfData -Force
 
 $zipPath = Join-Path $distDir "RespawnIRC-$version-windows.zip"
-Compress-Archive -Path (Join-Path $distDir 'image\RespawnIRC') -DestinationPath $zipPath
+
+# Compress-Archive était de loin l'étape la plus lente du script sur ces 159 Mo et ces 426 fichiers.
+# CreateFromDirectory fait la même archive nettement plus vite. Le dernier argument est
+# includeBaseDirectory : à $true, les entrées commencent par RespawnIRC\, ce qui donne bien le dossier
+# unique à décompresser tel quel, comme le -Path sur le dossier le faisait avant.
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::CreateFromDirectory($imageDir, $zipPath, [System.IO.Compression.CompressionLevel]::Optimal, $true)
 Remove-Item -Recurse -Force (Join-Path $distDir 'image')
 
 Write-Host "== Terminé : $zipPath"
