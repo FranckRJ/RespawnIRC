@@ -207,22 +207,81 @@ Copy-Item (Join-Path $opensslDir '*.dll') $imageDir -Force
 #    installé, quel que soit le Windows. C'est ce qui les distingue de l'Universal CRT abandonné
 #    plus bas : sur un Windows 10 vierge, ucrtbase.dll est bien dans System32 alors que
 #    msvcp140.dll et vcruntime140.dll n'y sont pas. Passer à Windows 10 ne les rend pas inutiles.
-$crtDir = Get-ChildItem (Join-Path $env:VCToolsRedistDir 'x64\Microsoft.VC143.CRT') -ErrorAction SilentlyContinue
+#
+#    Tout le dossier est copié, sans liste de noms à tenir. Une liste figée de trois DLL a livré
+#    pendant longtemps une archive qui ne démarrait pas du tout sur une machine vierge :
+#    Qt5Core.dll et Qt5Widgets.dll importent aussi msvcp140_1.dll, et le chargeur s'arrête sur
+#    « MSVCP140_1.dll est introuvable » avant la première ligne de code. Ce n'est pas une DLL que
+#    ce dépôt choisit — elle est réclamée par les binaires précompilés de Qt 5.15.2, donc depuis
+#    toujours et quel que soit le compilateur qui construit RespawnIRC. Relevé au dumpbin, elle
+#    était la seule des dix DLL du dossier à manquer, les neuf autres n'étant importées par rien ;
+#    les copier quand même coûte 1,1 Mo sur 158 et retire la question. Le glob sur
+#    Microsoft.VC*.CRT évite au passage de figer le numéro de version des outils.
+$crtDir = Get-ChildItem (Join-Path $env:VCToolsRedistDir 'x64') -Directory -Filter 'Microsoft.VC*.CRT' -ErrorAction SilentlyContinue |
+    Select-Object -First 1
 
 if(-not $crtDir)
 {
     throw "Bibliothèques d'exécution MSVC introuvables sous $env:VCToolsRedistDir."
 }
 
-foreach($thisDll in @('vcruntime140.dll', 'vcruntime140_1.dll', 'msvcp140.dll'))
-{
-    Copy-Item (Join-Path $env:VCToolsRedistDir "x64\Microsoft.VC143.CRT\$thisDll") $imageDir -Force
-}
+Copy-Item (Join-Path $crtDir.FullName '*.dll') $imageDir -Force
 
 # L'Universal CRT n'est pas copié : ucrtbase.dll et les api-ms-win-* sont des composants du système
 # depuis Windows 10, et les seconds n'y sont même pas des fichiers, le chargeur résolvant ces noms
 # par le schéma d'API sets du noyau. La quarantaine de DLL que le dépôt distribuait n'existait que
 # pour Windows 7, où l'Universal CRT n'arrivait que par la mise à jour facultative KB2999226.
+
+Write-Host "== Vérification des dépendances"
+# Une archive incomplète ne se voit pas sur la machine qui la fabrique : installer les Build Tools
+# pose msvcp140.dll et toute sa famille dans System32, et le chargeur les y trouve. C'est ce qui a
+# laissé passer l'absence de msvcp140_1.dll, et c'est la deuxième fois qu'une archive silencieusement
+# incomplète est sortie d'ici. On vérifie donc que chaque DLL du runtime C++ réclamée par un binaire
+# de l'archive est bien dans l'archive, plutôt que de s'en remettre à la machine de compilation.
+#
+# Portée volontairement étroite : les imports statiques de la famille du runtime MSVC, les seuls que
+# ni Windows ni windeployqt ne fournissent. Le reste des imports est soit dans l'archive, soit fourni
+# par le système ; OpenSSL n'apparaît pas ici puisque Qt le charge dynamiquement, et il a déjà sa
+# propre vérification plus haut. Un import chargé à la main par LoadLibrary échapperait aussi à ce
+# contrôle : il ne remplace pas un essai sur une machine sans redistribuable Visual C++.
+$namesInImage = @{}
+Get-ChildItem $imageDir -Recurse -File -Include '*.dll', '*.exe' |
+    ForEach-Object { $namesInImage[$_.Name.ToLower()] = $true }
+
+$missingRuntime = @{}
+$previousPreference = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+
+try
+{
+    foreach($thisPe in (Get-ChildItem $imageDir -Recurse -File -Include '*.dll', '*.exe'))
+    {
+        foreach($thisLine in (& dumpbin /nologo /dependents $thisPe.FullName 2>&1))
+        {
+            # Les lignes d'imports de dumpbin sont indentées de quatre espaces et ne portent qu'un nom.
+            if($thisLine -match '^\s{4}(\S+\.dll)\s*$')
+            {
+                $thisImport = $matches[1].ToLower()
+
+                if($thisImport -match '^(msvcp|vcruntime|concrt|vccorlib)\d' -and -not $namesInImage.ContainsKey($thisImport))
+                {
+                    $missingRuntime[$thisImport] = $true
+                }
+            }
+        }
+    }
+}
+finally
+{
+    $ErrorActionPreference = $previousPreference
+}
+
+if($missingRuntime.Count -gt 0)
+{
+    throw "L'archive serait incomplète : $(($missingRuntime.Keys | Sort-Object) -join ', ') réclamée(s) par ses binaires mais absente(s). Ces DLL ne font partie d'aucun Windows, le programme ne démarrerait pas sur une machine où le redistribuable Visual C++ n'a jamais été installé."
+}
+
+Write-Host "   ok, aucune DLL du runtime C++ ne manque à l'archive"
 
 Write-Host "== Données du programme"
 # resources/ et themes/ sont extraits de git et non copiés depuis le dossier de travail : celui-ci
