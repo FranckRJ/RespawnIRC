@@ -264,6 +264,14 @@ distribution.
 
 ## Ordre suggéré
 
+**Le portage est repoussé, et cette section décrit ce qu'il faudrait faire, pas ce qui est
+engagé.** Décision du mainteneur, prise le 30 juillet 2026 : le projet reste sur Qt 5.15.2 et
+OpenSSL 1.1.1 pour l'instant. Rien de ce document n'est démenti — l'analyse tient, l'ordre de
+travail ci-dessous est toujours le bon, et l'exposition d'une bibliothèque TLS sans maintenance
+depuis septembre 2023 est connue et assumée, non pas ignorée. Ne pas entamer le portage sans le
+mainteneur : la lecture naturelle des paragraphes qui suivent est qu'il n'y a aucune raison
+d'attendre, et c'est précisément ce que cet avertissement corrige.
+
 La version visée sort en septembre, mais il n'y a aucune raison d'attendre : le portage est
 le même pour toute version de Qt 6, et 6.11 est disponible aujourd'hui. Le faire maintenant
 transforme septembre en simple changement de numéro de version.

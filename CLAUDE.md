@@ -396,7 +396,10 @@ un seul vrai point, l'autre étant réglé.
   `-schannel` pour le TLS de Windows. C'est le sujet de `MIGRATION-QT6.md`, et le seul point restant
   qui soit une exposition et non du confort. À l'échelle de « ce qui reste pour Windows », il pèse
   plus lourd que tout le reste réuni : ce qui subsiste, au fond, c'est d'être arrimé à un Qt et à une
-  bibliothèque TLS tous deux en fin de vie.
+  bibliothèque TLS tous deux en fin de vie. **La migration est néanmoins repoussée**, décision du
+  mainteneur : le projet reste sur Qt 5.15.2 et OpenSSL 1.1.1 pour l'instant, l'exposition étant connue
+  et assumée. L'analyse de `MIGRATION-QT6.md` reste juste et son ordre de travail inchangé, mais ne pas
+  entreprendre le portage sans le mainteneur.
 
 Les pistes de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` sont du confort et rien n'y casse si elles
 attendent ; il n'en reste que deux ouvertes, le `build-windows.ps1` du point 3 et la compilation hors
