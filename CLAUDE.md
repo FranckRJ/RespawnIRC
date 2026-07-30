@@ -88,10 +88,17 @@ déjà équipée, et qui a coûté des essais :
 
 - **la stratégie d'exécution par défaut d'un Windows 10 est `Restricted`**, donc un
   `.\bootstrap-windows.ps1` échoue avant d'afficher la moindre ligne. La commande à donner est
-  `powershell -ExecutionPolicy Bypass -File .\bootstrap-windows.ps1`. Attention à ne pas conclure de
-  `Get-ExecutionPolicy` qu'il n'y a pas de problème : un `Bypass` de portée `Process`, posé par
-  l'outil depuis lequel on travaille, masque complètement le `Restricted` des portées persistantes,
-  qu'il faut donc lire avec `Get-ExecutionPolicy -List` ;
+  `powershell -ExecutionPolicy Bypass -File .\bootstrap-windows.ps1`. Vérifié sur machine vierge :
+  le script est bien refusé par un `PSSecurityException` / `UnauthorizedAccess`. Attention à ne pas
+  conclure de `Get-ExecutionPolicy` qu'il n'y a pas de problème : un `Bypass` de portée `Process`,
+  posé par l'outil depuis lequel on travaille, masque complètement le refus. Deux précisions, les
+  deux constatées sur la machine vierge et les deux capables d'égarer le diagnostic :
+  `Get-ExecutionPolicy -List` n'affiche **pas** le mot `Restricted` — les cinq portées y sont
+  `Undefined`, `Restricted` n'étant que le défaut implicite des éditions client quand rien n'est
+  posé ; et le `Bypass` de portée `Process` **se transmet aux processus enfants** par la variable
+  d'environnement `PSExecutionPolicyPreference`, si bien que relancer un `powershell.exe` neuf ne
+  révèle rien non plus. Pour voir le vrai comportement il faut vider cette variable, et c'est
+  seulement alors que `Get-ExecutionPolicy` répond `Restricted` ;
 - **git est le seul prérequis que le script n'installe pas**, et le dépôt doit être un vrai clone :
   `dist-windows.ps1` extrait `resources/` et `themes/` avec `git archive HEAD`, ce qu'une archive zip
   décompressée ne permet pas. L'échec arriverait tard, après une compilation complète. Sur un zip, la
@@ -114,7 +121,9 @@ déjà équipée, et qui a coûté des essais :
   redémarrage avant que `cl.exe` fonctionne.
 
 Compter une trentaine de minutes et environ 4,5 Go, dont 3,3 pour les seuls Build Tools et 0,9 pour
-Qt avec QtWebEngine. Le reste est négligeable.
+Qt avec QtWebEngine. Le reste est négligeable. La durée dépend surtout de la machine et du réseau, et
+l'estimation est large : sur une machine rapide, l'installation des Build Tools a pris deux minutes et
+demie et le script entier moins de dix. Ne pas s'inquiéter d'un écart dans un sens comme dans l'autre.
 
 **Les cinq étapes ont maintenant tourné**, l'installation des Build Tools comprise : exécutée par le
 script sur une machine virtuelle vierge — ni MSVC ni Qt, `vswhere.exe` absent — puis suivie de la
@@ -124,24 +133,37 @@ désinstaller les Build Tools pour réessayer. Les quatre autres ont été rejou
 compris celle de Qt — qui, la première fois qu'on l'a vraiment lancée, a révélé les deux défauts
 corrigés ci-dessus.
 
+**La branche `-Verb RunAs` a maintenant tourné elle aussi**, et avec elle la combinaison qui restait
+neuve — sur une machine vierge **suivante**, distincte de celle du paragraphe ci-dessus, et sous
+Windows 10 IoT Enterprise LTSC 2021. Le script lancé depuis un PowerShell **ordinaire** y a affiché sa
+ligne « élévation nécessaire », l'invite UAC a été acceptée, l'installateur élevé a rendu 0 et les
+quatre étapes suivantes ont continué dans le processus d'origine. Ce qui se déduisait de la conception est
+désormais constaté : `C:\Qt`, `qmake.exe`, `hunspell.lib`, `zs.lib` et les DLL d'OpenSSL appartiennent
+à l'utilisateur courant, quand `C:\Program Files (x86)\Microsoft Visual Studio` appartient à
+`BUILTIN\Administrators`. C'est exactement ce que n'élever que l'installateur cherche à obtenir, et
+c'est la raison de ne pas « simplifier » en relançant tout le script élevé.
+
+Du même coup, **les étapes 3 à 5 ont travaillé sans élévation** pour la première fois — elles avaient
+jusqu'ici tourné pour de bon dans un processus élevé et s'étaient sautées dans un processus ordinaire,
+jamais l'inverse. Rien n'a bronché : compilation de Hunspell et de zlib, extraction d'OpenSSL,
+vérification finale, `git status` vide à l'arrivée, aucun `aqtinstall.log` à la racine et
+`build\bootstrap` bien effacé.
+
 Ce qui **reste supposé** dans cette étape, et à ne pas présenter autrement :
 
-- le traitement du code de retour 3010 comme un succès. L'installation observée a rendu 0, et rien
-  n'a encore exigé le redémarrage que 3010 conseille ;
-- **la branche `-Verb RunAs` elle-même n'a pas tourné.** L'installation vérifiée s'est faite en
-  élevant le script entier depuis l'extérieur, avant que cette branche existe ; ce qui a été essayé
-  ensuite, c'est le cas où les Build Tools sont déjà là, qui a bien rendu la main sans invite et sans
-  élévation. Restent non constatés le passage de l'invite acceptée et le `catch` du refus. Même
-  situation qu'avant, et pour la même raison : il faudrait une machine où désinstaller les Build
-  Tools. En attendant, ne pas décrire l'élévation comme vérifiée.
+- le traitement du code de retour 3010 comme un succès. Les deux installations observées ont rendu 0
+  — les journaux de l'installateur disent `Exit code: 0x0, restarting: No` — et rien n'a encore exigé
+  le redémarrage que 3010 conseille ;
+- **le `catch` du refus de l'invite UAC.** L'invite acceptée est maintenant constatée, le refus non.
+  Il faudrait pour cela une machine où désinstaller les Build Tools, puis refuser volontairement.
 
-Une conséquence de ce changement, moins visible, vaut d'être notée avant de croire les étapes 3 à 5
-mieux couvertes qu'elles ne le sont : **elles n'ont jamais travaillé sans élévation.** Elles ont
-tourné pour de bon dans un processus élevé, et se sont sautées dans un processus ordinaire — jamais
-l'inverse. Seule celle de Qt a réellement installé quelque chose sans élévation. Rien ne laisse
-attendre un problème, tout ce qu'elles écrivent allant dans le dépôt et dans `C:\Qt`, mais c'est bien
-une combinaison neuve : jusqu'ici la marche à suivre lançait tout le script élevé, elle ne pouvait
-donc pas se produire. La prochaine machine vierge la verra en même temps que l'invite UAC.
+Et une conséquence à connaître avant de vouloir tout enchaîner sur la même machine : **installer les
+Build Tools détruit la seule propriété qui rendait cette machine utile.** L'installation pose
+`msvcp140.dll`, `msvcp140_1.dll` et toute leur famille dans `System32` — vérifié, ils y sont après et
+n'y étaient pas avant. La machine qui vient d'être amorcée ne peut donc plus servir à essayer
+l'archive : le chargeur y trouvera dans `System32` ce que l'archive aurait oublié d'embarquer. Relever
+l'inventaire de `System32` **avant** de lancer le script, ou garder une seconde machine pour l'essai.
+C'est ce piège, et pas un autre, qui a laissé sortir l'archive incomplète décrite plus bas.
 
 La leçon de méthode vaut au-delà de ce script : **sur une machine déjà équipée, toute étape
 d'installation se saute et se déclare bonne sans avoir rien fait.** Pour l'essayer, effacer sa cible
@@ -161,7 +183,23 @@ bibliothèques d'exécution de MSVC**, ce sont les deux seules pièces à ajoute
 - sans `vcruntime140.dll` et compagnie, le programme ne démarre pas là où le redistribuable n'a
   jamais été installé. **Ces DLL-là ne partent pas avec Windows 7** : elles ne font partie d'aucun
   Windows. Le test qui tranche, sur une machine vierge : `ucrtbase.dll` est dans `System32`,
-  `msvcp140.dll` et `vcruntime140.dll` n'y sont pas.
+  `msvcp140.dll` et `vcruntime140.dll` n'y sont pas. Attention en le faisant : `System32` contient
+  bien un `msvcp140_clr0400.dll` et un `vcruntime140_clr0400.dll`, copies privées du .NET Framework
+  qui ne servent à rien ici — un `dir msvcp140*` trouve donc quelque chose et peut faire conclure
+  l'inverse de la vérité.
+
+**Et « compagnie » compte pour de bon.** Le script figeait une liste de trois noms —
+`vcruntime140.dll`, `vcruntime140_1.dll`, `msvcp140.dll` — alors que `Qt5Core.dll` et `Qt5Widgets.dll`
+importent aussi **`msvcp140_1.dll`**. Résultat : toute archive sortie d'ici échouait sur une machine
+sans redistribuable avec « The code execution cannot proceed because MSVCP140_1.dll was not found »,
+constaté sur un Windows 10 LTSC 2019 propre. Le point important pour ne pas se tromper sur la cause :
+cette dépendance vient des **binaires précompilés de Qt 5.15.2**, pas de la compilation faite ici.
+Elle ne dépend donc ni de la version des Build Tools ni d'un changement récent — elle est là depuis
+que ce Qt existe, et toutes les archives précédentes en manquaient. `dist-windows.ps1` copie
+maintenant tout le dossier `Microsoft.VC*.CRT`, dix DLL pour 1,8 Mo, et vérifie avant de compresser
+qu'aucun import de la famille du runtime ne manque à l'archive. Relevé au `dumpbin` : `msvcp140_1.dll`
+était la seule qui manquait vraiment, les huit autres ne sont importées par rien — elles sont copiées
+quand même, 1,1 Mo sur 158 valant mieux qu'une liste de noms à tenir à jour.
 
 #### Ce que l'abandon de Windows 7 a retiré
 
@@ -228,8 +266,8 @@ ne le fait que si `VCINSTALLDIR` est définie, donc seulement quand le script to
 qui n'apparaît pas si on essaie `windeployqt` à la main dans un shell neuf. D'où le
 `--no-compiler-runtime`, à ne pas retirer.
 
-Répartition de ce qui reste, pour situer les ordres de grandeur : sur 158 Mo décompressés (70 Mo
-compressés, 419 fichiers), **environ 124 tiennent à QtWebEngine**, soit 78 %. Chromium lui-même en
+Répartition de ce qui reste, pour situer les ordres de grandeur : sur 159 Mo décompressés (71 Mo
+compressés, 426 fichiers), **environ 124 tiennent à QtWebEngine**, soit 78 %. Chromium lui-même en
 fait 112 (`Qt5WebEngineCore.dll` seul en pèse 97, le reste étant `icudtl.dat` et ses fichiers
 `.pak`), QtQuick, QML et WebChannel 8, et ANGLE 3 (`libGLESv2.dll` et `libEGL.dll`). Attention au
 raisonnement : RespawnIRC est une application Widgets, qui dessine en raster et n'utilise ni QML ni
@@ -242,10 +280,23 @@ seul `opengl32sw.dll`. Le poids n'était la raison d'aucun des trois retraits, m
 dernier soit le plus visible.
 
 Windows 7 n'est plus une cible, et n'avait de toute façon **jamais été essayé** : sa compatibilité
-était raisonnée d'après la documentation de Microsoft, sans machine pour la vérifier. Ce qui est
-vérifié, et qui reste la seule chose à présenter comme telle, c'est que le programme démarre depuis
-l'archive sous Windows 10, sur une machine virtuelle vierge, archive décompressée et lancée telle
-quelle.
+était raisonnée d'après la documentation de Microsoft, sans machine pour la vérifier.
+
+Il a longtemps été écrit ici que le démarrage du programme depuis l'archive, sous Windows 10 et sur
+une machine virtuelle vierge, était « la seule chose à présenter comme vérifiée ». **C'était faux, et
+c'est instructif.** L'archive manquait `msvcp140_1.dll` depuis toujours, et sur un Windows 10 LTSC
+2019 réellement propre elle ne démarre pas du tout. La machine qui avait servi à l'essai n'était donc
+pas vierge de ce qui compte : elle avait le redistribuable Visual C++, presque certainement parce que
+les Build Tools y avaient été installés — ce qui le pose dans `System32`, comme constaté depuis. Le
+constat « ça démarre » était juste, sa portée non : il ne disait rien de l'archive, seulement de cette
+machine-là.
+
+La leçon est la même que celle du bas de la section précédente, appliquée cette fois non pas à une
+étape d'installation mais à l'essai final : **une machine cesse d'être un témoin valable dès qu'on y
+installe ce dont on veut prouver l'absence.** Ce qui est vérifié aujourd'hui, et à ne pas présenter
+plus largement, c'est que l'archive corrigée ne réclame aucune DLL du runtime C++ qu'elle n'embarque
+pas — établi au `dumpbin` contre l'inventaire de `System32` relevé avant l'installation des Build
+Tools, et non par un lancement sur une seconde machine vierge, qui reste à faire.
 
 #### Pourquoi Hunspell et zlib ne passent pas par vcpkg
 

@@ -1,6 +1,8 @@
 # Pistes de simplification de la compilation et de la distribution
 
-État des lieux des redondances et des frottements de la chaîne de compilation, relevés en juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, `dist-windows.ps1`, `run-windows.ps1`, `dist-macos.sh` et la section « Compilation » du README. **Rien n'a été modifié** : ce fichier est une liste de pistes, classées par rapport entre l'effort et le gain, pas un plan arrêté.
+État des lieux des redondances et des frottements de la chaîne de compilation, relevés en juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, `dist-windows.ps1`, `run-windows.ps1`, `dist-macos.sh` et la section « Compilation » du README. Ce fichier est une liste de pistes, classées par rapport entre l'effort et le gain, pas un plan arrêté : les points 1 à 5, 7 et 10 n'ont pas été faits. Ceux qui l'ont été portent la mention **fait** et sont conservés pour ce qu'ils ont appris — les points 8, 9 et 11, et le point 6 qui est le plus instructif des quatre.
+
+Les numéros de ligne cités sont ceux du relevé de juillet 2026 et ont dérivé depuis ; les chercher par leur contenu plutôt que par leur numéro.
 
 Les deux premières sont celles qui rapportent le plus pour le moins de risque : elles ne changent aucune sémantique de compilation et suppriment à elles deux quatre analyseurs dupliqués et neuf occurrences d'options.
 
@@ -50,12 +52,23 @@ Piste : un `windows-common.ps1` chargé par point-sourcing, avec `Resolve-QtDir`
 
 La compilation est déjà hors des sources, ce qui apporte l'essentiel de ce que cet effacement achetait. Piste : donner à la distribution son propre `build\dist`, ou faire de l'effacement une option `-Clean`.
 
-## 6. Deux détails dans la section des bibliothèques d'exécution
+## 6. Deux détails dans la section des bibliothèques d'exécution — **fait, et ce n'était pas un détail**
 
-- `Microsoft.VC143.CRT` est figé en dur dans `dist-windows.ps1:202` et `:211`. Cela cassera au prochain changement de version des outils. Chercher `x64\Microsoft.VC*.CRT` et copier `*.dll` (ce dossier ne contient que les trois DLL voulues plus `concrt140.dll`) supprime le numéro figé, la liste des trois noms et la boucle `foreach`.
-- `dist-windows.ps1:202` affecte un `Get-ChildItem` à `$crtDir` pour ne s'en servir que comme test d'existence. `Test-Path` dit la même chose sans construire un listage de dossier.
+Cette section est résolue. Elle est conservée entière parce qu'elle est le meilleur exemple de ce fichier : une simplification classée « détail », dont la réalisation a révélé un bug qui rendait l'archive inutilisable.
 
-Ces deux points sont désormais tout ce qui reste de cette section : l'Universal CRT, qui en occupait l'essentiel, est sorti du script avec l'abandon de Windows 7.
+Ce qui était écrit ici : « `Microsoft.VC143.CRT` est figé en dur dans `dist-windows.ps1`. Cela cassera au prochain changement de version des outils. Chercher `x64\Microsoft.VC*.CRT` et copier `*.dll` (ce dossier ne contient que les trois DLL voulues plus `concrt140.dll`) supprime le numéro figé, la liste des trois noms et la boucle `foreach`. »
+
+**La parenthèse était fausse, et c'est elle qui cachait le bug.** Le dossier contient **dix** DLL, pas quatre : `concrt140.dll`, `msvcp140.dll`, `msvcp140_1.dll`, `msvcp140_2.dll`, `msvcp140_atomic_wait.dll`, `msvcp140_codecvt_ids.dll`, `vccorlib140.dll`, `vcruntime140.dll`, `vcruntime140_1.dll`, `vcruntime140_threads.dll`, pour 1,8 Mo. Et parmi celles que la liste de trois noms laissait de côté se trouvait `msvcp140_1.dll`, que `Qt5Core.dll` et `Qt5Widgets.dll` importent : **toute archive sortie de ce dépôt échouait au lancement sur une machine sans redistribuable Visual C++**, avec « The code execution cannot proceed because MSVCP140_1.dll was not found ».
+
+Le changement est donc fait, sous sa forme la plus large : `Copy-Item` sur `*.dll` du dossier trouvé par glob. Les neuf DLL que rien n'importe aujourd'hui sont copiées aussi, 1,1 Mo sur 158 — précisément pour ne pas retenir une liste de noms, qui est ce qui a échoué. S'y ajoute une vérification au `dumpbin` avant compression : aucun binaire de l'archive ne doit réclamer une DLL du runtime qu'elle n'embarque pas.
+
+Le second point tombe de lui-même : `$crtDir` sert maintenant vraiment, puisque c'est de son chemin qu'on copie. Il n'y a plus de `Get-ChildItem` employé comme `Test-Path`.
+
+Trois leçons, qui portent sur tout le reste de ce fichier :
+
+- **une affirmation entre parenthèses est une affirmation.** « Ce dossier ne contient que les trois DLL voulues plus `concrt140.dll` » avait la forme d'une observation et n'était qu'une supposition ; un `dir` l'aurait démentie en une seconde. C'est exactement le défaut que le point 8 se reprochait déjà sous le nom de « ne pas figer de chiffres venant de l'installation » ;
+- **classer une piste par son gain la classe mal quand le risque est ailleurs.** Ce point était rangé en « deux détails » à cause du gain — quelques lignes de script. Sa non-réalisation coûtait une archive qui ne démarrait pas ;
+- la panne ne se voyait sur aucune machine où l'on pouvait essayer l'archive, parce qu'**installer les Build Tools pose ces DLL dans `System32`**. La machine qui fabrique l'archive ne peut donc jamais la valider. C'est le même mécanisme que celui décrit au point 8 pour l'Universal CRT — « la seule pièce dont l'absence ne se voyait sur aucune machine où l'on pouvait essayer l'archive » — et il a frappé deux fois.
 
 ## 7. macOS compile dans les sources, Windows non
 
@@ -84,7 +97,7 @@ L'abandon de Windows 7 a résolu le désaccord en vidant les deux listes. Il ne 
 
 ## 10. Accessoire : la compression
 
-`Compress-Archive` sur 158 Mo et quelques centaines de fichiers est l'étape la plus lente du script (`dist-windows.ps1:245`). `[System.IO.Compression.ZipFile]::CreateFromDirectory` fait la même chose nettement plus vite. Sans autre effet que le temps d'attente.
+`Compress-Archive` sur 159 Mo et quelques centaines de fichiers est l'étape la plus lente du script (`dist-windows.ps1:312`). `[System.IO.Compression.ZipFile]::CreateFromDirectory` fait la même chose nettement plus vite. Sans autre effet que le temps d'attente.
 
 ## 11. `opengl32sw.dll` : 20 Mo pour un repli que Windows fournit déjà — **fait**
 
@@ -114,5 +127,5 @@ Son apparition en v3.1.11 n'a rien d'une correction : elle est simultanée à un
 ## Ce qu'il ne faut pas toucher
 
 - `Invoke-BuildTool` (`dist-windows.ps1:90`) ressemble à de la cérémonie mais c'est la plus petite correction juste au fait que PowerShell 5.1 transforme la sortie d'erreur des outils natifs en erreurs fatales. S'en passer voudrait dire abandonner `$ErrorActionPreference = 'Stop'`, ce qui serait pire.
-- `--no-compiler-runtime`, les trois DLL du runtime C++ de MSVC, le BOM de `dist-windows.ps1` : tous documentés, tous justifiés. Les DLL du runtime en particulier ne sont pas parties avec Windows 7 et ne doivent pas être confondues avec ce qui l'a fait — elles ne sont dans aucun Windows.
+- `--no-compiler-runtime`, les DLL du runtime C++ de MSVC, le BOM de `dist-windows.ps1` : tous documentés, tous justifiés. Les DLL du runtime en particulier ne sont pas parties avec Windows 7 et ne doivent pas être confondues avec ce qui l'a fait — elles ne sont dans aucun Windows. Ne pas non plus chercher à les réduire à celles qui sont importées aujourd'hui : c'est cette économie-là, 1,1 Mo, qui a produit une archive incapable de démarrer (point 6).
 - `opengl32sw.dll` figurait ici, au titre du rendu de secours des machines sans pilote OpenGL. Il en sort, et de l'archive avec : ce rôle-là est tenu par ANGLE et WARP, pas par lui (point 11). C'est le rappel utile de cette section — une entrée y était depuis des années sur une justification que personne n'avait vérifiée.

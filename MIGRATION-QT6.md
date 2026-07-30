@@ -119,10 +119,17 @@ les traductions. **À vérifier plutôt qu'à supposer** : il faut écouter les 
 
 Le reste ne bouge pas dans son principe : `--no-compiler-runtime` reste nécessaire pour la
 même raison, l'allègement des traductions et la fusion des deux `resources/` aussi, avec des
-noms de fichiers renumérotés (`Qt6WebEngineCore.dll` et compagnie). La répartition des 158 Mo
+noms de fichiers renumérotés (`Qt6WebEngineCore.dll` et compagnie). La répartition des 159 Mo
 documentée dans `CLAUDE.md` sera à refaire de zéro. À noter que les retraits d'`opengl32sw.dll` et
 de `D3Dcompiler_47.dll` seront à revérifier plutôt qu'à reconduire : Qt 6 a abandonné ANGLE, et le
 chemin de rendu par défaut sous Windows n'est plus le même.
+
+La copie des bibliothèques d'exécution de MSVC, elle, n'a rien à changer : `dist-windows.ps1` copie
+tout le dossier `Microsoft.VC*.CRT` sans nommer de fichier, ce qui vaut pour n'importe quelle version
+des outils. **Garder cette forme.** Réduire la copie aux DLL que les binaires importent est ce qui a
+déjà livré une archive qui ne démarrait pas, `msvcp140_1.dll` manquant à un `Qt5Core.dll` qui la
+réclame ; rien ne dit quelles DLL de la famille les binaires de Qt 6 réclameront. La vérification au
+`dumpbin` en fin de script continuera de répondre à la question sans qu'on ait à la deviner.
 
 ---
 
@@ -269,7 +276,7 @@ transforme septembre en simple changement de numéro de version.
    jeu.
 2. **Le programme** : les substitutions de la table A, puis `QSoundEffect` à part.
 3. **`dist-windows.ps1` et `dist-macos.sh`**, puis remesurer l'archive et reprendre le
-   passage de `CLAUDE.md` sur la répartition des 158 Mo.
+   passage de `CLAUDE.md` sur la répartition des 159 Mo.
 
 **En septembre 2026 :** recompiler sur 6.12.0, qui ne devrait demander qu'un changement de
 chemin, et vérifier qu'aucune dépréciation n'est apparue entre les deux versions.
