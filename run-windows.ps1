@@ -8,6 +8,10 @@
 # Le DESTDIR de respawnIrc.pro produit l'exécutable directement à la racine du dépôt, là où sont
 # déjà resources\ et themes\ que pathTool::dataDirPath() va chercher à côté de lui : il n'y a donc
 # rien à recopier, il suffit de mettre Qt et OpenSSL dans le PATH le temps de l'exécution.
+#
+# Si l'exécutable manque, build-windows.ps1 est appelé : il n'y a rien à taper avant celui-ci. Ce qui
+# est compilé alors est un release aux noms de bibliothèques par défaut ; pour tout autre cas —
+# vcpkg, débogage — appeler build-windows.ps1 directement, avec ses arguments.
 
 [CmdletBinding()]
 param(
@@ -20,15 +24,17 @@ $ErrorActionPreference = 'Stop'
 $repoDir = $PSScriptRoot
 $builtExe = Join-Path $repoDir 'RespawnIRC.exe'
 
-if(-not (Test-Path $builtExe))
-{
-    throw "$builtExe est introuvable : compilez d'abord (voir le README)."
-}
-
-# Résolution de Qt et vérification d'OpenSSL, partagées avec dist-windows.ps1.
+# Résolution de Qt et vérification d'OpenSSL, partagées avec les autres scripts Windows.
 . (Join-Path $PSScriptRoot 'windows-common.ps1')
 
 $qtDir = Resolve-QtDir -QtDir $QtDir
+
+if(-not (Test-Path $builtExe))
+{
+    Write-Host "$builtExe est introuvable, compilation."
+    & (Join-Path $repoDir 'build-windows.ps1') -QtDir $qtDir
+}
+
 # Sans -Required : l'absence d'OpenSSL n'empêche pas de lancer le programme, seulement de joindre une
 # page, et c'est encore utile pour tout ce qui ne dépend pas du réseau.
 $opensslDir = Get-OpenSslDir -RepoDir $repoDir

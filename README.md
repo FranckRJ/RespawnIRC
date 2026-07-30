@@ -122,16 +122,22 @@ Attention : **OpenSSL 1.1.1 n'est plus maintenu depuis septembre 2023**. C'est u
 
 #### Compiler
 
-La compilation se fait hors des sources, dans `build\`, contrairement à Linux et macOS : le dossier de sources reste propre et il n'y a rien à ignorer dedans. Depuis une invite de commandes où `vcvars64.bat` a été exécuté et où le `bin` de Qt est dans le `PATH` :
+    .\build-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
+
+Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. La compilation se fait hors des sources, dans `build\respawnIrc`, contrairement à Linux et macOS : le dossier de sources reste propre et il n'y a rien à ignorer dedans. Les objets déjà compilés sont repris, `-Clean` recompile tout.
+
+Avec `-Tests`, il compile aussi `tests\tests.pro` dans `build\tests` et lance les vérifications. Avec un Hunspell venant de vcpkg, ajoutez `-HunspellLibName hunspell-1.7` ; c'est le même argument que celui de `dist-windows.ps1`, qui appelle ce script plutôt que d'avoir sa propre copie de ces étapes.
+
+À savoir, ce script étant récent : son enchaînement a été essayé avec des outils simulés, mais il n'a pas encore compilé sur une machine réellement équipée — la machine où il a été écrit n'a ni Build Tools ni Qt. Les quatre lignes ci-dessous, elles, sont celles qui ont servi jusqu'ici.
+
+Ce qu'il fait tient en quatre lignes, si vous préférez les taper depuis une invite de commandes où `vcvars64.bat` a été exécuté et où le `bin` de Qt est dans le `PATH` :
 
     mkdir build\respawnIrc
     cd build\respawnIrc
     qmake ..\..\respawnIrc\respawnIrc.pro DEFINES+=HUNSPELL_STATIC
     nmake release
 
-Avec un Hunspell venant de vcpkg, ajoutez `HUNSPELL_LIB_NAME=hunspell-1.7` à la ligne du `qmake`.
-
-Pour une compilation de débogage, ce sont les variables `HUNSPELL_LIB_NAME` et `ZLIB_LIB_NAME` qui désignent les bibliothèques de débogage, les `.pro` n'ayant rien de spécifique à Windows — et **dans un dossier de compilation à part**, ces noms étant choisis au moment du `qmake` et non à celui du `nmake` :
+La compilation de débogage, elle, reste à faire à la main : le script ne la couvre pas. Ce sont les variables `HUNSPELL_LIB_NAME` et `ZLIB_LIB_NAME` qui désignent les bibliothèques de débogage, les `.pro` n'ayant rien de spécifique à Windows — et **dans un dossier de compilation à part**, ces noms étant choisis au moment du `qmake` et non à celui du `nmake` :
 
     mkdir build\respawnIrc-debug
     cd build\respawnIrc-debug
@@ -144,15 +150,19 @@ Le `DESTDIR` des `.pro` ne distingue pas les deux configurations : **l'exécutab
 
 Et le piège qui suit, constaté : revenir au dossier de release et y relancer `nmake release` **ne rend pas la main à l'exécutable de release**. `nmake` compare la cible à ses objets, or la cible est l'exécutable de débogage laissé à la racine, plus récent qu'eux : il conclut que tout est à jour, n'affiche rien et ne fait rien. On croit lancer un binaire de release et on continue d'exécuter celui de débogage. Effacer `RespawnIRC.exe` avant de recompiler suffit, et la différence de taille est un bon signal — ici 1,5 Mo en release contre 3,5 en debug.
 
-`dist-windows.ps1` n'est pas exposé à ce piège : il efface `RespawnIRC.exe` avant d'appeler `nmake`, ce qui force l'édition de liens et garantit que l'archive emporte bien un binaire sorti de ses propres objets. Il effaçait auparavant tout `build\respawnIrc`, ce qui donnait la même garantie en recompilant les 45 sources à chaque archive ; le dossier est maintenant repris tel quel, et `-Clean` rend l'ancien comportement.
+`build-windows.ps1` n'est pas exposé à ce piège, ni `dist-windows.ps1` qui l'appelle : il efface `RespawnIRC.exe` avant `nmake`, ce qui force l'édition de liens et garantit que ce qui sort de là est bien issu des objets de son propre dossier. La distribution effaçait auparavant tout `build\respawnIrc`, ce qui donnait la même garantie en recompilant les 45 sources à chaque archive ; le dossier est maintenant repris tel quel, et `-Clean` rend l'ancien comportement. Le piège ne mord donc plus que sur les compilations tapées à la main, la compilation de débogage en tête.
 
 Seuls les fichiers intermédiaires restent dans `build\` : l'exécutable, lui, est produit à la racine du dépôt, là où sont déjà `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de lui. Il lui manque encore les DLL de Qt et celles d'OpenSSL, sans quoi il ne démarre pas ; inutile pour autant de passer par l'archive de `dist-windows.ps1`, il suffit de les avoir dans le `PATH`. C'est ce que fait `run-windows.ps1` :
 
     .\run-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
 
-Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `userdata\logs\respawnirc.log` (voir plus bas).
+Si l'exécutable n'est pas là, il appelle `build-windows.ps1` : sur un dépôt fraîchement cloné et amorcé, cette seule ligne compile et lance le programme. Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `userdata\logs\respawnirc.log` (voir plus bas).
 
-Les tests se compilent de la même façon :
+Les tests se compilent et se lancent avec `-Tests` :
+
+    .\build-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64 -Tests
+
+Ou à la main, de la même façon que le programme :
 
     mkdir build\tests
     cd build\tests
@@ -164,7 +174,7 @@ Les tests se compilent de la même façon :
 
     .\dist-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
 
-Le script compile, appelle `windeployqt`, allège le résultat, ajoute les bibliothèques d'exécution nécessaires, vérifie qu'il n'en manque aucune et fabrique `dist\RespawnIRC-<version>-windows.zip`. Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. Il reprend le dossier `build\respawnIrc` de la compilation à la main plutôt que de le raser, donc alterner entre essayer le programme et fabriquer une archive ne recompile que ce qui a changé ; `-Clean` force une compilation complète. Le numéro de version qui nomme l'archive est lu dans `version.pri`, d'où le programme le tient aussi.
+Le script compile en appelant `build-windows.ps1`, lance les tests, appelle `windeployqt`, allège le résultat, ajoute les bibliothèques d'exécution nécessaires, vérifie qu'il n'en manque aucune et fabrique `dist\RespawnIRC-<version>-windows.zip`. Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. Il reprend le dossier `build\respawnIrc` de la compilation à la main plutôt que de le raser, donc alterner entre essayer le programme et fabriquer une archive ne recompile que ce qui a changé ; `-Clean` force une compilation complète et `-SkipTests` saute les vérifications. Le numéro de version qui nomme l'archive est lu dans `version.pri`, d'où le programme le tient aussi.
 
 L'archive contient un unique dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut décompresser quelque part. Ces deux dossiers ne sont jamais modifiés par le programme, qui écrit tout dans un `userdata` créé à côté de l'exécutable — l'ensemble reste donc portable et se déplace d'un bloc. À noter que `windeployqt` crée lui aussi un dossier `resources` pour QtWebEngine : les deux contenus cohabitent dans le même dossier, aucun nom de fichier ne se chevauchant.
 

@@ -60,7 +60,10 @@ Le point de départ, dont tout le reste découle : **QtWebEngine n'existe pas po
 ne se compilant qu'avec MSVC. Le README détaille la mise en place, que `bootstrap-windows.ps1`
 exécute d'un bloc sur une machine vierge — Build Tools, Qt, Hunspell, zlib et OpenSSL. Ce script ne
 remplace pas le README : il applique ce qu'il décrit, et c'est le README qu'il faut lire quand une
-version change ou qu'une étape échoue. Les pièges à connaître :
+version change ou qu'une étape échoue. La suite est scriptée elle aussi : `build-windows.ps1`
+compile, avec `-Tests` pour les vérifications, `run-windows.ps1` lance le programme et appelle le
+précédent si l'exécutable manque, et `dist-windows.ps1` fabrique l'archive en appelant lui aussi
+`build-windows.ps1` — la compilation n'existe donc qu'à un seul endroit. Les pièges à connaître :
 
 - les `.pro` n'ont **pas** été modifiés pour Windows, et ne devraient pas avoir à l'être : tout passe
   par la ligne de commande de `qmake`, où il ne reste que `DEFINES+=HUNSPELL_STATIC`. Les variables
@@ -93,18 +96,22 @@ version change ou qu'une étape échoue. Les pièges à connaître :
 - `HUNSPELL_STATIC` est nécessaire au Hunspell compilé à la main, dont le `hunvisapi.h` teste
   vraiment la macro, mais sans effet sur celui de vcpkg, dont le port engendre un en-tête au test
   figé à `#if 1`. Le passer systématiquement marche donc dans les deux cas, et c'est ce que fait
-  `dist-windows.ps1` ;
+  `build-windows.ps1`. Il ne va **pas** aux tests : `tests.pro` n'inclut que `zlib.pri`, ni Hunspell
+  ni sa macro ne les concernent, et seul `ZLIB_LIB_NAME` leur est transmis quand il est donné ;
 - la compilation se fait **hors des sources**, dans `build/`, contrairement à Linux et macOS ; seuls
-  les objets intermédiaires y restent, le `DESTDIR` envoyant l'exécutable à la racine comme ailleurs ;
+  les objets intermédiaires y restent, le `DESTDIR` envoyant l'exécutable à la racine comme ailleurs.
+  `build-windows.ps1` y met `build\respawnIrc` pour le programme et `build\tests` pour les tests ;
 - ce `DESTDIR` ne distingue pas release et debug : les deux produisent `RespawnIRC.exe` à la racine et
   **s'écrasent l'un l'autre**, même depuis deux dossiers de compilation séparés. Conséquence contre-intuitive,
   constatée : après un `nmake debug`, un `nmake release` dans son propre dossier **ne fait rien** — sa cible
   est l'exécutable de débogage laissé à la racine, plus récent que ses objets, donc jugé à jour. Il n'affiche
   rien et on continue d'exécuter le binaire de débogage en croyant l'avoir remplacé. Effacer `RespawnIRC.exe`
-  avant de recompiler ; la taille tranche, 1,5 Mo en release contre 3,5 en debug. `dist-windows.ps1` y échappe
-  en effaçant ce seul `RespawnIRC.exe` avant son `nmake` : le lien est alors toujours refait, donc l'archive
-  emporte forcément un binaire sorti des objets de son propre dossier. Il rasait auparavant tout
-  `build\respawnIrc`, ce qui achetait la même garantie au prix des 45 sources à chaque archive.
+  avant de recompiler ; la taille tranche, 1,5 Mo en release contre 3,5 en debug. `build-windows.ps1` y échappe
+  en effaçant ce seul `RespawnIRC.exe` avant son `nmake` : le lien est alors toujours refait, donc ce qui sort
+  de là sort forcément des objets de son propre dossier. La protection valait pour la seule distribution
+  quand elle vivait dans `dist-windows.ps1` ; elle couvre maintenant toute compilation scriptée, et le piège
+  ne mord plus que sur ce qu'on tape à la main, la compilation de débogage en tête. Le script de distribution
+  rasait auparavant tout `build\respawnIrc`, ce qui achetait la même garantie au prix des 45 sources à chaque archive.
   Le cas qui juge ce mécanisme a été exercé : un `nmake debug` avait laissé ses 3,5 Mo à la racine, et le
   `dist-windows.ps1` lancé ensuite a bien rendu un exécutable de 1,5 Mo, sorti des objets de son dossier.
   La **suite** du script, de `windeployqt` à la compression, a tourné depuis elle aussi : une archive complète
@@ -115,13 +122,15 @@ version change ou qu'une étape échoue. Les pièges à connaître :
 - `windeployqt` crée un dossier `resources/` pour QtWebEngine, exactement le nom du dossier de
   données du programme, et au même endroit puisque `pathTool::dataDirPath()` renvoie le dossier de
   l'exécutable. Les deux contenus doivent **fusionner**, pas se remplacer ;
-- `dist-windows.ps1` et `run-windows.ps1` chargent `windows-common.ps1` par point-sourcing, où vivent
-  la résolution du dossier de Qt et la vérification d'OpenSSL, qui étaient recopiées dans les deux.
-  `bootstrap-windows.ps1` **garde ses propres copies** d'`Import-MsvcEnvironment` et d'`Invoke-BuildTool`,
-  et c'est délibéré : il tourne quand rien n'est encore installé, et il est le seul des trois à avoir une
-  raison de ne dépendre de rien ;
-- les **quatre** `.ps1` du dépôt sont en UTF-8 **avec BOM** — `dist-windows.ps1`, `run-windows.ps1`,
-  `windows-common.ps1` et `bootstrap-windows.ps1` : PowerShell 5.1 lit un `.ps1` comme de l'ANSI sans
+- `build-windows.ps1`, `dist-windows.ps1` et `run-windows.ps1` chargent `windows-common.ps1` par
+  point-sourcing, où vivent la résolution du dossier de Qt, la vérification d'OpenSSL,
+  `Import-MsvcEnvironment` et `Invoke-BuildTool`. Les deux dernières y sont descendues quand le script de
+  compilation en est devenu le troisième utilisateur ; `Import-MsvcEnvironment` rend la main aussitôt si
+  `nmake` répond déjà, ce qui rend sans coût son appel par un script et par celui qu'il appelle.
+  `bootstrap-windows.ps1` **garde ses propres copies** des deux, et c'est délibéré : il tourne quand rien
+  n'est encore installé, et il est le seul des quatre à avoir une raison de ne dépendre de rien ;
+- les **cinq** `.ps1` du dépôt sont en UTF-8 **avec BOM** — `build-windows.ps1`, `dist-windows.ps1`,
+  `run-windows.ps1`, `windows-common.ps1` et `bootstrap-windows.ps1` : PowerShell 5.1 lit un `.ps1` comme de l'ANSI sans
   lui, et tous les accents des messages sont abîmés. N'en réenregistrer aucun sans le BOM, et le
   vérifier sur les octets du fichier, pas à travers un pipeline PowerShell qui décode le texte et
   masquerait la perte ;
@@ -425,12 +434,15 @@ un seul vrai point, l'autre étant réglé.
   entreprendre le portage sans le mainteneur.
 
 Les pistes de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` sont du confort et rien n'y casse si elles
-attendent ; il n'en reste que deux ouvertes, le `build-windows.ps1` du point 3 et la compilation hors
-des sources sous macOS du point 7. Les points 1, 2, 4, 5 et 10 ont été faits, et ce qu'il faut en
+attendent ; il n'en reste qu'une ouverte, la compilation hors des sources sous macOS du point 7. Les
+points 1, 2, 3, 4, 5 et 10 ont été faits, et ce qu'il faut en
 retenir tient en une ligne : le numéro de version vit dans `version.pri`, les noms de bibliothèques ne
-se passent plus à `qmake` que s'ils sortent de l'ordinaire, `windows-common.ps1` porte ce que deux des
-scripts partagent, la distribution reprend les objets au lieu de les raser, et l'archive se compresse
-par `ZipFile`. Restent enfin deux réserves qui ne sont pas des tâches, seulement des choses
+se passent plus à `qmake` que s'ils sortent de l'ordinaire, `windows-common.ps1` porte ce que les trois
+scripts partagent, `build-windows.ps1` est le seul endroit où la compilation est écrite, la distribution
+reprend les objets au lieu de les raser et lance les tests avant d'assembler, et l'archive se compresse
+par `ZipFile`. Une réserve sur le point 3 : le script de compilation n'a encore rien compilé pour de
+bon, seul son enchaînement ayant été essayé avec des outils simulés, la machine où il a été écrit
+n'ayant ni Build Tools ni Qt. Restent enfin deux réserves qui ne sont pas des tâches, seulement des choses
 à ne pas oublier : le code de retour 3010, toujours non constaté et de faible valeur — il ne diffère
 de 0 que par un redémarrage conseillé — et le retrait d'`opengl32sw.dll`, vérifié sur une machine sans
 accélération mais pas sur une machine dont Direct3D 11 serait cassé ou désactivé, cas qu'une machine

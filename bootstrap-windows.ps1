@@ -23,8 +23,11 @@
 # Build Tools (3,3 Go) et Qt (0,9 Go mesuré, QtWebEngine compris), le reste étant négligeable :
 # Hunspell et zlib pèsent 2,4 Mo de téléchargement et se compilent en une quinzaine de secondes.
 #
-# Ce script est en UTF-8 avec BOM, comme dist-windows.ps1 et pour la même raison : PowerShell 5.1 lit
-# un .ps1 comme de l'ANSI sans lui et tous les accents des messages sont abîmés.
+# Le script s'arrête à l'installation : il affiche pour finir les commandes de build-windows.ps1, de
+# run-windows.ps1 et de dist-windows.ps1, qui sont la suite de la chaîne.
+#
+# Ce script est en UTF-8 avec BOM, comme les trois autres .ps1 du dépôt et pour la même raison :
+# PowerShell 5.1 lit un .ps1 comme de l'ANSI sans lui et tous les accents des messages sont abîmés.
 
 [CmdletBinding()]
 param(
@@ -53,9 +56,9 @@ $repoDir = $PSScriptRoot
 $downloadDir = Join-Path $repoDir 'build\bootstrap'
 $qtDir = Join-Path $QtRootDir "$QtVersion\msvc2019_64"
 
-# Les mêmes que dans dist-windows.ps1, recopiées pour que ce script reste autonome : il tourne avant
-# que quoi que ce soit d'autre n'existe sur la machine. Voir POSSIBLE-BUILD-SIMPLIFICATIONS.md,
-# point 4, pour le windows-common.ps1 qui les réunirait un jour.
+# Les mêmes que dans windows-common.ps1, recopiées pour que ce script reste autonome : il tourne avant
+# que quoi que ce soit d'autre n'existe sur la machine. C'est le seul des quatre scripts Windows à
+# avoir une raison de ne dépendre de rien, et cette duplication-là est délibérée.
 function Import-MsvcEnvironment
 {
     if(Get-Command nmake -ErrorAction SilentlyContinue)
@@ -446,7 +449,11 @@ if($missing -gt 0)
 }
 
 Write-Host ""
+Write-Host "Pour compiler, avec ses tests :"
+Write-Host "    .\build-windows.ps1 -QtDir $qtDir -Tests"
+Write-Host ""
+Write-Host "Pour compiler et essayer le programme :"
+Write-Host "    .\run-windows.ps1 -QtDir $qtDir"
+Write-Host ""
 Write-Host "Pour fabriquer l'archive distribuable :"
 Write-Host "    .\dist-windows.ps1 -QtDir $qtDir"
-Write-Host ""
-Write-Host "Pour compiler et essayer sans passer par l'archive, voir la section Windows du README."

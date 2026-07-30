@@ -4,13 +4,16 @@
 # jamais écrits : sous Windows tout ce que le programme écrit va dans userdata/, à côté de
 # l'exécutable, ce qui garde l'ensemble portable.
 #
-# Usage : .\dist-windows.ps1 [-QtDir chemin\vers\Qt\5.15.2\msvc2019_64] [-Clean]
+# Usage : .\dist-windows.ps1 [-QtDir chemin\vers\Qt\5.15.2\msvc2019_64] [-Clean] [-SkipTests]
 #         [-HunspellLibName hunspell-1.7] [-ZlibLibName zlibstatic]
 # À défaut, le Qt utilisé est celui dont le qmake est dans le PATH.
 #
-# Les deux noms de bibliothèques ne servent qu'à ceux qui n'ont pas suivi la recette du README : les
-# .pro prennent par défaut hunspell et, sous MSVC, zlib, qui sont les noms qu'elle produit. Le cas
-# type est le hunspell-1.7 de vcpkg. -Clean recompile tout au lieu de reprendre l'existant.
+# La compilation elle-même est celle de build-windows.ps1, à qui tous ces arguments sont passés : ce
+# script n'en garde pas de copie. Les tests sont compilés et lancés avant l'assemblage, la chaîne
+# d'outils étant déjà chargée ; -SkipTests s'en passe. Les deux noms de bibliothèques ne servent qu'à
+# ceux qui n'ont pas suivi la recette du README : les .pro prennent par défaut hunspell et, sous MSVC,
+# zlib, qui sont les noms qu'elle produit. Le cas type est le hunspell-1.7 de vcpkg. -Clean recompile
+# tout au lieu de reprendre l'existant.
 #
 # Le script trouve tout seul l'environnement MSVC avec vswhere, il n'y a donc pas besoin de le
 # lancer depuis une invite de commandes développeur.
@@ -25,88 +28,30 @@ param(
     [string]$QtDir,
     [string]$HunspellLibName,
     [string]$ZlibLibName,
-    [switch]$Clean
+    [switch]$Clean,
+    [switch]$SkipTests
 )
 
 $ErrorActionPreference = 'Stop'
 
 $repoDir = $PSScriptRoot
 $distDir = Join-Path $repoDir 'dist'
-$buildDir = Join-Path $repoDir 'build\respawnIrc'
 
-# Résolution de Qt et vérification d'OpenSSL, partagées avec run-windows.ps1.
+# Résolution de Qt, environnement MSVC et appel des outils, partagés avec les autres scripts Windows.
 . (Join-Path $PSScriptRoot 'windows-common.ps1')
 
 $qtDir = Resolve-QtDir -QtDir $QtDir
-$qmakeBin = Join-Path $qtDir 'bin\qmake.exe'
 $windeployqtBin = Join-Path $qtDir 'bin\windeployqt.exe'
 
-foreach($thisBin in @($qmakeBin, $windeployqtBin))
+if(-not (Test-Path $windeployqtBin))
 {
-    if(-not (Test-Path $thisBin))
-    {
-        throw "$thisBin est introuvable."
-    }
+    throw "$windeployqtBin est introuvable."
 }
 
-# Charge les variables d'environnement de MSVC (cl, nmake, rc) dans la session courante :
-# vcvars64.bat les pose dans son propre processus, on les récupère en lisant son `set` final.
-# vswhere ignore les Build Tools sans -products *, ils ne sont pas considérés comme un produit.
-function Import-MsvcEnvironment
-{
-    if(Get-Command nmake -ErrorAction SilentlyContinue)
-    {
-        return
-    }
-
-    $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-
-    if(-not (Test-Path $vswhere))
-    {
-        throw "vswhere introuvable : les Build Tools de Visual Studio ne sont pas installés."
-    }
-
-    $vsDir = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format value -property installationPath
-
-    if(-not $vsDir)
-    {
-        throw "Aucune installation MSVC avec les outils C++ x64 n'a été trouvée."
-    }
-
-    cmd /c "`"$vsDir\VC\Auxiliary\Build\vcvars64.bat`" > nul 2>&1 && set" | ForEach-Object {
-        if($_ -match '^([^=]+)=(.*)$')
-        {
-            Set-Item -Path "env:$($matches[1])" -Value $matches[2]
-        }
-    }
-}
-
-# qmake, nmake et windeployqt écrivent leur progression sur la sortie d'erreur. Avec
-# $ErrorActionPreference à Stop, PowerShell transforme chacune de ces lignes en erreur fatale alors
-# que la commande a très bien fonctionné : on repasse donc en Continue le temps de l'appel, et on
-# juge de la réussite sur le code de retour, qui est le seul indicateur fiable.
-function Invoke-BuildTool
-{
-    param([Parameter(Mandatory)][scriptblock]$Command, [Parameter(Mandatory)][string]$Name)
-
-    $previousPreference = $ErrorActionPreference
-    $ErrorActionPreference = 'Continue'
-
-    try
-    {
-        & $Command
-    }
-    finally
-    {
-        $ErrorActionPreference = $previousPreference
-    }
-
-    if($LASTEXITCODE -ne 0)
-    {
-        throw "$Name a échoué (code $LASTEXITCODE)."
-    }
-}
-
+# build-windows.ps1 charge l'environnement MSVC pour son compte, mais l'assemblage en a besoin lui
+# aussi, pour dumpbin et pour VCToolsRedistDir : on le charge donc ici plutôt que de compter sur
+# l'effet de bord d'un autre script. L'appeler deux fois ne coûte rien, la fonction rendant la main
+# aussitôt si nmake répond déjà.
 Import-MsvcEnvironment
 
 # version.pri est la seule source du numéro de version, et le .pro le pousse de là dans le programme :
@@ -120,57 +65,17 @@ if($sourceOfVersion -notmatch '(?m)^\s*RESPAWNIRC_VERSION\s*=\s*([0-9.]+)\s*$')
 
 $version = $matches[1]
 
-Write-Host "== Compilation de RespawnIRC $version avec $qtDir"
-# Compilation hors des sources : tout ce qui est produit reste dans build/, jamais dans respawnIrc/.
-# Le dossier est celui de la compilation release à la main, décrite dans le README, et il est repris
-# tel quel : fabriquer une archive après avoir essayé le programme ne recompile que ce qui a changé,
-# là où l'effacement systématique d'avant coûtait les 45 sources à chaque fois. -Clean le retrouve.
-if($Clean)
-{
-    Remove-Item -Recurse -Force $buildDir -ErrorAction SilentlyContinue
-}
-
-New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
-
-# En revanche l'exécutable en place est toujours effacé, et ce n'est pas un détail : le DESTDIR des
-# .pro ne distingue ni release ni debug ni dossier de compilation, si bien que le RespawnIRC.exe de la
-# racine peut venir d'ailleurs — d'un nmake debug, typiquement. nmake le comparerait alors à ses
-# objets, le trouverait plus récent, n'éditerait aucun lien et l'archive emporterait ce binaire-là. Le
-# retirer garantit que ce qui est empaqueté sort bien des objets de ce dossier-ci. C'est ce que
-# l'effacement complet assurait avant, pour beaucoup plus cher.
-Remove-Item (Join-Path $repoDir 'RespawnIRC.exe') -Force -ErrorAction SilentlyContinue
-
-# Les noms de bibliothèques ne sont transmis que s'ils sont donnés : les valeurs par défaut des .pro
-# sont déjà celles de la recette du README, et les répéter ici ne faisait rien. HUNSPELL_STATIC, lui,
-# est nécessaire au Hunspell compilé à la main, dont les en-têtes déclareraient sinon tout en
-# __declspec(dllimport) ; il est sans effet sur celui de vcpkg, qui engendre un hunvisapi.h au test
-# déjà figé. Le passer toujours marche donc dans les deux cas.
-$optionsForQmake = @('DEFINES+=HUNSPELL_STATIC')
-
-if($HunspellLibName)
-{
-    $optionsForQmake += "HUNSPELL_LIB_NAME=$HunspellLibName"
-}
-
-if($ZlibLibName)
-{
-    $optionsForQmake += "ZLIB_LIB_NAME=$ZlibLibName"
-}
-
-Push-Location $buildDir
-
-try
-{
-    Invoke-BuildTool -Name 'qmake' -Command {
-        & $qmakeBin (Join-Path $repoDir 'respawnIrc\respawnIrc.pro') @optionsForQmake
-    }
-
-    Invoke-BuildTool -Name 'nmake' -Command { nmake release }
-}
-finally
-{
-    Pop-Location
-}
+Write-Host "== RespawnIRC $version"
+# La compilation est celle de build-windows.ps1, avec ses dossiers hors des sources, son effacement de
+# l'exécutable avant l'édition de liens et sa reprise des objets déjà compilés. Ce script en avait sa
+# propre copie, la même à quelques lignes près : elle n'existe plus qu'à un seul endroit, celui que le
+# README donne aussi comme la façon de compiler.
+#
+# Les tests passent avant l'assemblage. Ils ne coûtent presque rien ici, la chaîne d'outils étant déjà
+# chargée, et fabriquer une archive sans les avoir lancés n'a pas de sens. Une erreur dans le script
+# appelé remonte ici et arrête tout, ce qui est bien le comportement voulu.
+& (Join-Path $repoDir 'build-windows.ps1') -QtDir $qtDir -HunspellLibName $HunspellLibName `
+    -ZlibLibName $ZlibLibName -Clean:$Clean -Tests:(-not $SkipTests)
 
 Write-Host "== Assemblage du dossier distribuable"
 # L'archive contient un unique dossier RespawnIRC, à décompresser tel quel : l'application et ses

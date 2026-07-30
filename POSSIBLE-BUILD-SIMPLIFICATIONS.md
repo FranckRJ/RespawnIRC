@@ -1,6 +1,6 @@
 # Pistes de simplification de la compilation et de la distribution
 
-État des lieux des redondances et des frottements de la chaîne de compilation, relevés en juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, `dist-windows.ps1`, `run-windows.ps1`, `dist-macos.sh` et la section « Compilation » du README. Ce fichier est une liste de pistes, classées par rapport entre l'effort et le gain, pas un plan arrêté : **il n'en reste que deux d'ouvertes, les points 3 et 7.** Les autres portent la mention **fait** et sont conservés pour ce qu'ils ont appris, le point 6 restant de loin le plus instructif.
+État des lieux des redondances et des frottements de la chaîne de compilation, relevés en juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, `dist-windows.ps1`, `run-windows.ps1`, `dist-macos.sh` et la section « Compilation » du README. Ce fichier est une liste de pistes, classées par rapport entre l'effort et le gain, pas un plan arrêté : **il n'en reste qu'une d'ouverte, le point 7.** Les autres portent la mention **fait** et sont conservés pour ce qu'ils ont appris, le point 6 restant de loin le plus instructif.
 
 Les numéros de ligne cités sont ceux du relevé de juillet 2026 et ont dérivé depuis ; les chercher par leur contenu plutôt que par leur numéro.
 
@@ -30,15 +30,24 @@ Les deux premiers sont faits. `HUNSPELL_LIB_NAME` est vide par défaut dans `dis
 
 Une conséquence à ne pas oublier en reprenant ce point : le renommage de la bibliothèque de zlib touche `bootstrap-windows.ps1`, sa vérification finale, les deux recettes du README et les mentions de `CLAUDE.md`, et il périme les `zs.lib` déjà posés sur les machines de développement — un `zlib\lib` qui ne contient que les anciens noms fait échouer l'édition de liens sur un `zlib.lib` introuvable. Les renommer suffit, rien n'est à recompiler.
 
-## 3. Il n'y a pas de script de compilation, seulement un script d'amorçage, un de distribution et un de lancement
+## 3. Il n'y a pas de script de compilation, seulement un script d'amorçage, un de distribution et un de lancement — **fait**
 
-Le README fait taper `mkdir` / `cd` / `qmake` / `nmake` à la main (`README.md:85-88`), puis une seconde fois pour les tests (`README.md:102-106`). Pendant ce temps `run-windows.ps1:27` refuse de travailler tant que cela n'a pas été fait, et `dist-windows.ps1:124-143` contient sa propre copie des mêmes quatre étapes.
+Le README faisait taper `mkdir` / `cd` / `qmake` / `nmake` à la main (`README.md:85-88`), puis une seconde fois pour les tests (`README.md:102-106`). Pendant ce temps `run-windows.ps1:27` refusait de travailler tant que cela n'avait pas été fait, et `dist-windows.ps1:124-143` contenait sa propre copie des mêmes quatre étapes.
 
 Piste : un `build-windows.ps1 [-Tests]` extrait de `dist-windows.ps1`, appelé par le script de distribution, appelé par `run-windows.ps1` quand l'exécutable manque, et qui remplace les deux recettes du README.
 
-Cela donnerait aussi un chemin scripté aux tests : aujourd'hui `tests/tests.pro` n'est compilé qu'à la main, et `dist-windows.ps1` fabrique une archive sans avoir lancé les 142 vérifications. Les faire tourner avant l'assemblage ne coûte presque rien puisque la chaîne d'outils est déjà chargée — avec un `-SkipTests` pour s'en passer.
+Cela donnerait aussi un chemin scripté aux tests : `tests/tests.pro` n'était compilé qu'à la main, et `dist-windows.ps1` fabriquait une archive sans avoir lancé les 142 vérifications. Les faire tourner avant l'assemblage ne coûte presque rien puisque la chaîne d'outils est déjà chargée — avec un `-SkipTests` pour s'en passer.
 
-`bootstrap-windows.ps1` a comblé l'autre bout de la chaîne, l'installation des outils, mais s'arrête volontairement là : il se termine en affichant la commande de `dist-windows.ps1` plutôt que de compiler. Un `build-windows.ps1` viendrait exactement entre les deux, et c'est lui qui manque encore pour qu'une machine vierge aille du dépôt à l'exécutable sans qu'on tape une seule ligne de `qmake`.
+`bootstrap-windows.ps1` avait comblé l'autre bout de la chaîne, l'installation des outils, mais s'arrêtait volontairement là : il se terminait en affichant la commande de `dist-windows.ps1` plutôt que de compiler. Un `build-windows.ps1` vient exactement entre les deux, et c'est lui qui manquait pour qu'une machine vierge aille du dépôt à l'exécutable sans qu'on tape une seule ligne de `qmake`.
+
+Fait, sous la forme décrite et sans rien y ajouter. `build-windows.ps1` porte les deux cibles, `-Tests` compilant `tests\tests.pro` dans `build\tests` **et lançant** les vérifications — compiler les tests sans les lancer n'aurait pas de sens. `dist-windows.ps1` l'appelle et n'a plus de compilation à lui, avec un `-SkipTests` qui se transmet en `-Tests:(-not $SkipTests)` ; `run-windows.ps1` l'appelle quand `RespawnIRC.exe` manque, au lieu de refuser de travailler ; `bootstrap-windows.ps1` termine en affichant les trois commandes de la suite au lieu de la seule distribution. Deux détails valaient d'être remarqués en écrivant :
+
+- `tests.pro` n'inclut que `zlib.pri`. Il ne reçoit donc **ni** `DEFINES+=HUNSPELL_STATIC` **ni** `HUNSPELL_LIB_NAME`, ce que la recette du README faisait déjà sans le dire ; les deux cibles ne partagent pas leurs options ;
+- l'effacement de l'exécutable avant `nmake` — la précaution du point 5, qui garantit que l'édition de liens a lieu — profite maintenant à toute compilation et pas seulement à la distribution. Le piège du `DESTDIR` unique ne mord donc plus que sur les compilations tapées à la main, celle de débogage en tête.
+
+Ce qui a été **écarté** : la compilation de débogage. Elle demande ses propres noms de bibliothèques et son propre dossier, elle sert au diagnostic et non à la chaîne qui va des sources à l'archive, et l'ajouter aurait élargi la piste au lieu de la faire. Sa recette reste dans le README, et le script le dit dans son en-tête plutôt que de laisser croire à un oubli.
+
+**Ce qui n'a pas été vérifié, et qu'il ne faut pas présenter autrement** : le script n'a encore rien compilé pour de bon. La machine où il a été écrit n'a ni Build Tools ni Qt — c'est celle qui a servi à essayer l'invite UAC, et l'équiper détruirait ce qui la rend utile (voir CLAUDE.md). Seul son enchaînement a été essayé, avec un `windows-common.ps1` simulé et un faux `qmake.exe` qui affiche ses arguments : les deux cibles dans leurs dossiers, les arguments réellement transmis à `qmake` — `DEFINES+=HUNSPELL_STATIC HUNSPELL_LIB_NAME=... ZLIB_LIB_NAME=...` pour le programme, `ZLIB_LIB_NAME=...` seul pour les tests — le code de retour des tests, `-Clean`, l'erreur quand `qmake` manque, l'appel depuis `run-windows.ps1` avec l'exécutable absent, et celui depuis `dist-windows.ps1` jusqu'à `windeployqt`. C'est l'enchaînement qui est vérifié, pas la compilation : il reste à lancer le script sur une machine équipée.
 
 ## 4. Une trentaine de lignes dupliquées mot pour mot entre les deux scripts PowerShell — **fait**
 
@@ -50,7 +59,7 @@ Piste : un `windows-common.ps1` chargé par point-sourcing, avec `Resolve-QtDir`
 
 Fait : `windows-common.ps1` porte `Resolve-QtDir` et `Get-OpenSslDir`, chargé par point-sourcing depuis `dist-windows.ps1` et `run-windows.ps1`. La différence entre les deux appelants — le `throw` de la distribution contre le `Write-Warning` du lanceur — est devenue un `-Required`, ce qui est exactement ce qu'elle était.
 
-`bootstrap-windows.ps1` n'y touche pas et garde ses deux copies, l'arbitrage ayant été tranché dans le sens de son autonomie. `Invoke-BuildTool` et `Import-MsvcEnvironment` restent donc en deux exemplaires, dans le script d'amorçage et dans celui de distribution : les réunir n'a de sens qu'avec le `build-windows.ps1` du point 3, qui serait leur troisième utilisateur.
+`bootstrap-windows.ps1` n'y touche pas et garde ses deux copies, l'arbitrage ayant été tranché dans le sens de son autonomie. `Invoke-BuildTool` et `Import-MsvcEnvironment` sont depuis descendus dans `windows-common.ps1` avec le reste : le `build-windows.ps1` du point 3 en était le troisième utilisateur attendu, et il est arrivé. Il n'en reste donc que deux exemplaires, celui du fichier commun et celui du script d'amorçage.
 
 ## 5. Chaque distribution recompile tout, et efface ce dont `run-windows.ps1` a besoin — **fait**
 

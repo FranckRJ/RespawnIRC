@@ -1,13 +1,16 @@
-﻿# Le peu que dist-windows.ps1 et run-windows.ps1 ont en commun : retrouver l'installation de Qt, et
-# savoir si OpenSSL est là. Les deux blocs étaient recopiés mot pour mot dans les deux scripts, à la
-# seule différence du throw contre le Write-Warning, d'où le -Required ci-dessous.
+﻿# Ce que build-windows.ps1, dist-windows.ps1 et run-windows.ps1 ont en commun : retrouver
+# l'installation de Qt, savoir si OpenSSL est là, charger l'environnement de MSVC et appeler un outil
+# de compilation. Les deux premiers blocs étaient recopiés mot pour mot dans les scripts de
+# distribution et de lancement, à la seule différence du throw contre le Write-Warning, d'où le
+# -Required ci-dessous ; les deux autres attendaient ici le troisième utilisateur que le script de
+# compilation vient d'apporter.
 #
 # Se charge par point-sourcing, pour que les fonctions atterrissent dans la portée de l'appelant :
 #     . (Join-Path $PSScriptRoot 'windows-common.ps1')
 #
 # bootstrap-windows.ps1 ne charge rien d'ici et garde ses propres copies d'Import-MsvcEnvironment et
 # d'Invoke-BuildTool : il tourne sur une machine où rien n'est encore installé, et son autonomie a une
-# valeur propre. C'est le seul des trois scripts à avoir une raison de ne dépendre de rien, et sa
+# valeur propre. C'est le seul des quatre scripts à avoir une raison de ne dépendre de rien, et sa
 # duplication est délibérée.
 #
 # Ce fichier est en UTF-8 avec BOM comme les autres .ps1 du dépôt : PowerShell 5.1 lit un .ps1 comme
@@ -54,4 +57,64 @@ function Get-OpenSslDir
     }
 
     return $opensslDir
+}
+
+# Charge les variables d'environnement de MSVC (cl, nmake, rc, dumpbin) dans la session courante :
+# vcvars64.bat les pose dans son propre processus, on les récupère en lisant son `set` final. C'est ce
+# qui évite d'avoir à lancer les scripts depuis une invite de commandes développeur. La fonction ne
+# fait rien si nmake répond déjà, ce qui la rend sans coût quand un script en appelle un autre.
+# vswhere ignore les Build Tools sans -products *, ils ne sont pas considérés comme un produit.
+function Import-MsvcEnvironment
+{
+    if(Get-Command nmake -ErrorAction SilentlyContinue)
+    {
+        return
+    }
+
+    $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+
+    if(-not (Test-Path $vswhere))
+    {
+        throw "vswhere introuvable : les Build Tools de Visual Studio ne sont pas installés."
+    }
+
+    $vsDir = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format value -property installationPath
+
+    if(-not $vsDir)
+    {
+        throw "Aucune installation MSVC avec les outils C++ x64 n'a été trouvée."
+    }
+
+    cmd /c "`"$vsDir\VC\Auxiliary\Build\vcvars64.bat`" > nul 2>&1 && set" | ForEach-Object {
+        if($_ -match '^([^=]+)=(.*)$')
+        {
+            Set-Item -Path "env:$($matches[1])" -Value $matches[2]
+        }
+    }
+}
+
+# qmake, nmake et windeployqt écrivent leur progression sur la sortie d'erreur. Avec
+# $ErrorActionPreference à Stop, PowerShell transforme chacune de ces lignes en erreur fatale alors
+# que la commande a très bien fonctionné : on repasse donc en Continue le temps de l'appel, et on
+# juge de la réussite sur le code de retour, qui est le seul indicateur fiable.
+function Invoke-BuildTool
+{
+    param([Parameter(Mandatory)][scriptblock]$Command, [Parameter(Mandatory)][string]$Name)
+
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+
+    try
+    {
+        & $Command
+    }
+    finally
+    {
+        $ErrorActionPreference = $previousPreference
+    }
+
+    if($LASTEXITCODE -ne 0)
+    {
+        throw "$Name a échoué (code $LASTEXITCODE)."
+    }
 }
