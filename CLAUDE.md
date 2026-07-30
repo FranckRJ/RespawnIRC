@@ -167,9 +167,13 @@ déjà équipée, et qui a coûté des essais :
   raison n'est pas seulement son poids — 3,3 Go, un quart d'heure, le processeur occupé : c'est que
   l'invite UAC arrive **dans la seconde** qui suit le `Start-Process`, si bien que la ligne
   « élévation nécessaire » s'affichait sans qu'on ait le temps de la lire. Constaté, et c'est ce qui a
-  fait ajouter le `Read-Host`. Le message dit aussi ce que l'invite doit montrer, l'installateur de
-  Visual Studio édité par Microsoft : accorder une élévation à un installateur nommé n'est pas la même
-  chose que l'accorder à un script dont on ne sait pas ce qu'il élève. Le bloc est **dans la branche
+  fait ajouter le `Read-Host`. Le message dit aussi ce que l'invite annonce — « Visual Studio
+  Installer », éditeur vérifié « Microsoft Corporation » : accorder une élévation à un installateur
+  nommé n'est pas la même chose que l'accorder à un script dont on ne sait pas ce qu'il élève. Ces
+  deux libellés ont été vus à l'écran et retrouvés dans le binaire, `FileDescription` pour le premier
+  et sujet de la signature Authenticode pour le second, sur le `setup.exe` que pose l'installation —
+  c'est le même bootstrapper que `vs_BuildTools.exe`, ce qui permet de rejouer l'invite sur une
+  machine déjà équipée sans rien retélécharger. Le bloc est **dans la branche
   qui installe**, donc rien n'est demandé si les Build Tools sont déjà là ou avec `-SkipBuildTools` —
   la réentrance garde sa valeur, une reprise ne redemande rien. `-Yes` s'en passe. Ne pas déplacer ce
   bloc en tête de script : il redemanderait à chaque reprise, ce que la conception évite depuis le

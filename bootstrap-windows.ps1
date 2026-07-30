@@ -176,7 +176,11 @@ else
     # autres réunies pèsent un dixième de celle-ci — et la seule qui écrive hors du dépôt et de
     # $QtRootDir. Surtout, l'invite UAC arrive dans la seconde qui suit le Start-Process : annoncer
     # l'élévation juste avant de la demander ne laissait pas le temps de lire l'annonce, et on se
-    # retrouvait à autoriser une élévation sans savoir laquelle. Ce bloc est dans le `else`, donc il
+    # retrouvait à autoriser une élévation sans savoir laquelle. Les deux libellés cités sont ceux de
+    # l'invite, vus à l'écran et retrouvés dans le binaire — « Visual Studio Installer » est sa
+    # FileDescription, « Microsoft Corporation » le sujet de sa signature Authenticode. Ce sont ceux
+    # de vs_BuildTools.exe comme du setup.exe posé par l'installation, qui est le même bootstrapper.
+    # Ce bloc est dans le `else`, donc il
     # n'apparaît pas sur une machine qui a déjà les Build Tools, ni avec -SkipBuildTools : personne
     # n'a à valider une étape qui ne va rien faire.
     if(-not $Yes)
@@ -190,9 +194,9 @@ else
         {
             Write-Host ""
             Write-Host "   Une invite UAC va s'afficher pour cette installation, et pour elle seule. Elle"
-            Write-Host "   nomme l'installateur de Visual Studio, édité par Microsoft : c'est ce qu'il faut"
-            Write-Host "   y lire avant d'accepter, et refuser si elle annonce autre chose. Elle expire au"
-            Write-Host "   bout de deux minutes, il faut donc rester devant l'écran jusque-là."
+            Write-Host "   annonce « Visual Studio Installer », éditeur vérifié « Microsoft Corporation »."
+            Write-Host "   Elle arrive juste après, et doit être acceptée dans les deux minutes : passé ce"
+            Write-Host "   délai Windows l'annule de lui-même et le script s'arrête."
         }
 
         Write-Host ""
