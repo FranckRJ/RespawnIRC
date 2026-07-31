@@ -1,8 +1,77 @@
 # Pistes de simplification de la compilation et de la distribution
 
-Relevé de juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, les scripts Windows, `dist-macos.sh` et la section « Compilation » du README. Les onze pistes sont faites, et une douzième est venue après coup — l'absence de script de compilation côté Unix, décrite plus bas. Il n'en reste aucune d'ouverte.
+Relevé de juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, les scripts Windows, `dist-macos.sh` et la section « Compilation » du README. Les douze pistes de la première passe sont faites — les onze du relevé d'origine, plus l'absence de script de compilation côté Unix, venue après coup et décrite plus bas.
 
-Ce fichier a donc été ramené à ce qui n'existe qu'ici : les décisions prises, les réserves qui restent et les leçons que ces pistes ont coûtées. Le détail de ce qui a été fait vit maintenant là où il sert — `CLAUDE.md`, le README, les commentaires des scripts — plutôt qu'en double. La version longue, avec les états des lieux d'origine, leurs chiffres et leurs numéros de ligne, est dans l'historique git ; c'est là qu'il faut aller pour savoir à quoi ressemblait la chaîne avant, et le commit qui a allégé ce fichier est le point de départ.
+**Une seconde passe en a ouvert six autres**, décrites juste en dessous et dont **aucune n'est appliquée**. Elles ne se recouvrent pas avec les premières : celles-là portaient sur ce qui était en double ou en trop, celles-ci sur l'endroit où le temps passe et sur ce que les trois plateformes ne font pas pareil.
+
+Ce fichier garde donc ce qui n'existe qu'ici : les pistes ouvertes, les décisions prises, les réserves qui restent et les leçons que tout cela a coûtées. Le détail de ce qui a été fait vit là où il sert — `CLAUDE.md`, le README, les commentaires des scripts — plutôt qu'en double. La version longue, avec les états des lieux d'origine, leurs chiffres et leurs numéros de ligne, est dans l'historique git ; c'est là qu'il faut aller pour savoir à quoi ressemblait la chaîne avant, et le commit qui a allégé ce fichier est le point de départ.
+
+## Les pistes ouvertes
+
+Les mesures qui suivent ont été faites ici, sur un Mac Intel — Core i3-1000NG4, 2 cœurs et 4 fils —, avec le Qt 5.15.2 officiel et `make -j4`. **Ce sont des chiffres de machine lente, et ce sont les rapports qui comptent, pas les secondes.** Ce qui n'a pas pu être mesuré est signalé comme tel à chaque fois : il n'y a ici ni machine Windows ni machine Linux.
+
+### 13. Aucun en-tête précompilé, alors que 42 sources relisent les mêmes en-têtes Qt
+
+Chacune des 42 sources du programme ouvre `QtWidgets`, `QtCore` ou `QtNetwork`, et le compilateur les réanalyse à chaque fois. `qmake` sait faire un en-tête précompilé — `CONFIG += precompile_header` et `PRECOMPILED_HEADER` — et le fait avec MSVC comme avec clang et gcc : **ce serait deux lignes dans les `.pro` et un fichier d'en-tête, sans rien de spécifique à une plateforme**, ce qui compte vu le principe rappelé plus bas. Mesuré avec les quatre en-têtes parapluie `QtCore`, `QtGui`, `QtWidgets` et `QtNetwork` :
+
+| Ce qu'on compile | Sans en-tête précompilé | Avec | Écart |
+| --- | --- | --- | --- |
+| tout, dossier de compilation neuf | 99,2 s (274,2 s de processeur) | 90,9 s (148,9 s) | **-8 %** |
+| les 42 sources, en-tête précompilé déjà là | 77,7 s (174,1 s) | 46,6 s (78,8 s) | **-40 %** |
+| une source modifiée, édition de liens et bundle compris | 4,50 s | 2,96 s | **-34 %** |
+
+Le temps de processeur tombe de moitié partout ; le temps d'attente, lui, ne suit qu'à partir de la deuxième compilation. **C'est le point à comprendre avant de juger la piste** : fabriquer l'en-tête précompilé coûte une quarantaine de secondes qui ne se parallélisent pas, si bien qu'une compilation partant de rien ne gagne presque rien et que `-c` / `-Clean` deviennent relativement plus chers. Le gain est sur la compilation ordinaire, celle qu'on fait vingt fois par jour. Les tests gagneraient de la même façon, et d'autant plus qu'ils recompilent six sources du programme pour leur compte.
+
+Deux réserves. La première est que **ceci n'a été mesuré que sous macOS et clang** : le mécanisme de MSVC n'est pas le même — un `.cpp` engendré, `/Yc` une fois et `/Yu` sur chaque source — et n'a pas été essayé, pas plus que gcc. La seconde est que le contenu de l'en-tête est un réglage à lui seul : le prendre parapluie comme ici est le choix maximal, qui économise le plus par source et coûte le plus à fabriquer, et il pèse 37 Mo dans chaque dossier de compilation.
+
+### 14. Sous Windows, la compilation est en série, et c'est la seule des trois plateformes dans ce cas
+
+`build-windows.ps1` appelle `nmake`, qui n'a pas d'équivalent du `-j` de `make` : les 42 sources se compilent l'une après l'autre pendant que macOS et Linux en font quatre à la fois. `cl /MP` n'y change rien, `qmake` engendrant une invocation de `cl` par source. L'outil fait pour ça est **jom**, le clone parallèle de `nmake` écrit par Qt, un zip de 1,7 Mo sur `download.qt.io/official_releases/jom/` — exactement la forme de dépendance que `bootstrap-windows.ps1` sait déjà installer avec son `Get-FileIfNeeded`, `build-windows.ps1` le prenant quand il est là et retombant sur `nmake` sinon.
+
+**Raisonné et non constaté, et il ne faut pas le présenter autrement.** Il n'y a pas de machine Windows ici, et la vérification de repli n'a pas marché non plus : `qmake -spec win32-msvc` refuse d'engendrer le `Makefile` sans `cl` pour l'interroger, donc même la forme des règles est déduite de celle du `Makefile` Unix. C'est aussi, si ça se confirme, le plus gros gain absolu des six pistes, puisque c'est la seule plateforme où rien ne se parallélise — et il s'ajoute à celui du point 13 au lieu de s'y substituer.
+
+### 15. `dist-macos.sh` n'allège rien, alors que `dist-windows.ps1` le fait depuis longtemps
+
+Le script Windows retire les traductions de QtWebEngine autres que `fr` et `en-US`, les `qt_*.qm` autres que le français, et les ressources des outils de développement de Chromium. Le script macOS ne retire rien, et le DMG publié porte donc tout. Relevé sur le DMG de la version 3.1.17 : `qtwebengine_locales` contient **53 fichiers pour 17 Mo** quand deux suffisent, et `qtwebengine_devtools_resources.pak` en fait 1,5 de plus. Le bundle passe de 208 à 190 Mo, et l'image disque de 96,2 à 88,6 Mio.
+
+Il n'y a rien à inventer : ce sont les deux mêmes décisions que sous Windows, déjà prises et déjà documentées. Deux détails valent d'être notés au passage : les `.qm` de Qt ne sont pas dans le bundle, `macdeployqt` ne les copiant pas, donc seules les deux pièces de QtWebEngine sont concernées ; et l'allègement doit **précéder la signature**, pour la même raison que le `git archive`. C'est la troisième fois que la leçon du bas de ce fichier se vérifie — une décision prise pour une plateforme ne se propage pas toute seule aux autres.
+
+### 16. L'image disque est en UDZO, qui est le format que personne n'a choisi
+
+`dist-macos.sh` passe `-format UDZO`, la compression zlib. Or c'est aussi ce que `hdiutil` prend par défaut quand on lui donne un dossier source : ce n'est pas un choix, c'est celui qui n'a jamais été fait. Mesuré sur le bundle allégé du point 15 :
+
+| Format | Temps | Taille |
+| --- | --- | --- |
+| UDZO, bundle complet (ce qu'on publie aujourd'hui) | 16,2 s | 96,2 Mio |
+| UDZO | 14,2 s | 88,6 Mio |
+| UDZO, `zlib-level=9` | 39,4 s | 81,2 Mio |
+| **ULFO** (lzfse) | **12,2 s** | **79,8 Mio** |
+| ULMO (lzma) | 117,0 s | 64,5 Mio |
+
+ULFO est **plus petit et plus rapide** que ce qu'on fait aujourd'hui, ce qui est rare et ce qui rend la piste facile à juger : -17 % sur l'image, sans contrepartie de temps. La seule question est la compatibilité, et elle est réglée par le `man hdiutil` : ULFO demande macOS 10.11, quand l'application annonce elle-même 10.13 dans son `LSMinimumSystemVersion` — l'image ne peut donc pas être le maillon le plus exigeant. ULMO, lui, demande 10.15 et **relèverait ce plancher au-dessus de celui de l'application** pour 15 Mio et deux minutes de plus : c'est la seule des cinq lignes à écarter. L'image ULFO a été montée pour vérifier qu'elle porte bien le bundle allégé et le lien vers `/Applications`.
+
+### 17. Rien ne vérifie que le bundle macOS est autonome, alors que l'archive Windows l'est à chaque fois
+
+`dist-windows.ps1` relève au `dumpbin` que chaque DLL du runtime réclamée par un binaire de l'archive est bien dans l'archive, et cette vérification existe pour une raison écrite noir sur blanc dans `CLAUDE.md` : **la machine qui fabrique n'est pas un témoin valable**. macOS est dans le même cas, et même un peu pire, puisque la machine de développement porte à la fois le Qt de compilation, que le bundle trouve par un second `LC_RPATH`, et le Hunspell de Homebrew. Un bundle mal déployé y fonctionne parfaitement et ne démarre nulle part ailleurs. `CLAUDE.md` rapporte bien que l'autonomie a été vérifiée — mais **une fois, à la main**, et le script ne la vérifie pas.
+
+Le pendant existe et a été essayé ici : `otool -l` sur chaque Mach-O du bundle, en refusant tout `name` ou `path` qui mentionne `/Users`, `/opt/homebrew` ou `/usr/local`. Sur le DMG publié il trouve 44 binaires et aucun fautif, ce qui reproduit exactement le relevé de `CLAUDE.md`. Et **il ne dit pas seulement oui** : lancé sur le bundle d'une compilation ordinaire, il désigne le seul binaire présent et ses deux lignes, `/usr/local/opt/hunspell/lib/libhunspell-1.7.0.dylib` et le `path /Users/.../Qt/5.15.2/clang_64/lib`. Il distingue donc bien un bundle déployé d'un bundle qui ne l'est pas, ce qui est la panne à attraper. Il lui faudrait le même garde-fou qu'à son cousin Windows — zéro binaire relevé veut dire que la vérification est cassée, jamais que le bundle est propre — et il a la même limite : il ne voit que ce qui est lié, pas ce qu'un `dlopen` irait chercher.
+
+### 18. Quatre petites choses
+
+- **`QMAKE_CXXFLAGS_RELEASE += -O2` dans `respawnIrc.pro` ne sert à rien.** `-O2` est déjà le défaut de la compilation release sur les trois plateformes — `QMAKE_CFLAGS_OPTIMIZE` dans `gcc-base.conf` pour gcc et clang, dans `msvc-desktop.conf` pour MSVC —, et le `Makefile` engendré porte bien `-O2 -O2`. `tests/tests.pro` n'a pas cette ligne : les deux `.pro` se contredisent déjà, sans conséquence ;
+- **les deux scripts de distribution effacent tout `dist/` en commençant**, et pas seulement le dossier de travail `dist/image` : fabriquer la version suivante supprime silencieusement l'archive de la précédente, qui peut être celle qu'on vient de publier ;
+- **`dist-macos.sh` prend son Qt en argument positionnel**, seul de tous les scripts, et son analyse d'arguments prend pour un chemin de Qt tout ce qu'elle ne reconnaît pas. Constaté : `./dist-macos.sh --skip-test`, une lettre de moins, répond `--skip-test/bin/qmake est introuvable ou non exécutable`, là où `build-unix.sh` répond `Option inconnue : --skip-test` ;
+- **l'aide de `build-unix.sh` est un `sed -n '2,17p' "$0"`**, un intervalle de lignes tenu à la main : une ligne ajoutée à l'en-tête tronque l'aide sans que rien ne le signale.
+
+### Regardé, mesuré, et écarté
+
+Ces cinq-là ne sont pas des oublis, et deux ont coûté une mesure chacune :
+
+- **fondre la signature dans `macdeployqt`** avec son `-codesign=-`, ce qui supprimerait une étape et le `--deep` qu'Apple a déprécié : mesuré **plus lent**, 33,8 s contre 17,8 + 3,2 = 21,0 s pour les deux étapes actuelles, les deux bundles étant acceptés par `codesign --verify --deep --strict`. À ne pas refaire ;
+- **le `rm -rf` du bundle que `build-unix.sh` fait à chaque compilation**, qu'on soupçonnerait de forcer une édition de liens et une recopie des 366 fichiers de données pour rien : mesuré à 1,1 s, 1,54 s contre 0,43 s pour un `make` à vide. Négligeable, et c'est le prix du `DESTDIR` que les dossiers de compilation partagent. Ne pas y toucher ;
+- **ccache** : le cas courant est ici une source qu'on vient de modifier, c'est-à-dire exactement celui que ccache ne peut pas servir. Il ne gagnerait que sur les compilations parties de rien et les changements de branche, pour une dépendance de plus sur deux plateformes et rien du tout sur la troisième. Le point 13 attaque le même coût par le bon bout ;
+- **partager avec les tests les six sources du programme qu'ils recompilent** : il faudrait une bibliothèque statique et un `.pro` de plus, pour six fichiers sur 42 ;
+- **`aqt --archives`** pour alléger le téléchargement de Qt à l'amorçage : ça figerait une liste de noms d'archives qui suit la version de Qt, ce que la leçon « ne pas figer de chiffres venant d'une installation » interdit précisément.
 
 ## Ce qui a été fait, et où c'est documenté maintenant
 
@@ -62,7 +131,8 @@ Son apparition en v3.1.11 n'a rien d'une correction : elle est simultanée à un
 - **classer une piste par son gain la classe mal quand le risque est ailleurs.** Le même point était rangé en « deux détails » à cause du gain, quelques lignes de script ; sa non-réalisation coûtait bien plus ;
 - **ne pas figer de chiffres venant d'une installation** — nombre de DLL, numéro de version des outils, noms de fichiers : ils suivent la version du SDK ou des Build Tools. Chercher par glob, copier le dossier entier ;
 - **une piste peut être bonne et son argument faux.** Le point 7 promettait la disparition d'un `rm -rf` que le changement de dossier ne faisait pas disparaître : le `Makefile` engendré le disait, personne ne l'avait ouvert. Lire ce que produisent les outils plutôt que raisonner sur ce qu'ils devraient produire — c'est valable pour `qmake`, et ça l'a déjà été pour `dumpbin` et `windeployqt`. **Et la suite du même point ajoute l'autre moitié** : ce `rm -rf` a fini par perdre sa raison d'être, une fois les dépendances manquantes ajoutées aux règles — il n'est plus dans les instructions du README, et ne reste dans `build-unix.sh` que pour un motif étranger à macOS. Constater ce qu'un outil produit dit ce qui est, pas ce qui est possible ;
-- **une machine cesse d'être un témoin valable dès qu'on y installe ce dont on veut prouver l'absence.** Installer les Build Tools pose `msvcp140.dll` et sa famille dans `System32` : la machine qui fabrique l'archive ne peut donc jamais la valider. C'est le mécanisme qui a laissé sortir deux archives silencieusement incomplètes.
+- **une machine cesse d'être un témoin valable dès qu'on y installe ce dont on veut prouver l'absence.** Installer les Build Tools pose `msvcp140.dll` et sa famille dans `System32` : la machine qui fabrique l'archive ne peut donc jamais la valider. C'est le mécanisme qui a laissé sortir deux archives silencieusement incomplètes ;
+- **« qu'est-ce qu'une plateforme fait que les autres ne font pas ? » est la question la plus productive de ce fichier.** Elle avait donné la douzième piste ; à la seconde passe elle en a donné trois de plus sur six — l'allègement que seul Windows fait, la vérification que seul Windows fait, et la compilation en série que seul Windows subit. Deux des trois sont des manques de macOS et la troisième un manque de Windows : ce n'est donc pas une plateforme qui est en retard, c'est le fait que chaque correctif a été écrit là où le problème s'est présenté. **La lire comme une liste de choses à faire sur une seule plateforme serait passer à côté.**
 
 ## Ce qu'il ne faut pas toucher
 
