@@ -7,8 +7,8 @@ TARGET = respawnIrcTests
 TEMPLATE = app
 
 # Comme pour le programme, l'exécutable est produit à un endroit fixe quelle que soit la façon de
-# compiler. Les tests n'ont pas besoin de resources/ ni de themes/, ils lisent leurs fixtures par
-# le chemin absolu ci-dessous : ils restent donc dans build/ plutôt qu'à la racine.
+# compiler, et c'est le même : build/. Les tests n'ont besoin ni de resources/ ni de themes/, ils
+# lisent leurs fixtures par le chemin absolu ci-dessous.
 DESTDIR = $$PWD/../build
 
 DEFINES += QT_DEPRECATED_WARNINGS

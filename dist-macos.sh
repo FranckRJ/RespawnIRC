@@ -66,9 +66,9 @@ then
     exit 1
 fi
 
-# Le DESTDIR de respawnIrc.pro produit le bundle à la racine du dépôt, pas dans le dossier de
-# compilation.
-bundlePath="$repoDir/RespawnIRC.app"
+# Le DESTDIR de respawnIrc.pro produit le bundle dans build/, à côté de respawnIrcTests, et non dans
+# le dossier des objets qu'est build/respawnIrc.
+bundlePath="$repoDir/build/RespawnIRC.app"
 
 echo "== Version distribuable $version"
 optionsForBuild=(-q "$qtDir")
@@ -82,7 +82,8 @@ fi
 
 # L'effacement du bundle déjà en place, que ce script faisait lui-même à cause de la règle sans
 # dépendance qui fabrique Info.plist, est maintenant dans build-unix.sh : il y couvre le même piège
-# pour qui compile sans passer par ici.
+# pour qui compile sans passer par ici. Le bundle sort de la compilation dans build/ ; c'est le mv
+# plus bas qui l'en retire, l'image disque n'ayant pas à contenir un chemin de compilation.
 "$repoDir/build-unix.sh" "${optionsForBuild[@]}"
 
 echo "== Embarquement de Qt dans le bundle"

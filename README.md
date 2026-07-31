@@ -152,17 +152,17 @@ La compilation de débogage, elle, reste à faire à la main : le script ne la c
 
 Ne pas lancer `nmake release` dans ce dossier-là : il lierait les bibliothèques de débogage à un binaire release et échouerait par le `LNK2038` symétrique.
 
-Le `DESTDIR` des `.pro` ne distingue pas les deux configurations : **l'exécutable de débogage remplace celui de release** à la racine du dépôt, sous le même nom `RespawnIRC.exe`. Deux dossiers de compilation séparés ne donnent donc pas deux exécutables côte à côte, seulement le dernier compilé.
+Le `DESTDIR` des `.pro` ne distingue pas les deux configurations : **l'exécutable de débogage remplace celui de release** dans `build\`, sous le même nom `RespawnIRC.exe`. Deux dossiers de compilation séparés ne donnent donc pas deux exécutables côte à côte, seulement le dernier compilé.
 
-Et le piège qui suit, constaté : revenir au dossier de release et y relancer `nmake release` **ne rend pas la main à l'exécutable de release**. `nmake` compare la cible à ses objets, or la cible est l'exécutable de débogage laissé à la racine, plus récent qu'eux : il conclut que tout est à jour, n'affiche rien et ne fait rien. On croit lancer un binaire de release et on continue d'exécuter celui de débogage. Effacer `RespawnIRC.exe` avant de recompiler suffit, et la différence de taille est un bon signal — ici 1,5 Mo en release contre 3,5 en debug.
+Et le piège qui suit, constaté : revenir au dossier de release et y relancer `nmake release` **ne rend pas la main à l'exécutable de release**. `nmake` compare la cible à ses objets, or la cible est l'exécutable de débogage laissé dans `build\`, plus récent qu'eux : il conclut que tout est à jour, n'affiche rien et ne fait rien. On croit lancer un binaire de release et on continue d'exécuter celui de débogage. Effacer `RespawnIRC.exe` avant de recompiler suffit, et la différence de taille est un bon signal — ici 1,5 Mo en release contre 3,5 en debug.
 
 `build-windows.ps1` n'est pas exposé à ce piège, ni `dist-windows.ps1` qui l'appelle : il efface `RespawnIRC.exe` avant `nmake`, ce qui force l'édition de liens et garantit que ce qui sort de là est bien issu des objets de son propre dossier. La distribution effaçait auparavant tout `build\respawnIrc`, ce qui donnait la même garantie en recompilant les 45 sources à chaque archive ; le dossier est maintenant repris tel quel, et `-Clean` rend l'ancien comportement. Le piège ne mord donc plus que sur les compilations tapées à la main, la compilation de débogage en tête.
 
-Seuls les fichiers intermédiaires restent dans `build\` : l'exécutable, lui, est produit à la racine du dépôt, là où sont déjà `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de lui. Il lui manque encore les DLL de Qt et celles d'OpenSSL, sans quoi il ne démarre pas ; inutile pour autant de passer par l'archive de `dist-windows.ps1`, il suffit de les avoir dans le `PATH`. C'est ce que fait `run-windows.ps1` :
+Les objets intermédiaires restent dans `build\respawnIrc` ; `RespawnIRC.exe`, lui, est produit dans `build\`, où la compilation dépose aussi `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de lui. Il lui manque encore les DLL de Qt et celles d'OpenSSL, sans quoi il ne démarre pas ; inutile pour autant de passer par l'archive de `dist-windows.ps1`, il suffit de les avoir dans le `PATH`. C'est ce que fait `run-windows.ps1` :
 
     .\run-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
 
-Si l'exécutable n'est pas là, il appelle `build-windows.ps1` : sur un dépôt fraîchement cloné et amorcé, cette seule ligne compile et lance le programme. Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `userdata\logs\respawnirc.log` (voir plus bas).
+Si l'exécutable n'est pas là, il appelle `build-windows.ps1` : sur un dépôt fraîchement cloné et amorcé, cette seule ligne compile et lance le programme. Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `build\userdata\logs\respawnirc.log` — `userdata\` étant à côté de l'exécutable, il est dans `build\` tant qu'on n'a pas fabriqué l'archive (voir plus bas).
 
 Les tests se compilent et se lancent avec `-Tests` :
 
@@ -245,16 +245,18 @@ Le script sert aussi bien Linux que macOS, les deux ne différant que par une op
     qmake ../../respawnIrc/respawnIrc.pro
     make -j4
 
-L'exécutable `RespawnIRC` est produit à la racine du dépôt, là où sont `resources/` et `themes/` qu'il va chercher à côté de lui. Il n'y a rien à déplacer, lancez-le de là :
+L'exécutable `RespawnIRC` est produit dans `build/`, et la compilation y recopie `resources/` et `themes/` à côté de lui, là où il va les chercher. Il n'y a rien à déplacer, lancez-le de là :
 
-    cd ../..
+    cd ..
     ./RespawnIRC
 
 Tout ceci en une ligne :
 
-    mkdir -p build/respawnIrc; cd build/respawnIrc; qmake ../../respawnIrc/respawnIrc.pro; make -j4; cd ../..; ./RespawnIRC
+    mkdir -p build/respawnIrc; cd build/respawnIrc; qmake ../../respawnIrc/respawnIrc.pro; make -j4; cd ..; ./RespawnIRC
 
-Seuls les objets intermédiaires restent dans `build/respawnIrc` ; le `DESTDIR` du `.pro` dépose l'exécutable à la racine dans tous les cas. Compiler dans le dossier de sources continue de fonctionner et donne le même résultat au même endroit — c'est simplement ce qui laissait un `Makefile` et une quarantaine de `.o` au milieu des sources, et le `.gitignore` n'a plus de règle pour les couvrir.
+Seuls les objets intermédiaires restent dans `build/respawnIrc` ; le `DESTDIR` du `.pro` dépose l'exécutable et ses données dans `build/` dans tous les cas, à côté de `respawnIrcTests`. **Rien n'atterrit à la racine du dépôt**, qui ne porte que des sources : un `rm -rf build/` nettoie tout ce que la compilation a produit. Compiler dans le dossier de sources continue de fonctionner et donne le même résultat au même endroit — c'est simplement ce qui laissait un `Makefile` et une quarantaine de `.o` au milieu des sources, et le `.gitignore` n'a plus de règle pour les couvrir.
+
+La copie de `resources/` et `themes/` a la même réserve que le bundle macOS décrit plus bas : elle se fait à chaque édition de liens, donc un thème modifié sans qu'un `.cpp` bouge ne parvient pas au programme tant qu'il n'y a rien à relier.
 
 ### macOS
 
@@ -277,24 +279,24 @@ Il n'y a pas de chemin à lui donner : le script écarte les Qt sans QtWebEngine
 À la main, c'est :
 
     export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"
-    rm -rf RespawnIRC.app
+    rm -rf build/RespawnIRC.app
     mkdir -p build/respawnIrc
     cd build/respawnIrc
     qmake ../../respawnIrc/respawnIrc.pro CONFIG+=sdk_no_version_check
     make -j4
 
-Comme sous Linux, seuls les objets intermédiaires restent dans `build/respawnIrc` : le `DESTDIR` du `.pro` dépose le bundle à la racine du dépôt de toute façon.
+Comme sous Linux, seuls les objets intermédiaires restent dans `build/respawnIrc` : le `DESTDIR` du `.pro` dépose le bundle dans `build/` de toute façon.
 
-Le `rm -rf RespawnIRC.app` de la deuxième ligne n'est pas une précaution de confort, c'est ce qui rend la compilation à la main fiable — deux règles du `Makefile` visent des fichiers du bundle sans en dépendre vraiment, et `make` les saute dès qu'un bundle est déjà là :
+Le `rm -rf build/RespawnIRC.app` de la deuxième ligne n'est pas une précaution de confort, c'est ce qui rend la compilation à la main fiable — deux règles du `Makefile` visent des fichiers du bundle sans en dépendre vraiment, et `make` les saute dès qu'un bundle est déjà là :
 
 - celle qui fabrique `Info.plist` n'a **aucune** dépendance : un numéro de version changé dans `version.pri` ne parvient pas au bundle, qui garde celui de la compilation précédente ;
 - celles qui recopient `resources` et `themes` ont le **dossier** source pour dépendance, pas les fichiers dedans : un thème modifié sans qu'un `.cpp` bouge ne parvient pas au bundle non plus, `make` répondant `Nothing to be done`.
 
-Changer de dossier de compilation n'y change rien, ces règles ayant pour cible le bundle de la racine et non un fichier du dossier de compilation. `build-unix.sh` fait cet effacement de lui-même avant chaque compilation, et `dist-macos.sh` en hérite : passer par le script est le plus simple, ces deux pièges ne mordent que sur ce qu'on tape à la main.
+Changer de dossier de compilation n'y change rien, ces règles ayant pour cible le bundle du `DESTDIR` et non un fichier du dossier de compilation. `build-unix.sh` fait cet effacement de lui-même avant chaque compilation, et `dist-macos.sh` en hérite : passer par le script est le plus simple, ces deux pièges ne mordent que sur ce qu'on tape à la main.
 
-Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne pourrait donc pas cohabiter à la racine du dépôt avec le dossier de sources `respawnIrc`. Le bundle est posé à la racine, lancez-le de là ou double-cliquez dessus depuis le Finder :
+Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne pourrait cohabiter ni avec le dossier de sources `respawnIrc`, ni avec le `build/respawnIrc` où vont ses objets. Le `.app`, lui, ne se confond avec aucun des deux. Le bundle est posé dans `build/`, lancez-le de là ou double-cliquez dessus depuis le Finder :
 
-    cd ../..
+    cd ..
     ./RespawnIRC.app/Contents/MacOS/RespawnIRC
 
 Le bundle **embarque** `resources` et `themes` dans son `Contents/Resources` (voir `pathTool::dataDirPath`) : il est autonome et se déplace où l'on veut, la compilation ordinaire donnant le même bundle que celui qu'on distribue. Un thème modifié n'y parvient donc qu'à la compilation suivante, avec la réserve du paragraphe ci-dessus si vous compilez à la main.

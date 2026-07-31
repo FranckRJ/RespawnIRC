@@ -84,8 +84,10 @@ Remove-Item -Recurse -Force $distDir -ErrorAction SilentlyContinue
 $imageDir = Join-Path $distDir 'image\RespawnIRC'
 New-Item -ItemType Directory -Force -Path $imageDir | Out-Null
 
-# Le DESTDIR de respawnIrc.pro produit l'exécutable à la racine du dépôt, pas dans build\.
-Copy-Item (Join-Path $repoDir 'RespawnIRC.exe') $imageDir
+# Le DESTDIR de respawnIrc.pro produit l'exécutable dans build\, et non dans le dossier des objets
+# qu'est build\respawnIrc. Les resources\ et themes\ que la compilation dépose à côté de lui ne sont
+# pas repris : ils viennent de git archive plus bas, pour la raison expliquée là.
+Copy-Item (Join-Path $repoDir 'build\RespawnIRC.exe') $imageDir
 
 Write-Host "== Copie de Qt à côté de l'exécutable"
 # windeployqt copie les DLL de Qt, les greffons et QtWebEngineProcess.exe à côté de l'exécutable.

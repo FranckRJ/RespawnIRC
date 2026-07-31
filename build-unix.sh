@@ -13,8 +13,8 @@
 # d'un côté, un exécutable de l'autre. Les .pro, eux, ne distinguent rien.
 #
 # La compilation se fait hors des sources, dans build/respawnIrc et build/tests, comme sous Windows ;
-# seuls les objets intermédiaires y restent, le DESTDIR des .pro déposant le programme à la racine du
-# dépôt et respawnIrcTests dans build/.
+# seuls les objets intermédiaires y restent, le DESTDIR des .pro déposant le programme et
+# respawnIrcTests dans build/, avec resources/ et themes/ à côté d'eux.
 
 set -e
 
@@ -68,16 +68,17 @@ qmakeBin="$qtDir/bin/qmake"
 # Tout ce qui distingue les deux systèmes tient ici. CONFIG+=sdk_no_version_check fait taire
 # l'avertissement de Qt 5.15.2, qui n'a été testé qu'avec le SDK 10.15 alors que Xcode en fournit un
 # bien plus récent. Le programme est un bundle sous macOS parce que le système de fichiers y ignore
-# la casse : un exécutable RespawnIRC ne pourrait pas cohabiter avec le dossier de sources
-# respawnIrc.
+# la casse : un exécutable RespawnIRC ne pourrait cohabiter ni avec le dossier de sources respawnIrc,
+# ni avec le build/respawnIrc où vont maintenant ses objets. Le .app, lui, ne se confond avec aucun
+# des deux.
 if [ "$(uname -s)" = "Darwin" ]
 then
     optionsForProgram=(CONFIG+=sdk_no_version_check)
-    builtProgram="$repoDir/RespawnIRC.app"
+    builtProgram="$repoDir/build/RespawnIRC.app"
     cpuCount="$(sysctl -n hw.ncpu)"
 else
     optionsForProgram=()
-    builtProgram="$repoDir/RespawnIRC"
+    builtProgram="$repoDir/build/RespawnIRC"
     cpuCount="$(nproc 2> /dev/null || getconf _NPROCESSORS_ONLN 2> /dev/null || echo 4)"
 fi
 
@@ -96,12 +97,12 @@ buildThisTarget()
     fi
 
     # Ce qui est en place est toujours effacé, et ce n'est pas un détail. Le DESTDIR des .pro ne
-    # distingue pas les dossiers de compilation : ce qui est à la racine peut venir d'ailleurs, make
+    # distingue pas les dossiers de compilation : ce qui est dans build/ peut venir d'ailleurs, make
     # le comparerait à ses objets, le trouverait à jour et n'éditerait aucun lien. Sous macOS cette
     # même ligne règle un second piège, celui que dist-macos.sh traitait pour son compte : la règle
     # qmake qui fabrique Info.plist n'a aucune dépendance, si bien qu'un bundle déjà là garde le
     # numéro de version de la compilation précédente. Compiler dans un dossier neuf n'y change rien,
-    # la cible de cette règle étant le bundle de la racine.
+    # la cible de cette règle étant le bundle du DESTDIR et non un fichier du dossier de compilation.
     rm -rf "$thisBuiltFile"
 
     mkdir -p "$thisBuildDir"

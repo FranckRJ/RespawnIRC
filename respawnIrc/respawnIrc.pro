@@ -9,12 +9,12 @@ QT += \
 TARGET = RespawnIRC
 TEMPLATE = app
 
-# Sous Linux et Windows le programme cherche resources/ et themes/ à côté de son exécutable : on le
-# produit donc directement à la racine du dépôt, où ces dossiers sont déjà, plutôt que de demander
-# un déplacement à la main après chaque compilation. Sous macOS le bundle les embarque (voir le bloc
-# macx plus bas) et se déplace donc où l'on veut, mais il sort au même endroit. $$PWD est le dossier
-# de ce .pro, la cible est donc la même que la compilation ait lieu dans les sources ou dans build/.
-DESTDIR = $$PWD/..
+# Le programme et ses données sortent ensemble dans build/, comme respawnIrcTests : rien n'atterrit
+# plus à la racine du dépôt, qui ne porte donc que des sources. C'est resources/ et themes/ que le
+# programme cherche à côté de son exécutable, et ils l'y suivent — dans le bundle sous macOS, par la
+# copie du bloc !macx plus bas ailleurs. $$PWD est le dossier de ce .pro, la cible est donc la même
+# que la compilation ait lieu dans les sources ou dans build/.
+DESTDIR = $$PWD/../build
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
@@ -51,6 +51,26 @@ macx {
     dataOfBundle.files = $$PWD/../resources $$PWD/../themes
     dataOfBundle.path = Contents/Resources
     QMAKE_BUNDLE_DATA += dataOfBundle
+}
+
+# Pendant du QMAKE_BUNDLE_DATA ci-dessus pour les plateformes sans bundle : les deux dossiers sont
+# recopiés à côté de l'exécutable à chaque édition de liens, puisque c'est là que
+# pathTool::dataDirPath() les cherche. Les scripts de distribution les remplacent ensuite par leur
+# version commitée, le dossier de travail contenant aussi ce que le mainteneur a accumulé en se
+# servant du programme.
+#
+# La destination s'écrit différemment selon l'outil de copie, et c'est la seule chose de ce .pro qui
+# distingue les plateformes en dehors du bloc macx : cp veut le dossier parent et fusionne dans une
+# destination déjà en place, xcopy veut le dossier cible. Il n'y a pas ici, contrairement au
+# DEFINES+=HUNSPELL_STATIC de Windows, de ligne de commande qmake où mettre la différence.
+!macx {
+    for(nameOfData, $$list(resources themes)) {
+        win32: pathOfDataDest = $$shell_path($$DESTDIR/$$nameOfData)
+        else: pathOfDataDest = $$shell_path($$DESTDIR)
+
+        QMAKE_POST_LINK += $(COPY_DIR) $$shell_path($$clean_path($$PWD/../$$nameOfData)) \
+            $$pathOfDataDest $$escape_expand(\\n\\t)
+    }
 }
 
 CONFIG += c++14

@@ -41,20 +41,41 @@ projet n'a aucun format de distribution Linux — ni `.deb`, ni AppImage, ni Fla
 n'est pas d'écrire un script mais de décider qu'on publie des binaires Linux, ce qui appartient au
 mainteneur.
 
-Les `.pro` ont un `DESTDIR` : quelle que soit la plateforme et l'endroit d'où `qmake` est lancé,
-le programme atterrit à la racine du dépôt et les tests dans `build/`. Il n'y a plus rien à
-déplacer à la main après compilation, seuls les objets intermédiaires suivent la façon de compiler.
-C'est ce qui rend la compilation hors des sources gratuite : elle ne déplace **rien** de ce qui
-sort, seulement ce qui traîne pendant. Les `.pro` acceptent les deux façons — tous leurs chemins
-passent par `$$PWD` — et rien ne les distingue à l'arrivée ; compiler dans les sources marche donc
-encore, mais n'est plus documenté et le `.gitignore` ne couvre plus ce que ça y laisse. Le
-nettoyage complet tient désormais en un `rm -rf build/`.
+Les `.pro` ont un `DESTDIR` : quelle que soit la plateforme et l'endroit d'où `qmake` est lancé, le
+programme **et les tests** atterrissent dans `build/`, et **rien à la racine du dépôt**, qui ne porte
+donc que des sources. Il n'y a plus rien à déplacer à la main après compilation, seuls les objets
+intermédiaires suivent la façon de compiler — ils restent dans `build/respawnIrc` et `build/tests`,
+sous ce qui en sort. C'est ce qui rend la compilation hors des sources gratuite : elle ne déplace
+**rien** de ce qui sort, seulement ce qui traîne pendant. Les `.pro` acceptent les deux façons — tous
+leurs chemins passent par `$$PWD` — et rien ne les distingue à l'arrivée ; compiler dans les sources
+marche donc encore, mais n'est plus documenté et le `.gitignore` ne couvre plus ce que ça y laisse.
+Le nettoyage complet tient désormais en un `rm -rf build/`.
+
+Le programme cherchant `resources/` et `themes/` à côté de son exécutable, **ils voyagent avec lui** :
+le `QMAKE_BUNDLE_DATA` les met dans le bundle sous macOS, et un `QMAKE_POST_LINK` du bloc `!macx` les
+recopie dans `build/` ailleurs. Deux conséquences à connaître. La première est que ce bloc porte la
+seule chose du `.pro` qui distingue les plateformes en dehors de `macx` — la destination s'écrit
+différemment selon l'outil, `cp -f -R` voulant le dossier parent et fusionnant dans une destination
+déjà là, `xcopy /s /q /y /i` voulant le dossier cible. Ce n'est **pas** le cas du
+`DEFINES+=HUNSPELL_STATIC` qu'on a refusé de descendre dans le `.pro` : celui-là avait une ligne de
+commande `qmake` où vivre, celui-ci n'en a pas. La seconde est que la copie se fait à l'édition de
+liens : **un thème modifié sans qu'un `.cpp` bouge ne parvient donc pas au programme**, exactement
+comme le piège du bundle macOS documenté plus bas, et c'est le même `rm -rf` de `build-unix.sh` qui
+s'en garde.
+
+Cette disposition a fait disparaître quatre règles du `.gitignore` et l'exception qui allait avec :
+`/RespawnIRC`, `/RespawnIRC.app/`, `/RespawnIRC.exe`, `/RespawnIRC.pdb` et le `!/respawnIrc/` que la
+première rendait nécessaire. C'était le piège de casse le plus désagréable du dépôt — `/RespawnIRC`
+ignorait aussi le dossier de sources `respawnIrc`, macOS ne distinguant pas les majuscules, et tout
+fichier qu'on y ajoutait devenait invisible pour `git status`. Le `/build/` déjà présent couvre
+maintenant tout. **Ne pas réintroduire de règle de racine** sans avoir d'abord ramené quelque chose
+à la racine.
 
 Dépendances Debian : `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine5-dev
 zlib1g-dev`. zlib sert à décompresser le payload des pages (voir plus bas).
 
-L'exécutable doit tourner depuis la racine du dépôt (il y cherche `themes/` et `resources/`), ce que
-le `DESTDIR` lui donne gratuitement.
+L'exécutable doit tourner depuis `build/` (il y cherche `themes/` et `resources/`, que la compilation
+y dépose à côté de lui), ce que le `DESTDIR` lui donne gratuitement.
 
 Le numéro de version est dans `version.pri`, à la racine, et **nulle part ailleurs** : le `.pro`
 l'inclut, le pousse dans un `DEFINES` que `respawnIrc.cpp` reprend pour `currentVersionName`, et le
@@ -80,8 +101,9 @@ Quatre pièges, tous documentés dans le README :
   `~/Qt/*/clang_64`, là où le README fait installer le Qt officiel. Il n'y a donc plus de chemin à
   passer. Un Qt **désigné** à la main, lui, n'est jamais remplacé en douce : s'il ne convient pas le
   script le dit et s'arrête ;
-- le système de fichiers ignore la casse, donc `RespawnIRC` ne peut pas cohabiter avec le
-  dossier `respawnIrc` : on compile un bundle `RespawnIRC.app` posé à la racine du dépôt. Il
+- le système de fichiers ignore la casse, donc un exécutable `RespawnIRC` ne pourrait cohabiter ni
+  avec le dossier de sources `respawnIrc`, ni avec le `build/respawnIrc` où vont ses objets : on
+  compile un bundle `RespawnIRC.app`, qui ne se confond avec aucun des deux, posé dans `build/`. Il
   **embarque `resources/` et `themes/`** dans `Contents/Resources`, par le `QMAKE_BUNDLE_DATA` du
   `.pro`, et se déplace donc d'un bloc : une compilation ordinaire donne le même bundle que celui
   qu'on distribue, il n'y a **qu'une seule disposition** et `pathTool::dataDirPath()` n'a rien à
@@ -90,24 +112,26 @@ Quatre pièges, tous documentés dans le README :
 - conséquence du point précédent, à connaître : le `make` qui recopie ces deux dossiers a le dossier
   **source** pour dépendance, pas les fichiers dedans. Un thème modifié sans qu'un `.cpp` bouge ne
   parvient donc pas au bundle sur un `make` lancé à la main — constaté, `Nothing to be done`. C'est
-  le même piège que celui d'`Info.plist` juste en dessous, et c'est le même `rm -rf RespawnIRC.app`
-  de `build-unix.sh` qui s'en garde : passer par le script, ou effacer le bundle ;
-- pour la même raison la règle `/RespawnIRC` du `.gitignore` attrape le dossier de sources ;
-  l'exception `!/respawnIrc/` la neutralise, sans quoi les fichiers ajoutés dans `respawnIrc/`
-  n'apparaissent pas dans `git status` ;
+  le même piège que celui d'`Info.plist` juste en dessous, et c'est le même
+  `rm -rf build/RespawnIRC.app` de `build-unix.sh` qui s'en garde : passer par le script, ou effacer
+  le bundle. Depuis que les deux autres plateformes recopient elles aussi ces dossiers à côté de
+  l'exécutable, le piège est le leur également ;
 - **la règle qmake qui fabrique `Info.plist` n'a aucune dépendance**, si bien que `make` la saute
   dès qu'un bundle est déjà là : un numéro de version changé dans `version.pri` ne parvient pas au
-  bundle, qui garde celui de la compilation précédente. Le `rm -rf RespawnIRC.app` qui s'en garde est
-  maintenant dans `build-unix.sh`, où il couvre aussi la compilation ordinaire et pas seulement la
-  distribution — c'est la même ligne qui, sous Linux, garantit que ce qui sort vient bien des objets
-  du dossier de compilation courant. **Compiler hors des sources n'y change rien** — on l'a
-  cru, et c'était l'unique justification du point 7 de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` : la
-  cible de cette règle est le bundle de la racine, où le `DESTDIR` l'envoie, et pas un fichier du
-  dossier de compilation. Un dossier neuf ne peut donc rien y faire, et l'effacement reste
-  nécessaire. Se lit dans le `Makefile` engendré, la règle
-  `<racine>/RespawnIRC.app/Contents/Info.plist:` s'y terminant sur un deux-points nu, et **constaté**
-  depuis un `build/respawnIrc` : le contenu d'`Info.plist` remplacé par un texte quelconque, `make`
-  répond `Nothing to be done` et laisse le fichier tel quel.
+  bundle, qui garde celui de la compilation précédente. Le `rm -rf build/RespawnIRC.app` qui s'en
+  garde est maintenant dans `build-unix.sh`, où il couvre aussi la compilation ordinaire et pas
+  seulement la distribution — c'est la même ligne qui, sous Linux, garantit que ce qui sort vient
+  bien des objets du dossier de compilation courant. **Compiler hors des sources n'y change rien** —
+  on l'a cru, et c'était l'unique justification du point 7 de
+  `POSSIBLE-BUILD-SIMPLIFICATIONS.md` : la cible de cette règle est le bundle du `DESTDIR`, et pas un
+  fichier du dossier de compilation. Un dossier neuf ne peut donc rien y faire, et l'effacement reste
+  nécessaire. **Déplacer le `DESTDIR` dans `build/` n'y a rien changé non plus**, pour exactement la
+  même raison : la cible suit le `DESTDIR`, elle est simplement passée de
+  `<racine>/RespawnIRC.app/Contents/Info.plist:` à `../../build/RespawnIRC.app/Contents/Info.plist:`,
+  toujours terminée sur un deux-points nu — relu dans le `Makefile` engendré après le déplacement.
+  L'expérience qui l'avait établie, elle, date d'avant : depuis un `build/respawnIrc`, le contenu
+  d'`Info.plist` remplacé par un texte quelconque, `make` répond `Nothing to be done` et laisse le
+  fichier tel quel.
 
 La compilation se fait **hors des sources**, dans `build/respawnIrc`, comme sur les deux autres
 plateformes : c'est ce que fait `build-unix.sh` et ce que décrit le README.
@@ -119,6 +143,37 @@ macOS. Le bundle est **autonome**, ce qu'interdisait l'époque où `imageDownloa
 stickers dans `resources/stickers/` : ces dossiers ne pouvaient pas être enfermés en lecture seule,
 d'où l'ancien dossier `RespawnIRC` contenant l'application **et** ses données. Depuis que les
 stickers vont dans le cache, plus rien n'y écrit.
+
+Cette autonomie est **vérifiée sur le DMG** : ses 44 binaires Mach-O n'ont aucun chemin absolu vers
+`/Users`, `/opt/homebrew` ou `/usr/local`, le seul `LC_RPATH` de l'exécutable est
+`@executable_path/../Frameworks`, et `libhunspell-1.7.0.dylib` y est copié comme les frameworks Qt —
+le Homebrew de l'utilisateur ne sert donc pas plus que son Qt. Ne restent en dehors que le système :
+`/usr/lib/libz.1.dylib`, `libc++`, `libSystem` et les frameworks d'Apple. À savoir aussi, et
+conséquence du Qt officiel utilisé et non des scripts : le binaire est **thin x86_64**, donc sous
+Rosetta sur une machine Apple Silicon.
+
+**Mais « autonome » ne vaut que pour ce bundle-là**, et pas pour celui que laisse une compilation
+ordinaire. Les deux ont bien la même disposition — c'est tout ce que dit le point du
+`QMAKE_BUNDLE_DATA` plus haut, et il ne faut pas lui faire dire que le bundle du build est
+distribuable — mais celui du build garde pour second `LC_RPATH` le `lib` du Qt de compilation, et
+c'est par là qu'il trouve Qt. C'est voulu, et **il ne faut pas déplacer les étapes de `dist-macos.sh` dans
+`build-unix.sh`** :
+
+- ça coûterait une trentaine de secondes **à chaque compilation**, mesuré ici : 19,5 s pour
+  `macdeployqt`, qui fait passer le bundle de 5,5 Mo à 205 Mo, puis 10,4 s pour le
+  `codesign --deep` de ces 205 Mo. Et **sans rien économiser d'une fois sur l'autre**, le
+  `rm -rf build/RespawnIRC.app` de `build-unix.sh` effaçant le bundle avant chaque `make` : il n'y a jamais
+  de déploiement incrémental à reprendre, ces trente secondes s'ajouteraient telles quelles au
+  rebuild d'un seul `.cpp` ;
+- ça n'achèterait rien, le bundle de développement trouvant déjà Qt par ce second `LC_RPATH` ;
+  l'autonomie ne sert qu'à sortir de la machine ;
+- et deux des trois étapes seraient **nuisibles** en développement : le `git archive` remplacerait
+  `resources/` et `themes/` par leur version commitée, donc effacerait à chaque compilation le thème
+  qu'on est en train de modifier, et la signature serait de toute façon à refaire après chaque
+  édition de liens.
+
+Le seul besoin que ça couvrirait — essayer la disposition réellement distribuée — l'est déjà par
+`./dist-macos.sh --skip-tests`.
 
 Deux choses à ne pas défaire :
 
@@ -176,12 +231,13 @@ précédent si l'exécutable manque, et `dist-windows.ps1` fabrique l'archive en
   `build-windows.ps1`. Il ne va **pas** aux tests : `tests.pro` n'inclut que `zlib.pri`, ni Hunspell
   ni sa macro ne les concernent, et seul `ZLIB_LIB_NAME` leur est transmis quand il est donné ;
 - la compilation se fait **hors des sources**, dans `build/`, comme sur les deux autres plateformes ; seuls
-  les objets intermédiaires y restent, le `DESTDIR` envoyant l'exécutable à la racine comme ailleurs.
-  `build-windows.ps1` y met `build\respawnIrc` pour le programme et `build\tests` pour les tests ;
-- ce `DESTDIR` ne distingue pas release et debug : les deux produisent `RespawnIRC.exe` à la racine et
+  les objets intermédiaires restent dans les sous-dossiers, le `DESTDIR` envoyant l'exécutable et ses
+  `resources\`/`themes\` dans `build\` comme ailleurs.
+  `build-windows.ps1` met `build\respawnIrc` pour le programme et `build\tests` pour les tests ;
+- ce `DESTDIR` ne distingue pas release et debug : les deux produisent `RespawnIRC.exe` dans `build\` et
   **s'écrasent l'un l'autre**, même depuis deux dossiers de compilation séparés. Conséquence contre-intuitive,
   constatée : après un `nmake debug`, un `nmake release` dans son propre dossier **ne fait rien** — sa cible
-  est l'exécutable de débogage laissé à la racine, plus récent que ses objets, donc jugé à jour. Il n'affiche
+  est l'exécutable de débogage laissé dans `build\`, plus récent que ses objets, donc jugé à jour. Il n'affiche
   rien et on continue d'exécuter le binaire de débogage en croyant l'avoir remplacé. Effacer `RespawnIRC.exe`
   avant de recompiler ; la taille tranche, 1,5 Mo en release contre 3,5 en debug. `build-windows.ps1` y échappe
   en effaçant ce seul `RespawnIRC.exe` avant son `nmake` : le lien est alors toujours refait, donc ce qui sort
@@ -189,13 +245,14 @@ précédent si l'exécutable manque, et `dist-windows.ps1` fabrique l'archive en
   quand elle vivait dans `dist-windows.ps1` ; elle couvre maintenant toute compilation scriptée, et le piège
   ne mord plus que sur ce qu'on tape à la main, la compilation de débogage en tête. Le script de distribution
   rasait auparavant tout `build\respawnIrc`, ce qui achetait la même garantie au prix des 45 sources à chaque archive.
-  Le cas qui juge ce mécanisme a été exercé : un `nmake debug` avait laissé ses 3,5 Mo à la racine, et le
+  Le cas qui juge ce mécanisme a été exercé : un `nmake debug` avait laissé ses 3,5 Mo en place, et le
   `dist-windows.ps1` lancé ensuite a bien rendu un exécutable de 1,5 Mo, sorti des objets de son dossier.
   La **suite** du script, de `windeployqt` à la compression, a tourné depuis elle aussi : une archive complète
   a été fabriquée d'un bout à l'autre, 426 fichiers, 159 Mo décompressés et 71 compressés, avec les deux
   `resources/` bien fusionnés, la vérification au `dumpbin` à 98 imports du runtime sans manquant, et un
-  `git status` vide à l'arrivée. Le même `DESTDIR` dépose aussi `RespawnIRC.pdb` à la racine,
-  14 Mo, désormais dans le `.gitignore` — sans quoi `git status` n'est plus vide après un `nmake debug` ;
+  `git status` vide à l'arrivée. Le même `DESTDIR` dépose aussi `RespawnIRC.pdb` à côté de l'exécutable,
+  14 Mo — couverts par la seule règle `/build/` du `.gitignore` depuis que plus rien ne sort à la racine,
+  là où il fallait auparavant une règle par artefact pour que `git status` reste vide après un `nmake debug` ;
 - `windeployqt` crée un dossier `resources/` pour QtWebEngine, exactement le nom du dossier de
   données du programme, et au même endroit puisque `pathTool::dataDirPath()` renvoie le dossier de
   l'exécutable. Les deux contenus doivent **fusionner**, pas se remplacer ;
@@ -577,6 +634,53 @@ Les logs sont dans le cache et non dans les données : ils ne sont écrits qu'av
 `RESPAWNIRC_DEBUG`, et les perdre ne coûte rien. La spécification XDG les rangerait plutôt dans
 `XDG_STATE_HOME`, mais Qt 5.15 n'a pas de `StateLocation` et il faudrait lire la variable
 d'environnement à la main, pour un gain nul ici.
+
+### Pourquoi un `.ini` et pas un plist sous macOS
+
+La configuration est un `config.ini` écrit par un `QSettings` en `IniFormat`, le même sur les trois
+plateformes, à un chemin décidé par `pathTool`. La question du plist a été étudiée et **le `.ini`
+est gardé** ; ce qui suit a été mesuré avec un petit programme Qt 5.15.2, pas raisonné :
+
+- `QSettings::NativeFormat` n'est pas « le format de macOS » mais celui de chaque plateforme. Sous
+  **Windows c'est le registre**, ce qui détruirait le `userdata/` portable de l'archive ; sous
+  **Linux c'est le même moteur INI qu'`IniFormat`**, au seul suffixe `.conf` près, donc gain nul —
+  et surtout ce n'est **pas** dconf/GSettings, Qt n'ayant pas de greffon pour eux. Le seul endroit
+  où `NativeFormat` change vraiment quelque chose est donc macOS, et le seul qu'il casserait,
+  Windows ;
+- par domaine, le plist est **binaire**, son chemin échappe à `pathTool` (`QSettings::fileName()`
+  est en lecture seule), et **cfprefsd devient la source de vérité à la place du fichier** :
+  constaté, juste après un `sync()` le plist sur disque n'avait qu'une clé sur quatre quand
+  `defaults read` les affichait toutes. Copier, éditer ou effacer le fichier ne suffit alors plus ;
+- l'organisation étant laissée vide exprès (voir `main.cpp`), le nom obtenu est
+  `com.trolltech.unknown-organization.RespawnIRC.plist`. Un `setOrganizationDomain("franckrj.com")`
+  donne `com.franckrj.RespawnIRC.plist`, soit exactement le `CFBundleIdentifier` de l'`Info.plist`
+  depuis qu'il est capitalisé, et **sans perturber `QStandardPaths`** — mesuré, `AppDataLocation` et
+  `CacheLocation` ne bougent pas. Attention à ne pas prendre `setOrganizationName` pour l'équivalent :
+  celui-là **insère un niveau de dossier** dans tous les chemins de `QStandardPaths`
+  (`~/Library/Application Support/<Org>/RespawnIRC`, `~/.config/<Org>/RespawnIRC`), donc déplacerait
+  configuration, données et cache sur macOS comme sous Linux et demanderait une migration de plus.
+  C'est ce que l'organisation laissée vide évite ;
+- ce qu'un plist apporterait est mince : de vrais tableaux au lieu des listes échappées et l'UTF-8
+  stocké tel quel au lieu des `h\xe9h\xe9` du `.ini`. Les valeurs sans équivalent plist restent des
+  blobs `@Variant(...)` dans les deux formats, ce qui couvre les `QByteArray` de géométrie. Et la
+  moitié de ce gain tomberait toute seule le jour d'un passage à Qt 6, dont l'`IniFormat` écrit en
+  UTF-8 par défaut — voir `MIGRATION-QT6.md`.
+
+Ne pas rouvrir sans une raison neuve — préférences gérées par MDM, scriptage `defaults`, un
+composant natif à qui parler. **La capitalisation du `CFBundleIdentifier` n'en est pas une** : elle
+n'a levé que l'objection cosmétique, le domaine du plist coïncidant maintenant avec le bundle, et
+laisse les quatre autres intactes. Il faudrait de plus écrire l'import des `config.ini` existants, et
+ce fichier porte les cookies de connexion, les listes de pseudos et les couleurs : une migration
+ratée ne perd pas du confort, elle déconnecte les comptes. Si un plist était malgré tout voulu, la
+seule variante saine est `QSettings(chemin, NativeFormat)`, qui écrit un plist XML à l'endroit choisi
+sans passer par cfprefsd.
+
+Enfin, sur `~/Library/Preferences`, que le commentaire de `pathTool::configDirPath()` écarte : y
+poser le `.ini` ne **casserait** rien, cfprefsd ne touchant qu'aux fichiers qu'il reconnaît comme
+domaines. C'est une question de rangement — Apple y réserve les plists de son système de
+préférences et destine `Application Support` à ce que l'application gère elle-même — et
+`AppConfigLocation` y créerait de toute façon un **sous-dossier** `RespawnIRC` dans un dossier censé
+être plat.
 
 | Fonction de `pathTool` | Usage |
 | --- | --- |
