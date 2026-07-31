@@ -7,17 +7,15 @@ son historique git avant de deviner quoi que ce soit.
 
 ## Compiler et tester
 
-Chaque bloc part de la racine du dépôt.
+Chaque bloc part de la racine du dépôt, et la compilation se fait **hors des sources sur les trois
+plateformes**.
 
 ```bash
-# Linux : dans les sources
-cd respawnIrc && qmake && make -j4
-
-# macOS : hors des sources, comme Windows
+# le programme ; sous macOS, ajouter CONFIG+=sdk_no_version_check au qmake
 mkdir -p build/respawnIrc && cd build/respawnIrc
-qmake ../../respawnIrc/respawnIrc.pro CONFIG+=sdk_no_version_check && make -j4
+qmake ../../respawnIrc/respawnIrc.pro && make -j4
 
-# les tests, partout sauf Windows
+# les tests, partout sauf Windows où build-windows.ps1 -Tests s'en charge
 cd tests && qmake && make -j4 && ../build/respawnIrcTests
 ```
 
@@ -25,8 +23,10 @@ Les `.pro` ont un `DESTDIR` : quelle que soit la plateforme et l'endroit d'où `
 le programme atterrit à la racine du dépôt et les tests dans `build/`. Il n'y a plus rien à
 déplacer à la main après compilation, seuls les objets intermédiaires suivent la façon de compiler.
 C'est ce qui rend la compilation hors des sources gratuite : elle ne déplace **rien** de ce qui
-sort, seulement ce qui traîne pendant. Windows et macOS s'en servent, Linux non — les `.pro`
-acceptent les deux et rien ne les distingue à l'arrivée.
+sort, seulement ce qui traîne pendant. Les `.pro` acceptent les deux façons — tous leurs chemins
+passent par `$$PWD` — et rien ne les distingue à l'arrivée ; compiler dans les sources marche donc
+encore, mais n'est plus documenté et le `.gitignore` ne couvre plus ce que ça y laisse. Seuls les
+tests se compilent encore dans `tests/`, hors de Windows.
 
 Dépendances Debian : `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine5-dev
 zlib1g-dev`. zlib sert à décompresser le payload des pages (voir plus bas).
@@ -68,9 +68,9 @@ Quatre pièges, tous documentés dans le README :
   depuis un `build/respawnIrc` : le contenu d'`Info.plist` remplacé par un texte quelconque, `make`
   répond `Nothing to be done` et laisse le fichier tel quel.
 
-La compilation se fait **hors des sources**, dans `build/respawnIrc`, comme sous Windows : c'est ce
-que fait `dist-macos.sh` et ce que décrit le README. Les tests, eux, se compilent toujours dans
-`tests/`, ici comme sous Linux.
+La compilation se fait **hors des sources**, dans `build/respawnIrc`, comme sur les deux autres
+plateformes : c'est ce que fait `dist-macos.sh` et ce que décrit le README. Les tests, eux, se
+compilent toujours dans `tests/`, ici comme sous Linux.
 
 `./dist-macos.sh ~/Qt/5.15.2/clang_64` fabrique le DMG distribuable : `macdeployqt`, signature ad
 hoc, puis un dossier `RespawnIRC` contenant l'application **et** `resources/` et `themes/`. Cette
@@ -125,7 +125,7 @@ précédent si l'exécutable manque, et `dist-windows.ps1` fabrique l'archive en
   figé à `#if 1`. Le passer systématiquement marche donc dans les deux cas, et c'est ce que fait
   `build-windows.ps1`. Il ne va **pas** aux tests : `tests.pro` n'inclut que `zlib.pri`, ni Hunspell
   ni sa macro ne les concernent, et seul `ZLIB_LIB_NAME` leur est transmis quand il est donné ;
-- la compilation se fait **hors des sources**, dans `build/`, comme sous macOS et contrairement à Linux ; seuls
+- la compilation se fait **hors des sources**, dans `build/`, comme sur les deux autres plateformes ; seuls
   les objets intermédiaires y restent, le `DESTDIR` envoyant l'exécutable à la racine comme ailleurs.
   `build-windows.ps1` y met `build\respawnIrc` pour le programme et `build\tests` pour les tests ;
 - ce `DESTDIR` ne distingue pas release et debug : les deux produisent `RespawnIRC.exe` à la racine et
