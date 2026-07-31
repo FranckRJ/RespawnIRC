@@ -277,6 +277,7 @@ Il n'y a pas de chemin à lui donner : le script écarte les Qt sans QtWebEngine
 À la main, c'est :
 
     export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"
+    rm -rf RespawnIRC.app
     mkdir -p build/respawnIrc
     cd build/respawnIrc
     qmake ../../respawnIrc/respawnIrc.pro CONFIG+=sdk_no_version_check
@@ -284,14 +285,19 @@ Il n'y a pas de chemin à lui donner : le script écarte les Qt sans QtWebEngine
 
 Comme sous Linux, seuls les objets intermédiaires restent dans `build/respawnIrc` : le `DESTDIR` du `.pro` dépose le bundle à la racine du dépôt de toute façon.
 
-Un piège vaut d'être connu si vous compilez à la main après avoir changé le numéro de version : la règle qmake qui fabrique `Info.plist` n'a aucune dépendance, et `make` la saute donc dès qu'un bundle est déjà là — le bundle garde alors le numéro de la compilation précédente. Changer de dossier de compilation n'y change rien, cette règle ayant pour cible le bundle de la racine et non un fichier du dossier de compilation. Il faut effacer `RespawnIRC.app` avant de recompiler ; `build-unix.sh` le fait de lui-même, et `dist-macos.sh` en hérite.
+Le `rm -rf RespawnIRC.app` de la deuxième ligne n'est pas une précaution de confort, c'est ce qui rend la compilation à la main fiable — deux règles du `Makefile` visent des fichiers du bundle sans en dépendre vraiment, et `make` les saute dès qu'un bundle est déjà là :
+
+- celle qui fabrique `Info.plist` n'a **aucune** dépendance : un numéro de version changé dans `version.pri` ne parvient pas au bundle, qui garde celui de la compilation précédente ;
+- celles qui recopient `resources` et `themes` ont le **dossier** source pour dépendance, pas les fichiers dedans : un thème modifié sans qu'un `.cpp` bouge ne parvient pas au bundle non plus, `make` répondant `Nothing to be done`.
+
+Changer de dossier de compilation n'y change rien, ces règles ayant pour cible le bundle de la racine et non un fichier du dossier de compilation. `build-unix.sh` fait cet effacement de lui-même avant chaque compilation, et `dist-macos.sh` en hérite : passer par le script est le plus simple, ces deux pièges ne mordent que sur ce qu'on tape à la main.
 
 Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne pourrait donc pas cohabiter à la racine du dépôt avec le dossier de sources `respawnIrc`. Le bundle est posé à la racine, lancez-le de là ou double-cliquez dessus depuis le Finder :
 
     cd ../..
     ./RespawnIRC.app/Contents/MacOS/RespawnIRC
 
-Le programme cherche `resources/`, `themes/` et `userdata/` **à côté du bundle** et non dedans (voir `pathTool::dataDirPath`), le bundle doit donc rester à la racine du dépôt.
+Le bundle **embarque** `resources` et `themes` dans son `Contents/Resources` (voir `pathTool::dataDirPath`) : il est autonome et se déplace où l'on veut, la compilation ordinaire donnant le même bundle que celui qu'on distribue. Un thème modifié n'y parvient donc qu'à la compilation suivante, avec la réserve du paragraphe ci-dessus si vous compilez à la main.
 
 #### Fabriquer une version distribuable
 
@@ -301,12 +307,12 @@ Le bundle produit ci-dessus embarque les chemins du Qt de la machine qui l'a com
 
 Le script compile en appelant `build-unix.sh`, lance les tests, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 100 Mo pour un bundle de 200 Mo). Il trouve Qt comme `build-unix.sh`, et accepte lui aussi un chemin en argument ; `--skip-tests` saute les vérifications.
 
-L'image disque contient un dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut glisser dans les Applications, ou n'importe où ailleurs. Ces dossiers doivent rester à côté du bundle, que `pathTool::dataDirPath()` va y chercher. Ils ne sont plus jamais écrits depuis que le programme range ce qu'il produit dans `~/Library/Application Support` et `~/Library/Caches` : le bundle pourrait donc les embarquer et l'image se réduire à un simple `RespawnIRC.app`, ce qui reste à faire.
+L'image disque contient un `RespawnIRC.app` autonome et un lien vers `/Applications` : il n'y a qu'à glisser l'un sur l'autre, ou à déposer l'application où l'on veut. `resources` et `themes` sont dans `Contents/Resources` comme dans n'importe quel bundle compilé ici, à ceci près que le script les y remplace par leur version commitée, sans les fichiers que l'usage du programme a pu laisser dans le dossier de travail. Rien ne les écrit jamais, le programme rangeant ce qu'il produit dans `~/Library/Application Support` et `~/Library/Caches` : c'est ce qui permet de les enfermer dans le bundle.
 
 Trois limites de cette distribution :
 
 - l'application est en x86_64 seulement, parce que le Qt 5.15.2 officiel n'existe qu'en x86_64. Sur un Mac Apple Silicon elle tourne donc via Rosetta 2. Une version arm64 demanderait de compiler Qt et QtWebEngine depuis les sources, ou de passer à Qt 6 ;
-- la signature est ad hoc et l'application n'est pas notarisée : au premier lancement macOS la refusera. Il faut passer par un clic droit sur l'application puis « Ouvrir », ou retirer la mise en quarantaine avec `xattr -dr com.apple.quarantine /chemin/vers/RespawnIRC`. Cette signature ad hoc est bien celle qu'exigerait Apple Silicon pour du code arm64 ; elle ne dispense pas de la notarisation, seul un certificat Developer ID en dispenserait ;
+- la signature est ad hoc et l'application n'est pas notarisée : au premier lancement macOS la refusera. Il faut passer par un clic droit sur l'application puis « Ouvrir », ou retirer la mise en quarantaine avec `xattr -dr com.apple.quarantine /Applications/RespawnIRC.app`. Cette signature ad hoc est bien celle qu'exigerait Apple Silicon pour du code arm64 ; elle ne dispense pas de la notarisation, seul un certificat Developer ID en dispenserait ;
 - l'icône vient du `.ico` de Windows, qui plafonne à 128 pixels, et paraît donc un peu molle dans les grands affichages du Finder.
 
 ---

@@ -81,9 +81,17 @@ Quatre pièges, tous documentés dans le README :
   passer. Un Qt **désigné** à la main, lui, n'est jamais remplacé en douce : s'il ne convient pas le
   script le dit et s'arrête ;
 - le système de fichiers ignore la casse, donc `RespawnIRC` ne peut pas cohabiter avec le
-  dossier `respawnIrc` : on compile un bundle `RespawnIRC.app` posé à la racine du dépôt, et
-  les données restent à côté du bundle. C'est à ça que sert `pathTool::dataDirPath()`, à
-  utiliser partout plutôt que `QCoreApplication::applicationDirPath()` ;
+  dossier `respawnIrc` : on compile un bundle `RespawnIRC.app` posé à la racine du dépôt. Il
+  **embarque `resources/` et `themes/`** dans `Contents/Resources`, par le `QMAKE_BUNDLE_DATA` du
+  `.pro`, et se déplace donc d'un bloc : une compilation ordinaire donne le même bundle que celui
+  qu'on distribue, il n'y a **qu'une seule disposition** et `pathTool::dataDirPath()` n'a rien à
+  reconnaître. C'est cette fonction qu'il faut utiliser partout plutôt que
+  `QCoreApplication::applicationDirPath()` ;
+- conséquence du point précédent, à connaître : le `make` qui recopie ces deux dossiers a le dossier
+  **source** pour dépendance, pas les fichiers dedans. Un thème modifié sans qu'un `.cpp` bouge ne
+  parvient donc pas au bundle sur un `make` lancé à la main — constaté, `Nothing to be done`. C'est
+  le même piège que celui d'`Info.plist` juste en dessous, et c'est le même `rm -rf RespawnIRC.app`
+  de `build-unix.sh` qui s'en garde : passer par le script, ou effacer le bundle ;
 - pour la même raison la règle `/RespawnIRC` du `.gitignore` attrape le dossier de sources ;
   l'exception `!/respawnIrc/` la neutralise, sans quoi les fichiers ajoutés dans `respawnIrc/`
   n'apparaissent pas dans `git status` ;
@@ -104,14 +112,24 @@ Quatre pièges, tous documentés dans le README :
 La compilation se fait **hors des sources**, dans `build/respawnIrc`, comme sur les deux autres
 plateformes : c'est ce que fait `build-unix.sh` et ce que décrit le README.
 
-`./dist-macos.sh ~/Qt/5.15.2/clang_64` fabrique le DMG distribuable : `macdeployqt`, signature ad
-hoc, puis un dossier `RespawnIRC` contenant l'application **et** `resources/` et `themes/`. Cette
-disposition datait de l'époque où `imageDownloadTool` écrivait les stickers dans
-`resources/stickers/`, ce qui interdisait d'enfermer ces dossiers en lecture seule dans le bundle.
-Ce n'est plus le cas depuis que les stickers vont dans le cache : **le bundle pourrait maintenant
-être autonome**, `resources/` et `themes/` placés dans `Contents/Resources/` et le DMG réduit à un
-simple `RespawnIRC.app`. Ça n'a pas été fait, `pathTool::dataDirPath()` cherchant toujours à côté du
-bundle.
+`./dist-macos.sh ~/Qt/5.15.2/clang_64` fabrique le DMG distribuable : `macdeployqt`, remplacement de
+`resources/` et `themes/` par leur version commitée, signature ad hoc, puis une image contenant le
+seul `RespawnIRC.app` et un lien vers `/Applications`, la disposition qu'attend un utilisateur de
+macOS. Le bundle est **autonome**, ce qu'interdisait l'époque où `imageDownloadTool` écrivait les
+stickers dans `resources/stickers/` : ces dossiers ne pouvaient pas être enfermés en lecture seule,
+d'où l'ancien dossier `RespawnIRC` contenant l'application **et** ses données. Depuis que les
+stickers vont dans le cache, plus rien n'y écrit.
+
+Deux choses à ne pas défaire :
+
+- **le `git archive` reste nécessaire alors que la compilation a déjà rempli le bundle.** Elle y
+  copie le dossier de travail, où traîne ce que le mainteneur a accumulé en se servant du programme —
+  les stickers qu'une version antérieure téléchargeait dans `resources/stickers/`, que rien ne
+  distingue de ceux livrés. Le script efface donc les deux dossiers du bundle et les réextrait de
+  `HEAD` ; c'est la même raison que sous Windows, et elle survit au fait que le `.pro` s'en occupe
+  maintenant en temps ordinaire ;
+- **ce remplacement doit précéder la signature.** `codesign` scelle le contenu du bundle ; un fichier
+  changé après elle la casse, et macOS refuse alors de lancer l'application.
 
 ### Windows
 
@@ -540,8 +558,8 @@ ce refus ne se reconnaît pas, et fait corriger le message qui l'affirmait.
 
 ## Où le programme range ses données
 
-`resources/` et `themes/` sont **livrés avec le programme et jamais écrits**, toujours à côté de
-l'exécutable — à côté du bundle sous macOS. Ce que le programme écrit se répartit en **trois
+`resources/` et `themes/` sont **livrés avec le programme et jamais écrits**, à côté de
+l'exécutable — sous macOS dans le `Contents/Resources` du bundle. Ce que le programme écrit se répartit en **trois
 rôles**, qui atterrissent là où chaque système les attend :
 
 | Rôle | Contenu | Windows | Linux | macOS |

@@ -48,14 +48,12 @@ namespace
 QString pathTool::dataDirPath()
 {
 #ifdef Q_OS_MACOS
-    QDir dirOfApp(QCoreApplication::applicationDirPath());
-
-    if(dirOfApp.absolutePath().endsWith(".app/Contents/MacOS") == true)
+    /* resources/ et themes/ sont dans Contents/Resources : le QMAKE_BUNDLE_DATA du .pro les y met à
+     * chaque compilation, le bundle est donc autonome et le même qu'on le distribue ou non. Le
+     * binaire des tests, lui, n'est pas un bundle et retombe sur la ligne commune. */
+    if(QCoreApplication::applicationDirPath().endsWith(".app/Contents/MacOS") == true)
     {
-        dirOfApp.cdUp(); /* Contents */
-        dirOfApp.cdUp(); /* RespawnIRC.app */
-        dirOfApp.cdUp(); /* dossier contenant le bundle */
-        return dirOfApp.absolutePath();
+        return QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../Resources");
     }
 #endif
 

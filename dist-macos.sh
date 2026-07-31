@@ -1,10 +1,11 @@
 #!/bin/bash
-# Fabrique une image disque distribuable de RespawnIRC pour macOS : le bundle RespawnIRC.app rendu
-# autonome par macdeployqt (Qt et QtWebEngine embarqués), accompagné des dossiers resources/ et
-# themes/ que le programme lit à côté du bundle. Ces deux dossiers ne sont jamais écrits, ce que le
-# programme écrit allant dans ~/Library/Application Support et ~/Library/Caches : le bundle pourrait
-# donc les embarquer dans Contents/Resources et l'image se réduire à un simple RespawnIRC.app, mais
-# pathTool::dataDirPath() les cherche toujours à côté de lui.
+# Fabrique une image disque distribuable de RespawnIRC pour macOS : un bundle RespawnIRC.app
+# autonome, avec Qt et QtWebEngine embarqués par macdeployqt, accompagné d'un lien vers
+# /Applications pour l'installer d'un glisser-déposer. resources/ et themes/ sont dans
+# Contents/Resources, où le .pro les met déjà à la compilation et où pathTool::dataDirPath() les
+# cherche : ce script ne fait que les remplacer par leur version commitée. Ces deux dossiers ne sont
+# jamais écrits — ce que le programme écrit va dans ~/Library/Application Support et
+# ~/Library/Caches — c'est ce qui permet de les enfermer dans le bundle.
 #
 # Usage : ./dist-macos.sh [chemin/vers/Qt/5.15.2/clang_64] [--skip-tests]
 # À défaut d'argument, le Qt utilisé est celui dont le qmake est dans le PATH.
@@ -89,6 +90,19 @@ echo "== Embarquement de Qt dans le bundle"
 # réécrit les chemins qui pointaient vers le Qt de la machine de compilation.
 "$macdeployqtBin" "$bundlePath"
 
+echo "== Données livrées reprises de git"
+# La compilation a déjà mis resources/ et themes/ dans le bundle, mais tels qu'ils sont dans le
+# dossier de travail : celui-ci contient aussi ce que le mainteneur a accumulé en se servant du
+# programme, à commencer par les stickers qu'une version antérieure téléchargeait dans
+# resources/stickers/ et que rien ne distingue de ceux livrés. On les remplace donc par ce que git
+# archive sort de HEAD, c'est-à-dire uniquement ce qui est commité, sans liste d'exclusion à tenir à
+# jour. Ce que le programme écrit aujourd'hui vit dans les dossiers du système, jamais copiés.
+#
+# Ce remplacement doit précéder la signature, qui scelle le contenu du bundle et ne survivrait pas à
+# un fichier changé après elle.
+rm -rf "$bundlePath/Contents/Resources/resources" "$bundlePath/Contents/Resources/themes"
+git -C "$repoDir" archive HEAD resources themes | tar -x -C "$bundlePath/Contents/Resources"
+
 echo "== Signature ad hoc"
 # Sans signature, macOS refuse de lancer un bundle dont macdeployqt a réécrit les binaires. Cette
 # signature ad hoc ne vaut pas notarisation : au premier lancement il faudra passer par le menu
@@ -96,17 +110,13 @@ echo "== Signature ad hoc"
 codesign --force --deep --sign - "$bundlePath"
 
 echo "== Assemblage de l'image disque"
-# L'image contient un unique dossier RespawnIRC, à glisser tel quel dans les Applications :
-# l'application et ses données doivent rester ensemble.
+# L'image contient le seul RespawnIRC.app et un lien vers /Applications, la disposition attendue
+# sous macOS : on ouvre l'image et on glisse l'application sur le lien. hdiutil recopie ce lien
+# symbolique tel quel, il pointe donc vers les Applications de la machine qui monte l'image.
 rm -rf "$distDir"
-mkdir -p "$distDir/image/RespawnIRC"
-mv "$bundlePath" "$distDir/image/RespawnIRC/"
-# resources/ et themes/ sont extraits de git et non copiés depuis le dossier de travail : celui-ci
-# contient aussi ce que le mainteneur a accumulé en se servant du programme, à commencer par les
-# stickers qu'une version antérieure téléchargeait dans resources/stickers/ et que rien ne distingue
-# de ceux livrés. git archive ne sort que ce qui est commité, sans liste d'exclusion à tenir à jour.
-# Ce que le programme écrit aujourd'hui vit dans userdata/, qui n'est simplement jamais copié.
-git -C "$repoDir" archive HEAD resources themes | tar -x -C "$distDir/image/RespawnIRC"
+mkdir -p "$distDir/image"
+mv "$bundlePath" "$distDir/image/"
+ln -s /Applications "$distDir/image/Applications"
 
 dmgPath="$distDir/RespawnIRC-$version-macos.dmg"
 hdiutil create -volname "RespawnIRC $version" -srcfolder "$distDir/image" -ov -format UDZO -quiet "$dmgPath"

@@ -9,10 +9,11 @@ QT += \
 TARGET = RespawnIRC
 TEMPLATE = app
 
-# Le programme cherche resources/ et themes/ à côté de son exécutable : on le produit donc
-# directement à la racine du dépôt, où ces dossiers sont déjà, plutôt que de demander un
-# déplacement à la main après chaque compilation. $$PWD est le dossier de ce .pro, la cible est
-# donc la même que la compilation ait lieu dans les sources ou dans build/.
+# Sous Linux et Windows le programme cherche resources/ et themes/ à côté de son exécutable : on le
+# produit donc directement à la racine du dépôt, où ces dossiers sont déjà, plutôt que de demander
+# un déplacement à la main après chaque compilation. Sous macOS le bundle les embarque (voir le bloc
+# macx plus bas) et se déplace donc où l'on veut, mais il sort au même endroit. $$PWD est le dossier
+# de ce .pro, la cible est donc la même que la compilation ait lieu dans les sources ou dans build/.
 DESTDIR = $$PWD/..
 
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -41,6 +42,15 @@ macx {
     # qmake remplace @FULL_VERSION@ par cette VERSION dans Info.plist. Elle reste dans ce bloc parce
     # que c'est le seul endroit qui la lit, la VERSION de qmake n'ayant pas d'usage ailleurs ici.
     VERSION = $$RESPAWNIRC_VERSION
+
+    # Les données livrées entrent dans le bundle, qui est ainsi autonome et se déplace d'un bloc :
+    # c'est ce que pathTool::dataDirPath() y cherche, et la seule disposition qui existe sous macOS,
+    # une compilation ordinaire donnant le même bundle que celui qu'on distribue. dist-macos.sh
+    # remplace ensuite ces deux dossiers par leur version commitée, le dossier de travail contenant
+    # aussi ce que le mainteneur a accumulé en se servant du programme.
+    dataOfBundle.files = $$PWD/../resources $$PWD/../themes
+    dataOfBundle.path = Contents/Resources
+    QMAKE_BUNDLE_DATA += dataOfBundle
 }
 
 CONFIG += c++14
