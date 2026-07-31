@@ -55,52 +55,15 @@ do
     esac
 done
 
-if [ -z "$qtDir" ]
+# Résolution de Qt, partagée avec dist-macos.sh : les deux doivent tomber sur le même.
+. "$repoDir/unix-common.sh"
+
+if ! resolveQtDir "$qtDir"
 then
-    if command -v qmake > /dev/null
-    then
-        qtDir="$(dirname "$(dirname "$(command -v qmake)")")"
-    else
-        echo "Qt introuvable : passez son chemin avec -q, ou mettez son qmake dans le PATH." >&2
-        exit 1
-    fi
+    exit 1
 fi
 
 qmakeBin="$qtDir/bin/qmake"
-
-if [ ! -x "$qmakeBin" ]
-then
-    echo "$qmakeBin est introuvable ou non exécutable." >&2
-    exit 1
-fi
-
-# Un Qt trouvé n'est pas un Qt utilisable : celui de Homebrew et un Debian sans qtwebengine5-dev ont
-# tout ce qu'il faut sauf le module dont dépend tout l'affichage des messages. Sans ce contrôle, ça ne
-# se voit qu'au « Project ERROR: Unknown module(s) in QT: webenginewidgets » de qmake, qui ne dit ni
-# quel Qt a été pris, ni pourquoi celui-là n'ira jamais, ni lequel prendre. Le cas n'a rien de
-# théorique sous macOS : le qmake du PATH y est celui de Homebrew dès qu'il est installé, donc le
-# comportement par défaut du script tombe droit dessus. C'est qmake qu'on interroge et non un chemin
-# qu'on devine, les mkspecs n'étant pas sous $qtDir sur un Debian.
-archDataDir="$("$qmakeBin" -query QT_INSTALL_ARCHDATA)"
-
-if [ ! -f "$archDataDir/mkspecs/modules/qt_lib_webenginewidgets.pri" ]
-then
-    echo "Ce Qt n'a pas QtWebEngine, dont RespawnIRC a besoin : $qtDir" >&2
-
-    if [ "$(uname -s)" = "Darwin" ]
-    then
-        echo "Le qt@5 de Homebrew en est dépourvu, son Chromium ayant des failles non corrigées." >&2
-        echo "Installez le Qt 5.15.2 officiel avec aqtinstall (voir le README), puis désignez-le :" >&2
-        # Les deux lignes, et non celle de ce script-ci : dist-macos.sh passe par ici, et conseiller
-        # alors build-unix.sh ferait taper autre chose que ce qu'on voulait faire.
-        echo "    ./build-unix.sh -q ~/Qt/5.15.2/clang_64" >&2
-        echo "    ./dist-macos.sh ~/Qt/5.15.2/clang_64" >&2
-    else
-        echo "Installez le paquet qtwebengine5-dev (voir le README pour les autres distributions)." >&2
-    fi
-
-    exit 1
-fi
 
 # Tout ce qui distingue les deux systèmes tient ici. CONFIG+=sdk_no_version_check fait taire
 # l'avertissement de Qt 5.15.2, qui n'a été testé qu'avec le SDK 10.15 alors que Xcode en fournit un

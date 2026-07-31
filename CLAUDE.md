@@ -12,7 +12,7 @@ cibles, sur les trois plateformes, ont leur dossier sous `build/`.
 
 ```bash
 # sous macOS et sous Linux, un seul script pour les deux ; -t compile et lance les tests
-./build-unix.sh -t            # macOS : -q ~/Qt/5.15.2/clang_64, le qmake du PATH étant celui de Homebrew
+./build-unix.sh -t            # il trouve Qt seul, y compris le ~/Qt d'aqtinstall sous macOS
 
 # à la main ; sous macOS, ajouter CONFIG+=sdk_no_version_check au qmake
 mkdir -p build/respawnIrc && cd build/respawnIrc
@@ -25,7 +25,13 @@ qmake ../../tests/tests.pro && make -j4 && ../respawnIrcTests
 
 `build-unix.sh` est le pendant de `build-windows.ps1`, et le seul endroit où la compilation Unix est
 écrite : `dist-macos.sh` l'appelle au lieu de garder sa copie des mêmes étapes, et lance donc les
-tests avant d'assembler le DMG. Un script pour les deux systèmes et non un par plateforme — ils ne
+tests avant d'assembler le DMG. `unix-common.sh`, chargé par point-sourcing dans les deux, est le
+pendant de `windows-common.ps1` et porte la seule chose qu'ils partagent : la résolution de Qt. Elle
+y est descendue parce que **les deux doivent tomber sur le même Qt** — `build-unix.sh` compile contre
+celui qu'il résout, `dist-macos.sh` prend `macdeployqt` dans celui qu'il résout, et une divergence
+remplirait le bundle des frameworks d'un autre Qt que celui de la compilation. Ce serait une panne
+silencieuse chez l'utilisateur, pas une erreur de compilation. `dist-macos.sh` passe donc le Qt résolu
+explicitement en `-q` plutôt que de compter sur une coïncidence. Un script pour les deux systèmes et non un par plateforme — ils ne
 diffèrent que par l'option qmake du SDK, la façon de compter les processeurs et le nom de ce qui
 sort. Il n'y a délibérément **ni `bootstrap-` ni `run-` côté Unix** : le premier serait un emballage
 autour d'un `apt install` ou de trois commandes Homebrew et `aqt`, le second autour de
@@ -66,9 +72,14 @@ Quatre pièges, tous documentés dans le README :
   officiel via `aqtinstall` ; Hunspell vient de Homebrew, avec une bibliothèque au nom
   versionné (`-lhunspell-1.7`), et zlib du système. Conséquence à ne pas sous-estimer : le `qmake` du
   `PATH` est celui de Homebrew dès qu'il est installé, donc **le comportement par défaut des scripts
-  tombe droit sur le mauvais Qt** — c'est ce qui faisait échouer un `./dist-macos.sh` sans argument.
-  `build-unix.sh` interroge maintenant `qmake -query QT_INSTALL_ARCHDATA` et refuse un Qt sans
-  `qt_lib_webenginewidgets.pri`, en nommant la cause. Toujours lui passer `-q ~/Qt/5.15.2/clang_64` ;
+  tombait droit sur le seul Qt de la machine qui ne peut pas convenir** — c'est ce qui faisait échouer
+  un `./dist-macos.sh` sans argument, sur un `Unknown module(s) in QT: webenginewidgets` qui ne
+  désignait pas le coupable. `unix-common.sh` écarte maintenant les Qt sans
+  `mkspecs/modules/qt_lib_webenginewidgets.pri` — chemin obtenu par `qmake -query QT_INSTALL_ARCHDATA`
+  et non deviné, les mkspecs n'étant pas sous le dossier de Qt sur un Debian — puis va chercher dans
+  `~/Qt/*/clang_64`, là où le README fait installer le Qt officiel. Il n'y a donc plus de chemin à
+  passer. Un Qt **désigné** à la main, lui, n'est jamais remplacé en douce : s'il ne convient pas le
+  script le dit et s'arrête ;
 - le système de fichiers ignore la casse, donc `RespawnIRC` ne peut pas cohabiter avec le
   dossier `respawnIrc` : on compile un bundle `RespawnIRC.app` posé à la racine du dépôt, et
   les données restent à côté du bundle. C'est à ça que sert `pathTool::dataDirPath()`, à

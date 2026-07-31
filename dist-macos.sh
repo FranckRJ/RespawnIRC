@@ -35,22 +35,18 @@ do
     shift
 done
 
-# Cette résolution est aussi dans build-unix.sh, et elle y reste : ce script en a besoin pour son
-# compte, macdeployqt venant du même Qt que qmake. La descendre dans un fichier commun ferait un
-# troisième fichier pour six lignes et deux appelants — c'est quand un troisième utilisateur est
-# apparu que les scripts Windows ont eu leur windows-common.ps1.
-if [ -z "$qtDir" ]
+# Résolution de Qt, partagée avec build-unix.sh. Il est essentiel que les deux tombent sur le même :
+# macdeployqt vient d'ici, et il remplit le bundle des frameworks de son propre Qt.
+. "$repoDir/unix-common.sh"
+
+if ! resolveQtDir "$qtDir"
 then
-    if command -v qmake > /dev/null
-    then
-        qtDir="$(dirname "$(dirname "$(command -v qmake)")")"
-    else
-        echo "Qt introuvable : passez le chemin de Qt en argument, ou mettez son qmake dans le PATH." >&2
-        exit 1
-    fi
+    exit 1
 fi
 
-# qmake n'est pas vérifié ici : build-unix.sh le fait pour son compte, et dès sa première ligne utile.
+# Le Qt résolu est passé explicitement plus bas, et non laissé à la résolution de build-unix.sh : les
+# deux donneraient le même résultat, mais le compter sur une coïncidence est exactement ce qu'il ne
+# faut pas faire ici.
 macdeployqtBin="$qtDir/bin/macdeployqt"
 
 if [ ! -x "$macdeployqtBin" ]
