@@ -6,36 +6,58 @@
 # donc les embarquer dans Contents/Resources et l'image se réduire à un simple RespawnIRC.app, mais
 # pathTool::dataDirPath() les cherche toujours à côté de lui.
 #
-# Usage : ./dist-macos.sh [chemin/vers/Qt/5.15.2/clang_64]
+# Usage : ./dist-macos.sh [chemin/vers/Qt/5.15.2/clang_64] [--skip-tests]
 # À défaut d'argument, le Qt utilisé est celui dont le qmake est dans le PATH.
+#
+# La compilation elle-même est celle de build-unix.sh, à qui le Qt est passé : ce script ne garde pas
+# sa propre copie des mêmes étapes. Les tests sont compilés et lancés au passage, l'archive n'ayant
+# aucune raison de sortir sans eux ; --skip-tests s'en passe.
 
 set -e
 
 repoDir="$(cd "$(dirname "$0")" && pwd)"
 distDir="$repoDir/dist"
 
-if [ -n "$1" ]
-then
-    qtDir="$1"
-elif command -v qmake > /dev/null
-then
-    qtDir="$(dirname "$(dirname "$(command -v qmake)")")"
-else
-    echo "Qt introuvable : passez le chemin de Qt en argument, ou mettez son qmake dans le PATH." >&2
-    exit 1
-fi
+qtDir=""
+withTests="true"
 
-qmakeBin="$qtDir/bin/qmake"
-macdeployqtBin="$qtDir/bin/macdeployqt"
-
-for thisBin in "$qmakeBin" "$macdeployqtBin"
+while [ $# -gt 0 ]
 do
-    if [ ! -x "$thisBin" ]
+    case "$1" in
+        --skip-tests)
+            withTests="false"
+            ;;
+        *)
+            qtDir="$1"
+            ;;
+    esac
+
+    shift
+done
+
+# Cette résolution est aussi dans build-unix.sh, et elle y reste : ce script en a besoin pour son
+# compte, macdeployqt venant du même Qt que qmake. La descendre dans un fichier commun ferait un
+# troisième fichier pour six lignes et deux appelants — c'est quand un troisième utilisateur est
+# apparu que les scripts Windows ont eu leur windows-common.ps1.
+if [ -z "$qtDir" ]
+then
+    if command -v qmake > /dev/null
     then
-        echo "$thisBin est introuvable ou non exécutable." >&2
+        qtDir="$(dirname "$(dirname "$(command -v qmake)")")"
+    else
+        echo "Qt introuvable : passez le chemin de Qt en argument, ou mettez son qmake dans le PATH." >&2
         exit 1
     fi
-done
+fi
+
+# qmake n'est pas vérifié ici : build-unix.sh le fait pour son compte, et dès sa première ligne utile.
+macdeployqtBin="$qtDir/bin/macdeployqt"
+
+if [ ! -x "$macdeployqtBin" ]
+then
+    echo "$macdeployqtBin est introuvable ou non exécutable." >&2
+    exit 1
+fi
 
 # version.pri est la seule source du numéro de version, et le .pro le pousse de là dans le programme
 # comme dans Info.plist : le DMG, le bundle et le binaire ne peuvent pas annoncer trois numéros.
@@ -50,20 +72,21 @@ fi
 # Le DESTDIR de respawnIrc.pro produit le bundle à la racine du dépôt, pas dans le dossier de
 # compilation.
 bundlePath="$repoDir/RespawnIRC.app"
-# La compilation se fait hors des sources, dans build/, comme sous Windows : seuls les objets
-# intermédiaires y restent, et le dossier respawnIrc/ ne garde plus ni Makefile ni .o.
-buildDir="$repoDir/build/respawnIrc"
 
-echo "== Compilation de RespawnIRC $version avec $qtDir"
-# La règle de qmake qui fabrique Info.plist n'a aucune dépendance : make la saute dès qu'un bundle
-# est déjà là, et une version distribuable hériterait des informations du bundle précédent. Compiler
-# dans un dossier neuf n'y change rien, la cible de cette règle étant le bundle de la racine et non
-# un fichier du dossier de compilation : cet effacement reste donc nécessaire.
-rm -rf "$bundlePath"
-mkdir -p "$buildDir"
-cd "$buildDir"
-"$qmakeBin" "$repoDir/respawnIrc/respawnIrc.pro" CONFIG+=sdk_no_version_check
-make -j"$(sysctl -n hw.ncpu)"
+echo "== Version distribuable $version"
+optionsForBuild=(-q "$qtDir")
+
+if [ "$withTests" = "false" ]
+then
+    echo "-- tests sautés"
+else
+    optionsForBuild+=(-t)
+fi
+
+# L'effacement du bundle déjà en place, que ce script faisait lui-même à cause de la règle sans
+# dépendance qui fabrique Info.plist, est maintenant dans build-unix.sh : il y couvre le même piège
+# pour qui compile sans passer par ici.
+"$repoDir/build-unix.sh" "${optionsForBuild[@]}"
 
 echo "== Embarquement de Qt dans le bundle"
 # macdeployqt copie les frameworks Qt, les greffons et le processus QtWebEngine dans le bundle, et

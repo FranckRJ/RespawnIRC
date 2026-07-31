@@ -232,7 +232,13 @@ Il ne reste utile que si ANGLE lui-même échoue, ou si quelqu'un force `QT_OPEN
 
 Pour Linux, installez les paquets `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine5-dev zlib1g-dev`. Les noms des paquets sont ceux pour Debian, si vous utilisez une autre distribution ils peuvent changer.
 
-La compilation se fait **hors des sources**, comme sur les deux autres plateformes :
+La compilation tient ensuite en une commande :
+
+    ./build-unix.sh
+
+Le script sert aussi bien Linux que macOS, les deux ne différant que par une option de `qmake` et le nom de ce qui sort. Il compile **hors des sources**, dans `build/respawnIrc` ; `-t` compile et lance en plus les tests, `-c` repart de zéro au lieu de reprendre les objets déjà là, et `-q` désigne un autre Qt que celui dont le `qmake` est dans le `PATH`.
+
+À la main, c'est :
 
     mkdir -p build/respawnIrc
     cd build/respawnIrc
@@ -260,7 +266,13 @@ Homebrew fournit Hunspell, et zlib vient du système, mais son paquet `qt@5` est
 
 Ces binaires sont en x86_64 : sur un Mac Apple Silicon ils tournent via Rosetta 2. Le Chromium de Qt 5.15.2 est ancien, mieux vaut ne pas s'en servir comme navigateur généraliste.
 
-La compilation se fait ensuite **hors des sources**, comme sur les deux autres plateformes :
+La compilation se fait ensuite avec le même script que sous Linux, à qui il faut désigner ce Qt-là plutôt que celui de Homebrew :
+
+    ./build-unix.sh -q ~/Qt/5.15.2/clang_64
+
+`-t` compile et lance en plus les tests, `-c` repart de zéro. Le script ajoute de lui-même `CONFIG+=sdk_no_version_check`, qui fait taire l'avertissement de Qt 5.15.2 — testé avec le seul SDK 10.15 alors que Xcode en fournit un bien plus récent.
+
+À la main, c'est :
 
     export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"
     mkdir -p build/respawnIrc
@@ -268,11 +280,9 @@ La compilation se fait ensuite **hors des sources**, comme sur les deux autres p
     qmake ../../respawnIrc/respawnIrc.pro CONFIG+=sdk_no_version_check
     make -j4
 
-`CONFIG+=sdk_no_version_check` fait taire l'avertissement de Qt 5.15.2, qui n'a été testé qu'avec le SDK 10.15 alors que Xcode en fournit un bien plus récent.
-
 Comme sous Linux, seuls les objets intermédiaires restent dans `build/respawnIrc` : le `DESTDIR` du `.pro` dépose le bundle à la racine du dépôt de toute façon.
 
-Un piège vaut d'être connu si vous recompilez après avoir changé le numéro de version : la règle qmake qui fabrique `Info.plist` n'a aucune dépendance, et `make` la saute donc dès qu'un bundle est déjà là — le bundle garde alors le numéro de la compilation précédente. Changer de dossier de compilation n'y change rien, cette règle ayant pour cible le bundle de la racine et non un fichier du dossier de compilation. Il faut effacer `RespawnIRC.app` avant de recompiler, ce que `dist-macos.sh` fait de lui-même.
+Un piège vaut d'être connu si vous compilez à la main après avoir changé le numéro de version : la règle qmake qui fabrique `Info.plist` n'a aucune dépendance, et `make` la saute donc dès qu'un bundle est déjà là — le bundle garde alors le numéro de la compilation précédente. Changer de dossier de compilation n'y change rien, cette règle ayant pour cible le bundle de la racine et non un fichier du dossier de compilation. Il faut effacer `RespawnIRC.app` avant de recompiler ; `build-unix.sh` le fait de lui-même, et `dist-macos.sh` en hérite.
 
 Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne pourrait donc pas cohabiter à la racine du dépôt avec le dossier de sources `respawnIrc`. Le bundle est posé à la racine, lancez-le de là ou double-cliquez dessus depuis le Finder :
 
@@ -287,7 +297,7 @@ Le bundle produit ci-dessus embarque les chemins du Qt de la machine qui l'a com
 
     ./dist-macos.sh ~/Qt/5.15.2/clang_64
 
-Le script compile, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 100 Mo pour un bundle de 200 Mo). Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH`.
+Le script compile en appelant `build-unix.sh`, lance les tests, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 100 Mo pour un bundle de 200 Mo). Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; `--skip-tests` saute les vérifications.
 
 L'image disque contient un dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut glisser dans les Applications, ou n'importe où ailleurs. Ces dossiers doivent rester à côté du bundle, que `pathTool::dataDirPath()` va y chercher. Ils ne sont plus jamais écrits depuis que le programme range ce qu'il produit dans `~/Library/Application Support` et `~/Library/Caches` : le bundle pourrait donc les embarquer et l'image se réduire à un simple `RespawnIRC.app`, ce qui reste à faire.
 

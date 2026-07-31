@@ -11,7 +11,10 @@ Chaque bloc part de la racine du dépôt. **Rien ne se compile plus dans les sou
 cibles, sur les trois plateformes, ont leur dossier sous `build/`.
 
 ```bash
-# le programme ; sous macOS, ajouter CONFIG+=sdk_no_version_check au qmake
+# sous macOS et sous Linux, un seul script pour les deux ; -t compile et lance les tests
+./build-unix.sh -t            # macOS : -q ~/Qt/5.15.2/clang_64, le qmake du PATH étant celui de Homebrew
+
+# à la main ; sous macOS, ajouter CONFIG+=sdk_no_version_check au qmake
 mkdir -p build/respawnIrc && cd build/respawnIrc
 qmake ../../respawnIrc/respawnIrc.pro && make -j4
 
@@ -19,6 +22,18 @@ qmake ../../respawnIrc/respawnIrc.pro && make -j4
 mkdir -p build/tests && cd build/tests
 qmake ../../tests/tests.pro && make -j4 && ../respawnIrcTests
 ```
+
+`build-unix.sh` est le pendant de `build-windows.ps1`, et le seul endroit où la compilation Unix est
+écrite : `dist-macos.sh` l'appelle au lieu de garder sa copie des mêmes étapes, et lance donc les
+tests avant d'assembler le DMG. Un script pour les deux systèmes et non un par plateforme — ils ne
+diffèrent que par l'option qmake du SDK, la façon de compter les processeurs et le nom de ce qui
+sort. Il n'y a délibérément **ni `bootstrap-` ni `run-` côté Unix** : le premier serait un emballage
+autour d'un `apt install` ou de trois commandes Homebrew et `aqt`, le second autour de
+`./RespawnIRC`. Les quatre scripts Windows n'existent que parce que Windows n'a ni gestionnaire de
+paquets, ni Qt trouvable, ni Hunspell et zlib tout faits. Et **pas de `dist-linux.sh`** non plus : le
+projet n'a aucun format de distribution Linux — ni `.deb`, ni AppImage, ni Flatpak — donc la question
+n'est pas d'écrire un script mais de décider qu'on publie des binaires Linux, ce qui appartient au
+mainteneur.
 
 Les `.pro` ont un `DESTDIR` : quelle que soit la plateforme et l'endroit d'où `qmake` est lancé,
 le programme atterrit à la racine du dépôt et les tests dans `build/`. Il n'y a plus rien à
@@ -59,8 +74,10 @@ Quatre pièges, tous documentés dans le README :
   n'apparaissent pas dans `git status` ;
 - **la règle qmake qui fabrique `Info.plist` n'a aucune dépendance**, si bien que `make` la saute
   dès qu'un bundle est déjà là : un numéro de version changé dans `version.pri` ne parvient pas au
-  bundle, qui garde celui de la compilation précédente. `dist-macos.sh` s'en garde par un
-  `rm -rf RespawnIRC.app` avant de compiler. **Compiler hors des sources n'y change rien** — on l'a
+  bundle, qui garde celui de la compilation précédente. Le `rm -rf RespawnIRC.app` qui s'en garde est
+  maintenant dans `build-unix.sh`, où il couvre aussi la compilation ordinaire et pas seulement la
+  distribution — c'est la même ligne qui, sous Linux, garantit que ce qui sort vient bien des objets
+  du dossier de compilation courant. **Compiler hors des sources n'y change rien** — on l'a
   cru, et c'était l'unique justification du point 7 de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` : la
   cible de cette règle est le bundle de la racine, où le `DESTDIR` l'envoie, et pas un fichier du
   dossier de compilation. Un dossier neuf ne peut donc rien y faire, et l'effacement reste
@@ -70,7 +87,7 @@ Quatre pièges, tous documentés dans le README :
   répond `Nothing to be done` et laisse le fichier tel quel.
 
 La compilation se fait **hors des sources**, dans `build/respawnIrc`, comme sur les deux autres
-plateformes : c'est ce que fait `dist-macos.sh` et ce que décrit le README.
+plateformes : c'est ce que fait `build-unix.sh` et ce que décrit le README.
 
 `./dist-macos.sh ~/Qt/5.15.2/clang_64` fabrique le DMG distribuable : `macdeployqt`, signature ad
 hoc, puis un dossier `RespawnIRC` contenant l'application **et** `resources/` et `themes/`. Cette

@@ -1,6 +1,6 @@
 # Pistes de simplification de la compilation et de la distribution
 
-Relevé de juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, les scripts Windows, `dist-macos.sh` et la section « Compilation » du README. Les onze pistes sont faites ; il n'en reste aucune d'ouverte.
+Relevé de juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, les scripts Windows, `dist-macos.sh` et la section « Compilation » du README. Les onze pistes sont faites, et une douzième est venue après coup — l'absence de script de compilation côté Unix, décrite plus bas. Il n'en reste aucune d'ouverte.
 
 Ce fichier a donc été ramené à ce qui n'existe qu'ici : les décisions prises, les réserves qui restent et les leçons que ces pistes ont coûtées. Le détail de ce qui a été fait vit maintenant là où il sert — `CLAUDE.md`, le README, les commentaires des scripts — plutôt qu'en double. La version longue, avec les états des lieux d'origine, leurs chiffres et leurs numéros de ligne, est dans l'historique git ; c'est là qu'il faut aller pour savoir à quoi ressemblait la chaîne avant, et le commit qui a allégé ce fichier est le point de départ.
 
@@ -21,6 +21,8 @@ Ce fichier a donc été ramené à ce qui n'existe qu'ici : les décisions prise
 | 11 | `opengl32sw.dll`, 20 Mo pour un repli que Windows fournit déjà | `CLAUDE.md`, le README et le commentaire de `dist-windows.ps1` |
 
 Le point 3 a d'abord été livré sans avoir jamais compilé — seul son enchaînement avait été essayé avec des outils simulés, faute d'une machine équipée. Ce n'est plus le cas : `build-windows.ps1 -Tests` a compilé pour de bon sur une machine amorcée par `bootstrap-windows.ps1`, 142 vérifications sans échec et un `RespawnIRC.exe` de 1,52 Mo. Et la commande lancée était celle que le script d'amorçage affiche en terminant, ce qui a du même coup montré qu'elle ne marchait pas : elle donnait un `.\build-windows.ps1` nu, refusé par la stratégie d'exécution sur la machine qu'elle venait pourtant d'amorcer. Elle reprend maintenant le `powershell -ExecutionPolicy Bypass -File`.
+
+Les points 3 et 5 n'avaient été appliqués qu'à Windows, et c'est **une douzième piste** qui s'est révélée en cherchant l'équivalent macOS des scripts `.ps1` : `dist-macos.sh` gardait sa propre copie de la compilation et n'a jamais lancé les tests, si bien qu'un DMG pouvait sortir sans qu'une seule des 142 vérifications ait tourné. `build-unix.sh` corrige les deux — un seul script pour macOS et Linux, les deux ne différant que par trois lignes. Ce qu'il faut en retenir dépasse le cas : **une décision prise pour une plateforme ne se propage pas toute seule aux autres**, et c'est d'autant plus vrai que ce fichier-ci s'était déclaré clos. Ce qui a été **refusé** au passage, et n'est pas un oubli : ni `bootstrap-` ni `run-` côté Unix, où ils emballeraient une ligne, et pas de `dist-linux.sh` tant que le projet n'a aucun format de distribution Linux — écrire ce script serait décider de publier des binaires, ce qui n'est pas une simplification de la chaîne.
 
 Le point 6 est de loin le plus instructif des onze, et il vaut d'être lu dans l'historique : rangé ici en « deux détails » pour son gain de quelques lignes de script, il cachait l'absence de `msvcp140_1.dll`, c'est-à-dire une archive qui ne démarrait sur aucune machine sans redistribuable Visual C++.
 
