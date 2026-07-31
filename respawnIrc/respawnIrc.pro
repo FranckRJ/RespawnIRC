@@ -133,11 +133,30 @@ QMAKE_CXXFLAGS_RELEASE += -O2
 # Hunspell est attendu dans un dossier `hunspell` à la racine du dépôt (voir le wiki). Sous macOS
 # on se rabat sur celui de Homebrew, dont la bibliothèque porte un nom versionné contrairement à
 # celle de Debian ; ce nom peut être précisé : qmake HUNSPELL_LIB_NAME=hunspell-1.8
-HUNSPELL_DIR = $$PWD/../hunspell
+#
+# Le dossier se désigne de la même façon, et c'est ce qui rend la compilation possible sur un Mac
+# Apple Silicon : le programme y est en x86_64 comme ailleurs — le Qt 5.15.2 officiel n'existe pas
+# autrement, et ses mkspecs mettent -arch x86_64 dans le Makefile — alors que le Homebrew de
+# /opt/homebrew ne fournit que de l'arm64, qui ne se lie pas avec. Il faut donc un Hunspell x86_64 :
+# celui du Homebrew de /usr/local, ou une compilation à soi posée dans le dossier `hunspell` du
+# dépôt, que la ligne ci-dessous prend sans qu'on ait rien à désigner.
+#
+# Un dossier désigné n'est jamais remplacé en douce par celui de Homebrew, même s'il ne convient
+# pas : c'est le principe qu'unix-common.sh applique déjà au Qt donné en argument.
+hunspellDirWasGiven = $$HUNSPELL_DIR
+isEmpty(HUNSPELL_DIR): HUNSPELL_DIR = $$PWD/../hunspell
 
-macx:!exists($$HUNSPELL_DIR/include/hunspell/hunspell.hxx) {
+macx:isEmpty(hunspellDirWasGiven):!exists($$HUNSPELL_DIR/include/hunspell/hunspell.hxx) {
     HUNSPELL_DIR = $$system(brew --prefix hunspell)
     isEmpty(HUNSPELL_LIB_NAME): HUNSPELL_LIB_NAME = hunspell-1.7
+
+    # brew ne rend rien quand Hunspell n'est pas installé, et pas davantage quand c'est le Homebrew
+    # de /opt/homebrew qui est appelé depuis un processus traduit par Rosetta 2 — ce que qmake est
+    # forcément sur un Mac Apple Silicon, ses binaires étant en x86_64. Sans ce test, LIBS gardait
+    # un -L/lib/ et l'échec n'apparaissait qu'à l'édition de liens, en « library not found for
+    # -lhunspell-1.7 » qui ne dit pas d'où ce chemin venait ni pourquoi il est vide.
+    isEmpty(HUNSPELL_DIR): \
+        error("Hunspell introuvable : brew --prefix hunspell n'a rien rendu. Installez-le, ou désignez-le : qmake ... HUNSPELL_DIR=/usr/local/opt/hunspell HUNSPELL_LIB_NAME=hunspell-1.7")
 }
 
 isEmpty(HUNSPELL_LIB_NAME): HUNSPELL_LIB_NAME = hunspell

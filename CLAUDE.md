@@ -242,6 +242,51 @@ Deux choses à ne pas défaire :
 - **ce remplacement doit précéder la signature.** `codesign` scelle le contenu du bundle ; un fichier
   changé après elle la casse, et macOS refuse alors de lancer l'application.
 
+#### Compiler sur un Mac Apple Silicon
+
+**La cible ne dépend pas de la machine qui compile**, et c'est ce qu'il faut savoir avant de
+raisonner sur ce sujet. Les mkspecs du Qt 5.15.2 officiel fixent `QMAKE_APPLE_DEVICE_ARCHS = x86_64`
+en dur dans `mkspecs/common/macx.conf`, valeur littérale et non déduite de l'hôte ; `default_post.prf`
+la transforme en un `EXPORT_VALID_ARCHS = x86_64` du `Makefile`, d'où sort un `-arch x86_64` explicite
+dans `CXXFLAGS` et `LFLAGS`. Un Mac Apple Silicon produit donc le même bundle x86_64 qu'un Mac Intel,
+sans rien à passer à `qmake`, et la question de savoir si `clang` s'exécute traduit ou natif ne se
+pose pas : l'architecture est écrite sur sa ligne de commande. **Ne pas ajouter d'option
+d'architecture** en croyant corriger quelque chose — elle ferait au mieux double emploi.
+
+Ce qui manque vraiment tient en deux pièces, les deux en dehors du dépôt :
+
+- **Rosetta 2.** `qmake`, `macdeployqt` et `respawnIrcTests` sont en x86_64 comme tout ce Qt, donc
+  refusés par le noyau sans lui. Le piège n'était pas l'absence de Rosetta mais le **diagnostic** :
+  `qtHasWebEngine` avalait la sortie d'erreur de `qmake` et rendait faux, si bien qu'un « Bad CPU type
+  in executable » était rapporté comme un Qt sans QtWebEngine, avec le conseil d'installer par
+  `aqtinstall` celui qui était déjà là. `unix-common.sh` distingue maintenant les deux, par une
+  `qtSuitability` qui rend 1 pour un `qmake` qui ne démarre pas et 2 pour un Qt sans le module ; sur
+  un hôte `arm64`, le message nomme Rosetta et donne `softwareupdate --install-rosetta`. Les cinq
+  chemins ont été rejoués sur un Mac Intel — Qt désigné mort, Qt désigné sans module, vrai Qt,
+  candidats tous morts, et le message d'Apple Silicon en interposant un faux `uname` dans le `PATH`.
+  Le faux `qmake` rend **86**, qui est le code exact de ce refus ;
+- **un Hunspell x86_64**, et c'est le seul vrai obstacle. `brew --prefix hunspell` désigne
+  `/opt/homebrew` sur une machine Apple Silicon, dont la bibliothèque est en arm64 et ne se lie pas à
+  un binaire x86_64. Le `.pro` accepte donc maintenant un `HUNSPELL_DIR` sur la ligne de commande —
+  il l'écrasait auparavant, l'affectation étant inconditionnelle — et **un dossier désigné n'est
+  jamais remplacé en douce** par celui de Homebrew, le même principe que pour le Qt désigné aux
+  scripts. Les deux sorties sont un Hunspell x86_64 compilé à soi et posé dans le `hunspell/` de la
+  racine, que le `.pro` prend sans qu'on désigne rien, ou le Homebrew de `/usr/local`
+  (`HUNSPELL_DIR=/usr/local/opt/hunspell HUNSPELL_LIB_NAME=hunspell-1.7`). Le repli sur `brew`
+  s'arrête en plus sur un `error()` quand il ne rend rien : sans lui, `LIBS` gardait un `-L/lib/` et
+  l'échec n'apparaissait qu'à l'édition de liens, en « library not found » qui ne dit pas d'où venait
+  ce chemin vide. Ce cas n'est pas que celui d'un Hunspell absent — un Homebrew de `/opt/homebrew`
+  appelé depuis un `qmake` traduit refuserait de répondre, `uname -m` lui rendant `x86_64`.
+
+**Rien de tout ceci n'a été essayé sur un Mac Apple Silicon**, faute d'en avoir un, et il ne faut pas
+le présenter autrement. Ce qui est constaté l'a été sur un Mac Intel : la provenance du `-arch
+x86_64`, relue dans les mkspecs et dans le `Makefile` engendré ; les cinq messages de résolution de
+Qt ; les trois chemins de résolution de Hunspell — défaut Homebrew, `HUNSPELL_DIR` désigné, `brew`
+muet — et un `./build-unix.sh -t` complet, 142 vérifications sans échec, rendant toujours un exécutable
+`Mach-O 64-bit executable x86_64`. Le reste est raisonné : Rosetta traduisant le Chromium de
+QtWebEngine, et le refus de Homebrew sous traduction. C'est exactement le genre de sujet où une
+machine témoin est irremplaçable, comme pour les machines vierges de la section Windows.
+
 ### Windows
 
 Le point de départ, dont tout le reste découle : **QtWebEngine n'existe pas pour MinGW**, Chromium
