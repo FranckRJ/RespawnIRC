@@ -301,11 +301,21 @@ toucher. **`QtPositioning` doit rester** : l'exécutable et `QtWebEngineCore` s'
 à peu près tout ce qui se prend sans toucher à Chromium lui-même.
 
 Le repli de Chromium sur `en-US` a été **essayé et non supposé**, puisque c'est le seul vrai risque de
-cet allègement : un petit programme `QWebEngineView` pointé sur les ressources du bundle allégé par
-`QTWEBENGINE_RESOURCES_PATH` et `QTWEBENGINE_LOCALES_PATH` rend bien une page sous `LANG=ja_JP`, dont
-le `.pak` a disparu. Ce qui n'a **pas** été rejoué, faute d'accès assistif pour piloter l'interface
-depuis un script : le parcours dans l'application elle-même, fenêtre de connexion et navigateur
-interne.
+cet allègement, et **les deux usages que le programme fait de QtWebEngine l'ont été aussi**, sur le
+bundle extrait du DMG : « Ouvrir RespawnIRC Navigator » affiche jeuxvideo.com, le `QtWebEngineProcess`
+lancé étant bien celui des `Helpers` du bundle, et « Se connecter » puis « Afficher la page de
+connexion » rend la page de `/sso/login`. Relancé avec `LANG=ja_JP.UTF-8`, dont le `.pak` a disparu, le
+programme affiche la même page avec un Chromium qui tourne en `--lang=ja` : le repli vaut donc pour
+l'application elle-même et pas seulement pour un programme d'essai pointé sur ses ressources par
+`QTWEBENGINE_RESOURCES_PATH` et `QTWEBENGINE_LOCALES_PATH`. Deux choses à savoir pour rejouer ce
+parcours : il se pilote par `osascript` et System Events, ce qui demande l'**accès assistif** accordé à
+l'outil depuis lequel on travaille — sans lui `osascript` répond `-1719` et rien ne se clique — et la
+langue de Chromium suit aussi bien `LANG` que `-AppleLanguages`, les deux ayant donné `--lang=ja` ici.
+
+Une chose vue au passage, qui n'a rien à voir avec l'allègement et qu'il ne faut pas lui imputer : le
+navigateur interne écrit des `Uncaught SyntaxError` dans le journal sur les pages de jeuxvideo.com. Le
+Chromium de Qt 5.15 date de 2020 et le site utilise une syntaxe plus récente ; les pages s'affichent
+quand même. C'est un argument pour `MIGRATION-QT6.md`, pas un défaut du DMG.
 
 #### Compiler sur un Mac Apple Silicon
 
