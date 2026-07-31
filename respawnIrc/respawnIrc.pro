@@ -39,9 +39,21 @@ DEFINES += RESPAWNIRC_VERSION=\\\"$$RESPAWNIRC_VERSION\\\"
 # donc forcément ceux de ses propres règles, sans rien à deviner. Tout recompiler pour un changement
 # de version coûte moins cher que de tenir à jour la liste des sources qui lisent le DEFINES —
 # aujourd'hui respawnIrc.cpp seul, et rien ne le dit ici.
-dependsOfVersion.target = $(OBJECTS)
-dependsOfVersion.depends = $$clean_path($$PWD/../version.pri)
-QMAKE_EXTRA_TARGETS += dependsOfVersion
+#
+# La condition n'est pas une précaution : sous MSVC, CONFIG porte debug_and_release et qmake écrit
+# alors trois fichiers, un Makefile qui ne fait que rappeler nmake sur Makefile.Release et
+# Makefile.Debug, et ces deux-là. Seuls les deux derniers définissent OBJECTS ; dans le premier,
+# $(OBJECTS) ne vaut rien et nmake s'arrête net dessus, en « fatal error U1083: target macro
+# '$(OBJECTS)' expands to nothing » — donc aucune compilation Windows ne passait, ni le programme ni
+# l'archive. On n'écrit donc la règle que dans les passes qui compilent vraiment ; là où il n'y a
+# qu'un seul Makefile, ce qui est le cas de macOS et de Linux, debug_and_release est absent et rien
+# ne change. La leçon est celle que CLAUDE.md annonçait pour ce correctif : il n'avait pas été
+# essayé sous nmake, et make et nmake ne se comportent pas pareil devant une cible vide.
+build_pass|!debug_and_release {
+    dependsOfVersion.target = $(OBJECTS)
+    dependsOfVersion.depends = $$clean_path($$PWD/../version.pri)
+    QMAKE_EXTRA_TARGETS += dependsOfVersion
+}
 
 RC_FILE = respawnIrc.rc
 

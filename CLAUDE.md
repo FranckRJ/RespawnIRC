@@ -98,8 +98,22 @@ maintenant de `version.pri` un prérequis de `$(OBJECTS)`, la liste que qmake a 
 `Makefile` : un changement de version recompile tout, ce qui coûte moins cher que de tenir à jour la
 liste des sources qui lisent le `DEFINES` — `respawnIrc.cpp` seul aujourd'hui, et rien dans le `.pro`
 ne le dit. C'est le même procédé que pour les deux règles du bundle macOS plus bas, avec le même
-avantage : le nom des cibles vient de qmake et n'est pas deviné. **Il n'a en revanche pas été essayé
-sous `nmake`**, où il n'y a que la compilation de Windows pour le juger.
+avantage : le nom des cibles vient de qmake et n'est pas deviné.
+
+**Il n'avait pas été essayé sous `nmake`, et il y cassait tout.** Sous MSVC, `CONFIG` porte
+`debug_and_release` et qmake écrit **trois** fichiers : un `Makefile` qui ne fait que rappeler `nmake`
+sur `Makefile.Release` et `Makefile.Debug`, et ces deux-là. Seuls les deux derniers définissent
+`OBJECTS`. Dans le premier, `$(OBJECTS)` ne vaut rien, et `nmake` ne l'ignore pas comme le ferait
+`make` : il s'arrête sur un `fatal error U1083: target macro '$(OBJECTS)' expands to nothing`.
+Autrement dit **plus rien ne se compilait sous Windows**, ni `build-windows.ps1` ni
+`dist-windows.ps1`, et l'échec ne désignait pas le `.pro` d'où il venait. Le `.pro` n'écrit donc la
+règle que dans les passes qui compilent vraiment, par un `build_pass|!debug_and_release` : là où il
+n'y a qu'un seul `Makefile`, ce qui est le cas de macOS et de Linux, `debug_and_release` est absent et
+rien ne change. Vérifié des deux côtés après correction — `build-windows.ps1 -Tests` compile et rend
+142 vérifications sans échec, `dist-windows.ps1` fabrique l'archive entière, et un `version.pri`
+retouché fait bien tout recompiler sous `nmake`. La leçon vaut pour les règles ajoutées à la main dans
+un `.pro` : **elles doivent être essayées sur chaque générateur**, `make` et `nmake` ne se comportant
+pas pareil devant une cible vide.
 
 ### macOS
 
