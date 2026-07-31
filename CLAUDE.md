@@ -64,7 +64,11 @@ Quatre pièges, tous documentés dans le README :
 
 - le `qt@5` de Homebrew n'a **plus** QtWebEngine (Chromium troué), il faut le Qt 5.15.2
   officiel via `aqtinstall` ; Hunspell vient de Homebrew, avec une bibliothèque au nom
-  versionné (`-lhunspell-1.7`), et zlib du système ;
+  versionné (`-lhunspell-1.7`), et zlib du système. Conséquence à ne pas sous-estimer : le `qmake` du
+  `PATH` est celui de Homebrew dès qu'il est installé, donc **le comportement par défaut des scripts
+  tombe droit sur le mauvais Qt** — c'est ce qui faisait échouer un `./dist-macos.sh` sans argument.
+  `build-unix.sh` interroge maintenant `qmake -query QT_INSTALL_ARCHDATA` et refuse un Qt sans
+  `qt_lib_webenginewidgets.pri`, en nommant la cause. Toujours lui passer `-q ~/Qt/5.15.2/clang_64` ;
 - le système de fichiers ignore la casse, donc `RespawnIRC` ne peut pas cohabiter avec le
   dossier `respawnIrc` : on compile un bundle `RespawnIRC.app` posé à la racine du dépôt, et
   les données restent à côté du bundle. C'est à ça que sert `pathTool::dataDirPath()`, à

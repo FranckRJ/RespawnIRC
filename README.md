@@ -266,9 +266,11 @@ Homebrew fournit Hunspell, et zlib vient du système, mais son paquet `qt@5` est
 
 Ces binaires sont en x86_64 : sur un Mac Apple Silicon ils tournent via Rosetta 2. Le Chromium de Qt 5.15.2 est ancien, mieux vaut ne pas s'en servir comme navigateur généraliste.
 
-La compilation se fait ensuite avec le même script que sous Linux, à qui il faut désigner ce Qt-là plutôt que celui de Homebrew :
+La compilation se fait ensuite avec le même script que sous Linux, à qui il faut **désigner ce Qt-là** :
 
     ./build-unix.sh -q ~/Qt/5.15.2/clang_64
+
+Sans `-q`, le script prend le Qt dont le `qmake` est dans le `PATH` — et si Homebrew est installé, c'est le sien, celui qui n'a justement pas QtWebEngine. Le script s'en aperçoit et le dit avant de compiler quoi que ce soit, plutôt que de laisser `qmake` répondre un `Unknown module(s) in QT: webenginewidgets` qui ne désigne pas le coupable.
 
 `-t` compile et lance en plus les tests, `-c` repart de zéro. Le script ajoute de lui-même `CONFIG+=sdk_no_version_check`, qui fait taire l'avertissement de Qt 5.15.2 — testé avec le seul SDK 10.15 alors que Xcode en fournit un bien plus récent.
 
@@ -297,7 +299,7 @@ Le bundle produit ci-dessus embarque les chemins du Qt de la machine qui l'a com
 
     ./dist-macos.sh ~/Qt/5.15.2/clang_64
 
-Le script compile en appelant `build-unix.sh`, lance les tests, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 100 Mo pour un bundle de 200 Mo). Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; `--skip-tests` saute les vérifications.
+Le script compile en appelant `build-unix.sh`, lance les tests, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 100 Mo pour un bundle de 200 Mo). `--skip-tests` saute les vérifications. Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH`, ce qui ne convient que si ce n'est pas celui de Homebrew — donnez-lui le chemin comme ci-dessus.
 
 L'image disque contient un dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut glisser dans les Applications, ou n'importe où ailleurs. Ces dossiers doivent rester à côté du bundle, que `pathTool::dataDirPath()` va y chercher. Ils ne sont plus jamais écrits depuis que le programme range ce qu'il produit dans `~/Library/Application Support` et `~/Library/Caches` : le bundle pourrait donc les embarquer et l'image se réduire à un simple `RespawnIRC.app`, ce qui reste à faire.
 
