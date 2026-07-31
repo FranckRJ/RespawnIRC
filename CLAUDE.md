@@ -208,6 +208,32 @@ le Homebrew de l'utilisateur ne sert donc pas plus que son Qt. Ne restent en deh
 conséquence du Qt officiel utilisé et non des scripts : le binaire est **thin x86_64**, donc sous
 Rosetta sur une machine Apple Silicon.
 
+#### D'où vient le macOS 10.13 minimum, et le seul fichier qui ne le respecte pas
+
+Le `LSMinimumSystemVersion` du bundle vaut 10.13, et **ce n'est ni un choix du dépôt ni un hasard** :
+c'est Qt qui le fixe, à la ligne d'à côté de celle qui fixe l'architecture. `mkspecs/common/macx.conf`
+porte `QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.13` en 8 et `QMAKE_APPLE_DEVICE_ARCHS = x86_64` en 9 : deux
+valeurs littérales, aucune déduite de la machine, et le même raisonnement vaut donc pour les deux — la
+cible ne dépend pas de la machine qui compile. De là sort le `-mmacosx-version-min=10.13` de chaque
+compilation et de chaque édition de liens, que qmake reprend en `MACOSX_DEPLOYMENT_TARGET` et
+qu'`Info.plist` reprend à son tour par `${MACOSX_DEPLOYMENT_TARGET}`. **Rien dans le dépôt n'écrit ce
+nombre**, et le descendre demanderait de recompiler Qt : ses frameworks précompilés portent eux-mêmes
+10.13 dans leur load command, `QtCore` comme `QtWebEngineCore`. À savoir pour la migration : Qt 6.11
+demande **macOS 13**, cinq versions majeures plus haut — c'est la ligne « macOS minimum » du tableau
+de `MIGRATION-QT6.md`.
+
+**Une pièce du bundle distribué dément ce plancher, et c'est `libhunspell-1.7.0.dylib`** : il annonce
+`minos 14.0` là où tout le reste annonce 10.13. Ce n'est pas Qt mais Homebrew, qui compile pour la
+machine où il tourne — le `hunspell` de `/usr/local` était ici un 1.7.3 sur un macOS 15.7.8. Le DMG
+publié annonce donc 10.13 en transportant une bibliothèque qui en demande 14, et **l'éditeur de liens
+n'en dit rien** : le journal d'une compilation complète ne porte aucun avertissement du genre « built
+for newer macOS version ». Ce qui se passerait réellement entre 10.13 et 13.x n'est pas connu — il
+faudrait une machine de cette génération, et il ne faut pas trancher sans elle. La sortie, si le sujet
+compte un jour, est le Hunspell compilé à soi dans le `hunspell/` de la racine, que le `.pro` prend
+déjà en premier, avec le même `-mmacosx-version-min=10.13`. À ne pas confondre avec le besoin d'un
+Hunspell x86_64 de la section Apple Silicon : ce sont deux propriétés différentes du même fichier, et
+un Hunspell compilé à soi les réglerait toutes les deux.
+
 **Mais « autonome » ne vaut que pour ce bundle-là**, et pas pour celui que laisse une compilation
 ordinaire. Les deux ont bien la même disposition — c'est tout ce que dit le point du
 `QMAKE_BUNDLE_DATA` plus haut, et il ne faut pas lui faire dire que le bundle du build est
