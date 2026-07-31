@@ -59,9 +59,11 @@ différemment selon l'outil, `cp -f -R` voulant le dossier parent et fusionnant 
 déjà là, `xcopy /s /q /y /i` voulant le dossier cible. Ce n'est **pas** le cas du
 `DEFINES+=HUNSPELL_STATIC` qu'on a refusé de descendre dans le `.pro` : celui-là avait une ligne de
 commande `qmake` où vivre, celui-ci n'en a pas. La seconde est que la copie se fait à l'édition de
-liens : **un thème modifié sans qu'un `.cpp` bouge ne parvient donc pas au programme**, exactement
-comme le piège du bundle macOS documenté plus bas, et c'est le même `rm -rf` de `build-unix.sh` qui
-s'en garde.
+liens : un thème modifié sans qu'un `.cpp` bouge ne donnait donc rien à relier, et ne parvenait
+jamais au programme. Le même bloc met maintenant les fichiers des deux dossiers en `PRE_TARGETDEPS`,
+ce qui suffit à faire relier pour eux et donc à rendre la main au `QMAKE_POST_LINK` ; le prix est une
+édition de liens pour un thème modifié. Sous macOS le même besoin est couvert autrement, les règles
+du bundle ne passant pas par l'exécutable — voir plus bas.
 
 Cette disposition a fait disparaître quatre règles du `.gitignore` et l'exception qui allait avec :
 `/RespawnIRC`, `/RespawnIRC.app/`, `/RespawnIRC.exe`, `/RespawnIRC.pdb` et le `!/respawnIrc/` que la
@@ -85,9 +87,25 @@ qu'une ligne. Il était auparavant dans le littéral C++, que trois analyseurs s
 lire — une regex PowerShell, un `sed`, et un enchaînement `$$cat`/`$$find`/`$$replace` dans le
 `.pro`. Conséquence assumée : le programme ne se compile plus sans qmake, un `#error` le dit.
 
+Ce numéro arrivant aux sources par un `-D` de la ligne de commande du compilateur, **`make` ne le voit
+pas** : rien ne rattachait les objets déjà compilés à `version.pri`, et un numéro changé ne leur
+parvenait donc pas. Constaté, et pas seulement possible : `version.pri` passé à 3.1.42, un
+`./build-unix.sh` a rendu un bundle dont `Info.plist` annonçait 3.1.42 et dont le programme annonçait
+toujours v3.1.17 — le `rm -rf` du script ne s'en gardait pas, il force l'édition de liens et pas la
+compilation, et le `respawnIrc.o` resté en place portait l'ancien numéro. Une publication pouvait donc
+sortir en annonçant deux versions différentes selon l'endroit où on la regardait. Le `.pro` fait
+maintenant de `version.pri` un prérequis de `$(OBJECTS)`, la liste que qmake a lui-même écrite dans le
+`Makefile` : un changement de version recompile tout, ce qui coûte moins cher que de tenir à jour la
+liste des sources qui lisent le `DEFINES` — `respawnIrc.cpp` seul aujourd'hui, et rien dans le `.pro`
+ne le dit. C'est le même procédé que pour les deux règles du bundle macOS plus bas, avec le même
+avantage : le nom des cibles vient de qmake et n'est pas deviné. **Il n'a en revanche pas été essayé
+sous `nmake`**, où il n'y a que la compilation de Windows pour le juger.
+
 ### macOS
 
-Quatre pièges, tous documentés dans le README :
+Quatre pièges, dont le README dit l'essentiel. **Les deux derniers ne mordent plus** — le `.pro` a
+depuis donné leurs dépendances aux règles concernées, voir juste après la liste — mais ils sont
+gardés tels quels : ce sont eux qui expliquent ce que le `.pro` fait et pourquoi.
 
 - le `qt@5` de Homebrew n'a **plus** QtWebEngine (Chromium troué), il faut le Qt 5.15.2
   officiel via `aqtinstall` ; Hunspell vient de Homebrew, avec une bibliothèque au nom
@@ -109,29 +127,67 @@ Quatre pièges, tous documentés dans le README :
   qu'on distribue, il n'y a **qu'une seule disposition** et `pathTool::dataDirPath()` n'a rien à
   reconnaître. C'est cette fonction qu'il faut utiliser partout plutôt que
   `QCoreApplication::applicationDirPath()` ;
-- conséquence du point précédent, à connaître : le `make` qui recopie ces deux dossiers a le dossier
-  **source** pour dépendance, pas les fichiers dedans. Un thème modifié sans qu'un `.cpp` bouge ne
-  parvient donc pas au bundle sur un `make` lancé à la main — constaté, `Nothing to be done`. C'est
-  le même piège que celui d'`Info.plist` juste en dessous, et c'est le même
-  `rm -rf build/RespawnIRC.app` de `build-unix.sh` qui s'en garde : passer par le script, ou effacer
-  le bundle. Depuis que les deux autres plateformes recopient elles aussi ces dossiers à côté de
-  l'exécutable, le piège est le leur également ;
-- **la règle qmake qui fabrique `Info.plist` n'a aucune dépendance**, si bien que `make` la saute
-  dès qu'un bundle est déjà là : un numéro de version changé dans `version.pri` ne parvient pas au
-  bundle, qui garde celui de la compilation précédente. Le `rm -rf build/RespawnIRC.app` qui s'en
-  garde est maintenant dans `build-unix.sh`, où il couvre aussi la compilation ordinaire et pas
-  seulement la distribution — c'est la même ligne qui, sous Linux, garantit que ce qui sort vient
-  bien des objets du dossier de compilation courant. **Compiler hors des sources n'y change rien** —
-  on l'a cru, et c'était l'unique justification du point 7 de
+- conséquence du point précédent, à connaître : la règle qui recopie ces deux dossiers n'a que le
+  dossier **source** pour dépendance, pas les fichiers dedans. Un thème modifié sans qu'un `.cpp`
+  bouge ne parvenait donc pas au bundle sur un `make` lancé à la main — constaté, `Nothing to be
+  done`. Depuis que les deux autres plateformes recopient elles aussi ces dossiers à côté de
+  l'exécutable, le piège était le leur également ;
+- **la règle qmake qui fabrique `Info.plist` n'a aucune dépendance**, si bien que `make` la sautait
+  dès qu'un bundle était déjà là : un numéro de version changé dans `version.pri` ne parvenait pas au
+  bundle, qui gardait celui de la compilation précédente. **Compiler hors des sources n'y change
+  rien** — on l'a cru, et c'était l'unique justification du point 7 de
   `POSSIBLE-BUILD-SIMPLIFICATIONS.md` : la cible de cette règle est le bundle du `DESTDIR`, et pas un
-  fichier du dossier de compilation. Un dossier neuf ne peut donc rien y faire, et l'effacement reste
-  nécessaire. **Déplacer le `DESTDIR` dans `build/` n'y a rien changé non plus**, pour exactement la
-  même raison : la cible suit le `DESTDIR`, elle est simplement passée de
+  fichier du dossier de compilation. Un dossier neuf ne peut donc rien y faire. **Déplacer le
+  `DESTDIR` dans `build/` n'y a rien changé non plus**, pour exactement la même raison : la cible
+  suit le `DESTDIR`, elle est simplement passée de
   `<racine>/RespawnIRC.app/Contents/Info.plist:` à `../../build/RespawnIRC.app/Contents/Info.plist:`,
   toujours terminée sur un deux-points nu — relu dans le `Makefile` engendré après le déplacement.
   L'expérience qui l'avait établie, elle, date d'avant : depuis un `build/respawnIrc`, le contenu
   d'`Info.plist` remplacé par un texte quelconque, `make` répond `Nothing to be done` et laisse le
   fichier tel quel.
+
+**Ces deux règles ont maintenant les prérequis qui leur manquaient**, et c'est le `.pro` qui les leur
+donne : l'`Info.plist` du dépôt et `version.pri` pour la première, la liste récursive des fichiers de
+`resources/` et `themes/` pour les deux autres. Le procédé tient en une propriété de `make` : une même
+cible peut apparaître dans plusieurs règles tant qu'une seule porte des commandes, les prérequis
+s'additionnant. Ces `QMAKE_EXTRA_TARGETS` n'ont donc **que** des dépendances, et laissent les
+commandes à qmake. Deux choses à savoir avant d'y toucher :
+
+- le nom de la cible doit s'écrire **exactement** comme qmake l'écrit dans le `Makefile`. `make`
+  compare des chaînes et ne sait pas que deux chemins désignent le même fichier : une écriture
+  différente donnerait une seconde cible dont personne ne dépend, qui ne servirait à rien **sans que
+  rien ne le signale**. D'où le `$(DESTDIR)` du `.pro` — la variable du `Makefile` d'où sortent les
+  règles du bundle — plutôt qu'un chemin reconstruit. Ce n'est pas théorique : le premier essai
+  passait par `$$relative_path()`, qui donne le chemin le plus court quand qmake, lui, écrit le sien
+  en repassant par le dossier des sources ; les deux désignaient le même fichier et `make` n'en a
+  refait aucun ;
+- la liste de fichiers est figée au moment du `qmake`, mais elle n'a pas à connaître les fichiers
+  ajoutés depuis : c'est le dossier, que qmake garde comme prérequis, qui rattrape l'ajout et la
+  suppression — sa date bouge dans ces deux cas et pas quand un fichier change. Les deux prérequis
+  sont complémentaires, et la liste récursive comprend les sous-dossiers, sans quoi un sticker ajouté
+  ne serait vu de personne. Il reste un trou, étroit et sans conséquence en pratique : un fichier
+  **créé puis modifié** sans `qmake` entre les deux échappe aux deux prérequis — la date de son
+  dossier ne rebouge pas pour une modification, et lui n'était pas là au `qmake` pour être dans la
+  liste. Constaté en l'essayant exprès : un `touch` sur un fichier ajouté depuis ne déclenche rien.
+  Sa création, elle, a bien été vue, donc il est dans le bundle ; et `build-unix.sh` relance `qmake`
+  à chaque fois, ce qui referme le trou dès qu'on passe par lui.
+
+Vérifié règle par règle sur un bundle en place, sans jamais l'effacer : thème modifié, fichier ajouté,
+fichier supprimé, sticker modifié dans son sous-dossier, `version.pri` changé et `Info.plist` modifié
+parviennent tous au bundle sur un simple `make`, et un `make` à vide répond toujours `Nothing to be
+done`. Le `rm -rf build/RespawnIRC.app` de `build-unix.sh` n'est donc plus ce qui s'en garde : il
+reste, mais pour la seule raison qui n'a rien à voir avec macOS — le `DESTDIR` ne distinguant pas les
+dossiers de compilation, ce qui traîne dans `build/` peut venir d'ailleurs. **La conclusion du point 7
+tenait donc à un correctif que personne n'avait écrit, et non à une impossibilité** ; ce qu'elle
+établissait sur le `Makefile` engendré, en revanche, était juste.
+
+Un piège de plus, qui n'appartient pas au projet et qui a failli faire conclure à un correctif
+défaillant : le `make` d'Apple est un **GNU Make 3.81**, qui ne compare les dates qu'à la seconde. Un
+fichier modifié dans la même seconde que la compilation précédente n'est pas vu, et ne le sera jamais
+— attendre ne change rien, les deux dates restant égales. Quatre des vérifications ci-dessus ont
+d'abord échoué pour cette seule raison, enchaînées trop vite dans un script ; rejouées avec une
+seconde d'écart, elles passent toutes. Cela vaut pour les `.cpp` comme pour le reste, et c'est
+exactement le genre de résultat qu'il ne faut pas prendre pour la preuve qu'une règle est mauvaise.
 
 La compilation se fait **hors des sources**, dans `build/respawnIrc`, comme sur les deux autres
 plateformes : c'est ce que fait `build-unix.sh` et ce que décrit le README.

@@ -256,7 +256,7 @@ Tout ceci en une ligne :
 
 Seuls les objets intermédiaires restent dans `build/respawnIrc` ; le `DESTDIR` du `.pro` dépose l'exécutable et ses données dans `build/` dans tous les cas, à côté de `respawnIrcTests`. **Rien n'atterrit à la racine du dépôt**, qui ne porte que des sources : un `rm -rf build/` nettoie tout ce que la compilation a produit. Compiler dans le dossier de sources continue de fonctionner et donne le même résultat au même endroit — c'est simplement ce qui laissait un `Makefile` et une quarantaine de `.o` au milieu des sources, et le `.gitignore` n'a plus de règle pour les couvrir.
 
-La copie de `resources/` et `themes/` a la même réserve que le bundle macOS décrit plus bas : elle se fait à chaque édition de liens, donc un thème modifié sans qu'un `.cpp` bouge ne parvient pas au programme tant qu'il n'y a rien à relier.
+La copie de `resources/` et `themes/` se fait à chaque édition de liens. Un thème modifié sans qu'un `.cpp` bouge n'aurait donc rien à relier, et ne parviendrait jamais au programme : le `.pro` fait des fichiers de ces deux dossiers des prérequis de l'exécutable, de sorte que `make` relie pour eux aussi. Le prix est une édition de liens pour un thème modifié.
 
 ### macOS
 
@@ -279,7 +279,6 @@ Il n'y a pas de chemin à lui donner : le script écarte les Qt sans QtWebEngine
 À la main, c'est :
 
     export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"
-    rm -rf build/RespawnIRC.app
     mkdir -p build/respawnIrc
     cd build/respawnIrc
     qmake ../../respawnIrc/respawnIrc.pro CONFIG+=sdk_no_version_check
@@ -287,19 +286,16 @@ Il n'y a pas de chemin à lui donner : le script écarte les Qt sans QtWebEngine
 
 Comme sous Linux, seuls les objets intermédiaires restent dans `build/respawnIrc` : le `DESTDIR` du `.pro` dépose le bundle dans `build/` de toute façon.
 
-Le `rm -rf build/RespawnIRC.app` de la deuxième ligne n'est pas une précaution de confort, c'est ce qui rend la compilation à la main fiable — deux règles du `Makefile` visent des fichiers du bundle sans en dépendre vraiment, et `make` les saute dès qu'un bundle est déjà là :
+Il n'y a **plus** de `rm -rf build/RespawnIRC.app` à faire avant, et c'est récent. Trois règles du `Makefile` visaient des fichiers sans en dépendre vraiment, si bien que `make` les sautait et répondait `Nothing to be done` : celle qui fabrique `Info.plist`, qui n'a aucune dépendance ; celles qui recopient `resources` et `themes`, qui n'ont que le **dossier** source pour dépendance, pas les fichiers dedans ; et la compilation des sources, que rien ne rattachait à `version.pri` alors que le numéro de version leur arrive par un `-D`. Le `.pro` ajoute maintenant à ces trois règles les prérequis qui leur manquaient, sans toucher aux commandes — en `make`, une même cible peut apparaître dans plusieurs règles tant qu'une seule porte des commandes, et les prérequis s'additionnent.
 
-- celle qui fabrique `Info.plist` n'a **aucune** dépendance : un numéro de version changé dans `version.pri` ne parvient pas au bundle, qui garde celui de la compilation précédente ;
-- celles qui recopient `resources` et `themes` ont le **dossier** source pour dépendance, pas les fichiers dedans : un thème modifié sans qu'un `.cpp` bouge ne parvient pas au bundle non plus, `make` répondant `Nothing to be done`.
-
-Changer de dossier de compilation n'y change rien, ces règles ayant pour cible le bundle du `DESTDIR` et non un fichier du dossier de compilation. `build-unix.sh` fait cet effacement de lui-même avant chaque compilation, et `dist-macos.sh` en hérite : passer par le script est le plus simple, ces deux pièges ne mordent que sur ce qu'on tape à la main.
+Une réserve, qui n'est pas propre à ce projet : le `make` d'Apple est un GNU Make 3.81, qui **ne compare les dates qu'à la seconde**. Un fichier modifié dans la même seconde que la compilation précédente n'est donc pas vu, ici comme pour n'importe quel `.cpp`. Un `make` de plus, une seconde après, suffit.
 
 Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne pourrait cohabiter ni avec le dossier de sources `respawnIrc`, ni avec le `build/respawnIrc` où vont ses objets. Le `.app`, lui, ne se confond avec aucun des deux. Le bundle est posé dans `build/`, lancez-le de là ou double-cliquez dessus depuis le Finder :
 
     cd ..
     ./RespawnIRC.app/Contents/MacOS/RespawnIRC
 
-Le bundle **embarque** `resources` et `themes` dans son `Contents/Resources` (voir `pathTool::dataDirPath`) : il est autonome et se déplace où l'on veut, la compilation ordinaire donnant le même bundle que celui qu'on distribue. Un thème modifié n'y parvient donc qu'à la compilation suivante, avec la réserve du paragraphe ci-dessus si vous compilez à la main.
+Le bundle **embarque** `resources` et `themes` dans son `Contents/Resources` (voir `pathTool::dataDirPath`) : il est autonome et se déplace où l'on veut, la compilation ordinaire donnant le même bundle que celui qu'on distribue. Un thème modifié n'y parvient donc qu'à la compilation suivante — mais un `make` suffit, sans qu'il y ait quoi que ce soit à relier.
 
 #### Fabriquer une version distribuable
 

@@ -81,9 +81,12 @@ else
 fi
 
 # L'effacement du bundle déjà en place, que ce script faisait lui-même à cause de la règle sans
-# dépendance qui fabrique Info.plist, est maintenant dans build-unix.sh : il y couvre le même piège
-# pour qui compile sans passer par ici. Le bundle sort de la compilation dans build/ ; c'est le mv
-# plus bas qui l'en retire, l'image disque n'ayant pas à contenir un chemin de compilation.
+# dépendance qui fabrique Info.plist, est dans build-unix.sh — et n'a plus cette raison-là, le .pro
+# donnant maintenant ses dépendances à cette règle ; il y reste pour le DESTDIR que les dossiers de
+# compilation partagent. Ce qui compte ici est inchangé : le bundle qu'on va garnir sort forcément de
+# la compilation qui précède, et son Info.plist porte forcément la version qu'on distribue. Il sort
+# dans build/ ; c'est le mv plus bas qui l'en retire, l'image disque n'ayant pas à contenir un chemin
+# de compilation.
 "$repoDir/build-unix.sh" "${optionsForBuild[@]}"
 
 echo "== Embarquement de Qt dans le bundle"

@@ -98,11 +98,13 @@ buildThisTarget()
 
     # Ce qui est en place est toujours effacé, et ce n'est pas un détail. Le DESTDIR des .pro ne
     # distingue pas les dossiers de compilation : ce qui est dans build/ peut venir d'ailleurs, make
-    # le comparerait à ses objets, le trouverait à jour et n'éditerait aucun lien. Sous macOS cette
-    # même ligne règle un second piège, celui que dist-macos.sh traitait pour son compte : la règle
-    # qmake qui fabrique Info.plist n'a aucune dépendance, si bien qu'un bundle déjà là garde le
-    # numéro de version de la compilation précédente. Compiler dans un dossier neuf n'y change rien,
-    # la cible de cette règle étant le bundle du DESTDIR et non un fichier du dossier de compilation.
+    # le comparerait à ses objets, le trouverait à jour et n'éditerait aucun lien.
+    #
+    # Cette ligne couvrait aussi, sous macOS, les deux règles du bundle auxquelles qmake ne donne pas
+    # les dépendances qu'il faudrait — Info.plist et la copie de resources/ et themes/. Ce n'est plus
+    # sa raison d'être : le .pro leur ajoute maintenant les prérequis manquants, et make les refait
+    # tout seul. L'effacement reste pour le DESTDIR partagé ci-dessus, qui est un problème de script
+    # et non de règle.
     rm -rf "$thisBuiltFile"
 
     mkdir -p "$thisBuildDir"
