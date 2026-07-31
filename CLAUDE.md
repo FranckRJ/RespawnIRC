@@ -7,16 +7,17 @@ son historique git avant de deviner quoi que ce soit.
 
 ## Compiler et tester
 
-Chaque bloc part de la racine du dépôt, et la compilation se fait **hors des sources sur les trois
-plateformes**.
+Chaque bloc part de la racine du dépôt. **Rien ne se compile plus dans les sources** : les deux
+cibles, sur les trois plateformes, ont leur dossier sous `build/`.
 
 ```bash
 # le programme ; sous macOS, ajouter CONFIG+=sdk_no_version_check au qmake
 mkdir -p build/respawnIrc && cd build/respawnIrc
 qmake ../../respawnIrc/respawnIrc.pro && make -j4
 
-# les tests, partout sauf Windows où build-windows.ps1 -Tests s'en charge
-cd tests && qmake && make -j4 && ../build/respawnIrcTests
+# les tests ; sous Windows, build-windows.ps1 -Tests fait la même chose avec nmake
+mkdir -p build/tests && cd build/tests
+qmake ../../tests/tests.pro && make -j4 && ../respawnIrcTests
 ```
 
 Les `.pro` ont un `DESTDIR` : quelle que soit la plateforme et l'endroit d'où `qmake` est lancé,
@@ -25,8 +26,8 @@ déplacer à la main après compilation, seuls les objets intermédiaires suiven
 C'est ce qui rend la compilation hors des sources gratuite : elle ne déplace **rien** de ce qui
 sort, seulement ce qui traîne pendant. Les `.pro` acceptent les deux façons — tous leurs chemins
 passent par `$$PWD` — et rien ne les distingue à l'arrivée ; compiler dans les sources marche donc
-encore, mais n'est plus documenté et le `.gitignore` ne couvre plus ce que ça y laisse. Seuls les
-tests se compilent encore dans `tests/`, hors de Windows.
+encore, mais n'est plus documenté et le `.gitignore` ne couvre plus ce que ça y laisse. Le
+nettoyage complet tient désormais en un `rm -rf build/`.
 
 Dépendances Debian : `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine5-dev
 zlib1g-dev`. zlib sert à décompresser le payload des pages (voir plus bas).
@@ -69,8 +70,7 @@ Quatre pièges, tous documentés dans le README :
   répond `Nothing to be done` et laisse le fichier tel quel.
 
 La compilation se fait **hors des sources**, dans `build/respawnIrc`, comme sur les deux autres
-plateformes : c'est ce que fait `dist-macos.sh` et ce que décrit le README. Les tests, eux, se
-compilent toujours dans `tests/`, ici comme sous Linux.
+plateformes : c'est ce que fait `dist-macos.sh` et ce que décrit le README.
 
 `./dist-macos.sh ~/Qt/5.15.2/clang_64` fabrique le DMG distribuable : `macdeployqt`, signature ad
 hoc, puis un dossier `RespawnIRC` contenant l'application **et** `resources/` et `themes/`. Cette
