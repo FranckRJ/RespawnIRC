@@ -10,7 +10,9 @@
 # scripts font exactement la même chose.
 
 # Ce qui cloche avec le Qt dont on donne le qmake, s'il cloche quelque chose : 0 s'il convient, 1 si
-# son qmake ne s'exécute pas, 2 s'il n'a pas QtWebEngine, dont dépend tout l'affichage des messages.
+# son qmake ne s'exécute pas, 2 s'il n'a pas QtWebEngine. Le module sert à la fenêtre de connexion et
+# au navigateur interne, et non à l'affichage des messages, qui se fait dans un QTextBrowser — mais
+# respawnIrc.pro le demande dans son QT, donc un Qt sans lui ne compile pas du tout.
 # C'est qmake qu'on interroge et non un chemin qu'on devine : sur un Debian les mkspecs ne sont pas
 # sous le dossier de Qt.
 #
