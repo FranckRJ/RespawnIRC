@@ -730,8 +730,14 @@ un seul vrai point, l'autre étant réglé.
   plus lourd que tout le reste réuni : ce qui subsiste, au fond, c'est d'être arrimé à un Qt et à une
   bibliothèque TLS tous deux en fin de vie. **La migration est néanmoins repoussée**, décision du
   mainteneur : le projet reste sur Qt 5.15.2 et OpenSSL 1.1.1 pour l'instant, l'exposition étant connue
-  et assumée. L'analyse de `MIGRATION-QT6.md` reste juste et son ordre de travail inchangé, mais ne pas
-  entreprendre le portage sans le mainteneur.
+  et assumée. Les conclusions de `MIGRATION-QT6.md` tiennent et son ordre de travail est inchangé, mais ne pas
+  entreprendre le portage sans le mainteneur. Ce document a été relu ligne à ligne le 31 juillet 2026, code en
+  main : des numéros de ligne avaient dérivé, sa table des API supprimées était incomplète — il lui manquait le
+  `QTextStream::setCodec` de `tests/main.cpp`, qui est justement dans la première étape de son plan — et deux de
+  ses justifications étaient fausses, celle du retrait de FFmpeg et celle de la durée de vie libre d'une branche
+  LTS. Aucun arbitrage n'a changé de sens pour autant. La leçon est celle du dépôt tout entier : **une analyse
+  dont les conclusions sont bonnes peut avoir des détails faux**, et ce sont les détails qu'on recopie sans les
+  revérifier le jour où on l'exécute.
 
 Les pistes de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` étaient du confort et rien n'y cassait si elles
 attendaient ; **les onze sont maintenant faites**, la dernière étant la compilation hors des sources
