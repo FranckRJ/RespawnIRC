@@ -130,19 +130,21 @@ CONFIG += strict_c++
 
 QMAKE_CXXFLAGS_RELEASE += -O2
 
-# Hunspell est attendu dans un dossier `hunspell` à la racine du dépôt (voir le wiki). Sous macOS
-# on se rabat sur celui de Homebrew, dont la bibliothèque porte un nom versionné contrairement à
-# celle de Debian ; ce nom peut être précisé : qmake HUNSPELL_LIB_NAME=hunspell-1.8
+# Hunspell est attendu dans un dossier `hunspell` à la racine du dépôt, où le README fait compiler
+# ses sources à la main — c'est la façon documentée sous Windows comme sous macOS, et sur les deux
+# elle donne une bibliothèque statique. Sous macOS, et seulement là, on se rabat sur celui de
+# Homebrew quand ce dossier n'est pas là ; sa bibliothèque porte un nom versionné contrairement à
+# celle de Debian, et ce nom peut être précisé : qmake HUNSPELL_LIB_NAME=hunspell-1.8
 #
-# Le dossier se désigne de la même façon, et c'est ce qui rend la compilation possible sur un Mac
-# Apple Silicon : le programme y est en x86_64 comme ailleurs — le Qt 5.15.2 officiel n'existe pas
-# autrement, et ses mkspecs mettent -arch x86_64 dans le Makefile — alors que le Homebrew de
-# /opt/homebrew ne fournit que de l'arm64, qui ne se lie pas avec. Il faut donc un Hunspell x86_64 :
-# celui du Homebrew de /usr/local, ou une compilation à soi posée dans le dossier `hunspell` du
-# dépôt, que la ligne ci-dessous prend sans qu'on ait rien à désigner.
+# Ce repli traîne deux défauts que la compilation à la main n'a pas, parce que Homebrew compile pour
+# la machine où il tourne et non pour la cible : sa bibliothèque est en arm64 sur un /opt/homebrew,
+# donc ne se lie pas au programme qui est en x86_64 comme tout ce Qt ; et elle porte le plancher
+# macOS de cette machine-là, un minos 14.0 relevé ici, quand le bundle annonce 10.13. C'est pour ça
+# que le README ne le donne plus qu'en second choix et en le disant.
 #
-# Un dossier désigné n'est jamais remplacé en douce par celui de Homebrew, même s'il ne convient
-# pas : c'est le principe qu'unix-common.sh applique déjà au Qt donné en argument.
+# Le dossier se désigne aussi sur la ligne de commande, et un dossier désigné n'est jamais remplacé
+# en douce par celui de Homebrew : c'est le principe qu'unix-common.sh applique déjà au Qt donné en
+# argument.
 hunspellDirWasGiven = $$HUNSPELL_DIR
 isEmpty(HUNSPELL_DIR): HUNSPELL_DIR = $$PWD/../hunspell
 

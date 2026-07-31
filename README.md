@@ -260,13 +260,23 @@ La copie de `resources/` et `themes/` se fait à chaque édition de liens. Un th
 
 ### macOS
 
-Homebrew fournit Hunspell, et zlib vient du système, mais son paquet `qt@5` est livré **sans QtWebEngine** (retiré parce que son Chromium a des failles non corrigées) alors que RespawnIRC en a besoin. Il faut donc le Qt 5.15.2 officiel, que [aqtinstall](https://github.com/miurahr/aqtinstall) récupère sans demander de compte Qt :
+zlib vient du système, mais le paquet `qt@5` de Homebrew est livré **sans QtWebEngine** (retiré parce que son Chromium a des failles non corrigées) alors que RespawnIRC en a besoin. Il faut donc le Qt 5.15.2 officiel, que [aqtinstall](https://github.com/miurahr/aqtinstall) récupère sans demander de compte Qt :
 
-    brew install hunspell
     python3 -m venv ~/.aqtenv && ~/.aqtenv/bin/pip install aqtinstall
     ~/.aqtenv/bin/aqt install-qt mac desktop 5.15.2 clang_64 -m qtwebengine --outputdir ~/Qt
 
 Ces binaires sont en x86_64 : sur un Mac Apple Silicon ils tournent via Rosetta 2. Le Chromium de Qt 5.15.2 est ancien, mieux vaut ne pas s'en servir comme navigateur généraliste.
+
+Hunspell se compile ensuite à la main, dans un dossier `hunspell` à la racine du dépôt que le `.pro` prend sans qu'on ait rien à désigner. C'est la même méthode que sous Windows, et pour la même raison qu'elle y est décrite : une petite bibliothèque sans dépendance, dont on compile les sources directement sans passer par son `configure`. Elle est ici en plus **statique**, donc rien à embarquer dans le bundle :
+
+    curl -sSL -o hunspell.tar.gz https://github.com/hunspell/hunspell/archive/refs/tags/v1.7.3.tar.gz
+    tar xzf hunspell.tar.gz && cd hunspell-1.7.3/src/hunspell
+    clang++ -c -O2 -arch x86_64 -mmacosx-version-min=10.13 -DHUNSPELL_STATIC *.cxx
+    ar rcs libhunspell.a *.o
+    mkdir -p <dépôt>/hunspell/include/hunspell <dépôt>/hunspell/lib
+    cp *.hxx *.h <dépôt>/hunspell/include/hunspell/ && cp libhunspell.a <dépôt>/hunspell/lib/
+
+Les deux options de la troisième ligne ne sont pas décoratives, et c'est pour elles que `brew install hunspell` ne convient plus : Homebrew compile pour la machine où il tourne, donc en `arm64` sur un Mac Apple Silicon — qui ne se lie pas avec le x86_64 de ce Qt — et avec le plancher macOS de cette machine-là. Le `libhunspell` de Homebrew relevé ici annonçait ainsi `minos 14.0` alors que l'application annonce 10.13, sans que l'éditeur de liens en dise rien : le DMG promettait une compatibilité qu'une de ses pièces ne tenait pas. Les compiler soi-même règle les deux d'un coup. Un `brew install hunspell` reste accepté par le `.pro` comme repli s'il n'y a pas de dossier `hunspell`, avec cette réserve.
 
 La compilation se fait ensuite avec le même script que sous Linux :
 
@@ -301,16 +311,9 @@ Le bundle **embarque** `resources` et `themes` dans son `Contents/Resources` (vo
 
 **Rien de ce qui précède ne change, et le résultat est le même bundle x86_64.** Ce n'est pas une coïncidence : les mkspecs du Qt 5.15.2 officiel fixent `QMAKE_APPLE_DEVICE_ARCHS = x86_64` en dur (`mkspecs/common/macx.conf`), si bien que le `Makefile` engendré porte un `-arch x86_64` explicite sur chaque compilation et chaque édition de liens. La machine qui compile ne décide donc pas de la cible, et un Mac Apple Silicon produit exactement ce que produit un Mac Intel. `macdeployqt` remplit ensuite le bundle des mêmes frameworks, qui sont ceux du même Qt téléchargé.
 
-Deux choses sont à ajouter, les deux en dehors du dépôt :
+**Il n'y a plus qu'une chose à ajouter, et elle est en dehors du dépôt** : **Rosetta 2**, sans quoi ni `qmake`, ni `macdeployqt`, ni `respawnIrcTests` ne démarrent — ils sont en x86_64 comme le reste de ce Qt. `softwareupdate --install-rosetta` l'installe. Les scripts le disent eux-mêmes : un `qmake` qui ne s'exécute pas ne se confond plus avec un Qt sans QtWebEngine, et sur une machine `arm64` le message nomme Rosetta.
 
-- **Rosetta 2**, sans quoi ni `qmake`, ni `macdeployqt`, ni `respawnIrcTests` ne démarrent — ils sont en x86_64 comme le reste de ce Qt. `softwareupdate --install-rosetta` l'installe. Les scripts le disent maintenant eux-mêmes : un `qmake` qui ne s'exécute pas ne se confond plus avec un Qt sans QtWebEngine, et sur une machine `arm64` le message nomme Rosetta ;
-- **un Hunspell x86_64**. C'est le seul vrai obstacle : le Homebrew de `/opt/homebrew` est en arm64, et un `libhunspell-1.7.dylib` arm64 ne se lie pas à un binaire x86_64. Deux façons de s'en sortir, au choix — compiler Hunspell soi-même en x86_64 et le poser dans un dossier `hunspell` à la racine du dépôt, que le `.pro` prend sans qu'on ait rien à désigner ; ou installer le [Homebrew de `/usr/local`](https://docs.brew.sh/Installation), celui qui tourne sous Rosetta, et le désigner :
-
-<!-- -->
-
-    ./build-unix.sh   # avec <dépôt>/hunspell, rien à ajouter
-
-Le second cas passe par `qmake`, donc à la main plutôt que par le script :
+Le second obstacle, **un Hunspell x86_64**, a disparu avec la recette de compilation à la main donnée plus haut : son `-arch x86_64` est explicite, donc ce qu'elle produit convient sur les deux familles de Mac et il n'y a rien de particulier à faire ici. C'était le seul vrai problème de cette section, et il venait entièrement de Homebrew, qui compile pour la machine où il tourne — en `arm64` sur `/opt/homebrew`, qui ne se lie pas avec un binaire x86_64. Le repli sur Homebrew que garde le `.pro` reste donc à éviter sur une machine Apple Silicon ; si on y tient, il faut le [Homebrew de `/usr/local`](https://docs.brew.sh/Installation), celui qui tourne sous Rosetta, et le désigner à la main :
 
     arch -x86_64 /usr/local/bin/brew install hunspell
     mkdir -p build/respawnIrc && cd build/respawnIrc

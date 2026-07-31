@@ -108,8 +108,11 @@ depuis donné leurs dépendances aux règles concernées, voir juste après la l
 gardés tels quels : ce sont eux qui expliquent ce que le `.pro` fait et pourquoi.
 
 - le `qt@5` de Homebrew n'a **plus** QtWebEngine (Chromium troué), il faut le Qt 5.15.2
-  officiel via `aqtinstall` ; Hunspell vient de Homebrew, avec une bibliothèque au nom
-  versionné (`-lhunspell-1.7`), et zlib du système. Conséquence à ne pas sous-estimer : le `qmake` du
+  officiel via `aqtinstall` ; **Hunspell se compile à la main** dans le `hunspell/` de la racine, comme
+  sous Windows et par la recette du README — statique, x86_64 et `-mmacosx-version-min=10.13`
+  explicites —, et zlib vient du système. Homebrew n'est plus qu'un repli du `.pro`, avec sa
+  bibliothèque au nom versionné (`-lhunspell-1.7`) et les deux réserves dites plus bas.
+  Conséquence à ne pas sous-estimer : le `qmake` du
   `PATH` est celui de Homebrew dès qu'il est installé, donc **le comportement par défaut des scripts
   tombait droit sur le seul Qt de la machine qui ne peut pas convenir** — c'est ce qui faisait échouer
   un `./dist-macos.sh` sans argument, sur un `Unknown module(s) in QT: webenginewidgets` qui ne
@@ -200,11 +203,13 @@ stickers dans `resources/stickers/` : ces dossiers ne pouvaient pas être enferm
 d'où l'ancien dossier `RespawnIRC` contenant l'application **et** ses données. Depuis que les
 stickers vont dans le cache, plus rien n'y écrit.
 
-Cette autonomie est **vérifiée sur le DMG** : ses 44 binaires Mach-O n'ont aucun chemin absolu vers
-`/Users`, `/opt/homebrew` ou `/usr/local`, le seul `LC_RPATH` de l'exécutable est
-`@executable_path/../Frameworks`, et `libhunspell-1.7.0.dylib` y est copié comme les frameworks Qt —
-le Homebrew de l'utilisateur ne sert donc pas plus que son Qt. Ne restent en dehors que le système :
-`/usr/lib/libz.1.dylib`, `libc++`, `libSystem` et les frameworks d'Apple. À savoir aussi, et
+Cette autonomie est **vérifiée sur le DMG** : ses 43 binaires Mach-O n'ont aucun chemin absolu vers
+`/Users`, `/opt/homebrew` ou `/usr/local`, et le seul `LC_RPATH` de l'exécutable est
+`@executable_path/../Frameworks`. **Hunspell n'y est plus un binaire du tout** : il est lié
+statiquement dans l'exécutable, comme sous Windows, depuis que le `hunspell/` de la racine porte un
+`libhunspell.a` compilé à la main — c'est ce qui fait 43 et non 44, le `libhunspell-1.7.0.dylib` que
+`macdeployqt` copiait auparavant à côté des frameworks Qt ayant disparu. Ne restent en dehors que le
+système : `/usr/lib/libz.1.dylib`, `libc++`, `libSystem` et les frameworks d'Apple. À savoir aussi, et
 conséquence du Qt officiel utilisé et non des scripts : le binaire est **thin x86_64**, donc sous
 Rosetta sur une machine Apple Silicon.
 
@@ -222,17 +227,24 @@ nombre**, et le descendre demanderait de recompiler Qt : ses frameworks précomp
 demande **macOS 13**, cinq versions majeures plus haut — c'est la ligne « macOS minimum » du tableau
 de `MIGRATION-QT6.md`.
 
-**Une pièce du bundle distribué dément ce plancher, et c'est `libhunspell-1.7.0.dylib`** : il annonce
-`minos 14.0` là où tout le reste annonce 10.13. Ce n'est pas Qt mais Homebrew, qui compile pour la
-machine où il tourne — le `hunspell` de `/usr/local` était ici un 1.7.3 sur un macOS 15.7.8. Le DMG
-publié annonce donc 10.13 en transportant une bibliothèque qui en demande 14, et **l'éditeur de liens
-n'en dit rien** : le journal d'une compilation complète ne porte aucun avertissement du genre « built
-for newer macOS version ». Ce qui se passerait réellement entre 10.13 et 13.x n'est pas connu — il
-faudrait une machine de cette génération, et il ne faut pas trancher sans elle. La sortie, si le sujet
-compte un jour, est le Hunspell compilé à soi dans le `hunspell/` de la racine, que le `.pro` prend
-déjà en premier, avec le même `-mmacosx-version-min=10.13`. À ne pas confondre avec le besoin d'un
-Hunspell x86_64 de la section Apple Silicon : ce sont deux propriétés différentes du même fichier, et
-un Hunspell compilé à soi les réglerait toutes les deux.
+**Une pièce du bundle distribué démentait ce plancher, et c'était `libhunspell-1.7.0.dylib`** : il
+annonçait `minos 14.0` là où tout le reste annonce 10.13. Ce n'était pas Qt mais Homebrew, qui compile
+pour la machine où il tourne — le `hunspell` de `/usr/local` était ici un 1.7.3 sur un macOS 15.7.8.
+Le DMG publié annonçait donc 10.13 en transportant une bibliothèque qui en demandait 14, et
+**l'éditeur de liens n'en disait rien** : le journal d'une compilation complète ne portait aucun
+avertissement du genre « built for newer macOS version ». Ce qui se serait réellement passé entre
+10.13 et 13.x n'a jamais été connu, faute d'une machine de cette génération — et c'est le point de
+méthode à retenir, **la question a été supprimée plutôt que répondue**.
+
+**C'est fait** : Hunspell se compile maintenant à la main dans le `hunspell/` de la racine, que le
+`.pro` prend en premier sans qu'on désigne rien, avec `-arch x86_64` et
+`-mmacosx-version-min=10.13` explicites — la recette est dans le README, et c'est celle de Windows,
+qui attaque `src/hunspell/*.cxx` sans passer par le `configure`. Elle donne un `libhunspell.a`, donc
+**une bibliothèque statique et plus aucun binaire à déployer**. Vérifié sur le DMG refabriqué : 43
+Mach-O, aucun chemin de la machine de compilation, et **aucun plancher autre que 10.13**. Deux choses
+à ne pas confondre restent réglées par le même fichier : ce plancher, et le besoin d'un Hunspell
+x86_64 de la section Apple Silicon. Le repli sur Homebrew que garde le `.pro` traîne toujours les
+deux défauts, et ne doit être utilisé qu'en connaissance de cause.
 
 **Mais « autonome » ne vaut que pour ce bundle-là**, et pas pour celui que laisse une compilation
 ordinaire. Les deux ont bien la même disposition — c'est tout ce que dit le point du
@@ -291,12 +303,16 @@ Ce qui manque vraiment tient en deux pièces, les deux en dehors du dépôt :
   chemins ont été rejoués sur un Mac Intel — Qt désigné mort, Qt désigné sans module, vrai Qt,
   candidats tous morts, et le message d'Apple Silicon en interposant un faux `uname` dans le `PATH`.
   Le faux `qmake` rend **86**, qui est le code exact de ce refus ;
-- **un Hunspell x86_64**, et c'est le seul vrai obstacle. `brew --prefix hunspell` désigne
-  `/opt/homebrew` sur une machine Apple Silicon, dont la bibliothèque est en arm64 et ne se lie pas à
-  un binaire x86_64. Le `.pro` accepte donc maintenant un `HUNSPELL_DIR` sur la ligne de commande —
+- **un Hunspell x86_64**, qui était le seul vrai obstacle et qui **n'en est plus un** : la recette du
+  README compile Hunspell à la main avec `-arch x86_64` explicite, donc ce qu'elle produit convient
+  sur les deux familles de Mac et il n'y a rien de particulier à faire ici. Ce qui suit ne vaut plus
+  que pour le repli sur Homebrew, à éviter sur une machine Apple Silicon. `brew --prefix hunspell`
+  désigne
+  `/opt/homebrew` sur une telle machine, dont la bibliothèque est en arm64 et ne se lie pas à
+  un binaire x86_64. Le `.pro` accepte donc un `HUNSPELL_DIR` sur la ligne de commande —
   il l'écrasait auparavant, l'affectation étant inconditionnelle — et **un dossier désigné n'est
   jamais remplacé en douce** par celui de Homebrew, le même principe que pour le Qt désigné aux
-  scripts. Les deux sorties sont un Hunspell x86_64 compilé à soi et posé dans le `hunspell/` de la
+  scripts. Les deux sorties sont donc le Hunspell compilé à soi et posé dans le `hunspell/` de la
   racine, que le `.pro` prend sans qu'on désigne rien, ou le Homebrew de `/usr/local`
   (`HUNSPELL_DIR=/usr/local/opt/hunspell HUNSPELL_LIB_NAME=hunspell-1.7`). Le repli sur `brew`
   s'arrête en plus sur un `error()` quand il ne rend rien : sans lui, `LIBS` gardait un `-L/lib/` et
