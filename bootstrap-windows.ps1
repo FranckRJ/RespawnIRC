@@ -499,12 +499,33 @@ Write-Host ""
 Write-Host "Les commandes ci-dessous reprennent le -ExecutionPolicy Bypass de celle qui a lancé ce"
 Write-Host "script : sans lui, un Windows dont la stratégie d'exécution est restée au défaut refuse"
 Write-Host "le .ps1 avant même de le lire."
+
+# Le -QtDir n'est plus affiché quand Qt est là où les trois scripts vont le chercher tout seuls, et
+# c'est le cas ordinaire puisque c'est ce script qui vient de l'y poser. Il l'était auparavant
+# toujours, ce qui donnait des commandes justes mais faisait croire l'argument obligatoire : un
+# .\dist-windows.ps1 tapé sans lui échouait alors sur « Qt introuvable », au sortir d'un amorçage qui
+# venait pourtant d'installer Qt. Il reste affiché pour un -QtRootDir hors du défaut, où il est
+# vraiment nécessaire. Le C:\Qt écrit ici est celui que windows-common.ps1 fouille : c'est une
+# duplication, de la même espèce et pour la même raison que celle des deux fonctions plus haut — ce
+# script ne charge rien du dépôt, puisqu'il tourne avant que la machine soit équipée.
+if($qtDir -like 'C:\Qt\*')
+{
+    $qtDirArg = ''
+    Write-Host ""
+    Write-Host "Qt étant dans $qtDir, les trois scripts le trouvent seuls : il n'y a pas de -QtDir à"
+    Write-Host "leur passer."
+}
+else
+{
+    $qtDirArg = " -QtDir $qtDir"
+}
+
 Write-Host ""
 Write-Host "Pour compiler, avec ses tests :"
-Write-Host "    powershell -ExecutionPolicy Bypass -File .\build-windows.ps1 -QtDir $qtDir -Tests"
+Write-Host "    powershell -ExecutionPolicy Bypass -File .\build-windows.ps1$qtDirArg -Tests"
 Write-Host ""
 Write-Host "Pour compiler et essayer le programme :"
-Write-Host "    powershell -ExecutionPolicy Bypass -File .\run-windows.ps1 -QtDir $qtDir"
+Write-Host "    powershell -ExecutionPolicy Bypass -File .\run-windows.ps1$qtDirArg"
 Write-Host ""
 Write-Host "Pour fabriquer l'archive distribuable :"
-Write-Host "    powershell -ExecutionPolicy Bypass -File .\dist-windows.ps1 -QtDir $qtDir"
+Write-Host "    powershell -ExecutionPolicy Bypass -File .\dist-windows.ps1$qtDirArg"

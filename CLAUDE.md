@@ -457,6 +457,29 @@ précédent si l'exécutable manque, et `dist-windows.ps1` fabrique l'archive en
   `nmake` répond déjà, ce qui rend sans coût son appel par un script et par celui qu'il appelle.
   `bootstrap-windows.ps1` **garde ses propres copies** des deux, et c'est délibéré : il tourne quand rien
   n'est encore installé, et il est le seul des quatre à avoir une raison de ne dépendre de rien ;
+- **la résolution de Qt regarde dans `C:\Qt` quand personne n'a désigné de dossier**, comme
+  `unix-common.sh` regarde dans `~/Qt/*/clang_64`, et pour exactement la même raison : le défaut des
+  scripts doit tomber sur le Qt que le README fait installer. Elle ne le faisait pas, et l'écart se
+  voyait mal parce qu'il ne mordait que sur la machine fraîchement amorcée : `bootstrap-windows.ps1`
+  installe Qt dans `C:\Qt` et ne touche pas au `PATH`, si bien qu'un `.\dist-windows.ps1` sans argument
+  échouait sur « Qt introuvable » au sortir de l'amorçage qui venait de l'installer. Les commandes que
+  le bootstrap affiche en terminant portaient bien un `-QtDir`, donc elles marchaient — mais rien ne
+  disait que c'était l'argument qui les sauvait, et le README annonçait par ailleurs que sans argument
+  le `qmake` du `PATH` suffisait. Le bootstrap n'affiche plus ce `-QtDir` que lorsqu'il est vraiment
+  nécessaire, c'est-à-dire pour un `-QtRootDir` hors du défaut ;
+- **les Qt sans QtWebEngine sont écartés en le disant**, là encore comme sous Unix, et c'est le
+  pendant Windows du `qt@5` de Homebrew : le Qt pour MinGW n'a pas le module, Chromium ne se compilant
+  qu'avec MSVC, et c'est celui que trouve l'installateur en ligne de Qt quand on ne prend pas garde à
+  l'architecture. Le module se cherche en demandant `QT_INSTALL_ARCHDATA` à `qmake` puis en regardant
+  s'il y a un `mkspecs\modules\qt_lib_webenginewidgets.pri`, jamais en devinant un chemin. Sans ce
+  test, un tel Qt était accepté et l'échec n'arrivait qu'au `Unknown module(s) in QT:
+  webenginewidgets` de `qmake`, qui ne dit ni quel Qt a été pris, ni pourquoi celui-là n'ira jamais.
+  Un Qt **désigné** par `-QtDir` n'est en revanche jamais remplacé en douce : s'il ne convient pas, on
+  le dit et on s'arrête. Les six chemins ont été exercés — sans argument, Qt désigné valable, Qt
+  désigné absent, Qt désigné sans le module, `qmake` qui ne démarre pas, et les deux cas où le `PATH`
+  porte un mauvais Qt sur lequel la recherche enchaîne vers `C:\Qt`. Le Qt sans QtWebEngine a été
+  simulé sans rien casser, par une copie de `qmake.exe` accompagnée d'un `qt.conf` qui déplace son
+  `ArchData` vers un dossier vide ;
 - les **cinq** `.ps1` du dépôt sont en UTF-8 **avec BOM** — `build-windows.ps1`, `dist-windows.ps1`,
   `run-windows.ps1`, `windows-common.ps1` et `bootstrap-windows.ps1` : PowerShell 5.1 lit un `.ps1` comme de l'ANSI sans
   lui, et tous les accents des messages sont abîmés. N'en réenregistrer aucun sans le BOM, et le

@@ -34,7 +34,7 @@ Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les 
 
 **Ce qui vaut pour ce script vaut pour les trois autres**, et ça se voit juste après : sur une machine restée au défaut, les `.\build-windows.ps1`, `.\run-windows.ps1` et `.\dist-windows.ps1` écrits tels quels dans les sections suivantes sont refusés de la même façon, par un `PSSecurityException`. Il faut les préfixer pareillement, par exemple :
 
-    powershell -ExecutionPolicy Bypass -File .\build-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64 -Tests
+    powershell -ExecutionPolicy Bypass -File .\build-windows.ps1 -Tests
 
 C'est d'ailleurs sous cette forme que `bootstrap-windows.ps1` affiche les commandes de la suite quand il a fini. Les sections ci-dessous gardent la forme courte, qui est celle d'un shell où les scripts sont autorisés.
 
@@ -130,9 +130,9 @@ Attention : **OpenSSL 1.1.1 n'est plus maintenu depuis septembre 2023**. C'est u
 
 #### Compiler
 
-    .\build-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
+    .\build-windows.ps1
 
-Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. La compilation se fait hors des sources, dans `build\respawnIrc`, comme sur les deux autres plateformes : le dossier de sources reste propre et il n'y a rien à ignorer dedans. Les objets déjà compilés sont repris, `-Clean` recompile tout.
+Sans argument, il prend le Qt dont le `qmake` est dans le `PATH`, et à défaut celui que `bootstrap-windows.ps1` a installé dans `C:\Qt` : au sortir d'un amorçage il n'y a donc rien à lui passer. Un Qt installé ailleurs se désigne avec `-QtDir C:\chemin\vers\Qt\5.15.2\msvc2019_64`, et un Qt ainsi désigné n'est jamais remplacé en douce par un autre. Dans les deux cas, les Qt sans QtWebEngine sont écartés en le disant — celui pour MinGW n'en a pas, Chromium ne se compilant qu'avec MSVC, et sans ce test l'échec n'arrivait qu'au `Unknown module(s) in QT: webenginewidgets` de `qmake`, qui ne dit pas quel Qt a été pris. Le script retrouve aussi tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. La compilation se fait hors des sources, dans `build\respawnIrc`, comme sur les deux autres plateformes : le dossier de sources reste propre et il n'y a rien à ignorer dedans. Les objets déjà compilés sont repris, `-Clean` recompile tout.
 
 Avec `-Tests`, il compile aussi `tests\tests.pro` dans `build\tests` et lance les vérifications. Avec un Hunspell venant de vcpkg, ajoutez `-HunspellLibName hunspell-1.7` ; c'est le même argument que celui de `dist-windows.ps1`, qui appelle ce script plutôt que d'avoir sa propre copie de ces étapes.
 
@@ -160,13 +160,13 @@ Et le piège qui suit, constaté : revenir au dossier de release et y relancer `
 
 Les objets intermédiaires restent dans `build\respawnIrc` ; `RespawnIRC.exe`, lui, est produit dans `build\`, où la compilation dépose aussi `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de lui. Il lui manque encore les DLL de Qt et celles d'OpenSSL, sans quoi il ne démarre pas ; inutile pour autant de passer par l'archive de `dist-windows.ps1`, il suffit de les avoir dans le `PATH`. C'est ce que fait `run-windows.ps1` :
 
-    .\run-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
+    .\run-windows.ps1
 
 Si l'exécutable n'est pas là, il appelle `build-windows.ps1` : sur un dépôt fraîchement cloné et amorcé, cette seule ligne compile et lance le programme. Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `build\userdata\logs\respawnirc.log` — `userdata\` étant à côté de l'exécutable, il est dans `build\` tant qu'on n'a pas fabriqué l'archive (voir plus bas).
 
 Les tests se compilent et se lancent avec `-Tests` :
 
-    .\build-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64 -Tests
+    .\build-windows.ps1 -Tests
 
 Ou à la main, de la même façon que le programme :
 
@@ -178,9 +178,9 @@ Ou à la main, de la même façon que le programme :
 
 #### Fabriquer une version distribuable
 
-    .\dist-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
+    .\dist-windows.ps1
 
-Le script compile en appelant `build-windows.ps1`, lance les tests, appelle `windeployqt`, allège le résultat, ajoute les bibliothèques d'exécution nécessaires, vérifie qu'il n'en manque aucune et fabrique `dist\RespawnIRC-<version>-windows.zip`. Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. Il reprend le dossier `build\respawnIrc` de la compilation à la main plutôt que de le raser, donc alterner entre essayer le programme et fabriquer une archive ne recompile que ce qui a changé ; `-Clean` force une compilation complète et `-SkipTests` saute les vérifications. Le numéro de version qui nomme l'archive est lu dans `version.pri`, d'où le programme le tient aussi.
+Le script compile en appelant `build-windows.ps1`, lance les tests, appelle `windeployqt`, allège le résultat, ajoute les bibliothèques d'exécution nécessaires, vérifie qu'il n'en manque aucune et fabrique `dist\RespawnIRC-<version>-windows.zip`. Il résout Qt exactement comme lui, et accepte le même `-QtDir` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. Il reprend le dossier `build\respawnIrc` de la compilation à la main plutôt que de le raser, donc alterner entre essayer le programme et fabriquer une archive ne recompile que ce qui a changé ; `-Clean` force une compilation complète et `-SkipTests` saute les vérifications. Le numéro de version qui nomme l'archive est lu dans `version.pri`, d'où le programme le tient aussi.
 
 L'archive contient un unique dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut décompresser quelque part. Ces deux dossiers ne sont jamais modifiés par le programme, qui écrit tout dans un `userdata` créé à côté de l'exécutable — l'ensemble reste donc portable et se déplace d'un bloc. À noter que `windeployqt` crée lui aussi un dossier `resources` pour QtWebEngine : les deux contenus cohabitent dans le même dossier, aucun nom de fichier ne se chevauchant.
 
