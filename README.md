@@ -132,7 +132,7 @@ Attention : **OpenSSL 1.1.1 n'est plus maintenu depuis septembre 2023**. C'est u
 
     .\build-windows.ps1 -QtDir C:\Qt\5.15.2\msvc2019_64
 
-Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. La compilation se fait hors des sources, dans `build\respawnIrc`, contrairement à Linux et macOS : le dossier de sources reste propre et il n'y a rien à ignorer dedans. Les objets déjà compilés sont repris, `-Clean` recompile tout.
+Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. La compilation se fait hors des sources, dans `build\respawnIrc`, comme sous macOS et contrairement à Linux : le dossier de sources reste propre et il n'y a rien à ignorer dedans. Les objets déjà compilés sont repris, `-Clean` recompile tout.
 
 Avec `-Tests`, il compile aussi `tests\tests.pro` dans `build\tests` et lance les vérifications. Avec un Hunspell venant de vcpkg, ajoutez `-HunspellLibName hunspell-1.7` ; c'est le même argument que celui de `dist-windows.ps1`, qui appelle ce script plutôt que d'avoir sa propre copie de ces étapes.
 
@@ -260,18 +260,23 @@ Homebrew fournit Hunspell, et zlib vient du système, mais son paquet `qt@5` est
 
 Ces binaires sont en x86_64 : sur un Mac Apple Silicon ils tournent via Rosetta 2. Le Chromium de Qt 5.15.2 est ancien, mieux vaut ne pas s'en servir comme navigateur généraliste.
 
-Rendez-vous ensuite dans le dossier `respawnIrc` et compilez :
+La compilation se fait ensuite **hors des sources**, comme sous Windows et contrairement à Linux :
 
     export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"
-    cd respawnIrc
-    qmake CONFIG+=sdk_no_version_check
+    mkdir -p build/respawnIrc
+    cd build/respawnIrc
+    qmake ../../respawnIrc/respawnIrc.pro CONFIG+=sdk_no_version_check
     make -j4
 
 `CONFIG+=sdk_no_version_check` fait taire l'avertissement de Qt 5.15.2, qui n'a été testé qu'avec le SDK 10.15 alors que Xcode en fournit un bien plus récent.
 
+Seuls les objets intermédiaires restent dans `build/respawnIrc` : le `DESTDIR` du `.pro` dépose le résultat à la racine du dépôt de toute façon, la compilation hors des sources ne sert donc qu'à ne rien laisser dans `respawnIrc/`. Compiler dans les sources continue de fonctionner et donne exactement le même bundle au même endroit.
+
+Un piège vaut d'être connu si vous recompilez après avoir changé le numéro de version : la règle qmake qui fabrique `Info.plist` n'a aucune dépendance, et `make` la saute donc dès qu'un bundle est déjà là — le bundle garde alors le numéro de la compilation précédente. Changer de dossier de compilation n'y change rien, cette règle ayant pour cible le bundle de la racine et non un fichier du dossier de compilation. Il faut effacer `RespawnIRC.app` avant de recompiler, ce que `dist-macos.sh` fait de lui-même.
+
 Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne pourrait donc pas cohabiter à la racine du dépôt avec le dossier de sources `respawnIrc`. Le bundle est posé à la racine, lancez-le de là ou double-cliquez dessus depuis le Finder :
 
-    cd ..
+    cd ../..
     ./RespawnIRC.app/Contents/MacOS/RespawnIRC
 
 Le programme cherche `resources/`, `themes/` et `userdata/` **à côté du bundle** et non dedans (voir `pathTool::dataDirPath`), le bundle doit donc rester à la racine du dépôt.

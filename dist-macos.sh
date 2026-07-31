@@ -47,15 +47,22 @@ then
     exit 1
 fi
 
-# Le DESTDIR de respawnIrc.pro produit le bundle à la racine du dépôt, pas dans les sources.
+# Le DESTDIR de respawnIrc.pro produit le bundle à la racine du dépôt, pas dans le dossier de
+# compilation.
 bundlePath="$repoDir/RespawnIRC.app"
+# La compilation se fait hors des sources, dans build/, comme sous Windows : seuls les objets
+# intermédiaires y restent, et le dossier respawnIrc/ ne garde plus ni Makefile ni .o.
+buildDir="$repoDir/build/respawnIrc"
 
 echo "== Compilation de RespawnIRC $version avec $qtDir"
-cd "$repoDir/respawnIrc"
 # La règle de qmake qui fabrique Info.plist n'a aucune dépendance : make la saute dès qu'un bundle
-# est déjà là, et une version distribuable hériterait des informations du bundle précédent.
+# est déjà là, et une version distribuable hériterait des informations du bundle précédent. Compiler
+# dans un dossier neuf n'y change rien, la cible de cette règle étant le bundle de la racine et non
+# un fichier du dossier de compilation : cet effacement reste donc nécessaire.
 rm -rf "$bundlePath"
-"$qmakeBin" CONFIG+=sdk_no_version_check
+mkdir -p "$buildDir"
+cd "$buildDir"
+"$qmakeBin" "$repoDir/respawnIrc/respawnIrc.pro" CONFIG+=sdk_no_version_check
 make -j"$(sysctl -n hw.ncpu)"
 
 echo "== Embarquement de Qt dans le bundle"

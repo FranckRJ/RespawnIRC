@@ -7,14 +7,26 @@ son historique git avant de deviner quoi que ce soit.
 
 ## Compiler et tester
 
+Chaque bloc part de la racine du dépôt.
+
 ```bash
-cd respawnIrc && qmake && make -j4    # l'exécutable est produit à la racine du projet
+# Linux : dans les sources
+cd respawnIrc && qmake && make -j4
+
+# macOS : hors des sources, comme Windows
+mkdir -p build/respawnIrc && cd build/respawnIrc
+qmake ../../respawnIrc/respawnIrc.pro CONFIG+=sdk_no_version_check && make -j4
+
+# les tests, partout sauf Windows
 cd tests && qmake && make -j4 && ../build/respawnIrcTests
 ```
 
 Les `.pro` ont un `DESTDIR` : quelle que soit la plateforme et l'endroit d'où `qmake` est lancé,
 le programme atterrit à la racine du dépôt et les tests dans `build/`. Il n'y a plus rien à
 déplacer à la main après compilation, seuls les objets intermédiaires suivent la façon de compiler.
+C'est ce qui rend la compilation hors des sources gratuite : elle ne déplace **rien** de ce qui
+sort, seulement ce qui traîne pendant. Windows et macOS s'en servent, Linux non — les `.pro`
+acceptent les deux et rien ne les distingue à l'arrivée.
 
 Dépendances Debian : `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine5-dev
 zlib1g-dev`. zlib sert à décompresser le payload des pages (voir plus bas).
@@ -32,7 +44,7 @@ lire — une regex PowerShell, un `sed`, et un enchaînement `$$cat`/`$$find`/`$
 
 ### macOS
 
-Trois pièges, tous documentés dans le README :
+Quatre pièges, tous documentés dans le README :
 
 - le `qt@5` de Homebrew n'a **plus** QtWebEngine (Chromium troué), il faut le Qt 5.15.2
   officiel via `aqtinstall` ; Hunspell vient de Homebrew, avec une bibliothèque au nom
@@ -43,7 +55,22 @@ Trois pièges, tous documentés dans le README :
   utiliser partout plutôt que `QCoreApplication::applicationDirPath()` ;
 - pour la même raison la règle `/RespawnIRC` du `.gitignore` attrape le dossier de sources ;
   l'exception `!/respawnIrc/` la neutralise, sans quoi les fichiers ajoutés dans `respawnIrc/`
-  n'apparaissent pas dans `git status`.
+  n'apparaissent pas dans `git status` ;
+- **la règle qmake qui fabrique `Info.plist` n'a aucune dépendance**, si bien que `make` la saute
+  dès qu'un bundle est déjà là : un numéro de version changé dans `version.pri` ne parvient pas au
+  bundle, qui garde celui de la compilation précédente. `dist-macos.sh` s'en garde par un
+  `rm -rf RespawnIRC.app` avant de compiler. **Compiler hors des sources n'y change rien** — on l'a
+  cru, et c'était l'unique justification du point 7 de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` : la
+  cible de cette règle est le bundle de la racine, où le `DESTDIR` l'envoie, et pas un fichier du
+  dossier de compilation. Un dossier neuf ne peut donc rien y faire, et l'effacement reste
+  nécessaire. Se lit dans le `Makefile` engendré, la règle
+  `<racine>/RespawnIRC.app/Contents/Info.plist:` s'y terminant sur un deux-points nu, et **constaté**
+  depuis un `build/respawnIrc` : le contenu d'`Info.plist` remplacé par un texte quelconque, `make`
+  répond `Nothing to be done` et laisse le fichier tel quel.
+
+La compilation se fait **hors des sources**, dans `build/respawnIrc`, comme sous Windows : c'est ce
+que fait `dist-macos.sh` et ce que décrit le README. Les tests, eux, se compilent toujours dans
+`tests/`, ici comme sous Linux.
 
 `./dist-macos.sh ~/Qt/5.15.2/clang_64` fabrique le DMG distribuable : `macdeployqt`, signature ad
 hoc, puis un dossier `RespawnIRC` contenant l'application **et** `resources/` et `themes/`. Cette
@@ -98,7 +125,7 @@ précédent si l'exécutable manque, et `dist-windows.ps1` fabrique l'archive en
   figé à `#if 1`. Le passer systématiquement marche donc dans les deux cas, et c'est ce que fait
   `build-windows.ps1`. Il ne va **pas** aux tests : `tests.pro` n'inclut que `zlib.pri`, ni Hunspell
   ni sa macro ne les concernent, et seul `ZLIB_LIB_NAME` leur est transmis quand il est donné ;
-- la compilation se fait **hors des sources**, dans `build/`, contrairement à Linux et macOS ; seuls
+- la compilation se fait **hors des sources**, dans `build/`, comme sous macOS et contrairement à Linux ; seuls
   les objets intermédiaires y restent, le `DESTDIR` envoyant l'exécutable à la racine comme ailleurs.
   `build-windows.ps1` y met `build\respawnIrc` pour le programme et `build\tests` pour les tests ;
 - ce `DESTDIR` ne distingue pas release et debug : les deux produisent `RespawnIRC.exe` à la racine et
@@ -456,9 +483,11 @@ un seul vrai point, l'autre étant réglé.
   et assumée. L'analyse de `MIGRATION-QT6.md` reste juste et son ordre de travail inchangé, mais ne pas
   entreprendre le portage sans le mainteneur.
 
-Les pistes de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` sont du confort et rien n'y casse si elles
-attendent ; **dix des onze sont faites**, et il ne reste que la compilation hors des sources sous macOS
-du point 7. Ce qu'il faut en retenir tient en une ligne : le numéro de version vit dans `version.pri`,
+Les pistes de `POSSIBLE-BUILD-SIMPLIFICATIONS.md` étaient du confort et rien n'y cassait si elles
+attendaient ; **les onze sont maintenant faites**, la dernière étant la compilation hors des sources
+sous macOS du point 7 — dont l'argument s'est révélé faux, le `rm -rf RespawnIRC.app` qu'elle
+promettait de supprimer restant nécessaire pour la raison expliquée dans la section macOS plus haut.
+Ce qu'il faut en retenir tient en une ligne : le numéro de version vit dans `version.pri`,
 les noms de bibliothèques ne se passent plus à `qmake` que s'ils sortent de l'ordinaire,
 `windows-common.ps1` porte ce que les trois scripts partagent, `build-windows.ps1` est le seul endroit
 où la compilation est écrite, la distribution reprend les objets au lieu de les raser et lance les

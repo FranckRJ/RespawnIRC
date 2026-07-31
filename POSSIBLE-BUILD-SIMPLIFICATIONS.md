@@ -1,16 +1,8 @@
 # Pistes de simplification de la compilation et de la distribution
 
-Relevé de juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, les scripts Windows, `dist-macos.sh` et la section « Compilation » du README. Sur onze pistes, **dix sont faites** ; il n'en reste qu'une d'ouverte, le point 7.
+Relevé de juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, les scripts Windows, `dist-macos.sh` et la section « Compilation » du README. Les onze pistes sont faites ; il n'en reste aucune d'ouverte.
 
-Ce fichier a donc été ramené à ce qui n'existe qu'ici : la piste ouverte, les décisions prises, les réserves qui restent et les leçons que ces pistes ont coûtées. Le détail de ce qui a été fait vit maintenant là où il sert — `CLAUDE.md`, le README, les commentaires des scripts — plutôt qu'en double. La version longue, avec les états des lieux d'origine, leurs chiffres et leurs numéros de ligne, est dans l'historique git ; c'est là qu'il faut aller pour savoir à quoi ressemblait la chaîne avant, et le commit qui a allégé ce fichier est le point de départ.
-
-## La piste encore ouverte
-
-### 7. macOS compile dans les sources, Windows non
-
-`dist-macos.sh` a besoin d'un `rm -rf RespawnIRC.app` uniquement parce que la règle qmake qui fabrique `Info.plist` n'a aucune dépendance et que `make` la saute dès qu'un bundle est déjà là. Compiler dans `build/` comme sous Windows rend ce contournement inutile : un dossier neuf ne peut pas traîner un `Info.plist` périmé.
-
-C'est du confort, rien ne casse si ça attend.
+Ce fichier a donc été ramené à ce qui n'existe qu'ici : les décisions prises, les réserves qui restent et les leçons que ces pistes ont coûtées. Le détail de ce qui a été fait vit maintenant là où il sert — `CLAUDE.md`, le README, les commentaires des scripts — plutôt qu'en double. La version longue, avec les états des lieux d'origine, leurs chiffres et leurs numéros de ligne, est dans l'historique git ; c'est là qu'il faut aller pour savoir à quoi ressemblait la chaîne avant, et le commit qui a allégé ce fichier est le point de départ.
 
 ## Ce qui a été fait, et où c'est documenté maintenant
 
@@ -22,6 +14,7 @@ C'est du confort, rien ne casse si ça attend.
 | 4 | Une trentaine de lignes dupliquées entre les scripts PowerShell | `windows-common.ps1` et son en-tête |
 | 5 | Chaque distribution recompilait tout | `CLAUDE.md` et le README : objets repris, `-Clean`, et l'exécutable effacé avant `nmake` |
 | 6 | Les bibliothèques d'exécution de MSVC figées en dur | `CLAUDE.md` (« Ce qui manque et ne se voit pas ») et le README |
+| 7 | macOS compilait dans les sources, Windows non | `dist-macos.sh`, `CLAUDE.md` et le README : `build/respawnIrc`, et le piège d'`Info.plist` qui n'était pas ce qu'on croyait — voir ci-dessous |
 | 8 | L'installation des outils Visual Studio et son redistribuable | `CLAUDE.md` (« Ce que l'abandon de Windows 7 a retiré ») |
 | 9 | Deux listes de « trois choses » qui ne se recouvraient pas | résolu par l'abandon de Windows 7, commentaires de `dist-windows.ps1` |
 | 10 | La compression | `dist-windows.ps1` : `ZipFile::CreateFromDirectory`, 7,6 s contre 13,5 |
@@ -29,7 +22,9 @@ C'est du confort, rien ne casse si ça attend.
 
 Le point 3 a d'abord été livré sans avoir jamais compilé — seul son enchaînement avait été essayé avec des outils simulés, faute d'une machine équipée. Ce n'est plus le cas : `build-windows.ps1 -Tests` a compilé pour de bon sur une machine amorcée par `bootstrap-windows.ps1`, 142 vérifications sans échec et un `RespawnIRC.exe` de 1,52 Mo. Et la commande lancée était celle que le script d'amorçage affiche en terminant, ce qui a du même coup montré qu'elle ne marchait pas : elle donnait un `.\build-windows.ps1` nu, refusé par la stratégie d'exécution sur la machine qu'elle venait pourtant d'amorcer. Elle reprend maintenant le `powershell -ExecutionPolicy Bypass -File`.
 
-Le point 6 est de loin le plus instructif des dix, et il vaut d'être lu dans l'historique : rangé ici en « deux détails » pour son gain de quelques lignes de script, il cachait l'absence de `msvcp140_1.dll`, c'est-à-dire une archive qui ne démarrait sur aucune machine sans redistribuable Visual C++.
+Le point 6 est de loin le plus instructif des onze, et il vaut d'être lu dans l'historique : rangé ici en « deux détails » pour son gain de quelques lignes de script, il cachait l'absence de `msvcp140_1.dll`, c'est-à-dire une archive qui ne démarrait sur aucune machine sans redistribuable Visual C++.
+
+Le point 7, lui, a été fait mais **son argument était faux**, et c'est tout ce qu'il en reste d'intéressant. Il promettait que compiler dans `build/` rendrait inutile le `rm -rf RespawnIRC.app` de `dist-macos.sh`, « un dossier neuf ne pouvant pas traîner un `Info.plist` périmé ». Le `Makefile` engendré dit le contraire : la cible de la règle est `<racine>/RespawnIRC.app/Contents/Info.plist`, là où le `DESTDIR` envoie le bundle, et pas un fichier du dossier de compilation. Elle est donc sautée dès qu'un bundle est là, quel que soit l'endroit d'où l'on compile, et l'effacement reste nécessaire — il est resté, avec un commentaire qui dit maintenant pourquoi. Vérifié et pas seulement lu : depuis un `build/respawnIrc`, un `Info.plist` dont on remplace le contenu par n'importe quoi survit intact à un `make`, qui répond `Nothing to be done`. La compilation hors des sources a été faite quand même, pour ce qu'elle donne vraiment : `respawnIrc/` ne garde plus ni `Makefile` ni `.o`, et Windows et macOS compilent désormais de la même façon — seul Linux reste dans les sources.
 
 ## Les décisions à ne pas rouvrir sans le mainteneur
 
@@ -58,6 +53,7 @@ Son apparition en v3.1.11 n'a rien d'une correction : elle est simultanée à un
 - **une affirmation entre parenthèses est une affirmation.** « Ce dossier ne contient que les trois DLL voulues plus `concrt140.dll` » avait la forme d'une observation et n'était qu'une supposition ; un `dir` l'aurait démentie en une seconde, et elle a coûté une archive qui ne démarrait pas ;
 - **classer une piste par son gain la classe mal quand le risque est ailleurs.** Le même point était rangé en « deux détails » à cause du gain, quelques lignes de script ; sa non-réalisation coûtait bien plus ;
 - **ne pas figer de chiffres venant d'une installation** — nombre de DLL, numéro de version des outils, noms de fichiers : ils suivent la version du SDK ou des Build Tools. Chercher par glob, copier le dossier entier ;
+- **une piste peut être bonne et son argument faux.** Le point 7 promettait la disparition d'un `rm -rf` que rien ne faisait disparaître : le `Makefile` engendré le disait, personne ne l'avait ouvert. Lire ce que produisent les outils plutôt que raisonner sur ce qu'ils devraient produire — c'est valable pour `qmake`, et ça l'a déjà été pour `dumpbin` et `windeployqt` ;
 - **une machine cesse d'être un témoin valable dès qu'on y installe ce dont on veut prouver l'absence.** Installer les Build Tools pose `msvcp140.dll` et sa famille dans `System32` : la machine qui fabrique l'archive ne peut donc jamais la valider. C'est le mécanisme qui a laissé sortir deux archives silencieusement incomplètes.
 
 ## Ce qu'il ne faut pas toucher
