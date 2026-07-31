@@ -67,7 +67,10 @@ QString pathTool::configDirPath()
 #elif defined(Q_OS_MACOS)
     /* macOS ne sépare pas la configuration des données, et AppConfigLocation y désigne
      * ~/Library/Preferences, réservé aux .plist gérés par cfprefsd : un config.ini n'y a pas sa
-     * place, il va donc dans Application Support avec le reste. */
+     * place, il va donc dans Application Support avec le reste. Y poser le fichier quand même ne
+     * casserait rien — cfprefsd ne touche qu'aux fichiers qu'il reconnaît comme domaines — mais
+     * AppConfigLocation y créerait un sous-dossier RespawnIRC dans un dossier censé être plat. Et
+     * écrire un vrai plist à la place a été étudié puis écarté, voir CLAUDE.md. */
     return standardDirPath(QStandardPaths::AppDataLocation);
 #else
     return standardDirPath(QStandardPaths::AppConfigLocation);
