@@ -2,7 +2,7 @@
 
 Relevé de juillet 2026 sur `respawnIrc.pro`, `tests/tests.pro`, `zlib.pri`, les scripts Windows, `dist-macos.sh` et la section « Compilation » du README. Les douze pistes de la première passe sont faites — les onze du relevé d'origine, plus l'absence de script de compilation côté Unix, venue après coup et décrite plus bas.
 
-**Une seconde passe en a ouvert six autres**, décrites juste en dessous et dont **aucune n'est appliquée**. Elles ne se recouvrent pas avec les premières : celles-là portaient sur ce qui était en double ou en trop, celles-ci sur l'endroit où le temps passe et sur ce que les trois plateformes ne font pas pareil.
+**Une seconde passe en a ouvert six autres**, décrites juste en dessous. Elles ne se recouvrent pas avec les premières : celles-là portaient sur ce qui était en double ou en trop, celles-ci sur l'endroit où le temps passe et sur ce que les trois plateformes ne font pas pareil. **Une seule est faite**, le format de l'image disque du point 16 ; les cinq autres sont ouvertes et rien n'en a été appliqué.
 
 Ce fichier garde donc ce qui n'existe qu'ici : les pistes ouvertes, les décisions prises, les réserves qui restent et les leçons que tout cela a coûtées. Le détail de ce qui a été fait vit là où il sert — `CLAUDE.md`, le README, les commentaires des scripts — plutôt qu'en double. La version longue, avec les états des lieux d'origine, leurs chiffres et leurs numéros de ligne, est dans l'historique git ; c'est là qu'il faut aller pour savoir à quoi ressemblait la chaîne avant, et le commit qui a allégé ce fichier est le point de départ.
 
@@ -36,19 +36,22 @@ Le script Windows retire les traductions de QtWebEngine autres que `fr` et `en-U
 
 Il n'y a rien à inventer : ce sont les deux mêmes décisions que sous Windows, déjà prises et déjà documentées. Deux détails valent d'être notés au passage : les `.qm` de Qt ne sont pas dans le bundle, `macdeployqt` ne les copiant pas, donc seules les deux pièces de QtWebEngine sont concernées ; et l'allègement doit **précéder la signature**, pour la même raison que le `git archive`. C'est la troisième fois que la leçon du bas de ce fichier se vérifie — une décision prise pour une plateforme ne se propage pas toute seule aux autres.
 
-### 16. L'image disque est en UDZO, qui est le format que personne n'a choisi
+### 16. ~~L'image disque est en UDZO, qui est le format que personne n'a choisi~~ **Fait**
 
-`dist-macos.sh` passe `-format UDZO`, la compression zlib. Or c'est aussi ce que `hdiutil` prend par défaut quand on lui donne un dossier source : ce n'est pas un choix, c'est celui qui n'a jamais été fait. Mesuré sur le bundle allégé du point 15 :
+`dist-macos.sh` passait `-format UDZO`, la compression zlib. Or c'est aussi ce que `hdiutil` prend par défaut quand on lui donne un dossier source : ce n'était pas un choix, c'était celui qui n'avait jamais été fait. Il passe maintenant `-format ULFO`, et **le DMG a été refabriqué de bout en bout pour le vérifier** — `./dist-macos.sh` complet, 142 vérifications sans échec, `hdiutil imageinfo` annonçant bien `UDIF read-only compressed (lzfse)`.
+
+Les deux mesures qui décident, faites sur le bundle **réellement distribué**, celui de 208 Mo que l'allègement du point 15 n'a pas encore touché :
 
 | Format | Temps | Taille |
 | --- | --- | --- |
-| UDZO, bundle complet (ce qu'on publie aujourd'hui) | 16,2 s | 96,2 Mio |
-| UDZO | 14,2 s | 88,6 Mio |
-| UDZO, `zlib-level=9` | 39,4 s | 81,2 Mio |
-| **ULFO** (lzfse) | **12,2 s** | **79,8 Mio** |
-| ULMO (lzma) | 117,0 s | 64,5 Mio |
+| UDZO (ce qu'on publiait) | 14,2 s | 96,2 Mio |
+| **ULFO** (lzfse) | **12,2 s** | **87,0 Mio** |
 
-ULFO est **plus petit et plus rapide** que ce qu'on fait aujourd'hui, ce qui est rare et ce qui rend la piste facile à juger : -17 % sur l'image, sans contrepartie de temps. La seule question est la compatibilité, et elle est réglée par le `man hdiutil` : ULFO demande macOS 10.11, quand l'application annonce elle-même 10.13 dans son `LSMinimumSystemVersion` — l'image ne peut donc pas être le maillon le plus exigeant. Ce 10.13 n'est d'ailleurs pas un choix du dépôt mais celui de Qt, `CLAUDE.md` dit d'où il sort ; ce qui compte ici est qu'il ne peut pas descendre, donc que la marge d'ULFO est acquise. ULMO, lui, demande 10.15 et **relèverait ce plancher au-dessus de celui de l'application** pour 15 Mio et deux minutes de plus : c'est la seule des cinq lignes à écarter. L'image ULFO a été montée pour vérifier qu'elle porte bien le bundle allégé et le lien vers `/Applications`.
+ULFO est **plus petit et plus rapide**, ce qui est assez rare pour rendre la décision facile : -9,6 % sur l'image, sans contrepartie de temps. La compatibilité est réglée par le `man hdiutil` : ULFO demande macOS 10.11, quand l'application annonce elle-même 10.13 dans son `LSMinimumSystemVersion`, donc l'image ne peut pas être le maillon le plus exigeant. Ce 10.13 n'est d'ailleurs pas un choix du dépôt mais celui de Qt, `CLAUDE.md` dit d'où il sort ; ce qui compte ici est qu'il ne peut pas descendre, donc que la marge d'ULFO est acquise.
+
+**Attention en relisant les chiffres de cette piste, un premier jet les a conflés** : les mesures d'origine comparaient un ULFO sur bundle allégé, 79,8 Mio, à un UDZO sur bundle complet, 96,2 — soit -17 %, mais dont la moitié revenait à l'allègement du point 15 et non au format. Le tableau ci-dessus ne compare plus que ce qui doit l'être, à bundle identique. Pour mémoire, les autres formats mesurés sur le bundle allégé : UDZO 88,6 Mio, `zlib-level=9` 81,2 en 39,4 s, ULFO 79,8, ULMO 64,5 en 117,0 s. **Les deux gains se cumulent**, et le point 15 reste donc entier.
+
+ULMO est la seule ligne à écarter, et pas pour ses deux minutes : il demande macOS 10.15 et **relèverait le plancher au-dessus de celui de l'application**. C'est la seule objection que le passage à Qt 6 lèverait, son plancher étant macOS 13 — noté dans la section « ce que ça rapporte » de `MIGRATION-QT6.md`, avec la réserve que le temps de compression, lui, ne bougera pas.
 
 ### 17. Rien ne vérifie que le bundle macOS est autonome, alors que l'archive Windows l'est à chaque fois
 

@@ -168,7 +168,20 @@ ne dit aujourd'hui que « Windows 10 ».
 - le `qt` de Homebrew, en version 6, **fournit QtWebEngine** : le détour par `aqtinstall`
   devient facultatif sous macOS ;
 - « la dernière version librement téléchargeable » était une contrainte du LTS Qt 5. Les
-  versions intermédiaires de Qt 6, dont 6.11, sont libres d'accès.
+  versions intermédiaires de Qt 6, dont 6.11, sont libres d'accès ;
+- **un plancher macOS plus haut rouvre le choix du format de l'image disque**, et c'est le
+  seul endroit où le coût de la ligne « macOS minimum » du tableau ci-dessus rapporte quelque
+  chose. `dist-macos.sh` fabrique le DMG en ULFO (lzfse), qui demande macOS 10.11 et tient
+  sous le plancher de 10.13 que Qt 5.15.2 impose. ULMO (lzma) ferait une image d'un cinquième
+  plus petite mais demande 10.15, donc au-dessus de ce que l'application annonce
+  aujourd'hui — et le passage à Qt 6, qui monte le plancher à macOS 13, lève cette objection
+  d'un coup. Elle est la seule à disparaître : ULMO coûte toujours près de deux minutes de
+  compression contre une quinzaine de secondes pour ULFO, et c'est ce qu'il faudra peser à ce
+  moment-là. Les chiffres mesurés en juillet 2026 sont dans le commentaire de `dist-macos.sh`
+  et dans la piste 16 de `POSSIBLE-BUILD-SIMPLIFICATIONS.md`. À vérifier plutôt qu'à
+  supposer, le jour venu : `man hdiutil` ne connaît aujourd'hui aucun format plus récent
+  qu'ULMO, mais c'est exactement le genre de liste qui bouge avec le système, et le plancher
+  de Qt 6.12 n'est de toute façon pas encore publié.
 
 ---
 

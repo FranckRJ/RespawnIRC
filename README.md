@@ -328,7 +328,9 @@ Le bundle produit ci-dessus embarque les chemins du Qt de la machine qui l'a com
 
     ./dist-macos.sh
 
-Le script compile en appelant `build-unix.sh`, lance les tests, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 100 Mo pour un bundle de 200 Mo). Il trouve Qt comme `build-unix.sh`, et accepte lui aussi un chemin en argument ; `--skip-tests` saute les vérifications.
+Le script compile en appelant `build-unix.sh`, lance les tests, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 90 Mo pour un bundle de 200 Mo). Il trouve Qt comme `build-unix.sh`, et accepte lui aussi un chemin en argument ; `--skip-tests` saute les vérifications.
+
+L'image est compressée en lzfse (`-format ULFO`) et non en zlib, qui n'était que le format pris par défaut par `hdiutil` : c'est à la fois plus petit et plus rapide, 87,0 Mio en 12,2 s contre 96,2 en 14,2 mesurés sur ce bundle. lzfse demande macOS 10.11, en dessous du 10.13 que l'application annonce déjà — l'image ne peut donc pas être ce qui limite la compatibilité.
 
 L'image disque contient un `RespawnIRC.app` autonome et un lien vers `/Applications` : il n'y a qu'à glisser l'un sur l'autre, ou à déposer l'application où l'on veut. `resources` et `themes` sont dans `Contents/Resources` comme dans n'importe quel bundle compilé ici, à ceci près que le script les y remplace par leur version commitée, sans les fichiers que l'usage du programme a pu laisser dans le dossier de travail. Rien ne les écrit jamais, le programme rangeant ce qu'il produit dans `~/Library/Application Support` et `~/Library/Caches` : c'est ce qui permet de les enfermer dans le bundle.
 
