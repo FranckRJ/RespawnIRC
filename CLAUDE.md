@@ -196,20 +196,21 @@ La compilation se fait **hors des sources**, dans `build/respawnIrc`, comme sur 
 plateformes : c'est ce que fait `build-unix.sh` et ce que décrit le README.
 
 `./dist-macos.sh ~/Qt/5.15.2/clang_64` fabrique le DMG distribuable : `macdeployqt`, remplacement de
-`resources/` et `themes/` par leur version commitée, signature ad hoc, puis une image contenant le
-seul `RespawnIRC.app` et un lien vers `/Applications`, la disposition qu'attend un utilisateur de
-macOS. Le bundle est **autonome**, ce qu'interdisait l'époque où `imageDownloadTool` écrivait les
+`resources/` et `themes/` par leur version commitée, allègement, signature ad hoc, puis une image
+contenant le seul `RespawnIRC.app` et un lien vers `/Applications`, la disposition qu'attend un
+utilisateur de macOS. Le bundle est **autonome**, ce qu'interdisait l'époque où `imageDownloadTool` écrivait les
 stickers dans `resources/stickers/` : ces dossiers ne pouvaient pas être enfermés en lecture seule,
 d'où l'ancien dossier `RespawnIRC` contenant l'application **et** ses données. Depuis que les
 stickers vont dans le cache, plus rien n'y écrit.
 
-Cette autonomie est **vérifiée sur le DMG** : ses 43 binaires Mach-O n'ont aucun chemin absolu vers
+Cette autonomie est **vérifiée sur le DMG** : ses 39 binaires Mach-O n'ont aucun chemin absolu vers
 `/Users`, `/opt/homebrew` ou `/usr/local`, et le seul `LC_RPATH` de l'exécutable est
 `@executable_path/../Frameworks`. **Hunspell n'y est plus un binaire du tout** : il est lié
 statiquement dans l'exécutable, comme sous Windows, depuis que le `hunspell/` de la racine porte un
-`libhunspell.a` compilé à la main — c'est ce qui fait 43 et non 44, le `libhunspell-1.7.0.dylib` que
-`macdeployqt` copiait auparavant à côté des frameworks Qt ayant disparu. Ne restent en dehors que le
-système : `/usr/lib/libz.1.dylib`, `libc++`, `libSystem` et les frameworks d'Apple. À savoir aussi, et
+`libhunspell.a` compilé à la main — le `libhunspell-1.7.0.dylib` que `macdeployqt` copiait auparavant
+à côté des frameworks Qt a disparu, ce qui avait fait passer ce compte de 44 à 43 ; l'allègement
+décrit plus bas en a emporté quatre autres, `QtSerialPort` et les trois greffons `position`. Ne
+restent en dehors que le système : `/usr/lib/libz.1.dylib`, `libc++`, `libSystem` et les frameworks d'Apple. À savoir aussi, et
 conséquence du Qt officiel utilisé et non des scripts : le binaire est **thin x86_64**, donc sous
 Rosetta sur une machine Apple Silicon.
 
@@ -269,7 +270,7 @@ c'est par là qu'il trouve Qt. C'est voulu, et **il ne faut pas déplacer les é
 Le seul besoin que ça couvrirait — essayer la disposition réellement distribuée — l'est déjà par
 `./dist-macos.sh --skip-tests`.
 
-Deux choses à ne pas défaire :
+Trois choses à ne pas défaire :
 
 - **le `git archive` reste nécessaire alors que la compilation a déjà rempli le bundle.** Elle y
   copie le dossier de travail, où traîne ce que le mainteneur a accumulé en se servant du programme —
@@ -278,7 +279,33 @@ Deux choses à ne pas défaire :
   `HEAD` ; c'est la même raison que sous Windows, et elle survit au fait que le `.pro` s'en occupe
   maintenant en temps ordinaire ;
 - **ce remplacement doit précéder la signature.** `codesign` scelle le contenu du bundle ; un fichier
-  changé après elle la casse, et macOS refuse alors de lancer l'application.
+  changé après elle la casse, et macOS refuse alors de lancer l'application ;
+- **l'allègement aussi**, et pour la même raison. Il vient juste avant la signature, et retire ce que
+  `dist-windows.ps1` retire depuis longtemps de son côté — une décision prise pour une plateforme ne
+  s'était pas propagée toute seule à l'autre.
+
+Ce que l'allègement retire, et ce qu'il ne faut surtout pas y ajouter :
+
+| Pièce | Poids | Pourquoi |
+| --- | --- | --- |
+| `qtwebengine_locales` sauf `fr` et `en-US` | 17 Mo, 51 fichiers sur 53 | le programme est en français, `en-US` est le repli de Chromium |
+| `qtwebengine_devtools_resources.pak` | 1,5 Mo | les outils de développement de Chromium ne s'ouvrent jamais depuis le programme |
+| greffons `position` et `QtSerialPort` | 0,3 Mo | rien n'utilise la géolocalisation ; `macdeployqt` les copie parce que QtWebEngine déclare le module, et `QtSerialPort` n'entre que par le greffon NMEA |
+
+Le bundle passe de 208 à 190 Mo et l'image disque de 87 à 80. Trois choses à savoir avant d'y
+toucher. **`QtPositioning` doit rester** : l'exécutable et `QtWebEngineCore` s'y lient pour de bon —
+`otool -L` le dit — et le retirer empêcherait le programme de démarrer ; seuls les greffons, chargés
+à la demande, s'en vont. Les `qt_*.qm` que `dist-windows.ps1` réduit **n'ont pas de pendant ici**,
+`macdeployqt` ne les mettant pas dans le bundle. Et le reste du poids n'est pas là : sur les 208 Mo,
+197 sont des frameworks et **164 le seul `QtWebEngineCore`**, dont 132 de binaire. Ces 18 Mo sont donc
+à peu près tout ce qui se prend sans toucher à Chromium lui-même.
+
+Le repli de Chromium sur `en-US` a été **essayé et non supposé**, puisque c'est le seul vrai risque de
+cet allègement : un petit programme `QWebEngineView` pointé sur les ressources du bundle allégé par
+`QTWEBENGINE_RESOURCES_PATH` et `QTWEBENGINE_LOCALES_PATH` rend bien une page sous `LANG=ja_JP`, dont
+le `.pak` a disparu. Ce qui n'a **pas** été rejoué, faute d'accès assistif pour piloter l'interface
+depuis un script : le parcours dans l'application elle-même, fenêtre de connexion et navigateur
+interne.
 
 #### Compiler sur un Mac Apple Silicon
 

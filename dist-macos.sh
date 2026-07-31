@@ -107,6 +107,36 @@ echo "== Données livrées reprises de git"
 rm -rf "$bundlePath/Contents/Resources/resources" "$bundlePath/Contents/Resources/themes"
 git -C "$repoDir" archive HEAD resources themes | tar -x -C "$bundlePath/Contents/Resources"
 
+echo "== Allègement"
+# Les mêmes décisions que dist-windows.ps1, qui les prend depuis longtemps : une décision prise pour
+# une plateforme ne se propage pas toute seule aux autres. Comme le git archive ci-dessus, tout ceci
+# doit précéder la signature, qui scelle le contenu du bundle.
+#
+# À ne pas confondre avec du gras à chercher partout : sur les 208 Mo du bundle, 164 sont le seul
+# QtWebEngineCore et 197 des frameworks. Les 18 Mo qui suivent sont à peu près tout ce qui se prend
+# sans toucher à Chromium lui-même ; ils font passer le bundle à 190 Mo et l'image de 87 à 80.
+#
+# Aucun de ces retraits n'est écrit pour ignorer une absence, et c'est délibéré : avec le set -e du
+# script, une pièce qui ne serait plus là où macdeployqt la met arrête tout au lieu de laisser sortir
+# une image silencieusement plus grosse. C'est la leçon des archives Windows incomplètes.
+webengineResourcesDir="$bundlePath/Contents/Frameworks/QtWebEngineCore.framework/Versions/5/Resources"
+
+# macdeployqt copie les traductions de toutes les langues, 53 fichiers pour 17 Mo : le programme est
+# en français, on ne garde que le français plus l'anglais, que Chromium utilise comme repli. Les
+# qt_*.qm de Qt, que dist-windows.ps1 réduit de la même façon, n'ont pas d'équivalent ici :
+# macdeployqt ne les met pas dans le bundle.
+find "$webengineResourcesDir/qtwebengine_locales" -type f ! -name 'fr.pak' ! -name 'en-US.pak' -delete
+
+# Les outils de développement de Chromium ne sont jamais ouverts depuis le programme (1,5 Mo).
+rm "$webengineResourcesDir/qtwebengine_devtools_resources.pak"
+
+# Les greffons de géolocalisation, que macdeployqt copie parce que QtWebEngine déclare le module, et
+# le QtSerialPort qu'ils sont seuls à faire entrer dans le bundle — l'un des trois lit du NMEA sur un
+# port série. Rien ici n'utilise la géolocalisation. C'est 0,3 Mo sur 18, donc de la cohérence et non
+# du gain. QtPositioning, lui, reste : l'exécutable et QtWebEngineCore s'y lient pour de bon, le
+# retirer empêcherait le programme de démarrer.
+rm -r "$bundlePath/Contents/PlugIns/position" "$bundlePath/Contents/Frameworks/QtSerialPort.framework"
+
 echo "== Signature ad hoc"
 # Sans signature, macOS refuse de lancer un bundle dont macdeployqt a réécrit les binaires. Cette
 # signature ad hoc ne vaut pas notarisation : au premier lancement il faudra passer par le menu
