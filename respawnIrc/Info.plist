@@ -14,11 +14,12 @@
 	<string>RespawnIRC</string>
 	<key>CFBundleIconFile</key>
 	<string>${ASSETCATALOG_COMPILER_APPICON_NAME}</string>
-	<!-- Le même identifiant que la version Android (applicationId de son app/build.gradle). Il est
-	     écrit ici plutôt que déduit de QMAKE_TARGET_BUNDLE_PREFIX, qmake le fabriquant à partir du
-	     nom du bundle, ce qui donnerait com.franckrj.RespawnIRC. -->
+	<!-- Capitalisé comme le nom affiché, ce qui est l'usage sur macOS (com.apple.Safari,
+	     com.apple.TextEdit). Il ne reprend donc plus l'applicationId de la version Android, resté en
+	     minuscules : les deux identités divergent, et c'est voulu. Il est écrit ici plutôt que
+	     déduit de QMAKE_TARGET_BUNDLE_PREFIX pour rester explicite. -->
 	<key>CFBundleIdentifier</key>
-	<string>com.franckrj.respawnirc</string>
+	<string>com.franckrj.RespawnIRC</string>
 	<!-- Version complète, celle de version.pri que le .pro passe en VERSION. Surtout pas
 	     @SHORT_VERSION@, que qmake tronque aux deux premiers nombres : 3.1 au lieu de 3.1.17. -->
 	<key>CFBundleShortVersionString</key>
