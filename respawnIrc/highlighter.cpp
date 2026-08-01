@@ -102,7 +102,7 @@ void highlighterClass::spellCheck(const QString& text)
         QString simplifiedText = text.simplified();
         if(simplifiedText.isEmpty() == false)
         {
-            QStringList checkList = simplifiedText.split(QRegExp(R"rgx([^\w'-]+)rgx"), QString::SkipEmptyParts);
+            QStringList checkList = simplifiedText.split(QRegExp(R"rgx([^\w'-]+)rgx"));
             for(QString thisString : checkList)
             {
                 while(thisString.startsWith('\'') == true || thisString.startsWith('-') == true)
@@ -140,7 +140,7 @@ bool highlighterClass::checkWord(QString word)
 {
     if(spellChecker != nullptr && codec != nullptr)
     {
-        return spellChecker->spell(codec->fromUnicode(word).data());
+        return spellChecker->spell((std::string)codec->fromUnicode(word).data());
     }
     else
     {

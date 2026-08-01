@@ -129,6 +129,7 @@ void getTopicMessagesClass::analyzeMessages()
     QStringList tmpListOfNoelshackImagesUsed;
     QVector<QString> listOfPageSource;
     QVector<QString> listOfPageUrl;
+    bool cloudflareChallengeEncountered = false;
     QString locationHeader = ".";
     int firstValidePageNumber = -1;
 
@@ -156,6 +157,10 @@ void getTopicMessagesClass::analyzeMessages()
             {
                 listOfPageSource[i] = listOfReplys[i]->readAll();
 
+                if(listOfReplys[i]->rawHeaderList().contains("cf-mitigated")) {
+                    cloudflareChallengeEncountered = true;
+                }
+
                 if(locationHeader == ".")
                 {
                     locationHeader = listOfReplys[i]->rawHeader("Location");
@@ -172,6 +177,11 @@ void getTopicMessagesClass::analyzeMessages()
             listOfReplys[i]->deleteLater();
             listOfReplys[i] = nullptr;
         }
+    }
+
+    if(cloudflareChallengeEncountered) {
+        emit newMessageStatus("Entravé par Cloudflare.");
+        return;
     }
 
     emit newMessageStatus("Récupération des messages terminée !");

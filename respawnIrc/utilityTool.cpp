@@ -29,7 +29,7 @@ QList<QNetworkCookie> utilityTool::cookieToCookieList(const QNetworkCookie& conn
     }
 }
 
-void utilityTool::setupWebNotifierCookie(QWebEngineCookieStore& webEngineCookieStore)
+void utilityTool::setupWebNotifierCookie([[maybe_unused]] QWebEngineCookieStore& webEngineCookieStore)
 {
     // pk sa marsh pa, ri1 ki marsh :-(
 }

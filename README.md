@@ -20,20 +20,12 @@ Pour Windows le plus simple reste de télécharger la dernière version de Qt (h
 
 ### Linux
 
-Pour Linux, installez les paquets `qt5-default qtmultimedia5-dev libhunspell-dev` ainsi que `qtwebengine5-dev` si vous utilisez WebEngine (par défaut) ou `libqt5webkit5-dev` si vous utilisez WebKit (en utilisant les fichiers .old). Les noms des paquets sont ceux pour Debian, si vous utilisez une autre distribution ils peuvent changer.
+Pour Linux, installez les paquets `qtbase5-dev qtmultimedia5-dev libhunspell-dev` ainsi que `qtwebengine5-dev` si vous utilisez WebEngine (par défaut) ou `libqt5webkit5-dev` si vous utilisez WebKit (en utilisant les fichiers .old). Les noms des paquets sont ceux pour Debian, si vous utilisez une autre distribution ils peuvent changer.
 
 Rendez-vous ensuite dans le dossier `respawnIrc` et exécutez ces commandes :
 
     qmake
     make
-
----
-
-Si vous obtenez l’erreur suivante :
-> /usr/bin/ld: cannot find -llibhunspell: No such file or directory
-> /usr/bin/ld: note to link with /usr/lib/gcc/x86_64-linux-gnu/12/../../../x86_64-linux-gnu/libhunspell.a use -l:libhunspell.a or rename it to liblibhunspell.a
-
-Changez `-llibhunspell` par `-lhunspell` dans `respawnIrc.pro`, puis réexécutez `qmake` et `make`.
 
 ---
 

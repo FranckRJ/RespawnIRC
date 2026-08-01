@@ -1,3 +1,15 @@
 build-respawnIrc*
 hunspell/
 respawnIrc/respawnIrc.pro.user
+
+# Exécutable déplacé à la racine du projet
+/RespawnIRC
+/config.ini
+
+# Linux
+respawnIrc/*.o
+respawnIrc/moc_*.cpp
+respawnIrc/moc_predefs.h
+respawnIrc/Makefile
+respawnIrc/RespawnIRC
+respawnIrc/.qmake.stash

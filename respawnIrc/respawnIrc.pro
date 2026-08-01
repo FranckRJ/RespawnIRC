@@ -18,7 +18,7 @@ CONFIG += strict_c++
 
 QMAKE_CXXFLAGS_RELEASE += -O2
 
-LIBS += -L$$PWD/../hunspell/lib/ -llibhunspell
+LIBS += -L$$PWD/../hunspell/lib/ -lhunspell
 INCLUDEPATH += $$PWD/../hunspell/include
 DEPENDPATH += $$PWD/../hunspell/include
 
