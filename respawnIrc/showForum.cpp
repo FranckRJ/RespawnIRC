@@ -3,13 +3,13 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QAction>
-#include <QCoreApplication>
 #include <QPixmap>
 #include <QScopedPointer>
 
 #include "showForum.hpp"
 #include "utilityTool.hpp"
 #include "settingTool.hpp"
+#include "pathTool.hpp"
 
 namespace
 {
@@ -31,37 +31,37 @@ showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWid
     if(pinnedOnTagImage.isNull() == true)
     {
         pinnedOnTagImage.reset(new QPixmap);
-        pinnedOnTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-on.png");
+        pinnedOnTagImage->load(pathTool::dataDirPath() + "/resources/topic-marque-on.png");
     }
     if(pinnedOffTagImage.isNull() == true)
     {
         pinnedOffTagImage.reset(new QPixmap);
-        pinnedOffTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-marque-off.png");
+        pinnedOffTagImage->load(pathTool::dataDirPath() + "/resources/topic-marque-off.png");
     }
     if(hotTagImage.isNull() == true)
     {
         hotTagImage.reset(new QPixmap);
-        hotTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier2.png");
+        hotTagImage->load(pathTool::dataDirPath() + "/resources/topic-dossier2.png");
     }
     if(lockTagImage.isNull() == true)
     {
         lockTagImage.reset(new QPixmap);
-        lockTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-lock.png");
+        lockTagImage->load(pathTool::dataDirPath() + "/resources/topic-lock.png");
     }
     if(resolvedTagImage.isNull() == true)
     {
         resolvedTagImage.reset(new QPixmap);
-        resolvedTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-resolu.png");
+        resolvedTagImage->load(pathTool::dataDirPath() + "/resources/topic-resolu.png");
     }
     if(ghostTagImage.isNull() == true)
     {
         ghostTagImage.reset(new QPixmap);
-        ghostTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-ghost.png");
+        ghostTagImage->load(pathTool::dataDirPath() + "/resources/topic-ghost.png");
     }
     if(normalTagImage.isNull() == true)
     {
         normalTagImage.reset(new QPixmap);
-        normalTagImage->load(QCoreApplication::applicationDirPath() + "/resources/topic-dossier1.png");
+        normalTagImage->load(pathTool::dataDirPath() + "/resources/topic-dossier1.png");
     }
 
     timerForGetList = new QTimer(this);

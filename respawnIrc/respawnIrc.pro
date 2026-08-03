@@ -13,14 +13,49 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 RC_FILE = respawnIrc.rc
 
+# Informations du bundle macOS. L'icône est celle de Windows convertie, elle plafonne donc à 128
+# pixels : elle est un peu molle dans les grands affichages du Finder, il faudrait une source plus
+# grande pour y remédier.
+macx {
+    ICON = rirc.icns
+    QMAKE_BUNDLE = RespawnIRC
+    QMAKE_INFO_PLIST = Info.plist
+
+    # La version affichée par le Finder est lue dans respawnIrc.cpp pour n'avoir qu'une seule source ;
+    # qmake la remplace ensuite dans Info.plist à la place de @FULL_VERSION@. L'extraction se fait
+    # sans passer par le shell, dont les quotes ne survivent pas à l'analyse de qmake : la ligne
+    # cherchée est celle de currentVersionName, on enlève tout jusqu'au v du numéro puis tout ce qui
+    # suit le numéro lui-même.
+    linesOfSource = $$cat($$PWD/respawnIrc.cpp, lines)
+    lineOfVersion = $$find(linesOfSource, currentVersionName..v[0-9])
+    versionAfterTheV = $$replace(lineOfVersion, .*v, )
+    VERSION = $$replace(versionAfterTheV, [^0-9.].*, )
+
+    isEmpty(VERSION) {
+        error("Version introuvable dans respawnIrc.cpp, le bundle serait marqué 1.0.0.")
+    }
+}
+
 CONFIG += c++14
 CONFIG += strict_c++
 
 QMAKE_CXXFLAGS_RELEASE += -O2
 
-LIBS += -L$$PWD/../hunspell/lib/ -lhunspell
-INCLUDEPATH += $$PWD/../hunspell/include
-DEPENDPATH += $$PWD/../hunspell/include
+# Hunspell est attendu dans un dossier `hunspell` à la racine du dépôt (voir le wiki). Sous macOS
+# on se rabat sur celui de Homebrew, dont la bibliothèque porte un nom versionné contrairement à
+# celle de Debian ; ce nom peut être précisé : qmake HUNSPELL_LIB_NAME=hunspell-1.8
+HUNSPELL_DIR = $$PWD/../hunspell
+
+macx:!exists($$HUNSPELL_DIR/include/hunspell/hunspell.hxx) {
+    HUNSPELL_DIR = $$system(brew --prefix hunspell)
+    isEmpty(HUNSPELL_LIB_NAME): HUNSPELL_LIB_NAME = hunspell-1.7
+}
+
+isEmpty(HUNSPELL_LIB_NAME): HUNSPELL_LIB_NAME = hunspell
+
+LIBS += -L$$HUNSPELL_DIR/lib/ -l$$HUNSPELL_LIB_NAME
+INCLUDEPATH += $$HUNSPELL_DIR/include
+DEPENDPATH += $$HUNSPELL_DIR/include
 
 # zlib sert à décompresser le payload JSON des pages de jeuxvideo.com
 include(../zlib.pri)
@@ -109,4 +144,5 @@ HEADERS += \
     payloadTool.hpp \
     addCookieWindow.hpp \
     clickableLabel.hpp \
-    baseDialog.hpp
+    baseDialog.hpp \
+    pathTool.hpp

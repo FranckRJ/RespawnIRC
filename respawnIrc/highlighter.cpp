@@ -1,5 +1,4 @@
 #include <QFileInfo>
-#include <QCoreApplication>
 #include <QByteArray>
 #include <QColor>
 #include <QStringList>
@@ -7,6 +6,7 @@
 
 #include "highlighter.hpp"
 #include "styleTool.hpp"
+#include "pathTool.hpp"
 
 highlighterClass::highlighterClass(QTextDocument* parent) : QSyntaxHighlighter(parent)
 {
@@ -44,7 +44,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
         delete spellChecker;
     }
 
-    QFileInfo fileInfoForDic(QCoreApplication::applicationDirPath() + "/resources/" + spellDic + ".dic");
+    QFileInfo fileInfoForDic(pathTool::dataDirPath() + "/resources/" + spellDic + ".dic");
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
         spellChecker = nullptr;
@@ -52,9 +52,9 @@ bool highlighterClass::setDic(const QString newSpellDic)
     }
     else
     {
-        QFileInfo fileInfoForUserDic(QCoreApplication::applicationDirPath() + "/user_" + spellDic + ".dic");
-        spellChecker = new Hunspell((QCoreApplication::applicationDirPath() + "/resources/" + spellDic.toLatin1() + ".aff").toStdString().c_str(),
-                                    (QCoreApplication::applicationDirPath() + "/resources/" + spellDic.toLatin1() + ".dic").toStdString().c_str());
+        QFileInfo fileInfoForUserDic(pathTool::dataDirPath() + "/user_" + spellDic + ".dic");
+        spellChecker = new Hunspell((pathTool::dataDirPath() + "/resources/" + spellDic.toLatin1() + ".aff").toStdString().c_str(),
+                                    (pathTool::dataDirPath() + "/resources/" + spellDic.toLatin1() + ".dic").toStdString().c_str());
 
         if(fileInfoForUserDic.exists() == true && fileInfoForUserDic.isReadable() == true)
         {

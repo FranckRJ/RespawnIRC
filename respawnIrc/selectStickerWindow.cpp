@@ -1,7 +1,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QStringList>
-#include <QCoreApplication>
 #include <QDir>
 #include <QScrollBar>
 #include <QImage>
@@ -14,6 +13,7 @@
 #include "selectStickerWindow.hpp"
 #include "settingTool.hpp"
 #include "styleTool.hpp"
+#include "pathTool.hpp"
 
 namespace
 {
@@ -28,7 +28,7 @@ selectStickerWindowClass::selectStickerWindowClass(QWidget* parent) : baseDialog
     stickerBrowser->setReadOnly(true);
     stickerBrowser->setOpenExternalLinks(false);
     stickerBrowser->setOpenLinks(false);
-    stickerBrowser->setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
+    stickerBrowser->setSearchPaths(QStringList(pathTool::dataDirPath()));
     stickerBrowser->setMinimumWidth(450);
     stickerBrowser->setMinimumHeight(480);
 
@@ -124,7 +124,7 @@ clickableLabelClass* selectStickerWindowClass::createQLabelForStickerTypeWithThe
     QPalette palette;
     clickableLabelClass* imageView = new clickableLabelClass(listOfLabels.size(), parent);
 
-    image.load(QCoreApplication::applicationDirPath() + "/resources/" + imageName);
+    image.load(pathTool::dataDirPath() + "/resources/" + imageName);
     image = image.scaled(50, 50, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     palette.setColor(QPalette::Background, Qt::transparent);
@@ -147,7 +147,7 @@ void selectStickerWindowClass::loadAndUseListOfStickers(int stickerType)
         {
             case 0:
             {
-                QDir stickerDir(QCoreApplication::applicationDirPath() + "/resources/stickers/");
+                QDir stickerDir(pathTool::dataDirPath() + "/resources/stickers/");
                 QStringList listOfStickers;
 
                 if(stickerDir.exists() == true)

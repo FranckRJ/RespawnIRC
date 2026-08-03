@@ -1,4 +1,3 @@
-#include <QCoreApplication>
 #include <QVBoxLayout>
 #include <QNetworkCookieJar>
 #include <QMessageBox>
@@ -14,6 +13,7 @@
 #include "settingTool.hpp"
 #include "utilityTool.hpp"
 #include "configDependentVar.hpp"
+#include "pathTool.hpp"
 
 QThread* showTopicClass::threadForGetMessages;
 
@@ -282,7 +282,7 @@ void showTopicClass::addSearchPath(QString newSearchPath)
 
 void showTopicClass::resetSearchPath()
 {
-    messagesBox->setSearchPaths(QStringList(QCoreApplication::applicationDirPath()));
+    messagesBox->setSearchPaths(QStringList(pathTool::dataDirPath()));
 }
 
 void showTopicClass::relayoutDocumentHack()

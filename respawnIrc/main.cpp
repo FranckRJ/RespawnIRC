@@ -14,13 +14,14 @@
 #include "getTopicMessages.hpp"
 #include "shortcutTool.hpp"
 #include "styleTool.hpp"
+#include "pathTool.hpp"
 
 int main(int argc, char* argv[])
 {
     QCoreApplication::addLibraryPath("./");
 
     QApplication app(argc, argv);
-    QSettings setting(QCoreApplication::applicationDirPath() + "/config.ini", QSettings::IniFormat);
+    QSettings setting(pathTool::dataDirPath() + "/config.ini", QSettings::IniFormat);
 
     logTool::initialize();
 

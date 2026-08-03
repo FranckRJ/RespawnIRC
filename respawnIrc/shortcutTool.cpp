@@ -1,10 +1,10 @@
 #include <QFile>
 #include <QMap>
 #include <QTextStream>
-#include <QCoreApplication>
 
 #include "shortcutTool.hpp"
 #include "configDependentVar.hpp"
+#include "pathTool.hpp"
 
 namespace
 {
@@ -21,7 +21,7 @@ void shortcutTool::initializeAllShortcutsRules()
 
 void shortcutTool::loadShortcutRule(QString ruleName, QString beforeBase, QString afterBase, QString beforeNew, QString afterNew, bool useRegex)
 {
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/resources/" + ruleName + ".txt");
+    QFile thisFile(pathTool::dataDirPath() + "/resources/" + ruleName + ".txt");
 
     QMap<QString, shortcutRuleStruct>::iterator rulesIte = listOfShortcutRules.insert(ruleName, shortcutRuleStruct());
 

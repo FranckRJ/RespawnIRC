@@ -1,6 +1,5 @@
 #include <QFile>
 #include <QStringList>
-#include <QCoreApplication>
 #include <QTextStream>
 #include <QVector>
 #include <QDir>
@@ -8,6 +7,7 @@
 #include <QFontDatabase>
 
 #include "styleTool.hpp"
+#include "pathTool.hpp"
 
 namespace
 {
@@ -17,7 +17,7 @@ namespace
 
 QString styleTool::getStyle(QString themeName)
 {
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/style.css");
+    QFile thisFile(pathTool::dataDirPath() + "/themes/" + themeName + "/style.css");
     if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -31,7 +31,7 @@ QString styleTool::getStyle(QString themeName)
 
 QString styleTool::getModel(QString themeName)
 {
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/model.txt");
+    QFile thisFile(pathTool::dataDirPath() + "/themes/" + themeName + "/model.txt");
     if(themeName.isEmpty() == false && thisFile.open(QFile::ReadOnly | QFile::Text) == true)
     {
         QTextStream textStream(&thisFile);
@@ -51,7 +51,7 @@ modelInfoStruct styleTool::getModelInfo(QString themeName)
     QStringList listOfInfos;
     QVector<QString> listOfLine;
     modelInfoStruct modelInfo;
-    QFile thisFile(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/modelInfo.cfg");
+    QFile thisFile(pathTool::dataDirPath() + "/themes/" + themeName + "/modelInfo.cfg");
 
     listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"quote:<%ID_MESSAGE%>:[<%DATE_MESSAGE%>] <<%PSEUDO_PSEUDO%>>\">[C]</a> "); //quote button model
     listOfInfos.push_back("<a style=\"color: black;text-decoration: none\" href=\"blacklist:<%PSEUDO_LOWER%>\">[B]</a> "); //blacklist button model
@@ -147,7 +147,7 @@ const colorInfoForMessageAndOtherStruct& styleTool::getColorInfo()
 
 QString styleTool::getImagePathOfThemeIfExist(QString themeName)
 {
-    QDir imgDir(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/img/");
+    QDir imgDir(pathTool::dataDirPath() + "/themes/" + themeName + "/img/");
 
     if(themeName.isEmpty() == false && imgDir.exists() == true)
     {
@@ -159,7 +159,7 @@ QString styleTool::getImagePathOfThemeIfExist(QString themeName)
 
 void styleTool::loadThemeFont(QString themeName)
 {
-    QDir fontDir(QCoreApplication::applicationDirPath() + "/themes/" + themeName + "/fonts/");
+    QDir fontDir(pathTool::dataDirPath() + "/themes/" + themeName + "/fonts/");
     QStringList listOfFontsInDir;
 
     if(themeName.isEmpty() == false && fontDir.exists() == true)

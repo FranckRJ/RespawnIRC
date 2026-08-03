@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Description du bundle macOS, reprise du modèle fourni par Qt et complétée : le modèle par
+     défaut ne donne ni nom lisible ni version, que le Finder affiche, et laisse implicite la
+     compatibilité avec les écrans à haute densité. Les ${...} sont remplacés par qmake à partir
+     des variables du .pro. -->
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleName</key>
+	<string>RespawnIRC</string>
+	<key>CFBundleDisplayName</key>
+	<string>RespawnIRC</string>
+	<key>CFBundleIconFile</key>
+	<string>${ASSETCATALOG_COMPILER_APPICON_NAME}</string>
+	<!-- Le même identifiant que la version Android (applicationId de son app/build.gradle). Il est
+	     écrit ici plutôt que déduit de QMAKE_TARGET_BUNDLE_PREFIX, qmake le fabriquant à partir du
+	     nom du bundle, ce qui donnerait com.franckrj.RespawnIRC. -->
+	<key>CFBundleIdentifier</key>
+	<string>com.franckrj.respawnirc</string>
+	<!-- Version complète, lue dans respawnIrc.cpp par le .pro. Surtout pas @SHORT_VERSION@, que
+	     qmake tronque aux deux premiers nombres : 3.1 au lieu de 3.1.17. -->
+	<key>CFBundleShortVersionString</key>
+	<string>@FULL_VERSION@</string>
+	<key>CFBundleVersion</key>
+	<string>@FULL_VERSION@</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>${QMAKE_PKGINFO_TYPEINFO}</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSSupportsAutomaticGraphicsSwitching</key>
+	<true/>
+</dict>
+</plist>

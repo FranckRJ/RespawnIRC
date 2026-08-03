@@ -2,11 +2,11 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QDir>
-#include <QCoreApplication>
 #include <QStringList>
 #include <QItemSelectionModel>
 
 #include "selectThemeWindow.hpp"
+#include "pathTool.hpp"
 
 selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWidget* parent) : baseDialogClass(parent)
 {
@@ -55,7 +55,7 @@ selectThemeWindowClass::selectThemeWindowClass(QString newCurrentThemeName, QWid
 
 void selectThemeWindowClass::loadListOfThemes()
 {
-    QDir themeDir(QCoreApplication::applicationDirPath() + "/themes/");
+    QDir themeDir(pathTool::dataDirPath() + "/themes/");
     QStringList listOfTheme;
 
     if(themeDir.exists() == true)

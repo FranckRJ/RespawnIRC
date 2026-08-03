@@ -1,11 +1,11 @@
 #include <QHBoxLayout>
 #include <QTabBar>
-#include <QCoreApplication>
 
 #include "tabViewTopicInfos.hpp"
 #include "styleTool.hpp"
 #include "settingTool.hpp"
 #include "utilityTool.hpp"
+#include "pathTool.hpp"
 
 tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIgnoredPseudo, const QList<pseudoWithColorStruct>* newListOfColorPseudo,
                                                const QList<accountStruct>* newListOfAccount, QWidget* parent) : QWidget(parent)
@@ -21,7 +21,7 @@ tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIg
 
     tabList->setTabsClosable(true);
     tabList->setMovable(true);
-    alertImage.load(QCoreApplication::applicationDirPath() + "/resources/alert.png");
+    alertImage.load(pathTool::dataDirPath() + "/resources/alert.png");
 
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
     mainLayout->addWidget(tabList);
