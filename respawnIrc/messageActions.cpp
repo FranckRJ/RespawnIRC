@@ -6,28 +6,25 @@
 
 #include "messageActions.hpp"
 #include "utilityTool.hpp"
+#include "logTool.hpp"
 
 messageActionsClass::messageActionsClass(QWidget* newParent) : QObject(newParent)
 {
     parent = newParent;
     networkManager = new QNetworkAccessManager(this);
     timeoutForEditInfo = new autoTimeoutReplyClass(0, this);
-    timeoutForQuoteInfo = new autoTimeoutReplyClass(0, this);
     timeoutForDeleteInfo = new autoTimeoutReplyClass(0, this);
 }
 
 void messageActionsClass::updateSettingInfo()
 {
     timeoutForEditInfo->updateTimeoutTime();
-    timeoutForQuoteInfo->updateTimeoutTime();
     timeoutForDeleteInfo->updateTimeoutTime();
 }
 
 void messageActionsClass::setNewTopic(QString newTopicLink)
 {
     websiteOfTopic = parsingTool::getWebsite(newTopicLink);
-    oldIdOfMessageToEdit = 0;
-    oldUseMessageEdit = false;
 }
 
 void messageActionsClass::setNewAjaxInfo(ajaxInfoStruct newAjaxInfo)
@@ -53,7 +50,10 @@ const QNetworkCookie& messageActionsClass::getConnectCookie() const
     return currentConnectCookie;
 }
 
-bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdit)
+/* `urlForFormValues` est l'URL d'édition donnée par le site pour ce message. On y lit
+ * le texte à modifier et la session de formulaire à renvoyer, sans quoi l'envoi de la
+ * modification est refusé. */
+bool messageActionsClass::getEditInfo(long idOfMessageToEdit, QString urlForFormValues, bool useMessageEdit)
 {
     if(networkManager == nullptr)
     {
@@ -61,71 +61,75 @@ bool messageActionsClass::getEditInfo(long idOfMessageToEdit, bool useMessageEdi
         setNewCookie(currentConnectCookie, websiteOfCookie);
     }
 
-    if(ajaxInfo.list.isEmpty() == false)
+    if(urlForFormValues.isEmpty() == true || replyForEditInfo != nullptr)
     {
-        if(replyForEditInfo == nullptr)
-        {
-            QString urlToGet;
-            QNetworkRequest requestForEditInfo;
-
-            oldIdOfMessageToEdit = idOfMessageToEdit;
-            urlToGet = "https://" + websiteOfTopic + "/forums/ajax_edit_message.php?id_message=" + QString::number(oldIdOfMessageToEdit) + "&" + ajaxInfo.list + "&action=get";
-            requestForEditInfo = parsingTool::buildRequestWithThisUrl(urlToGet);
-            oldAjaxInfo = ajaxInfo;
-            oldUseMessageEdit = useMessageEdit;
-            replyForEditInfo = timeoutForEditInfo->resetReply(networkManager->get(requestForEditInfo));
-
-            if(replyForEditInfo->isOpen() == true)
-            {
-                connect(replyForEditInfo, &QNetworkReply::finished, this, &messageActionsClass::analyzeEditInfo);
-            }
-            else
-            {
-                analyzeEditInfo();
-                networkManager->deleteLater();
-                networkManager = nullptr;
-            }
-
-            return true;
-        }
+        return false;
     }
 
-    return false;
-}
+    oldIdOfMessageToEdit = idOfMessageToEdit;
+    oldUseMessageEdit = useMessageEdit;
 
-void messageActionsClass::getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted)
-{
-    if(networkManager == nullptr)
+    QNetworkRequest requestForEditInfo = parsingTool::buildRequestWithThisUrl(urlForFormValues);
+    requestForEditInfo.setRawHeader("Accept", "application/json");
+    requestForEditInfo.setRawHeader("X-Requested-With", "XMLHttpRequest");
+    replyForEditInfo = timeoutForEditInfo->resetReply(networkManager->get(requestForEditInfo));
+
+    if(replyForEditInfo->isOpen() == true)
     {
-        networkManager = new QNetworkAccessManager(this);
-        setNewCookie(currentConnectCookie, websiteOfCookie);
-    }
-
-    if(ajaxInfo.list.isEmpty() == false && replyForQuoteInfo == nullptr)
-    {
-        QNetworkRequest requestForQuoteInfo = parsingTool::buildRequestWithThisUrl("https://" + websiteOfTopic + "/forums/ajax_citation.php");
-        QString dataForQuote = "id_message=" + idOfMessageQuoted + "&" + ajaxInfo.list;
-        lastMessageQuoted = messageQuoted;
-        replyForQuoteInfo = timeoutForQuoteInfo->resetReply(networkManager->post(requestForQuoteInfo, dataForQuote.toLatin1()));
-
-        if(replyForQuoteInfo->isOpen() == true)
-        {
-            connect(replyForQuoteInfo, &QNetworkReply::finished, this, &messageActionsClass::analyzeQuoteInfo);
-        }
-        else
-        {
-            analyzeQuoteInfo();
-            networkManager->deleteLater();
-            networkManager = nullptr;
-        }
+        connect(replyForEditInfo, &QNetworkReply::finished, this, &messageActionsClass::analyzeEditInfo);
     }
     else
     {
-        QMessageBox::warning(parent, "Erreur", "Erreur, impossible de citer ce message, réessayez.");
+        analyzeEditInfo();
+        networkManager->deleteLater();
+        networkManager = nullptr;
     }
+
+    return true;
 }
 
-void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
+void messageActionsClass::analyzeEditInfo()
+{
+    QString source;
+    int httpStatus = replyForEditInfo->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+    timeoutForEditInfo->resetReply();
+
+    if(replyForEditInfo->isReadable() == true)
+    {
+        source = replyForEditInfo->readAll();
+    }
+    replyForEditInfo->deleteLater();
+    replyForEditInfo = nullptr;
+
+    qDebug(logNetwork) << "Réponse à la demande d'édition - code" << httpStatus << "- corps :" << source.left(1000);
+
+    editFormValuesStruct formValues = parsingTool::getEditFormValues(source);
+
+    if(formValues.isValid == false)
+    {
+        QString error = parsingTool::getErrorOfMessageSending(source, httpStatus);
+
+        emit setEditInfo(oldIdOfMessageToEdit, "", (error.isEmpty() == true ? "Impossible d'éditer ce message." : error),
+                         QList<QPair<QString, QString>>(), oldUseMessageEdit);
+        return;
+    }
+
+    if(formValues.needsCaptcha == true)
+    {
+        emit setEditInfo(oldIdOfMessageToEdit, "", "Jeuxvideo.com demande un captcha pour modifier ce message, ce que RespawnIRC ne sait pas faire.",
+                         QList<QPair<QString, QString>>(), oldUseMessageEdit);
+        return;
+    }
+
+    emit setEditInfo(oldIdOfMessageToEdit, formValues.text, "", formValues.listOfField, oldUseMessageEdit);
+}
+
+/* `urlForDeletion` vient directement du payload de la page (actions.delete.url du
+ * message) : elle embarque l'identifiant du message et le jeton attendu par le site,
+ * qui n'est pas celui utilisé ailleurs. Elle s'appelle en POST avec un corps vide, tout
+ * est déjà dans l'URL ; en GET le site répond 404. */
+void messageActionsClass::deleteMessage(QString urlForDeletion)
 {
     if(networkManager == nullptr)
     {
@@ -133,10 +137,13 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
         setNewCookie(currentConnectCookie, websiteOfCookie);
     }
 
-    if(ajaxInfo.mod.isEmpty() == false && replyForDeleteInfo == nullptr)
+    if(urlForDeletion.isEmpty() == false && replyForDeleteInfo == nullptr)
     {
-        QNetworkRequest requestForDeleteInfo = parsingTool::buildRequestWithThisUrl("https://" + websiteOfTopic + "/forums/modal_del_message.php?tab_message[]=" + idOfMessageDeleted + "&type=delete&" + ajaxInfo.mod);
-        replyForDeleteInfo = timeoutForDeleteInfo->resetReply(networkManager->get(requestForDeleteInfo));
+        QNetworkRequest requestForDeleteInfo = parsingTool::buildRequestWithThisUrl(urlForDeletion);
+        requestForDeleteInfo.setRawHeader("Accept", "application/json");
+        requestForDeleteInfo.setRawHeader("X-Requested-With", "XMLHttpRequest");
+        requestForDeleteInfo.setHeader(QNetworkRequest::ContentLengthHeader, 0);
+        replyForDeleteInfo = timeoutForDeleteInfo->resetReply(networkManager->post(requestForDeleteInfo, QByteArray()));
 
         if(replyForDeleteInfo->isOpen() == true)
         {
@@ -155,61 +162,10 @@ void messageActionsClass::deleteMessage(QString idOfMessageDeleted)
     }
 }
 
-void messageActionsClass::analyzeEditInfo()
-{
-    QString error;
-    QString message;
-    QString dataToSend = oldAjaxInfo.list + "&action=post";
-    QList<QPair<QString, QString>> listOfEditInput;
-    QString source;
-
-    timeoutForEditInfo->resetReply();
-
-    if(replyForEditInfo->isReadable())
-    {
-        source = replyForEditInfo->readAll();
-    }
-    replyForEditInfo->deleteLater();
-
-    source = parsingTool::parsingAjaxMessages(source);
-    message = parsingTool::getMessageEdit(source);
-    error = parsingTool::getErrorMessageInJSON(source, false, "Impossible d'éditer ce message.");
-    parsingTool::getListOfHiddenInputFromThisForm(source, "form-post-topic", listOfEditInput);
-
-    for(const QPair<QString, QString>& thisInput : listOfEditInput)
-    {
-        dataToSend += "&" + thisInput.first + "=" + thisInput.second;
-    }
-
-    emit setEditInfo(oldIdOfMessageToEdit, message, error, dataToSend, oldUseMessageEdit);
-
-    replyForEditInfo = nullptr;
-}
-
-void messageActionsClass::analyzeQuoteInfo()
-{
-    QString messageQuote;
-    QString source;
-
-    timeoutForQuoteInfo->resetReply();
-
-    if(replyForQuoteInfo->isReadable())
-    {
-        source = replyForQuoteInfo->readAll();
-    }
-    replyForQuoteInfo->deleteLater();
-
-    messageQuote = parsingTool::getMessageQuote(source);
-
-    messageQuote = ">" + QUrl::fromPercentEncoding(lastMessageQuoted.toUtf8()) + "\n>" + messageQuote;
-    replyForQuoteInfo = nullptr;
-
-    emit quoteThisMessage(messageQuote);
-}
-
 void messageActionsClass::analyzeDeleteInfo()
 {
     QString source;
+    int httpStatus = replyForDeleteInfo->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
     timeoutForDeleteInfo->resetReply();
 
@@ -221,10 +177,13 @@ void messageActionsClass::analyzeDeleteInfo()
 
     replyForDeleteInfo = nullptr;
 
-    if(source.startsWith("{\"erreur\":[]}") == false)
+    qDebug(logNetwork) << "Réponse à la suppression d'un message - code" << httpStatus << "- corps :" << source.left(1000);
+
+    QString error = parsingTool::getErrorOfMessageSending(source, httpStatus);
+
+    if(error.isEmpty() == false)
     {
-        source.remove(0, source.indexOf("[") + 2);
-        source.remove(source.lastIndexOf("]") - 1, 3);
-        QMessageBox::warning(parent, "Erreur", source);
+        qWarning(logNetwork) << "Suppression refusée :" << error;
+        QMessageBox::warning(parent, "Erreur", error);
     }
 }

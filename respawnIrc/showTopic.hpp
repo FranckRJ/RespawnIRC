@@ -8,6 +8,7 @@
 #include <QString>
 #include <QNetworkCookie>
 #include <QList>
+#include <QMap>
 #include <QPair>
 #include <QUrl>
 #include <QStringList>
@@ -26,6 +27,13 @@ struct messageInfoForEditStruct
     QString messageContent;
     int messageSize = 0;
     int realPosition = 0;
+};
+
+struct infoForActionsOnMessageStruct
+{
+    QString rawMessage;
+    QString editUrl;
+    QString deleteUrl;
 };
 
 class showTopicClass : public QWidget
@@ -60,6 +68,7 @@ private:
     void addMessageToTheEndOfMessagesBox(const QString& newMessage, long messageID);
     void editThisMessageOfMessagesBox(QString newMessage, long messageID);
     QString getColorOfThisPseudo(QString pseudo);
+    bool askIfThisMessageHasToBeDeleted(const QString& rawMessage);
     void setTopicToErrorMode();
     void replaceTextOrRemoveIt(QString& messageToChange, const QString& oldString, const QString& newString, bool itsAReplace);
 private slots:
@@ -79,7 +88,8 @@ signals:
     void newMessageStatus();
     void newNumberOfConnectedAndMP();
     void newMPAreAvailables(int newNumber, QString withThisPseudo);
-    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, QString infoToSend, bool useMessageEdit);
+    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error,
+                     QList<QPair<QString, QString>> listOfFieldForEdit, bool useMessageEdit);
     void newMessagesAvailable();
     void newNameForTopic(QString newName);
     void newCookieHasToBeSet();
@@ -129,6 +139,11 @@ private:
     bool useInternalNavigatorForLinks;
     bool downloadHighDefAvatar;
     long idOfLastMessageOfUser = 0;
+    /* Ce que le site nous a dit de chaque message affiché : son texte source (pour
+     * citer et éditer sans requête réseau) et les URL d'action qu'il autorise. Limité
+     * aux messages récents pour ne pas grossir indéfiniment. */
+    QMap<long, infoForActionsOnMessageStruct> listOfInfosForActions;
+    static const int maxNumberOfInfosForActionsKept = 200;
     int realTypeOfEdit;
     int currentTypeOfEdit;
     int currentErrorStreak = 0;

@@ -21,16 +21,14 @@ public:
     void setNewAjaxInfo(ajaxInfoStruct newAjaxInfo);
     void setNewCookie(QNetworkCookie newConnectCookie, QString newWebsiteOfCookie);
     const QNetworkCookie& getConnectCookie() const;
-    bool getEditInfo(long idOfMessageToEdit = 0, bool useMessageEdit = true);
-    void getQuoteInfo(QString idOfMessageQuoted, QString messageQuoted);
-    void deleteMessage(QString idOfMessageDeleted);
+    bool getEditInfo(long idOfMessageToEdit, QString urlForFormValues, bool useMessageEdit);
+    void deleteMessage(QString urlForDeletion);
 private slots:
     void analyzeEditInfo();
-    void analyzeQuoteInfo();
     void analyzeDeleteInfo();
 signals:
-    void quoteThisMessage(QString messageToQuote);
-    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error, QString infoToSend, bool useMessageEdit);
+    void setEditInfo(long idOfMessageEdit, QString messageEdit, QString error,
+                     QList<QPair<QString, QString>> listOfFieldForEdit, bool useMessageEdit);
 private:
     QWidget* parent;
     QNetworkCookie currentConnectCookie;
@@ -38,16 +36,12 @@ private:
     QString websiteOfTopic;
     QNetworkAccessManager* networkManager;
     autoTimeoutReplyClass* timeoutForEditInfo;
-    autoTimeoutReplyClass* timeoutForQuoteInfo;
     autoTimeoutReplyClass* timeoutForDeleteInfo;
     QNetworkReply* replyForEditInfo = nullptr;
-    QNetworkReply* replyForQuoteInfo = nullptr;
     QNetworkReply* replyForDeleteInfo = nullptr;
-    ajaxInfoStruct ajaxInfo;
-    ajaxInfoStruct oldAjaxInfo;
-    QString lastMessageQuoted;
     long oldIdOfMessageToEdit = 0;
     bool oldUseMessageEdit = false;
+    ajaxInfoStruct ajaxInfo;
 };
 
 #endif

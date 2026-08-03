@@ -22,6 +22,9 @@ LIBS += -L$$PWD/../hunspell/lib/ -lhunspell
 INCLUDEPATH += $$PWD/../hunspell/include
 DEPENDPATH += $$PWD/../hunspell/include
 
+# zlib sert à décompresser le payload JSON des pages de jeuxvideo.com
+include(../zlib.pri)
+
 SOURCES += \
     customWebPage.cpp \
     main.cpp \
@@ -59,6 +62,8 @@ SOURCES += \
     manageShortcutWindow.cpp \
     addShortcutWindow.cpp \
     utilityTool.cpp \
+    logTool.cpp \
+    payloadTool.cpp \
     addCookieWindow.cpp \
     clickableLabel.cpp \
     baseDialog.cpp
@@ -100,6 +105,8 @@ HEADERS += \
     manageShortcutWindow.hpp \
     addShortcutWindow.hpp \
     utilityTool.hpp \
+    logTool.hpp \
+    payloadTool.hpp \
     addCookieWindow.hpp \
     clickableLabel.hpp \
     baseDialog.hpp

@@ -1,10 +1,14 @@
 build-respawnIrc*
 hunspell/
+zlib/
 respawnIrc/respawnIrc.pro.user
 
 # Exécutable déplacé à la racine du projet
 /RespawnIRC
 /config.ini
+
+# Logs et pages sauvegardées quand RESPAWNIRC_DEBUG est activé
+/logs/
 
 # Linux
 respawnIrc/*.o
@@ -13,3 +17,9 @@ respawnIrc/moc_predefs.h
 respawnIrc/Makefile
 respawnIrc/RespawnIRC
 respawnIrc/.qmake.stash
+tests/*.o
+tests/moc_*.cpp
+tests/moc_predefs.h
+tests/Makefile
+tests/respawnIrcTests
+tests/.qmake.stash
