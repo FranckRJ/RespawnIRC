@@ -21,7 +21,19 @@ int main(int argc, char* argv[])
     QCoreApplication::addLibraryPath("./");
 
     QApplication app(argc, argv);
-    QSettings setting(pathTool::dataDirPath() + "/config.ini", QSettings::IniFormat);
+
+    /* Tous les dossiers rendus par QStandardPaths en dépendent, il faut donc le définir avant le
+     * premier appel à pathTool. L'organisation est laissée vide exprès : elle ajouterait un niveau
+     * de dossier au-dessus de RespawnIRC sans rien apporter. */
+    QCoreApplication::setApplicationName("RespawnIRC");
+
+    /* Avant toute lecture : les versions antérieures écrivaient à côté de l'exécutable. */
+    pathTool::migrateOldUserDataIfNeeded();
+
+    /* IniFormat sur les trois plateformes, et pas NativeFormat : celui-ci est le registre sous
+     * Windows, ce qui ferait perdre à l'archive sa portabilité, et un plist géré par cfprefsd sous
+     * macOS, dont le fichier n'est alors plus la source de vérité. Voir CLAUDE.md. */
+    QSettings setting(pathTool::configFilePath(), QSettings::IniFormat);
 
     logTool::initialize();
 

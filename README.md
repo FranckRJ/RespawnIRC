@@ -14,77 +14,365 @@ Il est fortement recommandé d'utiliser les sources de la branche master pour co
 Pour connaître les modifications à apporter au programme selon votre compilateur/version de Qt, référez-vous au wiki : https://github.com/FranckRJ/RespawnIRC/wiki/Compiler-selon-sa-configuration.  
 Pour compiler RespawnIRC vous devrez d'abord compiler Hunspell, pour ce faire référez-vous au wiki : https://github.com/FranckRJ/RespawnIRC/wiki/Compiler-Hunspell.
 
+Ces deux liens vers le wiki sont **antérieurs** aux sections par plateforme qui suivent, et n'ont pas été revérifiés depuis : en cas de désaccord, ce sont les sections ci-dessous qui font foi.
+
 ### Windows
 
-Pour Windows le plus simple reste de télécharger la dernière version de Qt (http://www.qt.io/download-open-source/) contenant Qt Creator, les libs Qt et un compilateur, de se rendre dans le dossier `respawnIrc` et d'ouvrir le .pro avec Qt Creator puis de cliquer sur `compiler`. Un nouveau dossier devrait être créé à la racine du projet (là où se trouvent les dossiers `resources` et `themes`) et à l'intérieur de celui-ci se trouve un dossier `debug` ou `release` (selon comment vous avez compilé) contenant le .exe, déplacez-le dans la racine du projet et exécutez-le.
+La cible est Windows 10 ou plus récent, en 64 bits. Tout se fait en ligne de commande, Qt Creator n'est pas nécessaire.
 
-En plus de Hunspell, RespawnIRC a besoin de zlib pour décompresser les pages de jeuxvideo.com. La plupart des toolchains MinGW, dont celle livrée avec Qt, en contiennent déjà une : dans ce cas il n'y a rien à faire. Sinon (avec MSVC notamment), compilez zlib et placez-la dans un dossier `zlib` à la racine du dépôt, à côté de `hunspell`, avec les en-têtes dans `zlib\include` et la bibliothèque dans `zlib\lib`. Si la bibliothèque obtenue ne porte pas le nom attendu (`zlib` avec MSVC, `z` ailleurs), son nom peut être précisé au moment de la configuration, par exemple `qmake ZLIB_LIB_NAME=zlibstatic`.
+**Le compilateur doit être MSVC, pas MinGW.** RespawnIRC utilise QtWebEngine, dont le moteur est Chromium, et Chromium ne se compile pas avec MinGW : les binaires officiels de Qt ne fournissent QtWebEngine que pour MSVC, et le module est purement et simplement absent des versions MinGW. C'est la seule contrainte forte de la compilation sous Windows, tout le reste en découle.
+
+En revanche aucune modification des fichiers `.pro` n'est nécessaire : toute la configuration passe par la ligne de commande de `qmake`, et il n'y reste qu'un `DEFINES+=HUNSPELL_STATIC`. Les deux variables `HUNSPELL_LIB_NAME` et `ZLIB_LIB_NAME` existent toujours mais ne servent plus qu'à désigner des bibliothèques autrement nommées — celles de vcpkg, ou celles de débogage : les noms produits par la recette ci-dessous sont ceux que les `.pro` prennent déjà par défaut.
+
+#### Tout installer d'un coup
+
+Sur une machine vierge, `bootstrap-windows.ps1` fait tout ce que décrivent les sections suivantes. Un PowerShell **ordinaire** suffit, à la racine du dépôt :
+
+    powershell -ExecutionPolicy Bypass -File .\bootstrap-windows.ps1
+
+`-ExecutionPolicy Bypass` n'est pas une précaution de style : la stratégie d'exécution par défaut d'un Windows 10 est `Restricted`, et un `.\bootstrap-windows.ps1` lancé tel quel sur une machine neuve échoue avant d'afficher quoi que ce soit — vérifié, il est refusé par un `UnauthorizedAccess`. Si vous cherchez à le constater vous-même, sachez que c'est étonnamment difficile à voir : `Get-ExecutionPolicy -List` affiche `Undefined` partout et jamais le mot `Restricted`, qui n'est que le défaut implicite, et un `Bypass` de portée `Process` se transmet aux processus enfants par la variable d'environnement `PSExecutionPolicyPreference` — relancer un `powershell.exe` neuf depuis un shell déjà en `Bypass` ne montre donc rien. Il faut vider cette variable.
+
+**Ce qui vaut pour ce script vaut pour les trois autres**, et ça se voit juste après : sur une machine restée au défaut, les `.\build-windows.ps1`, `.\run-windows.ps1` et `.\dist-windows.ps1` écrits tels quels dans les sections suivantes sont refusés de la même façon, par un `PSSecurityException`. Il faut les préfixer pareillement, par exemple :
+
+    powershell -ExecutionPolicy Bypass -File .\build-windows.ps1 -Tests
+
+C'est d'ailleurs sous cette forme que `bootstrap-windows.ps1` affiche les commandes de la suite quand il a fini. Les sections ci-dessous gardent la forme courte, qui est celle d'un shell où les scripts sont autorisés.
+
+Le script n'utilise pas git et ne récupère rien : il fait partie du dépôt, vous l'avez donc déjà. En revanche **la façon dont vous avez obtenu ce dépôt compte pour la suite**, et il vaut mieux le savoir avant d'installer 4,5 Go. Avec un `git clone`, tout fonctionne. Avec une archive zip téléchargée depuis GitHub, la compilation et `run-windows.ps1` fonctionnent, mais pas `dist-windows.ps1` : il extrait `resources/` et `themes/` avec `git archive HEAD`, et une archive décompressée n'est pas un dépôt — l'échec arriverait tard, après une compilation complète. Sur un zip il faut de plus lever la marque de provenance que Windows y met, sans quoi le script est bloqué même avec `Bypass` (`Unblock-File .\bootstrap-windows.ps1`).
+
+Il installe les Build Tools, Qt 5.15.2 avec QtWebEngine, compile Hunspell et zlib, récupère OpenSSL en vérifiant son empreinte SHA-256, et pose le tout dans la disposition attendue par les `.pro`. Compter une trentaine de minutes et environ 4,5 Go, presque entièrement pour les Build Tools (3,3 Go) et Qt (0,9 Go).
+
+Les cinq étapes ont maintenant tourné, l'installation des Build Tools comprise : elle a été exécutée par le script sur une machine virtuelle vierge, sans MSVC ni Qt, suivie de la compilation du programme, des tests et de la fabrication de l'archive. Elle avait longtemps été la seule branche jamais empruntée, faute d'une machine où désinstaller les Build Tools pour réessayer. Ce qui reste supposé et non constaté, c'est le seul traitement du code de retour 3010 — redémarrage conseillé — comme un succès : les deux installations observées ont rendu 0.
+
+**Cette installation des Build Tools est la seule étape à demander confirmation**, et il faut savoir pourquoi : c'est de loin la plus lourde — 3,3 Go, un quart d'heure, le processeur occupé tout du long — et l'invite UAC qui la suit s'affiche dans la seconde, trop vite pour qu'on ait le temps de lire ce qu'on est en train d'autoriser. Le script annonce donc ce qu'il va faire et attend une entrée. Il précise aussi ce que l'invite UAC annonce — **« Visual Studio Installer »**, éditeur vérifié **« Microsoft Corporation »** — de quoi accorder l'élévation à cet installateur précis plutôt qu'à un script dont on ne sait pas ce qu'il élève. La demande n'apparaît **que si les Build Tools manquent** : sur une machine déjà équipée, ou avec `-SkipBuildTools`, le script ne demande rien et reste bon à relancer sans surveillance. `-Yes` s'en passe.
+
+Seule cette installation a besoin des droits d'administrateur, et le script **élève cet installateur-là par une invite UAC** au lieu de réclamer d'être lancé élevé. L'invite n'apparaît que si les Build Tools manquent vraiment : sur une machine qui les a déjà, l'étape se saute sans rien demander. Un PowerShell administrateur reste accepté et ne fait alors apparaître aucune invite. Les quatre autres étapes n'écrivent que dans le dépôt et dans `C:\Qt`, et n'ont jamais besoin d'élévation — c'est aussi pourquoi seul l'installateur est élevé : ce que le script écrit ensuite appartient à l'utilisateur courant, et non à l'administrateur.
+
+Cette élévation a maintenant été essayée pour de bon, depuis un PowerShell ordinaire sur une machine vierge : l'invite UAC est apparue, elle a été acceptée, l'installateur élevé a rendu 0, et les quatre étapes suivantes ont continué sans élévation dans le processus d'origine. Le résultat est celui recherché — `C:\Qt` et tout ce que le script écrit dans le dépôt appartiennent à l'utilisateur courant, seule l'installation des Build Tools appartient aux administrateurs. Le refus de l'invite a été essayé lui aussi, sur une machine vierge : le script s'arrête sur son message et rend 1, sans rien avoir installé. Il a fallu au passage corriger ce message, qui annonçait un refus alors que rien ne permet de le reconnaître — le refus arrive en `InvalidOperationException` « The operation was canceled by the user. » sans exception interne, le `Win32Exception` 1223 y étant aplati en texte, et le même `catch` attrape tout autant un installateur introuvable. La cause est donc rapportée telle quelle, et la conduite à tenir donnée pour les deux cas. À savoir, si vous comptiez lancer le script et aller faire autre chose : une invite UAC laissée sans réponse **expire au bout de deux minutes**, et Windows rapporte cette expiration exactement comme un refus — le script s'arrête donc au même endroit et avec le même message. Sur une machine où les Build Tools manquent, il faut être devant l'écran pour les deux premières minutes ; ensuite seulement l'installation part pour son quart d'heure sans surveillance.
+
+À savoir avant d'essayer d'enchaîner l'amorçage et l'essai de l'archive sur la même machine : **installer les Build Tools pose `msvcp140.dll` et toute sa famille dans `System32`**. La machine amorcée n'est donc plus un témoin valable pour vérifier qu'une archive embarque bien tout ce qu'il lui faut — le chargeur y trouvera dans `System32` ce que l'archive aurait oublié. C'est précisément ce qui a laissé sortir une archive incomplète (voir « Les bibliothèques d'exécution »).
+
+Le script est réentrant, chaque étape étant sautée si son résultat est déjà là — après un échec, on le relance et il reprend où il en était.
+
+Les sections qui suivent décrivent les mêmes étapes à la main, et restent la référence : ce sont elles qu'il faut lire quand quelque chose ne se passe pas comme prévu, ou pour adapter une version.
+
+#### Les outils
+
+Les Build Tools de Visual Studio suffisent, l'IDE complet est inutile. L'installation se fait sans interface :
+
+    vs_BuildTools.exe --quiet --wait --norestart --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.26100
+
+Cette installation ciblée pèse **3,3 Go** (1,7 Go de Build Tools et 1,7 Go de Windows SDK) et n'installe ni WebView2 ni Microsoft Edge. Elle a été vérifiée de bout en bout sur une machine sans MSVC ni Qt : compilation du programme, des tests, et fabrication de l'archive. Le numéro du SDK est à adapter, c'est celui qui était courant au moment où ces lignes ont été écrites.
+
+Les **deux** composants sont nécessaires. `VC.Tools.x86.x64` seul pose bien `cl.exe` mais aucun `Windows Kits`, et rien ne compile : depuis Visual Studio 2015 les en-têtes de la bibliothèque C standard appartiennent au Windows SDK, pas au compilateur, et un simple `#include <stdio.h>` échoue.
+
+La variante historique reste valable :
+
+    vs_BuildTools.exe --quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended
+
+Elle installe la même chose plus WebView2 et Microsoft Edge, dont la compilation de RespawnIRC n'a aucun besoin, pour environ 5 Go. Il n'y a pas de raison de la préférer.
+
+Qt 5.15.2 est la dernière version dont les binaires sont librement téléchargeables. [aqtinstall](https://github.com/miurahr/aqtinstall) les récupère sans demander de compte Qt, et publie un exécutable autonome qui évite d'installer Python :
+
+    aqt.exe install-qt windows desktop 5.15.2 win64_msvc2019_64 -m qtwebengine --outputdir C:\Qt
+
+`qtmultimedia` fait partie de l'installation de base, seul `qtwebengine` doit être demandé en plus.
+
+#### Hunspell et zlib
+
+Rien n'est fourni par le système sous Windows, il faut donc compiler les deux. Ce sont deux petites bibliothèques sans dépendance, et les compiler à la main prend une quinzaine de secondes (12 s mesurées au dernier essai) : c'est la méthode recommandée. Récupérez les sources, [Hunspell 1.7.3](https://github.com/hunspell/hunspell/releases) et [zlib 1.3.1](https://github.com/madler/zlib/releases), décompressez-les, puis depuis une invite de commandes où `vcvars64.bat` a été exécuté :
+
+    cd hunspell-1.7.3\src\hunspell
+    cl /nologo /c /O2 /MD /EHsc /DHUNSPELL_STATIC *.cxx
+    lib /nologo /OUT:hunspell.lib *.obj
+    del *.obj
+    cl /nologo /c /Od /MDd /Z7 /EHsc /DHUNSPELL_STATIC *.cxx
+    lib /nologo /OUT:hunspelld.lib *.obj
+
+    cd zlib-1.3.1
+    cl /nologo /c /O2 /MD *.c
+    lib /nologo /OUT:zlib.lib *.obj
+    del *.obj
+    cl /nologo /c /Od /MDd /Z7 *.c
+    lib /nologo /OUT:zlibd.lib *.obj
+
+`/MD` est indispensable : c'est la bibliothèque C++ dynamique, celle qu'utilise Qt. Avec `/MT` l'édition de liens échouerait.
+
+Hunspell se compile **deux fois**, en release et en debug. `/MD` et `/MDd` ne se mélangent pas dans un même binaire : avec la seule bibliothèque release, un `nmake debug` de RespawnIRC échoue en `LNK2038`, sur un désaccord de `RuntimeLibrary` et de `_ITERATOR_DEBUG_LEVEL`. D'où le `hunspelld.lib` à part. Le `del *.obj` entre les deux passes n'est pas décoratif : `cl` écrit toujours `<source>.obj`, et sans lui la seconde bibliothèque reprendrait les objets de la première. `/Z7` plutôt que `/Zi` range les symboles dans les `.obj`, qui les emportent dans le `.lib`, là où `/Zi` les laisserait dans un `vc140.pdb` que personne ne copie et que l'éditeur de liens réclamerait ensuite en `LNK4099`.
+
+zlib se compile deux fois pour la même raison, mais son symptôme est plus discret et mérite d'être connu : étant en C, il n'emporte ni `_ITERATOR_DEBUG_LEVEL` ni l'enregistrement `RuntimeLibrary` que posent les en-têtes C++, si bien que l'éditeur de liens ne peut pas rendre de `LNK2038`. Il ne reste que le `/DEFAULTLIB:MSVCRT` des objets release — visible au `dumpbin /directives zs.lib` — qui dégénère en simple avertissement `LNK4098` et laisse **deux CRT dans le même binaire**. Un avertissement qu'on est d'autant plus tenté d'ignorer qu'il n'empêche rien ; c'est pourtant exactement le mélange que la section « Corruption de tas sous Windows » plus bas apprend à traquer, allouer dans une CRT et libérer dans l'autre. Le laisser dans le binaire de débogage, ce serait y introduire le défaut qu'on s'en sert pour chercher.
+
+Ces noms de bibliothèques ne sont pas arbitraires : `hunspell` et, sous MSVC, `zlib` sont ceux que les `.pro` prennent par défaut. La recette est libre de les choisir — `lib /OUT:` accepte n'importe quoi — donc autant prendre ceux qui n'obligent à rien passer à `qmake` ensuite. Ce sont aussi ceux que produit vcpkg pour zlib.
+
+Placez ensuite le résultat à la racine du dépôt, dans la disposition attendue par les `.pro` : les cinq en-têtes de `src\hunspell` (`hunspell.hxx`, `hunspell.h`, `hunvisapi.h`, `atypes.hxx`, `w_char.hxx`) dans `hunspell\include\hunspell` et `hunspell.lib` **et `hunspelld.lib`** dans `hunspell\lib` ; `zlib.h` et `zconf.h` dans `zlib\include` et `zlib.lib` **et `zlibd.lib`** dans `zlib\lib`.
+
+`HUNSPELL_STATIC` doit être défini à la compilation de Hunspell **et** à celle de RespawnIRC : sans lui les en-têtes de Hunspell déclarent tout en `__declspec(dllimport)` et l'édition de liens échoue. C'est le `DEFINES+=HUNSPELL_STATIC` des commandes plus bas.
+
+##### Avec vcpkg à la place
+
+[vcpkg](https://github.com/microsoft/vcpkg) fait la même chose sans avoir à savoir quels fichiers compiler, au prix d'une installation nettement plus lourde :
+
+    vcpkg install hunspell:x64-windows-static-md zlib:x64-windows-static-md
+
+Le triplet `x64-windows-static-md` donne des bibliothèques statiques avec la bibliothèque C++ dynamique, comme Qt ; `x64-windows-static` tout court utiliserait `/MT` et entrerait en conflit avec Qt. Les fichiers se recopient dans la même disposition que ci-dessus, à deux différences près : la bibliothèque de Hunspell s'appelle `hunspell-1.7.lib`, il faut donc ajouter `HUNSPELL_LIB_NAME=hunspell-1.7` aux commandes plus bas — c'est le cas type de cette variable, et le seul qui reste courant — et son `hunvisapi.h` est engendré avec le test déjà figé, ce qui rend `DEFINES+=HUNSPELL_STATIC` inutile, mais inoffensif. Le zlib de vcpkg, lui, s'appelle bien `zlib.lib` et ne demande rien.
+
+Pour mémoire, mesuré sur une même machine : la compilation à la main demande 2,4 Mo de téléchargement, une quinzaine de secondes et 44 Mo sur le disque, contre une dizaine de minutes et 912 Mo pour vcpkg, qui télécharge au passage CMake, 7zip, PowerShell Core et un environnement MSYS2 complet. Les deux tiers de ces dix minutes vont à libiconv, une dépendance du paquet vcpkg de Hunspell dont RespawnIRC n'a pas l'usage : la bibliothèque compilée à la main s'en passe et le programme fonctionne à l'identique, tests compris. vcpkg reste intéressant si vous utilisez déjà son cache binaire, ou pour suivre les mises à jour de Hunspell — qui sort une version tous les deux à quatre ans.
+
+Vérifiez dans tous les cas les noms de bibliothèques réellement obtenus plutôt que de supposer ceux d'ici, ils changent avec les versions et les méthodes de compilation — un zlib compilé en statique par CMake donne un `zlibstatic.lib`, par exemple. C'est à ça que servent les deux `..._LIB_NAME` quand le nom ne tombe pas juste.
+
+#### OpenSSL
+
+**Sans OpenSSL, le programme démarre mais ne peut joindre aucune page.** Qt 5.15.2 est compilé contre OpenSSL 1.1.1 et charge `libssl-1_1-x64.dll` et `libcrypto-1_1-x64.dll` à l'exécution pour tout ce qui est HTTPS ; en leur absence `QSslSocket::supportsSsl()` est faux et toutes les requêtes échouent, sans message clair. `windeployqt` ne les copie pas, et Qt ne les distribue plus : son dépôt ne contient plus que `tools_opensslv3_x64`, dont l'interface binaire est incompatible avec ce que Qt 5.15.2 va chercher.
+
+Il faut donc les récupérer ailleurs et les poser dans un dossier `openssl\bin` à la racine du dépôt, à côté de `hunspell` et `zlib`. La version utilisée pour la distribution actuelle est celle de [FireDaemon](https://firedaemon.com/download-firedaemon-openssl), signée et accompagnée d'une empreinte SHA-256 à vérifier.
+
+Attention : **OpenSSL 1.1.1 n'est plus maintenu depuis septembre 2023**. C'est un choix assumé faute d'alternative simple, Qt 5.15.2 ne sachant pas parler à OpenSSL 3. S'en affranchir demanderait de recompiler Qt depuis les sources avec `-schannel`, pour utiliser le TLS natif de Windows.
+
+#### Compiler
+
+    .\build-windows.ps1
+
+Sans argument, il prend le Qt dont le `qmake` est dans le `PATH`, et à défaut celui que `bootstrap-windows.ps1` a installé dans `C:\Qt` : au sortir d'un amorçage il n'y a donc rien à lui passer. Un Qt installé ailleurs se désigne avec `-QtDir C:\chemin\vers\Qt\5.15.2\msvc2019_64`, et un Qt ainsi désigné n'est jamais remplacé en douce par un autre. Dans les deux cas, les Qt sans QtWebEngine sont écartés en le disant — celui pour MinGW n'en a pas, Chromium ne se compilant qu'avec MSVC, et sans ce test l'échec n'arrivait qu'au `Unknown module(s) in QT: webenginewidgets` de `qmake`, qui ne dit pas quel Qt a été pris. Le script retrouve aussi tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. La compilation se fait hors des sources, dans `build\respawnIrc`, comme sur les deux autres plateformes : le dossier de sources reste propre et il n'y a rien à ignorer dedans. Les objets déjà compilés sont repris, `-Clean` recompile tout.
+
+Avec `-Tests`, il compile aussi `tests\tests.pro` dans `build\tests` et lance les vérifications. Avec un Hunspell venant de vcpkg, ajoutez `-HunspellLibName hunspell-1.7` ; c'est le même argument que celui de `dist-windows.ps1`, qui appelle ce script plutôt que d'avoir sa propre copie de ces étapes.
+
+Ce qu'il fait tient en quatre lignes, si vous préférez les taper depuis une invite de commandes où `vcvars64.bat` a été exécuté et où le `bin` de Qt est dans le `PATH` :
+
+    mkdir build\respawnIrc
+    cd build\respawnIrc
+    qmake ..\..\respawnIrc\respawnIrc.pro DEFINES+=HUNSPELL_STATIC
+    nmake release
+
+La compilation de débogage, elle, reste à faire à la main : le script ne la couvre pas. Ce sont les variables `HUNSPELL_LIB_NAME` et `ZLIB_LIB_NAME` qui désignent les bibliothèques de débogage, les `.pro` n'ayant rien de spécifique à Windows — et **dans un dossier de compilation à part**, ces noms étant choisis au moment du `qmake` et non à celui du `nmake` :
+
+    mkdir build\respawnIrc-debug
+    cd build\respawnIrc-debug
+    qmake ..\..\respawnIrc\respawnIrc.pro HUNSPELL_LIB_NAME=hunspelld ZLIB_LIB_NAME=zlibd DEFINES+=HUNSPELL_STATIC
+    nmake debug
+
+Ne pas lancer `nmake release` dans ce dossier-là : il lierait les bibliothèques de débogage à un binaire release et échouerait par le `LNK2038` symétrique.
+
+Le `DESTDIR` des `.pro` ne distingue pas les deux configurations : **l'exécutable de débogage remplace celui de release** dans `build\`, sous le même nom `RespawnIRC.exe`. Deux dossiers de compilation séparés ne donnent donc pas deux exécutables côte à côte, seulement le dernier compilé.
+
+Et le piège qui suit, constaté : revenir au dossier de release et y relancer `nmake release` **ne rend pas la main à l'exécutable de release**. `nmake` compare la cible à ses objets, or la cible est l'exécutable de débogage laissé dans `build\`, plus récent qu'eux : il conclut que tout est à jour, n'affiche rien et ne fait rien. On croit lancer un binaire de release et on continue d'exécuter celui de débogage. Effacer `RespawnIRC.exe` avant de recompiler suffit, et la différence de taille est un bon signal — ici 1,5 Mo en release contre 3,5 en debug.
+
+`build-windows.ps1` n'est pas exposé à ce piège, ni `dist-windows.ps1` qui l'appelle : il efface `RespawnIRC.exe` avant `nmake`, ce qui force l'édition de liens et garantit que ce qui sort de là est bien issu des objets de son propre dossier. La distribution effaçait auparavant tout `build\respawnIrc`, ce qui donnait la même garantie en recompilant les 45 sources à chaque archive ; le dossier est maintenant repris tel quel, et `-Clean` rend l'ancien comportement. Le piège ne mord donc plus que sur les compilations tapées à la main, la compilation de débogage en tête.
+
+Les objets intermédiaires restent dans `build\respawnIrc` ; `RespawnIRC.exe`, lui, est produit dans `build\`, où la compilation dépose aussi `resources\` et `themes\` que `pathTool::dataDirPath()` va chercher à côté de lui. Il lui manque encore les DLL de Qt et celles d'OpenSSL, sans quoi il ne démarre pas ; inutile pour autant de passer par l'archive de `dist-windows.ps1`, il suffit de les avoir dans le `PATH`. C'est ce que fait `run-windows.ps1` :
+
+    .\run-windows.ps1
+
+Si l'exécutable n'est pas là, il appelle `build-windows.ps1` : sur un dépôt fraîchement cloné et amorcé, cette seule ligne compile et lance le programme. Avec `-Logs`, il active `RESPAWNIRC_DEBUG` et le journal atterrit dans `build\userdata\logs\respawnirc.log` — `userdata\` étant à côté de l'exécutable, il est dans `build\` tant qu'on n'a pas fabriqué l'archive (voir plus bas).
+
+Les tests se compilent et se lancent avec `-Tests` :
+
+    .\build-windows.ps1 -Tests
+
+Ou à la main, de la même façon que le programme :
+
+    mkdir build\tests
+    cd build\tests
+    qmake ..\..\tests\tests.pro
+    nmake release
+    ..\respawnIrcTests.exe
+
+#### Fabriquer une version distribuable
+
+    .\dist-windows.ps1
+
+Le script compile en appelant `build-windows.ps1`, lance les tests, appelle `windeployqt`, allège le résultat, ajoute les bibliothèques d'exécution nécessaires, vérifie qu'il n'en manque aucune et fabrique `dist\RespawnIRC-<version>-windows.zip`. Il résout Qt exactement comme lui, et accepte le même `-QtDir` ; il retrouve tout seul l'environnement MSVC avec `vswhere`, il n'a donc pas besoin d'être lancé depuis une invite de commandes développeur. Il reprend le dossier `build\respawnIrc` de la compilation à la main plutôt que de le raser, donc alterner entre essayer le programme et fabriquer une archive ne recompile que ce qui a changé ; `-Clean` force une compilation complète et `-SkipTests` saute les vérifications. Le numéro de version qui nomme l'archive est lu dans `version.pri`, d'où le programme le tient aussi.
+
+L'archive contient un unique dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut décompresser quelque part. Ces deux dossiers ne sont jamais modifiés par le programme, qui écrit tout dans un `userdata` créé à côté de l'exécutable — l'ensemble reste donc portable et se déplace d'un bloc. À noter que `windeployqt` crée lui aussi un dossier `resources` pour QtWebEngine : les deux contenus cohabitent dans le même dossier, aucun nom de fichier ne se chevauchant.
+
+Trois dossiers sont allégés parce que `windeployqt` copie tout par défaut : les traductions de QtWebEngine sont réduites au français et à l'anglais qui lui sert de repli, celles de Qt au seul français, et les outils de développement de Chromium sont retirés. Cela représente une vingtaine de mégaoctets. S'y ajoute `--no-compiler-runtime`, qui évite les 24 Mo de `vc_redist.x64.exe` : `windeployqt` l'embarque dès que `VCINSTALLDIR` est définie, alors que rien ne le lance jamais et que les DLL du runtime sont déjà copiées à côté de l'exécutable. S'y ajoute enfin `opengl32sw.dll` et ses 20 Mo, longtemps conservé pour une raison qui s'est révélée fausse : voir plus bas. L'essentiel du poids restant est incompressible, `Qt5WebEngineCore.dll` pesant à lui seul près de 100 Mo.
+
+#### Les bibliothèques d'exécution
+
+Une seule chose manque encore à une machine vierge, et l'archive l'embarque : les **bibliothèques C++ de MSVC**. Elles ne font partie d'aucun Windows, elles arrivent avec le redistribuable Visual C++, et sans elles le programme ne démarre pas du tout. C'est facile à vérifier sur une machine neuve : `ucrtbase.dll` est bien dans `System32`, `msvcp140.dll` et `vcruntime140.dll` n'y sont pas. Un piège en le faisant : `System32` contient un `msvcp140_clr0400.dll` et un `vcruntime140_clr0400.dll`, copies privées du .NET Framework sans usage ici — un `dir msvcp140*` trouve donc quelque chose et peut faire conclure l'inverse.
+
+Le script copie **tout le dossier `Microsoft.VC*.CRT`** du redistribuable, soit dix DLL pour 1,8 Mo, et non une liste de noms choisis. C'est une correction, pas un choix de départ : il embarquait `vcruntime140.dll`, `vcruntime140_1.dll` et `msvcp140.dll`, et il manquait **`msvcp140_1.dll`**, que `Qt5Core.dll` et `Qt5Widgets.dll` importent. Toute archive produite avant cette correction échoue donc au lancement sur une machine sans redistribuable, avec « The code execution cannot proceed because MSVCP140_1.dll was not found » — constaté sur un Windows 10 LTSC 2019 propre. La dépendance vient des binaires précompilés de Qt 5.15.2 et non de la compilation faite ici : elle ne dépend pas de la version des Build Tools, et elle a toujours été là.
+
+Depuis, le script **vérifie avant de compresser** qu'aucun binaire de l'archive ne réclame une DLL du runtime C++ absente de l'archive, en relevant les imports au `dumpbin`. Ce contrôle ne remplace pas un essai sur une vraie machine sans redistribuable — il ne voit pas ce qui serait chargé par `LoadLibrary`, comme OpenSSL — mais il rend impossible la répétition exacte de cette panne.
+
+**L'archive corrigée a été essayée sur une machine virtuelle vierge sous Windows 10 LTSC 2019, celle-là même où la précédente échouait, et le programme fonctionne.** Les deux vérifications sont complémentaires et aucune ne rend l'autre inutile : celle du script tourne à chaque archive et attrape une régression immédiatement, l'essai sur machine vierge juge le résultat entier mais dépend de quelqu'un qui y pense.
+
+S'y ajoute OpenSSL, traité dans sa propre section plus haut, pour une raison sans rapport avec la version de Windows : Qt le charge à l'exécution et ne le distribue plus.
+
+Le reste de la pile de DLL qui accompagnait historiquement le programme n'existait que pour **Windows 7, qui n'est plus une cible** :
+
+- l'**Universal CRT** (`ucrtbase.dll` et la quarantaine de `api-ms-win-crt-*` et `api-ms-win-core-*`) est un composant du système depuis Windows 10, alors que Windows 7 ne l'obtenait que par la mise à jour facultative KB2999226. Les DLL de redirection n'ont même pas d'existence en tant que fichiers sous Windows 10 : ces noms sont résolus par le schéma d'*API sets* du noyau, ce qui explique qu'on ne les trouve pas dans `System32` sans que rien ne manque pour autant ;
+- **`D3Dcompiler_47.dll`**, dont Qt a besoin pour le rendu via ANGLE, fait partie de Windows 10 et n'était embarqué que parce que Windows 7 ne l'a généralement pas. `windeployqt` le copie encore avec le lot ANGLE, `dist-windows.ps1` le retire ensuite.
+
+Ces deux suppressions retirent une quarantaine de fichiers et quelques mégaoctets de l'archive — 47 fichiers et 6,4 Mo relevés avec le SDK 10.0.26100, mais le nombre de DLL de l'Universal CRT varie avec la version du SDK et ce chiffre n'est pas à figer. Le gain de poids est modeste ; le vrai gain est ailleurs. Le redistribuable de l'Universal CRT n'était pas au même endroit selon la version du SDK (`Redist\<version>\ucrt\DLLs\x64` pour les récents, `Redist\ucrt\DLLs\x64` pour les anciens), et cette recherche à deux dispositions, avec l'échec franc qui la protégeait, était la partie la plus fragile du script : elle avait déjà coûté une archive silencieusement incomplète. Elle n'a plus de raison d'être.
+
+#### `opengl32sw.dll`, et pourquoi il ne fait plus partie de l'archive
+
+Ce n'est pas une pièce Windows 7 : il est parti pour une raison à lui, et c'est le plus gros retrait de l'archive, 20 Mo sur 178.
+
+Le raisonnement qui l'a longtemps gardé était : sans pilote OpenGL utilisable, Windows ne fournit que le « GDI Generic » en version 1.1, très en deçà de ce que Qt demande, donc `opengl32sw.dll` est le seul recours. La première moitié est exacte, la conclusion ne suit pas. Le comportement par défaut de Qt bascule sur **ANGLE**, qui ne fait pas d'OpenGL du tout : il traduit en Direct3D 11, et en l'absence de GPU utilisable Direct3D se rabat sur **WARP**, le rasteriseur logiciel livré avec Windows. Le repli logiciel existe donc déjà dans le système, une couche plus bas.
+
+Mesuré sur une machine virtuelle sans la moindre accélération graphique (« Microsoft Basic Display Adapter », aucun ICD OpenGL enregistré) :
+
+| `QT_OPENGL` | `GL_RENDERER` obtenu |
+| --- | --- |
+| *(défaut)* | `ANGLE (Microsoft Basic Render Driver Direct3D11 vs_5_0 ps_5_0)` |
+| `desktop` | `GDI Generic`, OpenGL 1.1 — inutilisable |
+| `angle` | `ANGLE (Microsoft Basic Render Driver Direct3D11 vs_5_0 ps_5_0)` |
+| `software` | `Gallium 0.4 on llvmpipe`, Mesa 12 — c'est `opengl32sw.dll` |
+
+Sur cette même machine, l'archive privée d'`opengl32sw.dll` affiche correctement une page dans QtWebEngine, en mode par défaut comme en mode `angle`. Le fichier n'est donc **pas** le recours des machines sans pilote : ANGLE et WARP le sont.
+
+L'historique des versions publiées dit la même chose. Les releases **v3.1.6 à v3.1.10**, de 2018 à mars 2019, ont été distribuées avec QtWebEngine et ANGLE mais **sans aucun rendu OpenGL logiciel**, pendant environ un an et demi, sans problème signalé. `opengl32sw.dll` est apparu en v3.1.11 en même temps que `vc_redist.x86.exe` et qu'un changement de version de Qt : deux fichiers que `windeployqt` ajoute de lui-même, jamais une réponse à une panne.
+
+Il ne reste utile que si ANGLE lui-même échoue, ou si quelqu'un force `QT_OPENGL=software` — auquel cas, sans lui, Qt affiche « Failed to create OpenGL context » et le programme s'arrête. Ce dernier cas ne peut venir que d'une variable d'environnement posée à la main, le programme ne la définit jamais.
+
+**Il est donc retiré de l'archive**, comme `D3Dcompiler_47.dll`, après le passage de `windeployqt` qui continue de le copier. La réserve honnête : WARP est un composant de Windows, mais rien ne prouve qu'aucune machine cible n'a un Direct3D 11 cassé ou désactivé, et la panne serait alors totale. Le remettre est une ligne à supprimer dans `dist-windows.ps1`.
 
 ### Linux
 
 Pour Linux, installez les paquets `qtbase5-dev qtmultimedia5-dev libhunspell-dev qtwebengine5-dev zlib1g-dev`. Les noms des paquets sont ceux pour Debian, si vous utilisez une autre distribution ils peuvent changer.
 
-Rendez-vous ensuite dans le dossier `respawnIrc` :
+La compilation tient ensuite en une commande :
 
-    cd respawnIrc
+    ./build-unix.sh
 
-Et exécutez ces commandes :
+Le script sert aussi bien Linux que macOS, les deux ne différant que par une option de `qmake` et le nom de ce qui sort. Il compile **hors des sources**, dans `build/respawnIrc` ; `-t` compile et lance en plus les tests, `-c` repart de zéro au lieu de reprendre les objets déjà là, et `-q` désigne un autre Qt que celui dont le `qmake` est dans le `PATH`.
 
-    qmake
-    make
+À la main, c'est :
 
-### macOS
-
-Homebrew fournit Hunspell, et zlib vient du système, mais son paquet `qt@5` est livré **sans QtWebEngine** (retiré parce que son Chromium a des failles non corrigées) alors que RespawnIRC en a besoin. Il faut donc le Qt 5.15.2 officiel, que [aqtinstall](https://github.com/miurahr/aqtinstall) récupère sans demander de compte Qt :
-
-    brew install hunspell
-    python3 -m venv ~/.aqtenv && ~/.aqtenv/bin/pip install aqtinstall
-    ~/.aqtenv/bin/aqt install-qt mac desktop 5.15.2 clang_64 -m qtwebengine --outputdir ~/Qt
-
-Ces binaires sont en x86_64 : sur un Mac Apple Silicon ils tournent via Rosetta 2. Le Chromium de Qt 5.15.2 est ancien, mieux vaut ne pas s'en servir comme navigateur généraliste.
-
-Rendez-vous ensuite dans le dossier `respawnIrc` et compilez :
-
-    export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"
-    cd respawnIrc
-    qmake CONFIG+=sdk_no_version_check
+    mkdir -p build/respawnIrc
+    cd build/respawnIrc
+    qmake ../../respawnIrc/respawnIrc.pro
     make -j4
 
-`CONFIG+=sdk_no_version_check` fait taire l'avertissement de Qt 5.15.2, qui n'a été testé qu'avec le SDK 10.15 alors que Xcode en fournit un bien plus récent.
+L'exécutable `RespawnIRC` est produit dans `build/`, et la compilation y recopie `resources/` et `themes/` à côté de lui, là où il va les chercher. Il n'y a rien à déplacer, lancez-le de là :
 
-Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne peut donc pas être posé à la racine du dépôt à côté du dossier de sources `respawnIrc`. Déplacez le bundle à la racine et lancez-le, ou double-cliquez dessus depuis le Finder :
-
-    mv RespawnIRC.app ..
-    cd ..
-    ./RespawnIRC.app/Contents/MacOS/RespawnIRC
-
-Le programme cherche `resources/`, `themes/`, `config.ini` et `logs/` **à côté du bundle** et non dedans (voir `pathTool::dataDirPath`), le bundle doit donc rester à la racine du dépôt.
-
-#### Fabriquer une version distribuable
-
-Le bundle produit ci-dessus embarque les chemins du Qt de la machine qui l'a compilé : il n'est utilisable ailleurs qu'après un passage par `macdeployqt`, ce dont s'occupe `dist-macos.sh` :
-
-    ./dist-macos.sh ~/Qt/5.15.2/clang_64
-
-Le script compile, copie Qt et QtWebEngine dans le bundle, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 100 Mo pour un bundle de 200 Mo). Sans argument, il utilise le Qt dont le `qmake` est dans le `PATH`.
-
-L'image disque contient un dossier `RespawnIRC` avec l'application **et** les dossiers `resources` et `themes` : c'est ce dossier entier qu'il faut glisser dans les Applications, ou n'importe où ailleurs. L'application et ses données ne peuvent pas être séparées, ni les données enfermées dans le bundle, parce que le programme écrit dedans — les stickers, notamment, sont téléchargés dans `resources/stickers/`.
-
-Trois limites de cette distribution :
-
-- l'application est en x86_64 seulement, parce que le Qt 5.15.2 officiel n'existe qu'en x86_64. Sur un Mac Apple Silicon elle tourne donc via Rosetta 2. Une version arm64 demanderait de compiler Qt et QtWebEngine depuis les sources, ou de passer à Qt 6 ;
-- la signature est ad hoc et l'application n'est pas notarisée : au premier lancement macOS la refusera. Il faut passer par un clic droit sur l'application puis « Ouvrir », ou retirer la mise en quarantaine avec `xattr -dr com.apple.quarantine /chemin/vers/RespawnIRC`. Cette signature ad hoc est bien celle qu'exigerait Apple Silicon pour du code arm64 ; elle ne dispense pas de la notarisation, seul un certificat Developer ID en dispenserait ;
-- l'icône vient du `.ico` de Windows, qui plafonne à 128 pixels, et paraît donc un peu molle dans les grands affichages du Finder.
-
----
-
-Sous Windows et Linux, un fichier `RespawnIRC` devrait être créé dans le répertoire courant, déplacez-le dans la racine du projet (là où se trouvent les dossiers `resources` 
-et `themes`) et exécutez-le :
-
-    mv RespawnIRC ..
     cd ..
     ./RespawnIRC
 
 Tout ceci en une ligne :
 
-    cd respawnIrc; qmake; make; mv RespawnIRC ..; cd ..; ./RespawnIRC
+    mkdir -p build/respawnIrc; cd build/respawnIrc; qmake ../../respawnIrc/respawnIrc.pro; make -j4; cd ..; ./RespawnIRC
+
+Seuls les objets intermédiaires restent dans `build/respawnIrc` ; le `DESTDIR` du `.pro` dépose l'exécutable et ses données dans `build/` dans tous les cas, à côté de `respawnIrcTests`. **Rien n'atterrit à la racine du dépôt**, qui ne porte que des sources : un `rm -rf build/` nettoie tout ce que la compilation a produit. Compiler dans le dossier de sources continue de fonctionner et donne le même résultat au même endroit — c'est simplement ce qui laissait un `Makefile` et une quarantaine de `.o` au milieu des sources, et le `.gitignore` n'a plus de règle pour les couvrir.
+
+La copie de `resources/` et `themes/` se fait à chaque édition de liens. Un thème modifié sans qu'un `.cpp` bouge n'aurait donc rien à relier, et ne parviendrait jamais au programme : le `.pro` fait des fichiers de ces deux dossiers des prérequis de l'exécutable, de sorte que `make` relie pour eux aussi. Le prix est une édition de liens pour un thème modifié.
+
+### macOS
+
+zlib vient du système, mais le paquet `qt@5` de Homebrew est livré **sans QtWebEngine** (retiré parce que son Chromium a des failles non corrigées) alors que RespawnIRC en a besoin. Il faut donc le Qt 5.15.2 officiel, que [aqtinstall](https://github.com/miurahr/aqtinstall) récupère sans demander de compte Qt :
+
+    python3 -m venv ~/.aqtenv && ~/.aqtenv/bin/pip install aqtinstall
+    ~/.aqtenv/bin/aqt install-qt mac desktop 5.15.2 clang_64 -m qtwebengine --outputdir ~/Qt
+
+Ces binaires sont en x86_64 : sur un Mac Apple Silicon ils tournent via Rosetta 2. Le Chromium de Qt 5.15.2 est ancien, mieux vaut ne pas s'en servir comme navigateur généraliste.
+
+Hunspell se compile ensuite à la main, dans un dossier `hunspell` à la racine du dépôt que le `.pro` prend sans qu'on ait rien à désigner. C'est la même méthode que sous Windows, et pour la même raison qu'elle y est décrite : une petite bibliothèque sans dépendance, dont on compile les sources directement sans passer par son `configure`. Elle est ici en plus **statique**, donc rien à embarquer dans le bundle :
+
+    curl -sSL -o hunspell.tar.gz https://github.com/hunspell/hunspell/archive/refs/tags/v1.7.3.tar.gz
+    tar xzf hunspell.tar.gz && cd hunspell-1.7.3/src/hunspell
+    clang++ -c -O2 -arch x86_64 -mmacosx-version-min=10.13 -DHUNSPELL_STATIC *.cxx
+    ar rcs libhunspell.a *.o
+    mkdir -p <dépôt>/hunspell/include/hunspell <dépôt>/hunspell/lib
+    cp *.hxx *.h <dépôt>/hunspell/include/hunspell/ && cp libhunspell.a <dépôt>/hunspell/lib/
+
+Les deux options de la troisième ligne ne sont pas décoratives, et c'est pour elles que `brew install hunspell` ne convient plus : Homebrew compile pour la machine où il tourne, donc en `arm64` sur un Mac Apple Silicon — qui ne se lie pas avec le x86_64 de ce Qt — et avec le plancher macOS de cette machine-là. Le `libhunspell` de Homebrew relevé ici annonçait ainsi `minos 14.0` alors que l'application annonce 10.13, sans que l'éditeur de liens en dise rien : le DMG promettait une compatibilité qu'une de ses pièces ne tenait pas. Les compiler soi-même règle les deux d'un coup. Un `brew install hunspell` reste accepté par le `.pro` comme repli s'il n'y a pas de dossier `hunspell`, avec cette réserve.
+
+La compilation se fait ensuite avec le même script que sous Linux :
+
+    ./build-unix.sh
+
+Il n'y a pas de chemin à lui donner : le script écarte les Qt sans QtWebEngine — celui de Homebrew, donc, s'il est installé et que son `qmake` est dans le `PATH` — et va chercher dans `~/Qt` celui qu'`aqtinstall` vient d'y poser. `-q` reste là pour un Qt installé ailleurs, et un Qt désigné à la main n'est jamais remplacé en douce : s'il ne convient pas, le script le dit plutôt que d'en prendre un autre dans votre dos.
+
+`-t` compile et lance en plus les tests, `-c` repart de zéro. Le script ajoute de lui-même `CONFIG+=sdk_no_version_check`, qui fait taire l'avertissement de Qt 5.15.2 — testé avec le seul SDK 10.15 alors que Xcode en fournit un bien plus récent.
+
+À la main, c'est :
+
+    export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"
+    mkdir -p build/respawnIrc
+    cd build/respawnIrc
+    qmake ../../respawnIrc/respawnIrc.pro CONFIG+=sdk_no_version_check
+    make -j4
+
+Comme sous Linux, seuls les objets intermédiaires restent dans `build/respawnIrc` : le `DESTDIR` du `.pro` dépose le bundle dans `build/` de toute façon.
+
+Il n'y a **plus** de `rm -rf build/RespawnIRC.app` à faire avant, et c'est récent. Trois règles du `Makefile` visaient des fichiers sans en dépendre vraiment, si bien que `make` les sautait et répondait `Nothing to be done` : celle qui fabrique `Info.plist`, qui n'a aucune dépendance ; celles qui recopient `resources` et `themes`, qui n'ont que le **dossier** source pour dépendance, pas les fichiers dedans ; et la compilation des sources, que rien ne rattachait à `version.pri` alors que le numéro de version leur arrive par un `-D`. Le `.pro` ajoute maintenant à ces trois règles les prérequis qui leur manquaient, sans toucher aux commandes — en `make`, une même cible peut apparaître dans plusieurs règles tant qu'une seule porte des commandes, et les prérequis s'additionnent.
+
+Une réserve, qui n'est pas propre à ce projet : le `make` d'Apple est un GNU Make 3.81, qui **ne compare les dates qu'à la seconde**. Un fichier modifié dans la même seconde que la compilation précédente n'est donc pas vu, ici comme pour n'importe quel `.cpp`. Un `make` de plus, une seconde après, suffit.
+
+Contrairement à Linux c'est un bundle `RespawnIRC.app` qui est produit, et non un exécutable simple : le système de fichiers de macOS ne fait pas la différence entre majuscules et minuscules, un exécutable nommé `RespawnIRC` ne pourrait cohabiter ni avec le dossier de sources `respawnIrc`, ni avec le `build/respawnIrc` où vont ses objets. Le `.app`, lui, ne se confond avec aucun des deux. Le bundle est posé dans `build/`, lancez-le de là ou double-cliquez dessus depuis le Finder :
+
+    cd ..
+    ./RespawnIRC.app/Contents/MacOS/RespawnIRC
+
+Le bundle **embarque** `resources` et `themes` dans son `Contents/Resources` (voir `pathTool::dataDirPath`) : il est autonome et se déplace où l'on veut, la compilation ordinaire donnant le même bundle que celui qu'on distribue. Un thème modifié n'y parvient donc qu'à la compilation suivante — mais un `make` suffit, sans qu'il y ait quoi que ce soit à relier.
+
+#### Compiler sur un Mac Apple Silicon
+
+**Rien de ce qui précède ne change, et le résultat est le même bundle x86_64.** Ce n'est pas une coïncidence : les mkspecs du Qt 5.15.2 officiel fixent `QMAKE_APPLE_DEVICE_ARCHS = x86_64` en dur (`mkspecs/common/macx.conf`), si bien que le `Makefile` engendré porte un `-arch x86_64` explicite sur chaque compilation et chaque édition de liens. La machine qui compile ne décide donc pas de la cible, et un Mac Apple Silicon produit exactement ce que produit un Mac Intel. `macdeployqt` remplit ensuite le bundle des mêmes frameworks, qui sont ceux du même Qt téléchargé.
+
+**Il n'y a plus qu'une chose à ajouter, et elle est en dehors du dépôt** : **Rosetta 2**, sans quoi ni `qmake`, ni `macdeployqt`, ni `respawnIrcTests` ne démarrent — ils sont en x86_64 comme le reste de ce Qt. `softwareupdate --install-rosetta` l'installe. Les scripts le disent eux-mêmes : un `qmake` qui ne s'exécute pas ne se confond plus avec un Qt sans QtWebEngine, et sur une machine `arm64` le message nomme Rosetta.
+
+Le second obstacle, **un Hunspell x86_64**, a disparu avec la recette de compilation à la main donnée plus haut : son `-arch x86_64` est explicite, donc ce qu'elle produit convient sur les deux familles de Mac et il n'y a rien de particulier à faire ici. C'était le seul vrai problème de cette section, et il venait entièrement de Homebrew, qui compile pour la machine où il tourne — en `arm64` sur `/opt/homebrew`, qui ne se lie pas avec un binaire x86_64. Le repli sur Homebrew que garde le `.pro` reste donc à éviter sur une machine Apple Silicon ; si on y tient, il faut le [Homebrew de `/usr/local`](https://docs.brew.sh/Installation), celui qui tourne sous Rosetta, et le désigner à la main :
+
+    arch -x86_64 /usr/local/bin/brew install hunspell
+    mkdir -p build/respawnIrc && cd build/respawnIrc
+    qmake ../../respawnIrc/respawnIrc.pro CONFIG+=sdk_no_version_check \
+        HUNSPELL_DIR=/usr/local/opt/hunspell HUNSPELL_LIB_NAME=hunspell-1.7
+    make -j4
+
+Un `HUNSPELL_DIR` désigné n'est jamais remplacé en douce par celui de Homebrew, comme un Qt désigné en argument des scripts. Et si `brew --prefix hunspell` ne rend rien — Hunspell absent, ou le Homebrew de `/opt/homebrew` appelé depuis un `qmake` traduit par Rosetta —, `qmake` s'arrête en le disant, au lieu de laisser un `-L/lib/` échouer plus tard à l'édition de liens.
+
+**Réserve, et elle est entière : rien de tout ceci n'a été essayé sur un Mac Apple Silicon**, faute d'en avoir un. Ce qui est constaté l'a été sur un Mac Intel : que la cible `x86_64` vient des mkspecs et non de la machine, et que les messages des scripts sont ceux décrits ci-dessus — l'échec de `qmake` a été rejoué avec un faux `qmake` rendant 86, le code exact d'un « Bad CPU type in executable », et le message d'Apple Silicon en simulant la réponse d'`uname`. Le reste — Rosetta traduisant QtWebEngine, le comportement de Homebrew sous traduction — est raisonné, pas vérifié.
+
+#### Fabriquer une version distribuable
+
+Le bundle produit ci-dessus embarque les chemins du Qt de la machine qui l'a compilé : il n'est utilisable ailleurs qu'après un passage par `macdeployqt`, ce dont s'occupe `dist-macos.sh` :
+
+    ./dist-macos.sh
+
+Le script compile en appelant `build-unix.sh`, lance les tests, copie Qt et QtWebEngine dans le bundle, l'allège, le signe, et fabrique `dist/RespawnIRC-<version>-macos.dmg` (environ 80 Mo pour un bundle de 190 Mo). Il trouve Qt comme `build-unix.sh`, et accepte lui aussi un chemin en argument ; `--skip-tests` saute les vérifications.
+
+L'allègement est le pendant de celui que fait `dist-windows.ps1` : `macdeployqt` copie les traductions de QtWebEngine dans toutes les langues, 53 fichiers pour 17 Mo, dont on ne garde que le français et l'anglais qui sert de repli à Chromium ; s'y ajoutent les 1,5 Mo des outils de développement de Chromium, jamais ouverts depuis le programme, et les 0,3 Mo des greffons de géolocalisation et du `QtSerialPort` que l'un d'eux fait entrer. Cela fait passer le bundle de 208 à 190 Mo et l'image de 87 à 80. Les traductions de Qt elles-mêmes, que le script Windows réduit aussi, ne sont pas concernées : `macdeployqt` ne les met pas dans le bundle. Le reste du poids est incompressible, `QtWebEngineCore` pesant à lui seul 164 Mo.
+
+L'image est compressée en lzfse (`-format ULFO`) et non en zlib, qui n'était que le format pris par défaut par `hdiutil` : c'est à la fois plus petit et plus rapide, 87,0 Mio en 12,2 s contre 96,2 en 14,2 mesurés à bundle identique, avant l'allègement décrit ci-dessus. Les deux gains se cumulent : l'image publiée, lzfse sur bundle allégé, fait 79,7 Mio. lzfse demande macOS 10.11, en dessous du 10.13 que l'application annonce déjà — l'image ne peut donc pas être ce qui limite la compatibilité.
+
+L'image disque contient un `RespawnIRC.app` autonome et un lien vers `/Applications` : il n'y a qu'à glisser l'un sur l'autre, ou à déposer l'application où l'on veut. `resources` et `themes` sont dans `Contents/Resources` comme dans n'importe quel bundle compilé ici, à ceci près que le script les y remplace par leur version commitée, sans les fichiers que l'usage du programme a pu laisser dans le dossier de travail. Rien ne les écrit jamais, le programme rangeant ce qu'il produit dans `~/Library/Application Support` et `~/Library/Caches` : c'est ce qui permet de les enfermer dans le bundle.
+
+Trois limites de cette distribution :
+
+- l'application est en x86_64 seulement, parce que le Qt 5.15.2 officiel n'existe qu'en x86_64. Sur un Mac Apple Silicon elle tourne donc via Rosetta 2. Une version arm64 demanderait de compiler Qt et QtWebEngine depuis les sources, ou de passer à Qt 6 ;
+- la signature est ad hoc et l'application n'est pas notarisée : au premier lancement macOS la refusera. Il faut passer par un clic droit sur l'application puis « Ouvrir », ou retirer la mise en quarantaine avec `xattr -dr com.apple.quarantine /Applications/RespawnIRC.app`. Cette signature ad hoc est bien celle qu'exigerait Apple Silicon pour du code arm64 ; elle ne dispense pas de la notarisation, seul un certificat Developer ID en dispenserait ;
+- l'icône vient du `.ico` de Windows, qui plafonne à 128 pixels, et paraît donc un peu molle dans les grands affichages du Finder.
+
+---
+
+## Où le programme range ses données
+
+Les dossiers `resources` et `themes` sont livrés avec le programme et ne sont jamais modifiés. Ce que RespawnIRC écrit se range en trois catégories, qui vont là où chaque système les attend.
+
+**Sous Windows**, tout tient dans un dossier `userdata` à côté de l'exécutable, pour que le programme reste portable : on décompresse l'archive où l'on veut, et déplacer le dossier emporte la configuration avec lui.
+
+| Chemin | Contenu |
+| --- | --- |
+| `userdata\config.ini` | les réglages : comptes, thème, listes de pseudos |
+| `userdata\user_fr.dic` | mots ajoutés au correcteur orthographique |
+| `userdata\resources\shortcut.txt` | raccourcis d'écriture |
+| `userdata\resources\stickers\` | stickers téléchargés en lisant les topics |
+| `userdata\logs\` | journal et pages sauvegardées quand `RESPAWNIRC_DEBUG` est actif |
+
+**Sous Linux et macOS**, ce sont les dossiers standards :
+
+| Contenu | Linux | macOS |
+| --- | --- | --- |
+| `config.ini` | `~/.config/RespawnIRC/` | `~/Library/Application Support/RespawnIRC/` |
+| dictionnaire, raccourcis | `~/.local/share/RespawnIRC/` | `~/Library/Application Support/RespawnIRC/` |
+| stickers téléchargés, logs | `~/.cache/RespawnIRC/` | `~/Library/Caches/RespawnIRC/` |
+
+Les stickers téléchargés et les logs sont dans le cache parce qu'ils sont refabriquables : les premiers se retéléchargent tout seuls, les seconds ne servent qu'au diagnostic. Les effacer ne fait rien perdre.
+
+Ces dossiers reproduisent la disposition des données livrées, et la lecture les consulte en premier : un fichier qui s'y trouve masque celui d'origine. C'est ce qui permet de poser son propre dictionnaire à côté sans toucher à celui livré.
+
+Deux raisons à cette séparation. Une mise à jour se fait en remplaçant `resources` et `themes`, sans risquer d'effacer des réglages ; et les scripts de distribution n'embarquent plus les données du mainteneur, ce qu'ils faisaient jusqu'ici puisque les stickers téléchargés atterrissaient dans `resources/stickers/`, indiscernables de ceux livrés.
+
+Les versions antérieures posaient tous ces fichiers directement à côté de l'exécutable ; ils sont déplacés au premier démarrage, il n'y a rien à faire à la main.

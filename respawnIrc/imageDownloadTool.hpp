@@ -45,6 +45,8 @@ public:
     int getNumberOfDownloadRemaining();
 private:
     bool checkIfImageUrlExist(QString imageUrl, const imageDownloadRuleStruct& thisRule, QString ruleName);
+    QStringList basePathsForReading(const imageDownloadRuleStruct& thisRule);
+    QString basePathForWriting(const imageDownloadRuleStruct& thisRule);
     void startDownloadMissingImages();
     QString convertUrlToFilePath(QString thisUrl);
     QString removeLastLevelOfFilePath(QString thisPath);

@@ -199,7 +199,7 @@ void manageShortcutWindowClass::textInTextZoneChanged()
 
 void manageShortcutWindowClass::validateShortcuts()
 {
-    QFile thisFile(pathTool::dataDirPath() + "/resources/shortcut.txt");
+    QFile thisFile(pathTool::pathForWriting("resources/shortcut.txt"));
 
     if(thisFile.open(QFile::WriteOnly | QFile::Text))
     {

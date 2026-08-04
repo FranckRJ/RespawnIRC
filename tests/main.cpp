@@ -5,6 +5,10 @@
 #include "testTool.hpp"
 #include "payloadTool.hpp"
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
 namespace
 {
     int checksDone = 0;
@@ -110,7 +114,27 @@ int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
 
+#ifdef Q_OS_WIN
+    /* Le flux ci-dessus écrit en UTF-8, ce que la console de Windows n'est pas par défaut : sans
+     * cet appel les accents des noms de vérifications s'affichent en mojibake. On remet la page de
+     * codes d'origine à la sortie, parce que c'est un réglage de la console et pas du processus :
+     * elle resterait sinon en UTF-8 pour tout ce qui serait tapé ensuite dans la même fenêtre.
+     * Sortie redirigée vers un fichier ou un tube, ces deux appels ne font rien et n'ont rien à
+     * faire : les octets UTF-8 y partent tels quels, c'est au lecteur de les décoder. */
+    UINT previousConsoleCodePage = GetConsoleOutputCP();
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
     runParsingTests();
 
-    return testTool::finish();
+    int numberOfFailures = testTool::finish();
+
+#ifdef Q_OS_WIN
+    if(previousConsoleCodePage != 0)
+    {
+        SetConsoleOutputCP(previousConsoleCodePage);
+    }
+#endif
+
+    return numberOfFailures;
 }

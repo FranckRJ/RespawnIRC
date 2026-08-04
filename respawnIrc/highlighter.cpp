@@ -44,7 +44,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
         delete spellChecker;
     }
 
-    QFileInfo fileInfoForDic(pathTool::dataDirPath() + "/resources/" + spellDic + ".dic");
+    QFileInfo fileInfoForDic(pathTool::pathForReading("resources/" + spellDic + ".dic"));
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
         spellChecker = nullptr;
@@ -52,9 +52,9 @@ bool highlighterClass::setDic(const QString newSpellDic)
     }
     else
     {
-        QFileInfo fileInfoForUserDic(pathTool::dataDirPath() + "/user_" + spellDic + ".dic");
-        spellChecker = new Hunspell((pathTool::dataDirPath() + "/resources/" + spellDic.toLatin1() + ".aff").toStdString().c_str(),
-                                    (pathTool::dataDirPath() + "/resources/" + spellDic.toLatin1() + ".dic").toStdString().c_str());
+        QFileInfo fileInfoForUserDic(pathTool::pathForReading("user_" + spellDic + ".dic"));
+        spellChecker = new Hunspell(pathTool::pathForReading("resources/" + spellDic + ".aff").toStdString().c_str(),
+                                    pathTool::pathForReading("resources/" + spellDic + ".dic").toStdString().c_str());
 
         if(fileInfoForUserDic.exists() == true && fileInfoForUserDic.isReadable() == true)
         {
