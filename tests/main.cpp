@@ -126,6 +126,7 @@ int main(int argc, char* argv[])
 #endif
 
     runParsingTests();
+    runSpellCheckTests();
 
     int numberOfFailures = testTool::finish();
 

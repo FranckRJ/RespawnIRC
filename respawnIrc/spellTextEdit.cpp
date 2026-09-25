@@ -7,10 +7,17 @@
 #include <QTextBlock>
 #include <QIODevice>
 #include <QMenu>
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include "spellTextEdit.hpp"
 #include "pathTool.hpp"
+#include "configDependentVar.hpp"
+
+namespace
+{
+    const QRegularExpression expForWordSeparator(configDependentVar::expForWordSeparatorPattern,
+                                                 configDependentVar::expForWordSeparatorOptions);
+}
 
 spellTextEditClass::spellTextEditClass(QWidget* parent) : QTextEdit(parent)
 {
@@ -104,8 +111,8 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
 
 void spellTextEditClass::searchWordBoundaryPosition(QString textBlock, int checkPos, int& beginPos, int& endPos) const
 {
-    endPos = textBlock.indexOf(QRegExp(R"rgx([^\w'-])rgx"), checkPos);
-    beginPos = textBlock.lastIndexOf(QRegExp(R"rgx([^\w'-])rgx"), checkPos);
+    endPos = textBlock.indexOf(expForWordSeparator, checkPos);
+    beginPos = textBlock.lastIndexOf(expForWordSeparator, checkPos);
 
     if(endPos == -1)
     {

@@ -3,7 +3,7 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QMessageBox>
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include "addPseudoWindow.hpp"
 
@@ -40,7 +40,7 @@ bool addPseudoWindowClass::pseudoIsValide(QString pseudo)
         return false;
     }
 
-    if(pseudo.contains(QRegExp(R"rgx([^a-zA-Z0-9_\[\]-]+)rgx")) == true)
+    if(pseudo.contains(QRegularExpression(R"rgx([^a-zA-Z0-9_\[\]-]+)rgx")) == true)
     {
         return false;
     }
