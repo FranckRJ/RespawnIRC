@@ -11,6 +11,7 @@
 #include <QStringList>
 #include <QFocusEvent>
 #include <QHBoxLayout>
+#include <QSoundEffect>
 
 #include "sendMessages.hpp"
 #include "colorPseudoListWindow.hpp"
@@ -94,6 +95,8 @@ private:
     checkUpdateClass* checkUpdate;
     QString currentThemeName;
     QString lastClipboardDataChanged;
+    QSoundEffect soundForWarn;
+    QSoundEffect soundForNewMP;
     bool beepWhenWarn;
     bool beepForNewMP;
     bool warnUser;
