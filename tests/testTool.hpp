@@ -53,5 +53,6 @@ namespace testTool
 }
 
 void runParsingTests();
+void runSettingsTests();
 
 #endif

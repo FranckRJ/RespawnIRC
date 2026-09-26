@@ -21,6 +21,7 @@ INCLUDEPATH += $$PWD/../respawnIrc
 SOURCES += \
     main.cpp \
     testParsing.cpp \
+    testSettings.cpp \
     ../respawnIrc/parsingTool.cpp \
     ../respawnIrc/payloadTool.cpp \
     ../respawnIrc/pathTool.cpp \
