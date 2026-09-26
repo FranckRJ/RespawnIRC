@@ -18,7 +18,7 @@ containerForTopicsInfosClass::containerForTopicsInfosClass(const QList<QString>*
 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(splitter);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(layout);
 

@@ -35,14 +35,14 @@ mainWindowClass::mainWindowClass()
     QAction* actionCheckUpdate = menuFile->addAction("Chercher une mise à jour");
     menuFile->addSeparator();
     QAction* actionQuit = menuFile->addAction("Quitter");
-    actionConnect->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
-    actionShowAccountList->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
-    actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
-    actionOpenWebNavigator->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
-    actionOpenWebNavigatorAtMP->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_M));
-    actionGoToMp->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
-    actionCheckUpdate->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_U));
-    actionQuit->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
+    actionConnect->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
+    actionShowAccountList->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_P));
+    actionTabAddTab->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
+    actionOpenWebNavigator->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_N));
+    actionOpenWebNavigatorAtMP->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_M));
+    actionGoToMp->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_M));
+    actionCheckUpdate->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_U));
+    actionQuit->setShortcut(QKeySequence(Qt::ALT | Qt::Key_F4));
 
     QMenu* menuDiscussion = menuBar->addMenu("&Discussion");
     QAction* actionSelectTopic = menuDiscussion->addAction("Choisir un topic");
@@ -65,13 +65,13 @@ mainWindowClass::mainWindowClass()
     menuDiscussion->addSeparator();
     QAction* actionGoToTopic = menuDiscussion->addAction("Accéder au topic");
     QAction* actionGoToForum = menuDiscussion->addAction("Accéder au forum");
-    actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
-    actionUpdateTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
-    actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
-    actionSelectSticker->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
-    actionEditLastMessage->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
-    actionGoToTopic->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
-    actionGoToForum->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+    actionSelectTopic->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_T));
+    actionUpdateTopic->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_R));
+    actionReloadTopic->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_R));
+    actionSelectSticker->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_S));
+    actionEditLastMessage->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_E));
+    actionGoToTopic->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_O));
+    actionGoToForum->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_O));
 
     QMenu* menuSetting = menuBar->addMenu("&Configuration");
     QAction* actionShowListOfIgnoredPseudo = menuSetting->addAction("Gérer les ignorés");
@@ -81,9 +81,9 @@ mainWindowClass::mainWindowClass()
     QAction* actionReloadShortcuts = menuSetting->addAction("Recharger les raccourcis");
     menuSetting->addSeparator();
     QAction* actionShowPreferences = menuSetting->addAction("Préférences...");
-    actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
-    actionShowListOfColorPseudo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
-    actionShowPreferences->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
+    actionShowListOfIgnoredPseudo->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_I));
+    actionShowListOfColorPseudo->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_I));
+    actionShowPreferences->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_S));
 
     QMenu* menuFavorites = menuBar->addMenu("&Favoris");
     QMenu* menuUseFavorite = menuFavorites->addMenu("Accéder aux favoris");
@@ -109,7 +109,7 @@ mainWindowClass::mainWindowClass()
         }
 
         vectorOfUseFavorite.push_back(menuUseFavorite->addAction(nameForUseAndDel));
-        vectorOfUseFavorite.back()->setShortcut(QKeySequence(Qt::CTRL + (Qt::Key_F1 + i)));
+        vectorOfUseFavorite.back()->setShortcut(QKeySequence(Qt::CTRL | static_cast<Qt::Key>(Qt::Key_F1 + i)));
         if(nameOfTopic.isEmpty() == true)
         {
             thisFont = vectorOfUseFavorite.back()->font();
@@ -118,7 +118,7 @@ mainWindowClass::mainWindowClass()
         }
 
         vectorOfAddFavorite.push_back(menuAddFavorite->addAction(nameForAdd));
-        vectorOfAddFavorite.back()->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + (Qt::Key_F1 + i)));
+        vectorOfAddFavorite.back()->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | static_cast<Qt::Key>(Qt::Key_F1 + i)));
 
         vectorOfDelFavorite.push_back(menuDelFavorite->addAction(nameForUseAndDel));
         if(nameOfTopic.isEmpty() == true)
@@ -141,7 +141,7 @@ mainWindowClass::mainWindowClass()
     QAction* actionAbout = menuHelp->addAction("A propos de RespawnIRC");
     QAction* actionAboutQt = menuHelp->addAction("A propos de Qt");
     actionAbout->setShortcut(QKeySequence(Qt::Key_F10));
-    actionAboutQt->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F10));
+    actionAboutQt->setShortcut(QKeySequence(Qt::ALT | Qt::Key_F10));
 
     setMenuBar(menuBar);
     setCentralWidget(respawnIrc);

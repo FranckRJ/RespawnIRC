@@ -137,7 +137,7 @@ macx {
     }
 }
 
-CONFIG += c++14
+CONFIG += c++17
 CONFIG += strict_c++
 
 QMAKE_CXXFLAGS_RELEASE += -O2

@@ -25,7 +25,7 @@ tabViewTopicInfosClass::tabViewTopicInfosClass(const QList<QString>* newListOfIg
 
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
     mainLayout->addWidget(tabList);
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(mainLayout);
 

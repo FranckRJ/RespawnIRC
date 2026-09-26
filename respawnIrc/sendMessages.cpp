@@ -27,7 +27,7 @@ sendMessagesClass::sendMessagesClass(QWidget* parent) : QWidget(parent)
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(messageLine, 1);
     layout->addWidget(sendButton);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(layout);
 

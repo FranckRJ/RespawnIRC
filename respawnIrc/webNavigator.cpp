@@ -51,7 +51,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     topLayout->addWidget(urlLine, 1);
     topLayout->addWidget(goButton);
     topLayout->setSpacing(2);
-    topLayout->setMargin(2);
+    topLayout->setContentsMargins(2, 2, 2, 2);
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(mainMenuBar);
@@ -59,7 +59,7 @@ webNavigatorClass::webNavigatorClass(QWidget* parent, QString startUrl, QList<QN
     mainLayout->addLayout(topLayout);
     mainLayout->addWidget(webView, 1);
     mainLayout->setSpacing(0);
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(mainLayout);
     setWindowTitle("RespawnIRC Navigator");

@@ -8,6 +8,7 @@
 #include "imageDownloadTool.hpp"
 #include "parsingTool.hpp"
 #include "pathTool.hpp"
+#include "logTool.hpp"
 
 imageDownloadToolClass::imageDownloadToolClass(QObject* parent) : QObject(parent)
 {
@@ -282,21 +283,27 @@ void imageDownloadToolClass::analyzeLatestImageDownloaded()
                 QString imagePath = (basePath + ruleIte.value().directoryPath + convertUrlToFilePath(pathFile) + ruleIte.value().appendAfterName);
                 newDir.mkpath(removeLastLevelOfFilePath(imagePath));
                 newImageFile.setFileName(imagePath);
-                newImageFile.open(QIODevice::WriteOnly);
 
-                if(ruleIte.value().preferedImageWidth > 0 && ruleIte.value().preferedImageHeight > 0)
+                if(newImageFile.open(QIODevice::WriteOnly) == true)
                 {
-                    image = image.scaled(ruleIte.value().preferedImageWidth, ruleIte.value().preferedImageHeight,
-                                         ((ruleIte.value().keepAspectRatio == true) ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio), Qt::SmoothTransformation);
-                    image.save(&newImageFile, 0, 100);
+                    if(ruleIte.value().preferedImageWidth > 0 && ruleIte.value().preferedImageHeight > 0)
+                    {
+                        image = image.scaled(ruleIte.value().preferedImageWidth, ruleIte.value().preferedImageHeight,
+                                             ((ruleIte.value().keepAspectRatio == true) ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio), Qt::SmoothTransformation);
+                        image.save(&newImageFile, 0, 100);
+                    }
+                    else
+                    {
+                        newImageFile.write(imageInBytes);
+                    }
+
+                    newImageFile.close();
+                    listOfImagesIte.value().append(convertUrlToFilePath(listOfImagesUrlNeedDownload.front().linkOfImage));
                 }
                 else
                 {
-                    newImageFile.write(imageInBytes);
+                    qWarning(logNetwork) << "Impossible d'ouvrir en écriture le fichier de l'image :" << imagePath;
                 }
-
-                newImageFile.close();
-                listOfImagesIte.value().append(convertUrlToFilePath(listOfImagesUrlNeedDownload.front().linkOfImage));
             }
         }
     }

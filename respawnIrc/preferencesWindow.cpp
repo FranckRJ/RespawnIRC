@@ -34,7 +34,7 @@ preferenceWindowClass::preferenceWindowClass(QWidget* parent) : baseDialogClass(
     QVBoxLayout* realMainLayout = new QVBoxLayout(this);
     realMainLayout->addWidget(mainWidget);
     realMainLayout->addLayout(buttonLayout);
-    realMainLayout->setMargin(5);
+    realMainLayout->setContentsMargins(5, 5, 5, 5);
 
     mainWidget->addTab(createWidgetForMainTab(), "Général");
     mainWidget->addTab(createWidgetForMessagesTab(), "Messages");

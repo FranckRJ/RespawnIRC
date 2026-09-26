@@ -1,4 +1,5 @@
 #include <QVBoxLayout>
+#include <QAbstractButton>
 #include <QNetworkCookieJar>
 #include <QMessageBox>
 #include <QNetworkRequest>
@@ -41,7 +42,7 @@ showTopicClass::showTopicClass(const QList<QString>* newListOfIgnoredPseudo, con
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->addWidget(messagesBox);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(layout);
 
@@ -389,8 +390,8 @@ bool showTopicClass::askIfThisMessageHasToBeDeleted(const QString& rawMessage)
     boxForConfirmation.setText("Supprimer ce message ? Cette action est irréversible.");
     boxForConfirmation.setInformativeText(extractOfMessage.isEmpty() == true ? "(message vide)" : extractOfMessage);
     boxForConfirmation.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-    boxForConfirmation.setButtonText(QMessageBox::Yes, "Supprimer");
-    boxForConfirmation.setButtonText(QMessageBox::Cancel, "Annuler");
+    boxForConfirmation.button(QMessageBox::Yes)->setText("Supprimer");
+    boxForConfirmation.button(QMessageBox::Cancel)->setText("Annuler");
     boxForConfirmation.setDefaultButton(QMessageBox::Cancel);
 
     return (boxForConfirmation.exec() == QMessageBox::Yes);

@@ -10,7 +10,7 @@ viewThemeInfosClass::viewThemeInfosClass(QWidget* parent) : QWidget(parent)
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(informations);
     mainLayout->addStretch(1);
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(mainLayout);
 }

@@ -82,7 +82,7 @@ showForumClass::showForumClass(QString currentThemeName, QWidget* parent) : QWid
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->addWidget(listViewOfTopic);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(layout);
 

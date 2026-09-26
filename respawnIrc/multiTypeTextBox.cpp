@@ -28,7 +28,7 @@ multiTypeTextBoxClass::multiTypeTextBoxClass(QWidget* parent) : QWidget(parent)
     settingsChanged();
 
     layout->addWidget(lineEdit);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(layout);
 
