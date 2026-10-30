@@ -2,11 +2,18 @@
 #include <QByteArray>
 #include <QColor>
 #include <QStringList>
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include "highlighter.hpp"
 #include "styleTool.hpp"
 #include "pathTool.hpp"
+#include "configDependentVar.hpp"
+
+namespace
+{
+    const QRegularExpression expForWordSeparators(configDependentVar::expForWordSeparatorPattern + "+",
+                                                  configDependentVar::expForWordSeparatorOptions);
+}
 
 highlighterClass::highlighterClass(QTextDocument* parent) : QSyntaxHighlighter(parent)
 {
@@ -48,7 +55,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
         spellChecker = nullptr;
-        codec = QTextCodec::codecForName("UTF-8");
+        encoderUsed = QStringEncoder(QStringConverter::Utf8);
     }
     else
     {
@@ -60,7 +67,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
         {
             spellChecker->add_dic(fileInfoForUserDic.filePath().toLatin1());
         }
-        codec = QTextCodec::codecForName(QString(spellChecker->get_dic_encoding()).toLatin1());
+        encoderUsed = QStringEncoder(spellChecker->get_dic_encoding());
     }
 
     rehighlight();
@@ -83,9 +90,9 @@ void highlighterClass::styleChanged()
 
 void highlighterClass::addWordToDic(QString word)
 {
-    if(spellChecker != nullptr && codec != nullptr)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true)
     {
-        spellChecker->add(codec->fromUnicode(word).data());
+        spellChecker->add(QByteArray(encoderUsed(word)).toStdString());
         rehighlight();
     }
 }
@@ -97,12 +104,12 @@ void highlighterClass::highlightBlock(const QString& text)
 
 void highlighterClass::spellCheck(const QString& text)
 {
-    if(spellChecker != nullptr && codec != nullptr && spellCheckingIsEnabled == true)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true && spellCheckingIsEnabled == true)
     {
         QString simplifiedText = text.simplified();
         if(simplifiedText.isEmpty() == false)
         {
-            QStringList checkList = simplifiedText.split(QRegExp(R"rgx([^\w'-]+)rgx"));
+            QStringList checkList = simplifiedText.split(expForWordSeparators);
             for(QString thisString : checkList)
             {
                 while(thisString.startsWith('\'') == true || thisString.startsWith('-') == true)
@@ -118,12 +125,13 @@ void highlighterClass::spellCheck(const QString& text)
                 {
                     if(checkWord(thisString) == false)
                     {
-                        int wordCount;
+                        const QRegularExpression expForThisWord(R"rgx(\b)rgx" + QRegularExpression::escape(thisString) + R"rgx(\b)rgx",
+                                                                configDependentVar::expForWordSeparatorOptions);
+                        int wordCount = text.count(expForThisWord);
                         int index = -1;
-                        wordCount = text.count(QRegExp(R"rgx(\b)rgx" + thisString + R"rgx(\b)rgx"));
                         for(int j = 0; j < wordCount; ++j)
                         {
-                            index = text.indexOf(QRegExp(R"rgx(\b)rgx" + thisString + R"rgx(\b)rgx"), index + 1);
+                            index = text.indexOf(expForThisWord, index + 1);
                             if(index >= 0)
                             {
                                 setFormat(index, thisString.size(), spellCheckFormat);
@@ -138,9 +146,9 @@ void highlighterClass::spellCheck(const QString& text)
 
 bool highlighterClass::checkWord(QString word)
 {
-    if(spellChecker != nullptr && codec != nullptr)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true)
     {
-        return spellChecker->spell((std::string)codec->fromUnicode(word).data());
+        return spellChecker->spell(QByteArray(encoderUsed(word)).toStdString());
     }
     else
     {

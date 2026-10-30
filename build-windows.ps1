@@ -4,7 +4,7 @@
 # qmake. Le script de distribution l'appelle plutôt que de garder sa propre copie des mêmes étapes, et
 # run-windows.ps1 l'appelle quand l'exécutable manque.
 #
-# Usage : .\build-windows.ps1 [-QtDir chemin\vers\Qt\5.15.2\msvc2019_64] [-Tests] [-Clean]
+# Usage : .\build-windows.ps1 [-QtDir chemin\vers\Qt\6.12.0\msvc2022_64] [-Tests] [-Clean]
 #         [-HunspellLibName hunspell-1.7] [-ZlibLibName zlibstatic]
 # À défaut, le Qt utilisé est celui dont le qmake est dans le PATH.
 #
