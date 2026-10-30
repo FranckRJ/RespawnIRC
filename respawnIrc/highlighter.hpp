@@ -3,8 +3,8 @@
 
 #include <QSyntaxHighlighter>
 #include <QString>
+#include <QStringConverter>
 #include <QTextCharFormat>
-#include <QTextCodec>
 #include <QTextDocument>
 #include "hunspell/hunspell.hxx"
 
@@ -29,7 +29,7 @@ private:
     Hunspell* spellChecker = nullptr;
     bool spellCheckingIsEnabled = false;
     QTextCharFormat spellCheckFormat;
-    QTextCodec* codec = nullptr;
+    QStringEncoder encoderUsed;
 };
 
 #endif

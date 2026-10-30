@@ -21,7 +21,7 @@ bool customWebViewClass::canGoForward()
 
 void customWebViewClass::contextMenuEvent(QContextMenuEvent* event)
 {
-    QMenu* menu = page()->createStandardContextMenu();
+    QMenu* menu = createStandardContextMenu();
     const QList<QAction*> actions = menu->actions();
     for(QAction* thisAction : actions)
     {

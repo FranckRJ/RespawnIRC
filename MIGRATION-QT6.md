@@ -1,5 +1,81 @@
 # RespawnIRC — passage à Qt 6
 
+> **Le portage est fait pour Windows, le 17 août 2026, sur Qt 6.11.2, et la chaîne est passée à
+> Qt 6.12.0 le 3 octobre.** Ce document garde
+> l'analyse d'origine telle qu'elle était écrite **avant** toute compilation : il ne décrit donc
+> plus l'état du dépôt, et sert désormais à deux choses — retrouver le raisonnement qui a mené aux
+> arbitrages, et savoir sur quoi il s'est trompé. La section « Ce que l'exécution a démenti », juste
+> en dessous, liste les points faux ; **c'est elle qu'il faut lire avant de se fier à une
+> affirmation de ce fichier**. L'état réel est dans `CLAUDE.md`, en tête.
+>
+> macOS et Linux, eux, ne sont **pas** portés : tout ce que ce document dit d'eux reste à faire.
+
+---
+
+## Ce que l'exécution a démenti
+
+Les conclusions et l'ordre de travail ci-dessous ont tenu — le portage s'est déroulé comme prévu, et
+aucun arbitrage n'a changé de sens. Les **détails**, eux, ont mal vieilli, et c'est la leçon à en
+retenir : une analyse peut être juste sur le fond et fausse sur ce qu'on recopie sans revérifier.
+
+**Ce qui manquait complètement à la table A :**
+
+- **`qsizetype`.** Qt 6 fait passer `size()`, `count()`, `indexOf()` et `lastIndexOf()` de `int` à
+  `qsizetype`, et vingt endroits tronquaient le résultat. Le document n'en dit pas un mot. Piège
+  supplémentaire, découvert en route : ces conversions **ne produisent aucun avertissement**, ni à
+  `/W3` ni à `/W4`, parce que Qt désactive lui-même le C4244 dans le bloc `QT_NO_WARNINGS` de
+  `qcompilerdetection.h`. Il faut définir `QT_CC_WARNINGS` pour les voir — ce qui sort aussi 4844
+  C4251 venant des en-têtes de Qt ;
+- **`QRegularExpression::OptimizeOnFirstUsageOption`**, supprimée par Qt 6. C'est la seule API
+  retirée du portage qui ne vienne pas de `QRegExp`, et elle se cachait dans
+  `configDependentVar.hpp`, c'est-à-dire dans du code que le document donnait explicitement pour
+  déjà porté. Elle est la base des quelque cinquante expressions du programme : **plus rien ne
+  compilait** tant qu'elle était là ;
+- **l'`operator+` entre `Qt::Modifier` et `Qt::Key`**, que Qt 6 déclare `deleted`. Il faut
+  `operator|`, qui rend une `QKeyCombination`. Vingt et un raccourcis clavier concernés ;
+- **`QMessageBox::setButtonText`**, dépréciée, et **`QFile::open` devenue `[[nodiscard]]`** — cette
+  dernière ayant révélé un vrai défaut, un fichier d'image écrit sans vérifier son ouverture.
+
+**Ce qui était affirmé et s'est révélé faux :**
+
+- « **QtWebEngine : rien à changer**, aucune API supprimée dans ce qui est utilisé » (section A) :
+  `QWebEnginePage::createStandardContextMenu` n'existe plus, elle est passée à `QWebEngineView` ;
+- « **QStringConverter ne connaît que l'UTF-8, l'UTF-16, l'UTF-32, le Latin-1 et l'encodage du
+  système** », d'où une perte pour un dictionnaire en ISO-8859-15 (section A) : faux pour les
+  binaires officiels de Qt, qui embarquent ICU. L'enum `Encoding` ne déclare bien que cette poignée
+  de valeurs, mais le constructeur par nom accepte plus de deux cents encodages, ISO-8859-15
+  compris ;
+- « **aucune méthode concernée n'est `const`** », à propos du remplacement de `QTextCodec`
+  (section A) : `spellTextEdit::checkWord` et `getWordPropositions` le sont toutes les deux. Elles
+  le restent, les deux convertisseurs étant `mutable` ;
+- « **`QSoundEffect` ne passe par aucun moteur** », qui servait à justifier le retrait de FFmpeg
+  (section C) : le journal du programme affiche « Using Qt multimedia with FFmpeg version 7.1.5 »
+  dès le démarrage, un moteur est donc bien chargé. La conclusion a tenu quand même, mais sur la
+  foi de l'essai que la section C demandait : sans FFmpeg, Qt charge le moteur de Windows et les
+  deux sons ont été entendus. L'archive ne l'embarque plus ;
+- l'ordre de travail supposait qu'`aqtinstall` installerait Qt 6.11 : **aucune version publiée ne le
+  peut**, Qt ayant changé la disposition de son dépôt à partir de la 6.11.
+- « passer sur la série 6.12 **ne devrait demander qu'un changement de chemin** » (ordre de
+  travail) : Qt publie QtWebEngine à part depuis 6.12, avec son propre numéro, et le dossier où le
+  bootstrap allait le chercher contenait une préversion de juillet compilée contre un autre
+  `Qt6Gui`. Tout s'installait et se compilait, sans un avertissement, et le programme ne démarrait
+  pas. Il a fallu un `-WebEngineVersion` de plus dans `bootstrap-windows.ps1`.
+
+**Ce qui était annoncé comme un risque et n'en était pas un :**
+
+- `qMin(5, listOfWord.size())` a été présenté comme une erreur dure lors de la planification. Il
+  compile sans rien : Qt 6 a ajouté une surcharge à deux types qui promeut ses arguments ;
+- le `.pri` de qmake pour `webenginewidgets` — la question dont le document disait qu'une mauvaise
+  réponse invaliderait le plan entier — **est bien livré** avec l'extension QtWebEngine. qmake reste
+  donc viable, et la question « CMake maintenant » ne s'est pas posée.
+
+**Ce qui s'est vérifié exactement comme annoncé :** le `\w` du correcteur, qui était désigné comme
+« le point de vigilance, s'il ne devait y en avoir qu'un », et qui l'était ; les trente-deux
+emplacements de la table A, tous justes ; et le repli sur Schannel, qui négocie bien HTTP/2 et passe
+Cloudflare.
+
+---
+
 Analyse du 29 juillet 2026, branche `windows`. Portée : `respawnIrc/`, `tests/`, les deux
 `.pro` et les scripts de distribution. **Rien n'a été compilé contre Qt 6** : ce qui suit
 vient de la lecture du code et de la documentation de Qt 6.11. Les chiffres de taille, eux,
@@ -165,7 +241,8 @@ suivante.
   C++20 comme minimum. Le gel des fonctionnalités a eu lieu le 2 juin 2026 et la sortie est prévue
   le 22 septembre. Le passage du minimum à C++20 est discuté sur la liste de développement depuis
   2023, avec « 6.12+ » cité comme cible envisagée ; **c'est une intention, pas une décision
-  publiée**, et il ne faut pas l'écrire autrement. À revérifier à la sortie ;
+  publiée**, et il ne faut pas l'écrire autrement. Revérifié à la sortie : la page *C++20 Overview*
+  de 6.12 dit toujours « Qt 6 officially requires C++17 » ;
 - **QtWebEngine demande un compilateur C++20 quoi qu'il arrive**, à cause de Chromium, et ses
   notes de plate-forme le disent explicitement : MSVC ≥ 14.36 avec Visual Studio 2022, GCC ou
   Clang ≥ 10. Le projet utilise déjà des Build Tools 2022 et le SDK 10.0.26100, donc la contrainte
@@ -262,17 +339,17 @@ réclame ; rien ne dit quelles DLL de la famille les binaires de Qt 6 réclamero
 
 ## D. Ce que ça coûte
 
-| | Qt 5.15.2 | Qt 6.11 |
-| --- | --- | --- |
-| Windows minimum | Windows 7 | **Windows 10 1809** |
-| macOS minimum | 10.13 | **macOS 13**, Xcode 15 et SDK macOS 14 |
-| Compilateur Windows | MSVC 2019 | MSVC 2022, SDK Windows 11 ≥ 10.0.26100 |
-| QtWebEngine avec MinGW | non | **toujours non** |
+| | Qt 5.15.2 | Qt 6.11 | Qt 6.12 |
+| --- | --- | --- | --- |
+| Windows minimum | Windows 7 | **Windows 10 1809** | **Windows 10 1809** |
+| macOS minimum | 10.13 | **macOS 13**, Xcode 15 et SDK macOS 14 | **macOS 14.4**, Xcode 16 et SDK macOS 15 |
+| Compilateur Windows | MSVC 2019 | MSVC 2022, SDK Windows 11 ≥ 10.0.26100 | idem |
+| QtWebEngine avec MinGW | non | **toujours non** | **toujours non** |
 
-Les minimums de 6.12 ne sont pas encore publiés ; ceux de 6.11 sont donnés ici comme
-approximation, seule la fin de la prise en charge de Windows 10 après 6.12 étant annoncée. Les
-trois premières lignes sont relues dans la page *Supported Platforms* de 6.11, qui porte
-d'ailleurs la phrase en question : « Qt 6.12 will be the last version to support Windows 10. »
+Les trois premières lignes sont relues dans la page *Supported Platforms* de 6.11, qui porte
+d'ailleurs la phrase « Qt 6.12 will be the last version to support Windows 10. » Celle de 6.12,
+publiée depuis, donne le même minimum pour Windows : Windows 10 1809. Pour macOS, en revanche, elle
+monte le plancher à **14.4** : c'est la seule ligne que la sortie de 6.12 a changée.
 
 **Windows 7 était le principal coût de cette ligne, et il est déjà payé** : la cible du dépôt
 est passée à Windows 10 avant toute migration, la compatibilité Windows 7 ayant été raisonnée
@@ -292,8 +369,7 @@ que sous cette étiquette : ce sont des binaires du jeu d'outils v142, avec lesq
 caractères de `bootstrap-windows.ps1`, `$QtArch = 'win64_msvc2019_64'` et le `msvc2019_64` du chemin
 qu'il construit, plus les six lignes de commande du README qui recopient ce chemin.
 
-Ce qui reste à décider ici est plus étroit : Qt 6.11 demande Windows 10 **1809**, là où le dépôt
-ne dit aujourd'hui que « Windows 10 ».
+Qt 6.11 et 6.12 demandent Windows 10 **1809**, et le README l'annonce depuis le passage à Qt 6.
 
 ---
 
@@ -320,7 +396,7 @@ ne dit aujourd'hui que « Windows 10 ».
   chose. `dist-macos.sh` fabrique le DMG en ULFO (lzfse), qui demande macOS 10.11 et tient
   sous le plancher de 10.13 que Qt 5.15.2 impose. ULMO (lzma) ferait une image d'un cinquième
   plus petite mais demande 10.15, donc au-dessus de ce que l'application annonce
-  aujourd'hui — et le passage à Qt 6, qui monte le plancher à macOS 13, lève cette objection
+  aujourd'hui — et le passage à Qt 6, qui monte le plancher à macOS 14.4 avec 6.12, lève cette objection
   d'un coup. Elle est la seule à disparaître : ULMO coûte toujours près de deux minutes de
   compression contre une quinzaine de secondes pour ULFO, et c'est ce qu'il faudra peser à ce
   moment-là. Les chiffres mesurés en juillet 2026 sont dans le commentaire de `dist-macos.sh`
