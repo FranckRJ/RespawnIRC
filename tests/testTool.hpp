@@ -54,5 +54,6 @@ namespace testTool
 
 void runParsingTests();
 void runSettingsTests();
+void runSpellCheckTests();
 
 #endif
