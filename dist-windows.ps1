@@ -4,7 +4,7 @@
 # jamais écrits : sous Windows tout ce que le programme écrit va dans userdata/, à côté de
 # l'exécutable, ce qui garde l'ensemble portable.
 #
-# Usage : .\dist-windows.ps1 [-QtDir chemin\vers\Qt\5.15.2\msvc2019_64] [-Clean] [-SkipTests]
+# Usage : .\dist-windows.ps1 [-QtDir chemin\vers\Qt\6.12.0\msvc2022_64] [-Clean] [-SkipTests]
 #         [-HunspellLibName hunspell-1.7] [-ZlibLibName zlibstatic]
 # À défaut, le Qt utilisé est celui dont le qmake est dans le PATH.
 #
@@ -19,9 +19,9 @@
 # lancer depuis une invite de commandes développeur.
 #
 # La cible est Windows 10 64 bits ou plus récent. Le système fournit l'Universal CRT et
-# D3Dcompiler_47.dll, il n'y a donc que deux choses à embarquer : OpenSSL, sans quoi aucune page
-# n'est joignable, et les bibliothèques C++ de MSVC, sans lesquelles le programme ne démarre pas sur
-# une machine où le redistribuable n'a jamais été installé (voir le README pour le détail).
+# D3Dcompiler_47.dll, et Qt 6 se passe d'OpenSSL en se rabattant sur Schannel : il ne reste donc
+# qu'une chose à embarquer, les bibliothèques C++ de MSVC, sans lesquelles le programme ne démarre
+# pas sur une machine où le redistribuable n'a jamais été installé (voir le README pour le détail).
 
 [CmdletBinding()]
 param(
@@ -96,7 +96,16 @@ Write-Host "== Copie de Qt à côté de l'exécutable"
 # qui font doublon avec les DLL du runtime copiées plus bas. Il ne le copie que lorsque
 # VCINSTALLDIR est définie, donc uniquement quand le script est lancé après vcvars64.bat, ce qui est
 # toujours le cas ici : sans cet argument le gras dépend de la façon dont on appelle le script.
-Invoke-BuildTool -Name 'windeployqt' -Command { & $windeployqtBin --release --no-compiler-runtime (Join-Path $imageDir 'RespawnIRC.exe') }
+#
+# --no-ffmpeg et --exclude-plugins ffmpegmediaplugin écartent FFmpeg, 18 Mo : ses cinq DLL et le
+# greffon multimédia qui les charge. Le programme ne demande à QtMultimedia que ses deux sons, et
+# QSoundEffect joue les .wav sans FFmpeg : ils ont été entendus sur un Windows 10 vierge, ces DLL
+# retirées. --no-ffmpeg ne retire que les DLL et laisserait le greffon, incapable de se charger.
+# Sans lui, Qt prend le moteur de Windows, windowsmediaplugin, qui reste. Rien de tout cela n'est un
+# import statique : si un son se taisait, le contrôle au dumpbin plus bas ne le verrait pas.
+Invoke-BuildTool -Name 'windeployqt' -Command {
+    & $windeployqtBin --release --no-compiler-runtime --no-ffmpeg --exclude-plugins ffmpegmediaplugin (Join-Path $imageDir 'RespawnIRC.exe')
+}
 
 Write-Host "== Allègement"
 # windeployqt copie les traductions de toutes les langues : le programme est en français, on ne
@@ -108,36 +117,12 @@ Get-ChildItem (Join-Path $imageDir 'translations') -Filter 'qt_*.qm' -File |
 # Les outils de développement de Chromium ne sont jamais ouverts depuis le programme.
 Remove-Item (Join-Path $imageDir 'resources\qtwebengine_devtools_resources.pak') -Force -ErrorAction SilentlyContinue
 
-# D3Dcompiler_47.dll, que windeployqt copie avec le lot ANGLE, fait partie du système depuis
-# Windows 10 : le chargeur trouve celui de System32. Il n'était embarqué que pour Windows 7, où il
-# manque généralement. Ne pas lire cette ligne comme s'il restait un rendu de secours dans l'archive :
-# opengl32sw.dll est retiré juste en dessous, pour ses raisons propres, et plus rien ici ne rattrape un
-# ANGLE en panne. Ce qui rattrape l'absence de pilote OpenGL est WARP, déjà dans le système et une
-# couche plus bas — voir le commentaire suivant.
+# D3Dcompiler_47.dll, que windeployqt copie encore, fait partie du système depuis Windows 10 : le
+# chargeur trouve celui de System32.
 Remove-Item (Join-Path $imageDir 'D3Dcompiler_47.dll') -Force -ErrorAction SilentlyContinue
 
-# opengl32sw.dll (20 Mo, le plus gros fichier retirable de l'archive) est le rendu OpenGL logiciel de
-# Mesa. On a longtemps écrit ici qu'il était le seul recours des machines sans pilote OpenGL : c'est
-# faux. Sans pilote du vendeur, l'OpenGL de bureau se limite au « GDI Generic » 1.1 du système,
-# inutilisable pour Qt, mais le défaut de Qt bascule alors sur ANGLE, qui passe par Direct3D 11 et,
-# faute de GPU, par WARP, le rasteriseur logiciel livré avec Windows. Le repli logiciel est donc déjà
-# dans le système, une couche plus bas. Mesuré sur une machine virtuelle sans aucune accélération :
-# GL_RENDERER vaut « ANGLE (Microsoft Basic Render Driver Direct3D11 vs_5_0 ps_5_0) » et QtWebEngine
-# affiche correctement une page sans ce fichier. Les versions v3.1.6 à v3.1.10 publiées en amont ont
-# d'ailleurs été distribuées ainsi, avec QtWebEngine et sans lui, pendant un an et demi.
-# Il ne reste utile que si ANGLE lui-même échoue, ou si QT_OPENGL=software est forcé — ce dernier cas
-# ne peut venir que d'une variable d'environnement posée à la main, jamais du programme.
-Remove-Item (Join-Path $imageDir 'opengl32sw.dll') -Force -ErrorAction SilentlyContinue
-
 Write-Host "== Bibliothèques d'exécution (cible Windows 10)"
-# 1. OpenSSL, que Qt charge à l'exécution et sans lequel aucune page n'est joignable. Le détail est
-#    dans windows-common.ps1, avec la vérification elle-même : ici son absence est une erreur franche,
-#    une archive sans OpenSSL n'ayant aucun intérêt.
-$opensslDir = Get-OpenSslDir -RepoDir $repoDir -Required
-
-Copy-Item (Join-Path $opensslDir '*.dll') $imageDir -Force
-
-# 2. Bibliothèques C++ de MSVC : absentes d'une machine où le redistribuable n'a jamais été
+# Bibliothèques C++ de MSVC : absentes d'une machine où le redistribuable n'a jamais été
 #    installé, quel que soit le Windows. C'est ce qui les distingue de l'Universal CRT abandonné
 #    plus bas : sur un Windows 10 vierge, ucrtbase.dll est bien dans System32 alors que
 #    msvcp140.dll et vcruntime140.dll n'y sont pas. Passer à Windows 10 ne les rend pas inutiles.
@@ -176,9 +161,8 @@ Write-Host "== Vérification des dépendances"
 #
 # Portée volontairement étroite : les imports statiques de la famille du runtime MSVC, les seuls que
 # ni Windows ni windeployqt ne fournissent. Le reste des imports est soit dans l'archive, soit fourni
-# par le système ; OpenSSL n'apparaît pas ici puisque Qt le charge dynamiquement, et il a déjà sa
-# propre vérification plus haut. Un import chargé à la main par LoadLibrary échapperait aussi à ce
-# contrôle : il ne remplace pas un essai sur une machine sans redistribuable Visual C++.
+# par le système. Un import chargé à la main par LoadLibrary échapperait à ce contrôle : il ne
+# remplace pas un essai sur une machine sans redistribuable Visual C++.
 if(-not (Get-Command dumpbin -ErrorAction SilentlyContinue))
 {
     throw "dumpbin est introuvable alors que l'environnement MSVC est chargé : la vérification des dépendances ne peut pas se faire, et la sauter rendrait le contrôle inutile."

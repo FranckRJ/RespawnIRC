@@ -9,7 +9,7 @@
 #include <QStringList>
 #include <QPoint>
 #include <QContextMenuEvent>
-#include <QTextCodec>
+#include <QStringConverter>
 #include "hunspell/hunspell.hxx"
 
 class spellTextEditClass : public QTextEdit
@@ -37,7 +37,9 @@ private:
     QVector<QAction*> wordPropositionsActions;
     QString spellDic;
     Hunspell* spellChecker = nullptr;
-    QTextCodec* codecUsed = nullptr;
+    /* mutable : leur operator() n'est pas const, et checkWord et getWordPropositions le sont. */
+    mutable QStringEncoder encoderUsed;
+    mutable QStringDecoder decoderUsed;
     QStringList addedWords;
     QPoint lastPos;
     bool spellCheckingIsEnabled = false;

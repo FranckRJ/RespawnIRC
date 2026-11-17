@@ -1,8 +1,6 @@
 build-respawnIrc*
 hunspell/
 zlib/
-# Sous Windows, OpenSSL 1.1.1 posé à côté de hunspell et zlib (voir le README).
-openssl/
 respawnIrc/respawnIrc.pro.user
 
 # Ce que le programme écrit, tel que les versions antérieures le laissaient à côté de l'exécutable,

@@ -53,17 +53,16 @@ void spellTextEditClass::doStuffBeforeQuit()
 
             file.close();
         }
-        if(file.open(QIODevice::WriteOnly | QIODevice::Text) == true && codecUsed != nullptr)
+        if(spellChecker != nullptr && encoderUsed.isValid() == true && file.open(QIODevice::WriteOnly | QIODevice::Text) == true)
         {
             QTextStream writeStream(&file);
-            QByteArray encodedString;
+            writeStream.setEncoding(QStringConverter::encodingForName(spellChecker->get_dic_encoding()).value_or(QStringConverter::Utf8));
 
             writeStream << addedWords.count() << "\n";
 
             for(const QString& thisWord : addedWords)
             {
-                encodedString = codecUsed->fromUnicode(thisWord);
-                writeStream << encodedString.data() << "\n";
+                writeStream << thisWord << "\n";
             }
 
             file.close();
@@ -89,7 +88,8 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
         spellChecker = nullptr;
-        codecUsed = QTextCodec::codecForName("UTF-8");
+        encoderUsed = QStringEncoder(QStringConverter::Utf8);
+        decoderUsed = QStringDecoder(QStringConverter::Utf8);
         return false;
     }
     else
@@ -103,7 +103,8 @@ bool spellTextEditClass::setDic(const QString newSpellDic)
             spellChecker->add_dic(fileInfoForUserDic.filePath().toLatin1());
         }
 
-        codecUsed = QTextCodec::codecForName(QString(spellChecker->get_dic_encoding()).toLatin1());
+        encoderUsed = QStringEncoder(spellChecker->get_dic_encoding());
+        decoderUsed = QStringDecoder(spellChecker->get_dic_encoding());
     }
 
     return true;
@@ -154,20 +155,19 @@ void spellTextEditClass::searchWordBoundaryPosition(QString textBlock, int check
 QStringList spellTextEditClass::getWordPropositions(const QString word) const
 {
     QStringList wordList;
-    if(spellChecker != nullptr && codecUsed != nullptr)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true && decoderUsed.isValid() == true)
     {
-        QByteArray encodedString;
-        encodedString = codecUsed->fromUnicode(word);
-        bool check = spellChecker->spell((std::string)encodedString.data());
+        std::string encodedString = QByteArray(encoderUsed(word)).toStdString();
+        bool check = spellChecker->spell(encodedString);
 
         if(check == false)
         {
-            std::vector<std::string> suggestions = spellChecker->suggest((std::string)encodedString.data());
+            std::vector<std::string> suggestions = spellChecker->suggest(encodedString);
             if(suggestions.size() > 0)
             {
                 for(const std::string& suggestion : suggestions)
                 {
-                    wordList.append(codecUsed->toUnicode(suggestion.c_str()));
+                    wordList.append(decoderUsed(QByteArray::fromStdString(suggestion)));
                 }
             }
         }
@@ -197,7 +197,7 @@ QString spellTextEditClass::getWordUnderCursor(QPoint cursorPos) const
 
 void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 {
-    if(spellChecker != nullptr && codecUsed != nullptr && spellCheckingIsEnabled == true)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true && spellCheckingIsEnabled == true)
     {
         QFont thisFont;
         lastPos = event->pos();
@@ -241,9 +241,9 @@ void spellTextEditClass::contextMenuEvent(QContextMenuEvent* event)
 
 bool spellTextEditClass::checkWord(QString word) const
 {
-    if(spellChecker != nullptr && codecUsed != nullptr)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true)
     {
-        return spellChecker->spell((std::string)codecUsed->fromUnicode(word).data());
+        return spellChecker->spell(QByteArray(encoderUsed(word)).toStdString());
     }
     else
     {
@@ -279,11 +279,11 @@ void spellTextEditClass::correctWord()
 
 void spellTextEditClass::addWordToUserDic()
 {
-    if(spellChecker != nullptr && codecUsed != nullptr)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
 
-        spellChecker->add(codecUsed->fromUnicode(wordUnderCursor).data());
+        spellChecker->add(QByteArray(encoderUsed(wordUnderCursor)).toStdString());
         addedWords.append(wordUnderCursor);
 
         emit addWord(wordUnderCursor);
@@ -292,11 +292,11 @@ void spellTextEditClass::addWordToUserDic()
 
 void spellTextEditClass::ignoreWord()
 {
-    if(spellChecker != nullptr && codecUsed != nullptr)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true)
     {
         QString wordUnderCursor = getWordUnderCursor(lastPos);
 
-        spellChecker->add(codecUsed->fromUnicode(wordUnderCursor).data());
+        spellChecker->add(QByteArray(encoderUsed(wordUnderCursor)).toStdString());
 
         emit addWord(wordUnderCursor);
     }
