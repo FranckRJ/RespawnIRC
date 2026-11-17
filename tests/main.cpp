@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QFile>
+#include <QStringConverter>
 #include <QTextStream>
 
 #include "testTool.hpp"
@@ -17,8 +18,8 @@ namespace
     QTextStream& out()
     {
         static QTextStream stream(stdout);
-        static bool codecIsSet = [&]() { stream.setCodec("UTF-8"); return true; }();
-        Q_UNUSED(codecIsSet)
+        static bool encodingIsSet = [&]() { stream.setEncoding(QStringConverter::Utf8); return true; }();
+        Q_UNUSED(encodingIsSet)
         return stream;
     }
 }
@@ -104,8 +105,7 @@ QString testTool::loadFixture(const QString& nameOfFile)
 
 int testTool::finish()
 {
-    /* QTextStream interprète un const char* en latin-1, d'où le QString explicite. */
-    out() << "\n" << checksDone << QString(" vérifications, ") << checksFailed << QString(" échec(s).\n");
+    out() << "\n" << checksDone << " vérifications, " << checksFailed << " échec(s).\n";
     out().flush();
     return (checksFailed == 0 ? 0 : 1);
 }

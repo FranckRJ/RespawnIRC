@@ -55,7 +55,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
     if(fileInfoForDic.exists() == false || fileInfoForDic.isReadable() == false)
     {
         spellChecker = nullptr;
-        codec = QTextCodec::codecForName("UTF-8");
+        encoderUsed = QStringEncoder(QStringConverter::Utf8);
     }
     else
     {
@@ -67,7 +67,7 @@ bool highlighterClass::setDic(const QString newSpellDic)
         {
             spellChecker->add_dic(fileInfoForUserDic.filePath().toLatin1());
         }
-        codec = QTextCodec::codecForName(QString(spellChecker->get_dic_encoding()).toLatin1());
+        encoderUsed = QStringEncoder(spellChecker->get_dic_encoding());
     }
 
     rehighlight();
@@ -90,9 +90,9 @@ void highlighterClass::styleChanged()
 
 void highlighterClass::addWordToDic(QString word)
 {
-    if(spellChecker != nullptr && codec != nullptr)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true)
     {
-        spellChecker->add(codec->fromUnicode(word).data());
+        spellChecker->add(QByteArray(encoderUsed(word)).toStdString());
         rehighlight();
     }
 }
@@ -104,7 +104,7 @@ void highlighterClass::highlightBlock(const QString& text)
 
 void highlighterClass::spellCheck(const QString& text)
 {
-    if(spellChecker != nullptr && codec != nullptr && spellCheckingIsEnabled == true)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true && spellCheckingIsEnabled == true)
     {
         QString simplifiedText = text.simplified();
         if(simplifiedText.isEmpty() == false)
@@ -146,9 +146,9 @@ void highlighterClass::spellCheck(const QString& text)
 
 bool highlighterClass::checkWord(QString word)
 {
-    if(spellChecker != nullptr && codec != nullptr)
+    if(spellChecker != nullptr && encoderUsed.isValid() == true)
     {
-        return spellChecker->spell((std::string)codec->fromUnicode(word).data());
+        return spellChecker->spell(QByteArray(encoderUsed(word)).toStdString());
     }
     else
     {
